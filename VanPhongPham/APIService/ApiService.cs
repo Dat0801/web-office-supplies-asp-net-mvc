@@ -16,7 +16,7 @@ namespace VanPhongPham.APIService
         {
             _httpClient = new HttpClient();
             // Thay thế URL của API bên dưới bằng URL của Web API của bạn
-            _httpClient.BaseAddress = new Uri("https://254b-171-243-49-91.ngrok-free.app");
+            _httpClient.BaseAddress = new Uri("https://8f19-171-243-49-91.ngrok-free.app/");
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
