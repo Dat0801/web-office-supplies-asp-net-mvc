@@ -11,7 +11,13 @@ namespace VanPhongPham.Controllers
         // GET: Home
         public ActionResult Index()
         {
-            return View("Index");
+            return View();
         }
+
+        public ActionResult Login()
+        {
+            return View();
+        }
+
     }
 }
