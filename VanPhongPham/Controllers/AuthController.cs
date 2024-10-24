@@ -34,20 +34,19 @@ namespace VanPhongPham.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<ActionResult> Login(string email, string password)
-        {
-            try
+        public async Task<ActionResult> Login(UserLoginModelView user)
+        {           
+            var rs = await _apiService.LoginAsync(user);
+            if (rs)
             {
-                /*var token =*/ 
-                await _apiService.LoginAsync(email, password);
-                // Lưu token hoặc thực hiện hành động cần thiết sau khi đăng nhập thành công
+                TempData["SuccessMessage"] = "Đăng nhập thành công!";
                 return RedirectToAction("Index", "Home");
             }
-            catch (Exception ex)
-            {                
-                ViewBag.ErrorMessage = ex.Message;
+            else
+            {
+                TempData["ErrorMessage"] = "Đăng nhập thất bại!";
                 return View();
-            }
+            }            
         }
         [HttpPost]
         public async Task<ActionResult> Register(UserRegisterModelView model)

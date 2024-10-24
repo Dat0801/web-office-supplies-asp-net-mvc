@@ -3,6 +3,14 @@
     ViewBag.Title = "Văn Phòng Phẩm";
     Layout = "~/Views/Shared/_LayoutClient.cshtml";
 }
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+
 <!-- Navbar Start -->
 <div class="container-fluid pt-5">
     <div class="row border-top px-xl-5">

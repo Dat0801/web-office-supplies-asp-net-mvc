@@ -8,82 +8,106 @@ using VanPhongPham.ModelViews;
 
 namespace VanPhongPham.APIService
 {
-    public class ApiService
+    public class ApiService : IDisposable
     {
         private readonly HttpClient _httpClient;
 
         public ApiService()
         {
-            _httpClient = new HttpClient();
-            // Thay thế URL của API bên dưới bằng URL của Web API của bạn
-            _httpClient.BaseAddress = new Uri("https://8f19-171-243-49-91.ngrok-free.app/");
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("http://vanphongpham-001-site1.ltempurl.com")
+            };
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         // Đăng nhập
-        public async Task<string> LoginAsync(string email, string password)
+        public async Task<bool> LoginAsync(UserLoginModelView user)
         {
-            var loginData = new
-            {
-                Email = email,
-                Password = password
-            };
-
-            var content = new StringContent(JsonConvert.SerializeObject(loginData), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("/api/auth/login", content);
+            var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("/api/auth/auth_account", content);
 
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(json);
-                // Lưu JWT token nếu cần
-                SaveToken(tokenResponse.Token);
-                //return tokenResponse.Token;
+                var jsonResponse = JsonConvert.DeserializeObject<dynamic>(json);
+                var accessToken = jsonResponse?.data?.accessToken;
+                var refreshToken = jsonResponse.data?.refreshToken;
+                var expiresIn = jsonResponse.data?.expiresIn;
+                SaveToken(accessToken, refreshToken, expiresIn);
+                return true;
             }
-
-            throw new Exception("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+            else
+                return false;
         }
 
         // Đăng ký
         public async Task<bool> RegisterAsync(UserRegisterModelView model)
         {
-            UserRegisterModelView registerData = new UserRegisterModelView
-            {
-                Name = model.Name,
-                Email = model.Email,
-                PhoneNumber = model.PhoneNumber,
-                Password = model.Password                
-            };
-
-            var content = new StringContent(JsonConvert.SerializeObject(registerData), Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync("/api/auth/register", content);
 
             if (response.IsSuccessStatusCode)
             {
                 return true;
             }
-
-            throw new Exception("Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.");
+            else
+                return false;
         }
 
-        // Lưu JWT Token trong bộ nhớ hoặc session
-        private void SaveToken(string token)
+        // Lưu JWT Token vào session
+        private void SaveToken(string accessToken, string refreshToken, dynamic expiresIn)
         {
-            // Ví dụ: lưu vào session (nếu đang sử dụng ASP.NET MVC)
-            System.Web.HttpContext.Current.Session["JWTToken"] = token;
-
-            // Nếu lưu ở nơi khác (cookie, local storage, v.v.), tùy theo yêu cầu của bạn
+            System.Web.HttpContext.Current.Session["JWTToken"] = accessToken;
+            System.Web.HttpContext.Current.Session["RefreshToken"] = refreshToken;
+            System.Web.HttpContext.Current.Session["ExpiresIn"] = expiresIn;
         }
-
-        // Thiết lập JWT Token cho các lần gọi tiếp theo
-        private void SetTokenHeader()
+        private async Task EnsureTokenIsValid()
         {
+            var token = System.Web.HttpContext.Current.Session["JWTToken"] as string;
+            var expiresIn = DateTime.Parse(System.Web.HttpContext.Current.Session["ExpiresIn"] as string);
+            
+            if (string.IsNullOrEmpty(token) || DateTime.UtcNow >= expiresIn)
+            {
+                await RefreshTokenAsync();
+            }
+        }        
+        private async void SetTokenHeader()
+        {
+            await EnsureTokenIsValid();
             var token = System.Web.HttpContext.Current.Session["JWTToken"] as string;
             if (!string.IsNullOrEmpty(token))
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
+        }
+        public async Task<string> RefreshTokenAsync()
+        {
+            var refreshToken = System.Web.HttpContext.Current.Session["RefreshToken"] as string;
+
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                throw new Exception("Không tìm thấy refresh token.");
+            }
+
+            var content = new StringContent(JsonConvert.SerializeObject(new { refreshToken }), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("/api/auth/refresh_token", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var jsonResponse = JsonConvert.DeserializeObject<dynamic>(json);
+                var accessToken = jsonResponse.data?.accessToken;
+                var newRefreshToken = jsonResponse.data?.refreshToken;
+                var expiresIn = jsonResponse.data?.expiresIn;
+
+                // Lưu lại token mới
+                SaveToken(accessToken, refreshToken, expiresIn);
+                return accessToken;
+            }
+
+            throw new Exception("Làm mới token thất bại.");
         }
 
         // GET Method
@@ -131,10 +155,10 @@ namespace VanPhongPham.APIService
             response.EnsureSuccessStatusCode();
         }
 
-        // Mô hình phản hồi của Token
-        private class TokenResponse
+        // Dispose method
+        public void Dispose()
         {
-            public string Token { get; set; }
+            _httpClient.Dispose();
         }
     }
 }
