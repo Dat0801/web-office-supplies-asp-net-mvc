@@ -1,0 +1,77 @@
+﻿
+@{
+    ViewBag.Title = "Người dùng - Quản Trị";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h4 class="font-weight-bold py-3 mb-0">Danh sách người dùng</h4>
+<div class="row">
+
+    <div class="navbar-nav my-3 ml-2">
+        <!-- Search -->
+        <label class="nav-item navbar-text navbar-search-box p-0 active">
+            <a href="#"><i class="feather icon-search navbar-icon align-middle"></i></a>
+            <span class="navbar-search-input pl-2">
+                <input type="text" class="form-control navbar-text mx-2" placeholder="Tìm kiếm...">
+            </span>
+        </label>
+    </div>
+    <!-- Search -->
+    <a class="btn icon-btn btn-outline-primary my-3 ml-3" href="@Url.Action("AddUser","User")">
+        <i class="feather icon-user-plus navbar-icon align-middle"></i>
+    </a>
+</div>
+
+
+
+<div class="card">
+    <div class="card-header">Danh sách người dùng</div>
+    <table class="table card-table">
+        <thead class="thead-light">
+            <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>mdo</td>
+                <td>
+                    <button type="button" class="btn icon-btn btn-outline-danger">
+                        <i class="feather icon-user-minus navbar-icon align-middle"></i>
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>fat</td>
+                <td>
+                    <button type="button" class="btn icon-btn btn-outline-primary">
+                        <i class="feather icon-user-minus navbar-icon align-middle"></i>
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>twitter</td>
+                <td>
+                    <button type="button" class="btn icon-btn btn-outline-primary">
+                        <i class="feather icon-user-minus navbar-icon align-middle"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+

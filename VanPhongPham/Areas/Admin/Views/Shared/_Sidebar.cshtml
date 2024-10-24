@@ -1,0 +1,92 @@
+﻿<!-- [ Layout sidenav ] Start -->
+<div id="layout-sidenav" class="layout-sidenav sidenav sidenav-vertical bg-white logo-dark">
+    <!-- Brand demo (see assets/css/demo/demo.css) -->
+    <div class="app-brand demo">
+        <a href="index.html" class="app-brand-text demo sidenav-text font-weight-normal ml-2">QVD Admin</a>
+        <a href="javascript:" class="layout-sidenav-toggle sidenav-link text-large ml-auto">
+            <i class="ion ion-md-menu align-middle"></i>
+        </a>
+    </div>
+    <div class="sidenav-divider mt-0"></div>
+
+    <!-- Links -->
+    <ul class="sidenav-inner py-1">
+
+        <!-- Dashboards -->
+        <li class="sidenav-item active">
+            <a href="index.html" class="sidenav-link">
+                <i class="sidenav-icon feather icon-home"></i>
+                <div>Tổng quan</div>
+            </a>
+        </li>
+
+        <!-- Layouts -->
+        <li class="sidenav-divider mb-1"></li>
+        <li class="sidenav-header small font-weight-semibold">Chức năng quản lý</li>
+
+        <!-- Quản lý người dùng -->
+        <li class="sidenav-item">
+            <a href="javascript:" class="sidenav-link sidenav-toggle">
+                <i class="sidenav-icon feather icon-users"></i>
+                <div>Người dùng</div>
+            </a>
+            <ul class="sidenav-menu">
+                <li class="sidenav-item">
+                    <a href="@Url.Action("Index", "User")" class="sidenav-link">
+                        <div>Danh sách người dùng</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="@Url.Action("AddUser", "User")" class="sidenav-link">
+                        <div>Thêm mới người dùng</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <!-- Quản lý nhà cung cấp -->
+        <li class="sidenav-item">
+            <a href="javascript:" class="sidenav-link sidenav-toggle">
+                <i class="sidenav-icon feather icon-package"></i>
+                <div>Nhà cung cấp</div>
+            </a>
+            <ul class="sidenav-menu">
+                <li class="sidenav-item">
+                    <a href="bui_alert.html" class="sidenav-link">
+                        <div>Danh sách nhà cung cấp</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="bui_badges.html" class="sidenav-link">
+                        <div>Thêm mới nhà cung cấp</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Quản lý sản phẩm -->
+        <li class="sidenav-item">
+            <a href="javascript:" class="sidenav-link sidenav-toggle">
+                <i class="sidenav-icon feather icon-package"></i>
+                <div>Sản phẩm</div>
+            </a>
+            <ul class="sidenav-menu">
+                <li class="sidenav-item">
+                    <a href="bui_alert.html" class="sidenav-link">
+                        <div>Danh sách sản phẩm</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="bui_alert.html" class="sidenav-link">
+                        <div>Danh mục sản phẩm</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="bui_badges.html" class="sidenav-link">
+                        <div>Thêm mới sản phẩm</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<!-- [ Layout sidenav ] End -->
