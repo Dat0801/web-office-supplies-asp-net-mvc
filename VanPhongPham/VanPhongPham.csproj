@@ -582,6 +582,7 @@
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </Compile>
     <Compile Include="Models\SupplierRepository.cs" />
+    <Compile Include="Models\UserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
