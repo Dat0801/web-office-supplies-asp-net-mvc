@@ -425,3 +425,4 @@ D:\HK7\DACN\web-office-supplies-asp-net-mvc\VanPhongPham\obj\Debug\VanPhongPham.
 D:\HK7\DACN\web-office-supplies-asp-net-mvc\VanPhongPham\obj\Debug\VanPhongPham.csproj.CopyComplete
 D:\HK7\DACN\web-office-supplies-asp-net-mvc\VanPhongPham\obj\Debug\VanPhongPham.dll
 D:\HK7\DACN\web-office-supplies-asp-net-mvc\VanPhongPham\obj\Debug\VanPhongPham.pdb
+D:\HK7\DACN\web-office-supplies-asp-net-mvc\VanPhongPham\obj\Debug\VanPhongPham.csproj.AssemblyReference.cache
