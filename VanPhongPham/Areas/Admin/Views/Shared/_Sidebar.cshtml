@@ -14,7 +14,7 @@
 
         <!-- Dashboards -->
         <li class="sidenav-item active">
-            <a href="index.html" class="sidenav-link">
+            <a href="@Url.Action("Index", "Dashboard")" class="sidenav-link">
                 <i class="sidenav-icon feather icon-home"></i>
                 <div>Tổng quan</div>
             </a>
@@ -51,12 +51,12 @@
             </a>
             <ul class="sidenav-menu">
                 <li class="sidenav-item">
-                    <a href="bui_alert.html" class="sidenav-link">
+                    <a href="@Url.Action("Index", "Supplier")" class="sidenav-link">
                         <div>Danh sách nhà cung cấp</div>
                     </a>
                 </li>
                 <li class="sidenav-item">
-                    <a href="bui_badges.html" class="sidenav-link">
+                    <a href="@Url.Action("AddSupplier", "Supplier")" class="sidenav-link">
                         <div>Thêm mới nhà cung cấp</div>
                     </a>
                 </li>

@@ -1,0 +1,56 @@
+﻿@model List<VanPhongPham.Models.supplier>
+@{
+    ViewBag.Title = "Nhà cung cấp - Quản Trị";
+}
+
+<h4 class="font-weight-bold py-3 mb-0">Danh sách nhà cung cấp</h4>
+<div class="row">
+
+    <div class="navbar-nav my-3 ml-2">
+        <!-- Search -->
+        <label class="nav-item navbar-text navbar-search-box p-0 active">
+            <a href="#"><i class="feather icon-search navbar-icon align-middle"></i></a>
+            <span class="navbar-search-input pl-2">
+                <input type="text" class="form-control navbar-text mx-2" placeholder="Tìm kiếm...">
+            </span>
+        </label>
+    </div>
+    <!-- Search -->
+    <a class="btn icon-btn btn-outline-primary my-3 ml-3" href="@Url.Action("AddUser","User")">
+        <i class="feather icon-user-plus navbar-icon align-middle"></i>
+    </a>
+</div>
+
+
+
+<div class="card">
+    <table class="table card-table table-responsive-md">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã nhà cung cấp</th>
+                <th>Tên nhà cung cấp</th>
+                <th>Email</th>
+                <th>Số điện thoại</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var supplier in Model)
+            {
+            <tr>
+                <td>@supplier.supplier_id</td>
+                <td>@supplier.supplier_name</td>
+                <td>@supplier.email</td>
+                <td>@supplier.phone_number</td>
+                <td>
+                    <button type="button" class="btn icon-btn btn-outline-danger">
+                        <i class="feather icon-user-minus navbar-icon align-middle"></i>
+                    </button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
