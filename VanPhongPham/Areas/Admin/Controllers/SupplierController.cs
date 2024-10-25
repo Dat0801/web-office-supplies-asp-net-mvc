@@ -23,7 +23,32 @@ namespace VanPhongPham.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult AddSupplier()
         {
+            ViewBag.supplier_id = supplierRepository.generateSupplierId();
             return View();
+        }
+        [HttpPost]
+        public ActionResult AddSupplier(supplier supplier)
+        {
+            supplierRepository.AddSupplier(supplier);
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public ActionResult UpdateSupplier(string id)
+        {
+            supplier supplier = supplierRepository.GetSupplierById(id);
+            return View(supplier);
+        }
+        [HttpPost]
+        public ActionResult UpdateSupplier(supplier supplier)
+        {
+            supplierRepository.UpdateSupplier(supplier);
+            return View(supplier);
+        }
+        [HttpPost]
+        public ActionResult DeleteSupplier(string id)
+        {
+            supplierRepository.DeleteSupplier(id);
+            return RedirectToAction("Index");
         }
     }
 }

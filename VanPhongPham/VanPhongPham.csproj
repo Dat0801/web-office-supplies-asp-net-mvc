@@ -585,6 +585,7 @@
     </Compile>
     <Compile Include="Models\ProductRepository.cs" />
     <Compile Include="Models\SupplierRepository.cs" />
+    <Compile Include="Models\UserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
