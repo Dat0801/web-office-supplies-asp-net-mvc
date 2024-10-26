@@ -14,41 +14,36 @@ namespace VanPhongPham.Areas.Admin.Controllers
             supplierRepository = new SupplierRepository();
         }
         // GET: Admin/Supplier
-        public ActionResult Index()
+        public ActionResult Index(string supplier_id)
         {
+            if (supplier_id != null)
+            {
+                supplier supplier = supplierRepository.GetSupplierById(supplier_id);
+                ViewBag.supplier = supplier;
+            }
             List<supplier> listSupplier = supplierRepository.GetAllSuppliers();
+            ViewBag.supplier_id = supplierRepository.GenerateSupplierId();
             return View(listSupplier);
         }
 
-        [HttpGet]
-        public ActionResult AddSupplier()
-        {
-            ViewBag.supplier_id = supplierRepository.generateSupplierId();
-            return View();
-        }
         [HttpPost]
-        public ActionResult AddSupplier(supplier supplier)
+        public ActionResult AddSupplier(string action, supplier supplier)
         {
-            supplierRepository.AddSupplier(supplier);
-            return RedirectToAction("Index");
+            if(action == "add")
+            {
+                supplierRepository.AddSupplier(supplier);
+            }
+            else
+            {
+                supplierRepository.UpdateSupplier(supplier);
+            }
+            return RedirectToAction("Index", "Admin/Supplier"); 
         }
-        [HttpGet]
-        public ActionResult UpdateSupplier(string id)
+
+        public ActionResult DeleteSupplier(string supplier_id)
         {
-            supplier supplier = supplierRepository.GetSupplierById(id);
-            return View(supplier);
-        }
-        [HttpPost]
-        public ActionResult UpdateSupplier(supplier supplier)
-        {
-            supplierRepository.UpdateSupplier(supplier);
-            return View(supplier);
-        }
-        [HttpPost]
-        public ActionResult DeleteSupplier(string id)
-        {
-            supplierRepository.DeleteSupplier(id);
-            return RedirectToAction("Index");
+            supplierRepository.DeleteSupplier(supplier_id);
+            return RedirectToAction("Index", "Supplier");
         }
     }
 }

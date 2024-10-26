@@ -8,31 +8,36 @@
         <form method="post" action="/Supplier/AddSupplier">
             <div class="form-row">
                 <div class="form-group col-md-3">
-                    <label for="supplier_name">Tên nhà cung cấp</label>
-                    <input type="text" class="form-control" id="supplier_name" name="supplier_name" readonly value="@ViewBag.supplier_id" />
+                    <label for="supplier_name">Mã nhà cung cấp</label>
+                    <input type="text" class="form-control" id="supplier_id" name="supplier_id" readonly 
+                           value="@(ViewBag.supplier != null ? ViewBag.supplier.supplier_id : ViewBag.supplier_id ?? "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Tên nhà cung cấp</label>
-                    <input type="text" class="form-control" id="supplier_name" name="supplier_name" required />
+                    <input type="text" class="form-control" id="supplier_name" name="supplier_name" required 
+                           value="@(ViewBag.supplier != null ? ViewBag.supplier.supplier_name : "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required />
+                    <input type="email" class="form-control" id="email" name="email" required 
+                           value="@(ViewBag.supplier != null ? ViewBag.supplier.email : "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="phone_number">Số điện thoại</label>
-                    <input type="text" class="form-control" id="phone_number" name="phone_number" required />
+                    <input type="text" class="form-control" id="phone_number" name="phone_number" required 
+                           value="@(ViewBag.supplier != null ? ViewBag.supplier.phone_number : "")" />
                     <div class="clearfix"></div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Sign in</button>
+            <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
+            <button type="submit" name="action" value="edit" class="btn btn-primary">Sửa</button>
         </form>
     </div>
 </div>
-<h4 class="font-weight-bold py-3 mb-0">Danh sách nhà cung cấp</h4>
+<h4 class="font-weight-bold mb-0">Danh sách nhà cung cấp</h4>
 <div class="row">
 
     <div class="navbar-nav my-3 ml-2">
@@ -44,10 +49,6 @@
             </span>
         </label>
     </div>
-    <!-- Search -->
-    <a class="btn icon-btn btn-outline-primary my-3 ml-3" href="@Url.Action("AddSupplier","Supplier")">
-        <i class="feather icon-user-plus navbar-icon align-middle"></i>
-    </a>
 </div>
 
 <div class="card">
@@ -70,9 +71,12 @@
                     <td>@supplier.email</td>
                     <td>@supplier.phone_number</td>
                     <td>
-                        <button type="button" class="btn icon-btn btn-outline-danger">
+                        <a class="btn icon-btn btn-outline-danger" href="@Url.Action("DeleteSupplier", "Supplier", new { supplier_id = supplier.supplier_id })">
                             <i class="feather icon-user-minus navbar-icon align-middle"></i>
-                        </button>
+                        </a>
+                        <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("Index", "Supplier", new { supplier_id = supplier.supplier_id })">
+                            <i class="feather icon-user-check navbar-icon align-middle"></i>
+                        </a>
                     </td>
                 </tr>
             }

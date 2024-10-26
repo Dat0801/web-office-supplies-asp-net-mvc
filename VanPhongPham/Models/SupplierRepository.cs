@@ -22,27 +22,52 @@ namespace VanPhongPham.Models
         {
             return _context.suppliers.FirstOrDefault(x => x.supplier_id == id);
         }
-        public void AddSupplier(supplier supplier)
+        public bool AddSupplier(supplier supplier)
         {
-            _context.suppliers.InsertOnSubmit(supplier);
-            _context.SubmitChanges();
+            try
+            {
+                _context.suppliers.InsertOnSubmit(supplier);
+                _context.SubmitChanges();
+                return true;
+            } catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+            
         }
-        public void UpdateSupplier(supplier supplier)
+        public bool UpdateSupplier(supplier supplier)
         {
             supplier supplierToUpdate = GetSupplierById(supplier.supplier_id);
-            supplierToUpdate.supplier_name = supplier.supplier_name;            
-            supplierToUpdate.phone_number = supplier.phone_number;
-            supplierToUpdate.email = supplier.email;            
-            _context.SubmitChanges();
+            try
+            {
+                supplierToUpdate.supplier_name = supplier.supplier_name;
+                supplierToUpdate.phone_number = supplier.phone_number;
+                supplierToUpdate.email = supplier.email;
+                _context.SubmitChanges();
+                return true;
+            } catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
-        public void DeleteSupplier(string id)
+        public bool DeleteSupplier(string id)
         {
             supplier supplierToDelete = GetSupplierById(id);
-            _context.suppliers.DeleteOnSubmit(supplierToDelete);
-            _context.SubmitChanges();
+            try
+            {
+                _context.suppliers.DeleteOnSubmit(supplierToDelete);
+                _context.SubmitChanges();
+                return true;
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
 
-        public string generateSupplierId()
+        public string GenerateSupplierId()
         {
             supplier supplier = _context.suppliers.ToList().LastOrDefault();
             int num = int.Parse(supplier.supplier_id.Substring(3)) + 1;
@@ -54,7 +79,5 @@ namespace VanPhongPham.Models
             supplier_id += num;
             return supplier_id;
         }
-
-
     }
 }

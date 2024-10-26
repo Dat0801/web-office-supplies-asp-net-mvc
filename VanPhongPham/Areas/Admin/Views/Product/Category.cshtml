@@ -1,0 +1,73 @@
+﻿@model List<VanPhongPham.Models.category>
+@{
+    ViewBag.Title = "Danh mục sản phẩm - Quản Trị";
+}
+<div class="card mb-4">
+    <h6 class="card-header">Thêm mới danh mục</h6>
+    <div class="card-body">
+        <form method="post" action="AddCategory">
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="supplier_name">Mã danh mục</label>
+                    <input type="text" class="form-control" id="supplier_id" name="category_id" readonly
+                           value="@(ViewBag.category != null ? ViewBag.category.category_id : ViewBag.category_id ?? "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="supplier_name">Tên danh mục</label>
+                    <input type="text" class="form-control" id="supplier_name" name="category_name" required
+                           value="@(ViewBag.category != null ? ViewBag.category.category_name : "")" />
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
+            <button type="submit" name="action" value="edit" class="btn btn-primary">Sửa</button>
+        </form>
+    </div>
+</div>
+
+<h4 class="font-weight-bold py-3 mb-0">Danh sách sản phẩm</h4>
+<div class="row">
+
+    <div class="navbar-nav my-3 ml-2">
+        <!-- Search -->
+        <label class="nav-item navbar-text navbar-search-box p-0 active">
+            <a href="#"><i class="feather icon-search navbar-icon align-middle"></i></a>
+            <span class="navbar-search-input pl-2">
+                <input type="text" class="form-control navbar-text mx-2" placeholder="Tìm kiếm...">
+            </span>
+        </label>
+    </div>
+</div>
+
+<div class="card">
+    <table class="table card-table table-responsive-lg">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã danh mục</th>
+                <th>Tên danh mục</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Model)
+            {
+                <tr>
+                    <td>@category.category_id</td>
+                    <td>@category.category_name</td>
+                    <td>
+                        <a class="btn icon-btn btn-outline-danger"
+                           href="@Url.Action("DeleteCategory", "Product", new { category_id = category.category_id })">
+                            <i class="feather icon-user-minus navbar-icon align-middle"></i>
+                        </a>
+                        <a class="btn icon-btn btn-outline-info ml-2"
+                           href="@Url.Action("Category", "Product", new { category_id = category.category_id })">
+                            <i class="feather icon-user-check navbar-icon align-middle"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

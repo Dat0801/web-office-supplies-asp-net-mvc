@@ -22,7 +22,7 @@
 </div>
 
 <div class="card">
-    <table class="table card-table table-responsive-md">
+    <table class="table card-table table-responsive-lg">
         <thead class="thead-light">
             <tr>
                 <th>Mã sản phẩm</th>
@@ -30,6 +30,7 @@
                 <th>Giá nhập</th>
                 <th>Hệ số</th>
                 <th>Giá bán</th>
+                <th>Số lượng tồn</th>
                 <th>Danh mục</th>
                 <th>Hành động</th>
             </tr>
@@ -53,11 +54,14 @@
                             <span>@product.price</span><br />
                         }
                     </td>
-                    <td>@product.category.category_name</td>
+                    <td>@product.stock_quantity</td>
                     <td>
-                        <button type="button" class="btn icon-btn btn-outline-danger">
+                        <a href="">@product.category.category_name</a>
+                    </td>
+                    <td>
+                        <a class="btn icon-btn btn-outline-danger">
                             <i class="feather icon-user-minus navbar-icon align-middle"></i>
-                        </button>
+                        </a>
                     </td>
                 </tr>
             }
