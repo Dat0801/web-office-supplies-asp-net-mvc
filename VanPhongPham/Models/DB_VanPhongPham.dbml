@@ -1,34 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="DB_VanPhongPham" Class="DB_VanPhongPhamDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="WebSettings" ConnectionString="Data Source=.;Initial Catalog=DB_VanPhongPham;User ID=sa" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DB_VanPhongPhamConnectionString" Provider="Microsoft.Data.SqlClient" />
+  <Connection Mode="WebSettings" ConnectionString="Data Source=DESKTOP-NO8JHRO\VINHYET;Initial Catalog=DB_VanPhongPham;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DB_VanPhongPhamConnectionString1" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.addresses" Member="addresses">
+    <Type Name="address">
+      <Column Name="address_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="user_id" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="full_name" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="phone_number" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="address_line" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="ward" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="district" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="province" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="isDefault" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Association Name="user_address" Member="user" ThisKey="user_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
+    </Type>
+  </Table>
   <Table Name="dbo.users" Member="users">
     <Type Name="user">
-      <Column Name="user_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="username" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="password" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
-      <Column Name="full_name" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="email" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="phone_number" Type="System.String" DbType="VarChar(15) NOT NULL" CanBeNull="false" />
-      <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="created_at" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
-      <Column Name="last_login_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="is_active" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="user_id" Type="System.String" DbType="NVarChar(255) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="full_name" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="username" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
+      <Column Name="email" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="gender" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="dob" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="avt_url" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Association Name="user_address" Member="addresses" ThisKey="user_id" OtherKey="user_id" Type="address" />
       <Association Name="user_order" Member="orders" ThisKey="user_id" OtherKey="customer_id" Type="order" />
       <Association Name="user_order1" Member="orders1" ThisKey="user_id" OtherKey="employee_id" Type="order" />
       <Association Name="user_receipt" Member="receipts" ThisKey="user_id" OtherKey="employee_id" Type="receipt" />
       <Association Name="user_user_role" Member="user_roles" ThisKey="user_id" OtherKey="user_id" Type="user_role" />
-    </Type>
-  </Table>
-  <Table Name="dbo.addresses" Member="addresses">
-    <Type Name="address">
-      <Column Name="address_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="user_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="address_line" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="ward" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="district" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="province" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="address_type" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Association Name="user_address" Member="user" ThisKey="user_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.attribute_values" Member="attribute_values">
@@ -83,8 +82,8 @@
   <Table Name="dbo.orders" Member="orders">
     <Type Name="order">
       <Column Name="order_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="employee_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="customer_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="employee_id" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="customer_id" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
       <Column Name="method_id" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
       <Column Name="delivery_date" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="total_amount" Type="System.Double" DbType="Float" CanBeNull="true" />
@@ -168,7 +167,7 @@
   <Table Name="dbo.receipts" Member="receipts">
     <Type Name="receipt">
       <Column Name="receipt_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="employee_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="employee_id" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
       <Column Name="supplier_id" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
       <Column Name="total_cost" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="notes" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
@@ -201,7 +200,7 @@
   </Table>
   <Table Name="dbo.user_roles" Member="user_roles">
     <Type Name="user_role">
-      <Column Name="user_id" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="user_id" Type="System.String" DbType="NVarChar(255) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="role_id" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Association Name="role_user_role" Member="role" ThisKey="role_id" OtherKey="role_id" Type="role" IsForeignKey="true" />
       <Association Name="user_user_role" Member="user" ThisKey="user_id" OtherKey="user_id" Type="user" IsForeignKey="true" />

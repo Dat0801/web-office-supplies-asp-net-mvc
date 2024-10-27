@@ -1,0 +1,330 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Register</title>
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css">
+    <link href="~/Public/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <style>
+        .nav-item {
+            margin-right: 20px;
+        }
+
+        .top-bar {
+            background-color: #C43240;
+            padding: 5px 0;
+        }
+
+        .top-bar .nav-link {
+            margin-left: 15px;
+            font-size: 22px;
+        }
+
+        .top-bar .nav-link:hover {
+            color: #adb5bd;
+        }
+
+        .logo img {
+            max-height: 80px; /* Giới hạn chiều cao tối đa */
+            width: 100%; /* Đảm bảo chiếm 100% chiều rộng */
+            object-fit: contain; /* Đảm bảo logo không bị méo */
+        }
+
+        .is-invalid {
+            border-color: red;
+        }
+
+        .invalid-feedback {
+            display: none;
+            color: red;
+            font-size: 12px;
+        }
+
+        .is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+    <script src="~/Public/js/User.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row bg-secondary py-2 px-xl-5">
+            <div class="col-lg-6 text-center text-lg-left">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-primary font-weight-bold border border-white px-3 mr-1" href="@Url.Action("Index", "Home")">QVD</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="">Câu hỏi</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="">Trợ giúp</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a class="text-dark pl-2" href="">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Đăng ký 11 - Bootstrap Brain Component -->
+    <section class="py-3 py-md-5 py-xl-8 bg-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="mb-5">
+                        <h2 class="display-5 text-center">Đăng ký</h2>
+                        <p class="text-center m-0">Bạn đã có tài khoản? <a style="text-decoration: none; color: #ee4d2d" href="/Auth/Login">Đăng nhập</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-10 col-xl-8">
+                    <div class="row gy-5 justify-content-center">
+                        <div class="col-12 col-lg-5">
+                            <form id="registerForm">
+                                <div class="row gy-3 overflow-hidden">
+                                    <div class="col-12">
+                                        <!-- Thông báo xác thực email -->
+                                        <div class="alert alert-success" id="emailVerificationMessage" style="display: none;">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control border-0 border-bottom rounded-0" name="full_name" id="full_name" placeholder="Tên">
+                                            <label for="full_name" class="form-label">Tên</label>
+                                            <div class="invalid-feedback">Vui lòng nhập tên của bạn.</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control border-0 border-bottom rounded-0" name="username" id="username" placeholder="Tên đăng nhập">
+                                            <label for="username" class="form-label">Tên đăng nhập</label>
+                                            <div class="invalid-feedback">Vui lòng nhập tên đăng nhập.</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            <input type="email" class="form-control border-0 border-bottom rounded-0" name="email" id="email" placeholder="name@example.com">
+                                            <label for="email" class="form-label">Email</label>
+                                            <div class="invalid-feedback">Vui lòng nhập địa chỉ email hợp lệ.</div>
+                                            <div class="invalid-feedback" id="registrationError" style="display: none;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            <input type="password" class="form-control border-0 border-bottom rounded-0" name="password" id="password" placeholder="Mật khẩu">
+                                            <label for="password" class="form-label">Mật khẩu</label>
+                                            <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            <input type="password" class="form-control border-0 border-bottom rounded-0" name="cfpassword" id="cfpassword" placeholder="Xác nhận mật khẩu">
+                                            <label for="cfpassword" class="form-label">Xác nhận mật khẩu</label>
+                                            <div class="invalid-feedback">Vui lòng nhập lại mật khẩu khớp với mật khẩu đã nhập.</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label for="dob" class="form-label">Ngày sinh</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar"></i>
+                                            </span>
+                                            <input type="date" class="form-control" name="dob" id="dob">
+                                            <div class="invalid-feedback">Vui lòng nhập ngày sinh.</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label">Giới tính</label>
+                                        <div class="d-flex justify-content-between">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="gender" id="maleRadio" value="Nam">
+                                                <label class="form-check-label" for="maleRadio">Nam</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="gender" id="femaleRadio" value="Nữ">
+                                                <label class="form-check-label" for="femaleRadio">Nữ</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="gender" id="unknownRadio" value="Khác">
+                                                <label class="form-check-label" for="unknownRadio">Khác</label>
+                                            </div>
+                                        </div>
+                                        <div class="invalid-feedback">Vui lòng chọn giới tính.</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-grid">
+                                            <button class="btn btn-primary btn-lg" type="submit">ĐĂNG KÝ</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            let isValid = true;
+
+            const fullname = document.getElementById('full_name');
+            const username = document.getElementById('username');
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            const cfpassword = document.getElementById('cfpassword');
+            const dob = document.getElementById('dob');
+            const gender = document.querySelector('input[name="gender"]:checked');
+
+            if (fullname.value.trim() === "") {
+                fullname.classList.add("is-invalid");
+                isValid = false;
+            }
+            else {
+                fullname.classList.remove("is-invalid");
+            }
+
+            if (username.value.trim() === "") {
+                username.classList.add("is-invalid");
+                isValid = false;
+            }
+            else {
+                username.classList.remove("is-invalid");
+            }
+
+            if (email.value.trim() === "") {
+                email.classList.add("is-invalid");
+                isValid = false;
+            }
+            else {
+                email.classList.remove("is-invalid");
+            }
+
+            if (password.value.trim() === "") {
+                password.classList.add("is-invalid");
+                isValid = false;
+            }
+            else if (password.value.length < 6) {
+                password.classList.add("is-invalid");
+                const passwordFeedback = password.parentElement.querySelector('.invalid-feedback');
+                passwordFeedback.innerText = "Mật khẩu phải có ít nhất 6 ký tự.";
+                passwordFeedback.style.display = 'block';
+                isValid = false;
+            }
+            else {
+                password.classList.remove("is-invalid");
+                const passwordFeedback = password.parentElement.querySelector('.invalid-feedback');
+                passwordFeedback.style.display = 'none';
+            }
+
+            if (cfpassword.value.trim() === "" || cfpassword.value !== password.value) {
+                cfpassword.classList.add("is-invalid");
+                isValid = false;
+            }
+            else {
+                cfpassword.classList.remove("is-invalid");
+            }
+
+            if (dob.value.trim() === "")
+            {
+                dob.classList.add("is-invalid");
+                const dobFeedback = dob.parentElement.querySelector('.invalid-feedback');
+                if (dobFeedback)
+                {
+                    dobFeedback.innerText = "Vui lòng nhập ngày sinh.";
+                    dobFeedback.style.display = 'block';
+                }
+                isValid = false;
+            } else if (!isOver16(dob.value))
+            {
+                dob.classList.add("is-invalid");
+                const dobFeedback = dob.parentElement.querySelector('.invalid-feedback');
+                if (dobFeedback)
+                {
+                    dobFeedback.innerText = "Bạn phải đủ 16 tuổi để đăng ký.";
+                    dobFeedback.style.display = 'block';
+                }
+                isValid = false;
+            } else
+            {
+                dob.classList.remove("is-invalid");
+                const dobFeedback = dob.parentElement.querySelector('.invalid-feedback');
+                if (dobFeedback)
+                {
+                    dobFeedback.style.display = 'none';
+                }
+            }
+
+            if (!gender)
+            {
+                document.querySelectorAll('input[name="gender"]').forEach(genderInput =>
+                {
+                    genderInput.classList.add("is-invalid");
+                });
+                const genderFeedback = document.querySelector('input[name="gender"]').closest('.col-12').querySelector('.invalid-feedback');
+                genderFeedback.innerText = "Vui lòng chọn giới tính.";
+                genderFeedback.style.display = 'block';
+                isValid = false;
+            }
+            else
+            {
+                document.querySelectorAll('input[name="gender"]').forEach(genderInput =>
+                {
+                    genderInput.classList.remove("is-invalid");
+                });
+                const genderFeedback = document.querySelector('input[name="gender"]').closest('.col-12').querySelector('.invalid-feedback');
+                genderFeedback.style.display = 'none';
+            }
+
+            if (isValid) {
+                const tenkhachhang = fullname.value.trim();
+                const tentaikhoan = username.value.trim();
+                const genderValue = gender.value;
+                const dateofbirth = dob.value;
+
+                const usernameExists = await checkUsername(tentaikhoan);
+
+                const usernameFeedback = username.parentElement.querySelector('.invalid-feedback');
+                usernameFeedback.innerText = "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.";
+                usernameFeedback.style.display = 'block';
+
+                if (usernameExists) {
+                    username.classList.add("is-invalid");
+
+                    usernameFeedback.innerText = "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.";
+                    usernameFeedback.style.display = 'block';
+                }
+                else {
+                    usernameFeedback.style.display = 'none';
+                    signUp(email.value.trim(), password.value.trim(), tenkhachhang, tentaikhoan, genderValue, dateofbirth);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

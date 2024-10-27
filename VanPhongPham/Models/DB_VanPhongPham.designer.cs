@@ -30,12 +30,12 @@ namespace VanPhongPham.Models
 		
     #region Extensibility Method Definitions
     partial void OnCreated();
-    partial void Insertuser(user instance);
-    partial void Updateuser(user instance);
-    partial void Deleteuser(user instance);
     partial void Insertaddress(address instance);
     partial void Updateaddress(address instance);
     partial void Deleteaddress(address instance);
+    partial void Insertuser(user instance);
+    partial void Updateuser(user instance);
+    partial void Deleteuser(user instance);
     partial void Insertattribute_value(attribute_value instance);
     partial void Updateattribute_value(attribute_value instance);
     partial void Deleteattribute_value(attribute_value instance);
@@ -87,7 +87,7 @@ namespace VanPhongPham.Models
     #endregion
 		
 		public DB_VanPhongPhamDataContext() : 
-				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString"].ConnectionString, mappingSource)
+				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString1"].ConnectionString, mappingSource)
 		{
 			OnCreated();
 		}
@@ -116,19 +116,19 @@ namespace VanPhongPham.Models
 			OnCreated();
 		}
 		
-		public System.Data.Linq.Table<user> users
-		{
-			get
-			{
-				return this.GetTable<user>();
-			}
-		}
-		
 		public System.Data.Linq.Table<address> addresses
 		{
 			get
 			{
 				return this.GetTable<address>();
+			}
+		}
+		
+		public System.Data.Linq.Table<user> users
+		{
+			get
+			{
+				return this.GetTable<user>();
 			}
 		}
 		
@@ -261,80 +261,84 @@ namespace VanPhongPham.Models
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.users")]
-	public partial class user : INotifyPropertyChanging, INotifyPropertyChanged
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.addresses")]
+	public partial class address : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
-		private int _user_id;
+		private int _address_id;
 		
-		private string _username;
-		
-		private string _password;
+		private string _user_id;
 		
 		private string _full_name;
 		
-		private string _email;
-		
 		private string _phone_number;
 		
-		private System.Nullable<bool> _status;
+		private string _address_line;
 		
-		private System.DateTime _created_at;
+		private string _ward;
 		
-		private System.Nullable<System.DateTime> _last_login_at;
+		private int _district;
 		
-		private bool _is_active;
+		private int _province;
 		
-		private EntitySet<address> _addresses;
+		private System.Nullable<bool> _isDefault;
 		
-		private EntitySet<order> _orders;
-		
-		private EntitySet<order> _orders1;
-		
-		private EntitySet<receipt> _receipts;
-		
-		private EntitySet<user_role> _user_roles;
+		private EntityRef<user> _user;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
     partial void OnCreated();
-    partial void Onuser_idChanging(int value);
+    partial void Onaddress_idChanging(int value);
+    partial void Onaddress_idChanged();
+    partial void Onuser_idChanging(string value);
     partial void Onuser_idChanged();
-    partial void OnusernameChanging(string value);
-    partial void OnusernameChanged();
-    partial void OnpasswordChanging(string value);
-    partial void OnpasswordChanged();
     partial void Onfull_nameChanging(string value);
     partial void Onfull_nameChanged();
-    partial void OnemailChanging(string value);
-    partial void OnemailChanged();
     partial void Onphone_numberChanging(string value);
     partial void Onphone_numberChanged();
-    partial void OnstatusChanging(System.Nullable<bool> value);
-    partial void OnstatusChanged();
-    partial void Oncreated_atChanging(System.DateTime value);
-    partial void Oncreated_atChanged();
-    partial void Onlast_login_atChanging(System.Nullable<System.DateTime> value);
-    partial void Onlast_login_atChanged();
-    partial void Onis_activeChanging(bool value);
-    partial void Onis_activeChanged();
+    partial void Onaddress_lineChanging(string value);
+    partial void Onaddress_lineChanged();
+    partial void OnwardChanging(string value);
+    partial void OnwardChanged();
+    partial void OndistrictChanging(int value);
+    partial void OndistrictChanged();
+    partial void OnprovinceChanging(int value);
+    partial void OnprovinceChanged();
+    partial void OnisDefaultChanging(System.Nullable<bool> value);
+    partial void OnisDefaultChanged();
     #endregion
 		
-		public user()
+		public address()
 		{
-			this._addresses = new EntitySet<address>(new Action<address>(this.attach_addresses), new Action<address>(this.detach_addresses));
-			this._orders = new EntitySet<order>(new Action<order>(this.attach_orders), new Action<order>(this.detach_orders));
-			this._orders1 = new EntitySet<order>(new Action<order>(this.attach_orders1), new Action<order>(this.detach_orders1));
-			this._receipts = new EntitySet<receipt>(new Action<receipt>(this.attach_receipts), new Action<receipt>(this.detach_receipts));
-			this._user_roles = new EntitySet<user_role>(new Action<user_role>(this.attach_user_roles), new Action<user_role>(this.detach_user_roles));
+			this._user = default(EntityRef<user>);
 			OnCreated();
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int user_id
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_address_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int address_id
+		{
+			get
+			{
+				return this._address_id;
+			}
+			set
+			{
+				if ((this._address_id != value))
+				{
+					this.Onaddress_idChanging(value);
+					this.SendPropertyChanging();
+					this._address_id = value;
+					this.SendPropertyChanged("address_id");
+					this.Onaddress_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string user_id
 		{
 			get
 			{
@@ -344,6 +348,10 @@ namespace VanPhongPham.Models
 			{
 				if ((this._user_id != value))
 				{
+					if (this._user.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
 					this.Onuser_idChanging(value);
 					this.SendPropertyChanging();
 					this._user_id = value;
@@ -353,47 +361,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_username", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
-		public string username
-		{
-			get
-			{
-				return this._username;
-			}
-			set
-			{
-				if ((this._username != value))
-				{
-					this.OnusernameChanging(value);
-					this.SendPropertyChanging();
-					this._username = value;
-					this.SendPropertyChanged("username");
-					this.OnusernameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_password", DbType="VarChar(20)")]
-		public string password
-		{
-			get
-			{
-				return this._password;
-			}
-			set
-			{
-				if ((this._password != value))
-				{
-					this.OnpasswordChanging(value);
-					this.SendPropertyChanging();
-					this._password = value;
-					this.SendPropertyChanged("password");
-					this.OnpasswordChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_full_name", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_full_name", DbType="NVarChar(MAX) NOT NULL", CanBeNull=false)]
 		public string full_name
 		{
 			get
@@ -413,27 +381,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_email", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
-		public string email
-		{
-			get
-			{
-				return this._email;
-			}
-			set
-			{
-				if ((this._email != value))
-				{
-					this.OnemailChanging(value);
-					this.SendPropertyChanging();
-					this._email = value;
-					this.SendPropertyChanged("email");
-					this.OnemailChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_phone_number", DbType="VarChar(15) NOT NULL", CanBeNull=false)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_phone_number", DbType="VarChar(10) NOT NULL", CanBeNull=false)]
 		public string phone_number
 		{
 			get
@@ -453,82 +401,357 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_status", DbType="Bit")]
-		public System.Nullable<bool> status
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_address_line", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string address_line
 		{
 			get
 			{
-				return this._status;
+				return this._address_line;
 			}
 			set
 			{
-				if ((this._status != value))
+				if ((this._address_line != value))
 				{
-					this.OnstatusChanging(value);
+					this.Onaddress_lineChanging(value);
 					this.SendPropertyChanging();
-					this._status = value;
-					this.SendPropertyChanged("status");
-					this.OnstatusChanged();
+					this._address_line = value;
+					this.SendPropertyChanged("address_line");
+					this.Onaddress_lineChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_created_at", DbType="DateTime NOT NULL")]
-		public System.DateTime created_at
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ward", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string ward
 		{
 			get
 			{
-				return this._created_at;
+				return this._ward;
 			}
 			set
 			{
-				if ((this._created_at != value))
+				if ((this._ward != value))
 				{
-					this.Oncreated_atChanging(value);
+					this.OnwardChanging(value);
 					this.SendPropertyChanging();
-					this._created_at = value;
-					this.SendPropertyChanged("created_at");
-					this.Oncreated_atChanged();
+					this._ward = value;
+					this.SendPropertyChanged("ward");
+					this.OnwardChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_last_login_at", DbType="DateTime")]
-		public System.Nullable<System.DateTime> last_login_at
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_district", DbType="Int NOT NULL")]
+		public int district
 		{
 			get
 			{
-				return this._last_login_at;
+				return this._district;
 			}
 			set
 			{
-				if ((this._last_login_at != value))
+				if ((this._district != value))
 				{
-					this.Onlast_login_atChanging(value);
+					this.OndistrictChanging(value);
 					this.SendPropertyChanging();
-					this._last_login_at = value;
-					this.SendPropertyChanged("last_login_at");
-					this.Onlast_login_atChanged();
+					this._district = value;
+					this.SendPropertyChanged("district");
+					this.OndistrictChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_is_active", DbType="Bit NOT NULL")]
-		public bool is_active
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_province", DbType="Int NOT NULL")]
+		public int province
 		{
 			get
 			{
-				return this._is_active;
+				return this._province;
 			}
 			set
 			{
-				if ((this._is_active != value))
+				if ((this._province != value))
 				{
-					this.Onis_activeChanging(value);
+					this.OnprovinceChanging(value);
 					this.SendPropertyChanging();
-					this._is_active = value;
-					this.SendPropertyChanged("is_active");
-					this.Onis_activeChanged();
+					this._province = value;
+					this.SendPropertyChanged("province");
+					this.OnprovinceChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_isDefault", DbType="Bit")]
+		public System.Nullable<bool> isDefault
+		{
+			get
+			{
+				return this._isDefault;
+			}
+			set
+			{
+				if ((this._isDefault != value))
+				{
+					this.OnisDefaultChanging(value);
+					this.SendPropertyChanging();
+					this._isDefault = value;
+					this.SendPropertyChanged("isDefault");
+					this.OnisDefaultChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_address", Storage="_user", ThisKey="user_id", OtherKey="user_id", IsForeignKey=true)]
+		public user user
+		{
+			get
+			{
+				return this._user.Entity;
+			}
+			set
+			{
+				user previousValue = this._user.Entity;
+				if (((previousValue != value) 
+							|| (this._user.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._user.Entity = null;
+						previousValue.addresses.Remove(this);
+					}
+					this._user.Entity = value;
+					if ((value != null))
+					{
+						value.addresses.Add(this);
+						this._user_id = value.user_id;
+					}
+					else
+					{
+						this._user_id = default(string);
+					}
+					this.SendPropertyChanged("user");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.users")]
+	public partial class user : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private string _user_id;
+		
+		private string _full_name;
+		
+		private string _username;
+		
+		private string _email;
+		
+		private string _gender;
+		
+		private System.Nullable<System.DateTime> _dob;
+		
+		private string _avt_url;
+		
+		private EntitySet<address> _addresses;
+		
+		private EntitySet<order> _orders;
+		
+		private EntitySet<order> _orders1;
+		
+		private EntitySet<receipt> _receipts;
+		
+		private EntitySet<user_role> _user_roles;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onuser_idChanging(string value);
+    partial void Onuser_idChanged();
+    partial void Onfull_nameChanging(string value);
+    partial void Onfull_nameChanged();
+    partial void OnusernameChanging(string value);
+    partial void OnusernameChanged();
+    partial void OnemailChanging(string value);
+    partial void OnemailChanged();
+    partial void OngenderChanging(string value);
+    partial void OngenderChanged();
+    partial void OndobChanging(System.Nullable<System.DateTime> value);
+    partial void OndobChanged();
+    partial void Onavt_urlChanging(string value);
+    partial void Onavt_urlChanged();
+    #endregion
+		
+		public user()
+		{
+			this._addresses = new EntitySet<address>(new Action<address>(this.attach_addresses), new Action<address>(this.detach_addresses));
+			this._orders = new EntitySet<order>(new Action<order>(this.attach_orders), new Action<order>(this.detach_orders));
+			this._orders1 = new EntitySet<order>(new Action<order>(this.attach_orders1), new Action<order>(this.detach_orders1));
+			this._receipts = new EntitySet<receipt>(new Action<receipt>(this.attach_receipts), new Action<receipt>(this.detach_receipts));
+			this._user_roles = new EntitySet<user_role>(new Action<user_role>(this.attach_user_roles), new Action<user_role>(this.detach_user_roles));
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string user_id
+		{
+			get
+			{
+				return this._user_id;
+			}
+			set
+			{
+				if ((this._user_id != value))
+				{
+					this.Onuser_idChanging(value);
+					this.SendPropertyChanging();
+					this._user_id = value;
+					this.SendPropertyChanged("user_id");
+					this.Onuser_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_full_name", DbType="NVarChar(MAX)")]
+		public string full_name
+		{
+			get
+			{
+				return this._full_name;
+			}
+			set
+			{
+				if ((this._full_name != value))
+				{
+					this.Onfull_nameChanging(value);
+					this.SendPropertyChanging();
+					this._full_name = value;
+					this.SendPropertyChanged("full_name");
+					this.Onfull_nameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_username", DbType="VarChar(MAX)")]
+		public string username
+		{
+			get
+			{
+				return this._username;
+			}
+			set
+			{
+				if ((this._username != value))
+				{
+					this.OnusernameChanging(value);
+					this.SendPropertyChanging();
+					this._username = value;
+					this.SendPropertyChanged("username");
+					this.OnusernameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_email", DbType="NVarChar(MAX)")]
+		public string email
+		{
+			get
+			{
+				return this._email;
+			}
+			set
+			{
+				if ((this._email != value))
+				{
+					this.OnemailChanging(value);
+					this.SendPropertyChanging();
+					this._email = value;
+					this.SendPropertyChanged("email");
+					this.OnemailChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_gender", DbType="NVarChar(50)")]
+		public string gender
+		{
+			get
+			{
+				return this._gender;
+			}
+			set
+			{
+				if ((this._gender != value))
+				{
+					this.OngenderChanging(value);
+					this.SendPropertyChanging();
+					this._gender = value;
+					this.SendPropertyChanged("gender");
+					this.OngenderChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_dob", DbType="Date")]
+		public System.Nullable<System.DateTime> dob
+		{
+			get
+			{
+				return this._dob;
+			}
+			set
+			{
+				if ((this._dob != value))
+				{
+					this.OndobChanging(value);
+					this.SendPropertyChanging();
+					this._dob = value;
+					this.SendPropertyChanged("dob");
+					this.OndobChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_avt_url", DbType="NVarChar(MAX)")]
+		public string avt_url
+		{
+			get
+			{
+				return this._avt_url;
+			}
+			set
+			{
+				if ((this._avt_url != value))
+				{
+					this.Onavt_urlChanging(value);
+					this.SendPropertyChanging();
+					this._avt_url = value;
+					this.SendPropertyChanged("avt_url");
+					this.Onavt_urlChanged();
 				}
 			}
 		}
@@ -676,253 +899,6 @@ namespace VanPhongPham.Models
 		{
 			this.SendPropertyChanging();
 			entity.user = null;
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.addresses")]
-	public partial class address : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private string _address_id;
-		
-		private int _user_id;
-		
-		private string _address_line;
-		
-		private string _ward;
-		
-		private string _district;
-		
-		private string _province;
-		
-		private string _address_type;
-		
-		private EntityRef<user> _user;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void Onaddress_idChanging(string value);
-    partial void Onaddress_idChanged();
-    partial void Onuser_idChanging(int value);
-    partial void Onuser_idChanged();
-    partial void Onaddress_lineChanging(string value);
-    partial void Onaddress_lineChanged();
-    partial void OnwardChanging(string value);
-    partial void OnwardChanged();
-    partial void OndistrictChanging(string value);
-    partial void OndistrictChanged();
-    partial void OnprovinceChanging(string value);
-    partial void OnprovinceChanged();
-    partial void Onaddress_typeChanging(string value);
-    partial void Onaddress_typeChanged();
-    #endregion
-		
-		public address()
-		{
-			this._user = default(EntityRef<user>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_address_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
-		public string address_id
-		{
-			get
-			{
-				return this._address_id;
-			}
-			set
-			{
-				if ((this._address_id != value))
-				{
-					this.Onaddress_idChanging(value);
-					this.SendPropertyChanging();
-					this._address_id = value;
-					this.SendPropertyChanged("address_id");
-					this.Onaddress_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="Int NOT NULL")]
-		public int user_id
-		{
-			get
-			{
-				return this._user_id;
-			}
-			set
-			{
-				if ((this._user_id != value))
-				{
-					if (this._user.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onuser_idChanging(value);
-					this.SendPropertyChanging();
-					this._user_id = value;
-					this.SendPropertyChanged("user_id");
-					this.Onuser_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_address_line", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string address_line
-		{
-			get
-			{
-				return this._address_line;
-			}
-			set
-			{
-				if ((this._address_line != value))
-				{
-					this.Onaddress_lineChanging(value);
-					this.SendPropertyChanging();
-					this._address_line = value;
-					this.SendPropertyChanged("address_line");
-					this.Onaddress_lineChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ward", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string ward
-		{
-			get
-			{
-				return this._ward;
-			}
-			set
-			{
-				if ((this._ward != value))
-				{
-					this.OnwardChanging(value);
-					this.SendPropertyChanging();
-					this._ward = value;
-					this.SendPropertyChanged("ward");
-					this.OnwardChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_district", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string district
-		{
-			get
-			{
-				return this._district;
-			}
-			set
-			{
-				if ((this._district != value))
-				{
-					this.OndistrictChanging(value);
-					this.SendPropertyChanging();
-					this._district = value;
-					this.SendPropertyChanged("district");
-					this.OndistrictChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_province", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string province
-		{
-			get
-			{
-				return this._province;
-			}
-			set
-			{
-				if ((this._province != value))
-				{
-					this.OnprovinceChanging(value);
-					this.SendPropertyChanging();
-					this._province = value;
-					this.SendPropertyChanged("province");
-					this.OnprovinceChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_address_type", DbType="NVarChar(50)")]
-		public string address_type
-		{
-			get
-			{
-				return this._address_type;
-			}
-			set
-			{
-				if ((this._address_type != value))
-				{
-					this.Onaddress_typeChanging(value);
-					this.SendPropertyChanging();
-					this._address_type = value;
-					this.SendPropertyChanged("address_type");
-					this.Onaddress_typeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_address", Storage="_user", ThisKey="user_id", OtherKey="user_id", IsForeignKey=true)]
-		public user user
-		{
-			get
-			{
-				return this._user.Entity;
-			}
-			set
-			{
-				user previousValue = this._user.Entity;
-				if (((previousValue != value) 
-							|| (this._user.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._user.Entity = null;
-						previousValue.addresses.Remove(this);
-					}
-					this._user.Entity = value;
-					if ((value != null))
-					{
-						value.addresses.Add(this);
-						this._user_id = value.user_id;
-					}
-					else
-					{
-						this._user_id = default(int);
-					}
-					this.SendPropertyChanged("user");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
 		}
 	}
 	
@@ -1900,9 +1876,9 @@ namespace VanPhongPham.Models
 		
 		private string _order_id;
 		
-		private int _employee_id;
+		private string _employee_id;
 		
-		private int _customer_id;
+		private string _customer_id;
 		
 		private string _method_id;
 		
@@ -1928,9 +1904,9 @@ namespace VanPhongPham.Models
     partial void OnCreated();
     partial void Onorder_idChanging(string value);
     partial void Onorder_idChanged();
-    partial void Onemployee_idChanging(int value);
+    partial void Onemployee_idChanging(string value);
     partial void Onemployee_idChanged();
-    partial void Oncustomer_idChanging(int value);
+    partial void Oncustomer_idChanging(string value);
     partial void Oncustomer_idChanged();
     partial void Onmethod_idChanging(string value);
     partial void Onmethod_idChanged();
@@ -1973,8 +1949,8 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_employee_id", DbType="Int NOT NULL")]
-		public int employee_id
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_employee_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string employee_id
 		{
 			get
 			{
@@ -1997,8 +1973,8 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_customer_id", DbType="Int NOT NULL")]
-		public int customer_id
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_customer_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string customer_id
 		{
 			get
 			{
@@ -2165,7 +2141,7 @@ namespace VanPhongPham.Models
 					}
 					else
 					{
-						this._customer_id = default(int);
+						this._customer_id = default(string);
 					}
 					this.SendPropertyChanged("user");
 				}
@@ -2199,7 +2175,7 @@ namespace VanPhongPham.Models
 					}
 					else
 					{
-						this._employee_id = default(int);
+						this._employee_id = default(string);
 					}
 					this.SendPropertyChanged("user1");
 				}
@@ -3736,7 +3712,7 @@ namespace VanPhongPham.Models
 		
 		private string _receipt_id;
 		
-		private int _employee_id;
+		private string _employee_id;
 		
 		private string _supplier_id;
 		
@@ -3760,7 +3736,7 @@ namespace VanPhongPham.Models
     partial void OnCreated();
     partial void Onreceipt_idChanging(string value);
     partial void Onreceipt_idChanged();
-    partial void Onemployee_idChanging(int value);
+    partial void Onemployee_idChanging(string value);
     partial void Onemployee_idChanged();
     partial void Onsupplier_idChanging(string value);
     partial void Onsupplier_idChanged();
@@ -3802,8 +3778,8 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_employee_id", DbType="Int NOT NULL")]
-		public int employee_id
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_employee_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string employee_id
 		{
 			get
 			{
@@ -3970,7 +3946,7 @@ namespace VanPhongPham.Models
 					}
 					else
 					{
-						this._employee_id = default(int);
+						this._employee_id = default(string);
 					}
 					this.SendPropertyChanged("user");
 				}
@@ -4422,7 +4398,7 @@ namespace VanPhongPham.Models
 		
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
-		private int _user_id;
+		private string _user_id;
 		
 		private int _role_id;
 		
@@ -4434,7 +4410,7 @@ namespace VanPhongPham.Models
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
     partial void OnCreated();
-    partial void Onuser_idChanging(int value);
+    partial void Onuser_idChanging(string value);
     partial void Onuser_idChanged();
     partial void Onrole_idChanging(int value);
     partial void Onrole_idChanged();
@@ -4447,8 +4423,8 @@ namespace VanPhongPham.Models
 			OnCreated();
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="Int NOT NULL", IsPrimaryKey=true)]
-		public int user_id
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string user_id
 		{
 			get
 			{
@@ -4556,7 +4532,7 @@ namespace VanPhongPham.Models
 					}
 					else
 					{
-						this._user_id = default(int);
+						this._user_id = default(string);
 					}
 					this.SendPropertyChanged("user");
 				}

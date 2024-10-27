@@ -13,6 +13,7 @@ namespace VanPhongPham
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            VanPhongPham.Services.FirebaseService.Initialize();
         }
     }
 }

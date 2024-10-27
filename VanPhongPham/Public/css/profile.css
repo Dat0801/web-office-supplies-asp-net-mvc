@@ -1,0 +1,19 @@
+﻿.list-group-item.sub-item {
+    padding-left: 30px; /* Add some indent to sub-items */
+}
+
+.list-group-item.active {
+    background-color: #e91e63; /* màu hồng nổi bật */
+    color: white;
+}
+
+.list-group-item {
+    background-color: #f4f4f4; /* màu nền sidebar */
+    color: #333333; /* màu chữ sidebar */
+}
+
+.btn-save {
+    background-color: #e91e63; /* màu nút lưu */
+    color: white;
+    border-radius: 5px;
+}
