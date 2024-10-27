@@ -1,0 +1,314 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css">
+    <link href="~/Public/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <style>
+        .nav-item {
+            margin-right: 20px;
+        }
+
+        .top-bar {
+            background-color: #C43240;
+            padding: 5px 0;
+        }
+
+        .top-bar .nav-link {
+            margin-left: 15px;
+            font-size: 22px;
+        }
+
+        .top-bar .nav-link:hover {
+            color: #adb5bd;
+        }
+
+        .logo img {
+            max-height: 80px;
+            width: 100%;
+            object-fit: contain;
+        }
+
+        .is-invalid {
+            border-color: red;
+        }
+
+        .invalid-feedback {
+            display: none;
+            color: red;
+            font-size: 12px;
+        }
+
+        .is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyC7PsMUUTQancVCjMl0NnbDVDl0tpWdZDY",
+            authDomain: "ecommercevpp.firebaseapp.com",
+            projectId: "ecommercevpp",
+            storageBucket: "ecommercevpp.appspot.com",
+            messagingSenderId: "867737625124",
+            appId: "1:867737625124:web:b7df5e4e371340b3ce2eb1"
+        };
+
+        // Khởi tạo Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="~/Public/js/User.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row bg-secondary py-2 px-xl-5">
+            <div class="col-lg-6 text-center text-lg-left">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-primary font-weight-bold border border-white px-3 mr-1" href="@Url.Action("Index", "Home")">QVD</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="">Câu hỏi</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="">Trợ giúp</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a class="text-dark pl-2" href="">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Login 11 - Bootstrap Brain Component -->
+    <section class="py-3 py-md-5 py-xl-8 bg-white ">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="mb-5">
+                        <h2 class="display-5 text-center">Đăng nhập</h2>
+                        <p class="text-center m-0">Bạn mới biết đến Sopee? <a style="text-decoration: none; color: #ee4d2d" href="/Auth/Register">Đăng ký</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-10 col-xl-8">
+                    <div class="row gy-5 justify-content-center">
+                        <div class="col-12 col-lg-5">
+                            <form id="loginForm">
+                                <div class="row gy-3 overflow-hidden">
+                                    <div class="col-12">
+                                        <!-- Thông báo lỗi -->
+                                        <div class="alert alert-danger" id="notificationLogin" style="display: none;">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            <input type="email" class="form-control border-0 border-bottom rounded-0" name="email" id="email" placeholder="name@example.com">
+                                            <label for="email" class="form-label">Email</label>
+                                            <div class="invalid-feedback">Vui lòng nhập địa chỉ email hợp lệ.</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating mb-3">
+                                            <input type="password" class="form-control border-0 border-bottom rounded-0" name="password" id="password" value="" placeholder="Password">
+                                            <label for="password" class="form-label">Mật khẩu</label>
+                                            <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="row justify-content-between">
+                                            <div class="col-6">
+                                                <!-- Placeholder for future content -->
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="text-end">
+                                                    <a href="/Auth/ForgotPassword" class="link-secondary text-decoration-none">Quên mật khẩu?</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-grid">
+                                            <button class="btn btn-primary btn-lg" id="signin-password" type="submit">ĐĂNG NHẬP</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-12 text-center mt-3">
+                            <div class="d-flex align-items-center justify-content-center gap-3" style="width: 100%;">
+                                <div class="bg-dark flex-grow-1" style="height: 1px;"></div>
+                                <div class="px-2">Hoặc</div>
+                                <div class="bg-dark flex-grow-1" style="height: 1px;"></div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-5 d-flex align-items-center">
+                            <div class="d-flex gap-3 flex-column w-100">
+                                <button id="google-signin" class="btn btn-lg btn-danger">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-google" viewBox="0 0 16 16">
+                                        <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" />
+                                    </svg>
+                                    <span class="ms-2 fs-6">Google</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
+        <div class="row px-xl-5 pt-5">
+            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
+                <a href="" class="text-decoration-none">
+                    <h1 class="mb-4 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border border-white px-3 mr-1">QVD</span>Văn Phòng Phẩm</h1>
+                </a>
+                <p>
+                    QVD.vn - Website thương mại điện tử thuộc Tập đoàn QVD
+                </p>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>140 Lê Trọng Tấn, TP.HCM</p>
+                <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>qvd@gmail.com</p>
+                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
+            </div>
+            <div class="col-lg-8 col-md-12">
+                <div class="row">
+                    <div class="col-md-4 mb-5">
+                        <h5 class="font-weight-bold text-dark mb-4">Hỗ Trợ Khách Hàng</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-dark mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Hướng dẫn thanh toán</a>
+                            <a class="text-dark mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Chính sách giao hàng</a>
+                            <a class="text-dark mb-2" href="detail.html"><i class="fa fa-angle-right mr-2"></i>Chính sách đổi trả & hoàn tiền</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <h5 class="font-weight-bold text-dark mb-4">Về QVD.vn</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-dark mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Giới thiệu</a>
+                            <a class="text-dark mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Dịch vụ in ấn quảng cáo</a>
+                            <a class="text-dark mb-2" href="detail.html"><i class="fa fa-angle-right mr-2"></i>Chính sách bảo mật chung</a>
+                            <a class="text-dark mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Chính sách bảo mật thông tin cá nhân</a>
+                            <a class="text-dark mb-2" href="checkout.html"><i class="fa fa-angle-right mr-2"></i>Thông tin liên hệ</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-5">
+                        <h5 class="font-weight-bold text-dark mb-4">Nhận Thông Báo</h5>
+                        <form action="">
+                            <div class="form-group">
+                                <input type="text" class="form-control border-0 py-4" placeholder="Tên của bạn" required="required" />
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control border-0 py-4" placeholder="Email của bạn"
+                                       required="required" />
+                            </div>
+                            <div>
+                                <button class="btn btn-primary btn-block border-0 py-3" type="submit">Đăng Ký</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row border-top border-light mx-xl-5 py-4">
+            <div class="col-md-6 px-xl-0">
+                <p class="mb-md-0 text-center text-md-left text-dark">
+                    &copy; <a class="text-dark font-weight-semi-bold" href="#">QVD</a>. All Rights Reserved
+            </div>
+            <div class="col-md-6 px-xl-0 text-center text-md-right">
+                <img src="Public/img/payments.png" alt="">
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            let isValid = true;
+
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+
+            if (email.value.trim() === "") {
+                email.classList.add("is-invalid");
+                isValid = false;
+            }
+            else {
+                email.classList.remove("is-invalid");
+            }
+
+            if (password.value.trim() === "") {
+                password.classList.add("is-invalid");
+                isValid = false;
+            }
+            else {
+                password.classList.remove("is-invalid");
+            }
+
+            if (isValid) {
+                const check = await SignWithPassword(email.value.trim(), password.value.trim());
+                if (check) {
+                    window.location.replace('/Home/Index');
+                }
+            }
+        });
+        document.getElementById('google-signin').addEventListener('click', function () {
+            var provider = new firebase.auth.GoogleAuthProvider();
+
+            // Gọi firebase.auth() đúng cách
+            firebase.auth().signInWithPopup(provider).then(function (result) {
+                // Lấy token từ Firebase
+                result.user.getIdToken().then(function (token) {
+                    fetch('/Auth/GoogleSignIn', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ token: token })
+                    }).then(function (response) {
+                        return response.json(); // Chuyển đổi phản hồi thành JSON
+                    }).then(function (data) {
+                        console.log(data)
+                        if (data.success) {
+                            // Lưu token vào localStorage
+                            localStorage.setItem('token', data.token);
+
+                            window.location.replace('/Home/Index');
+                        } else {
+                            console.log('Đăng nhập không thành công: ' + data.message);
+                        }
+                    });
+                });
+            }).catch(function (error) {
+                console.log(error);
+            });
+        });
+    </script>
+</body>
+</html>

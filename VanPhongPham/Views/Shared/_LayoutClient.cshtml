@@ -3,17 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-    <!-- Favicon -->
-    <link href="~/Public/img/favicon.ico" rel="icon">
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
     <!-- Libraries Stylesheet -->
     <link href="~/Public/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
@@ -22,12 +13,18 @@
     <link href="~/Public/css/style.css" rel="stylesheet">
     <title>@ViewBag.Title</title>
 </head>
-<body>
-    @Html.Partial("_Header")
+<body class="p-0 m-0" style="padding: 0px 0px 0px 0px">
+    <header>
+        @Html.Partial("_Header")
+    </header>
 
-    @RenderBody()
+    <article>
+        @RenderBody()
+    </article>
 
-    @Html.Partial("_Footer")
+    <footer>
+        @Html.Partial("_Footer")
+    </footer>
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
@@ -40,9 +37,15 @@
 
     <!-- Contact Javascript File -->
     <script src="~/Public/mail/jqBootstrapValidation.min.js"></script>
-    <script src="~/Public/mail/contact.js"></script>
 
     <!-- Template Javascript -->
     <script src="~/Public/js/main.js"></script>
+    <script src="~/Public/js/User.js"></script>
+    <script src="~/Public/js/Cloudinary.js"></script>
+    <script src="~/Public/js/GHN.js"></script>
+
+    <script>
+        fetchUserData();
+    </script>
 </body>
 </html>

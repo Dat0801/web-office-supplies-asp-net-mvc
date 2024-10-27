@@ -39,7 +39,9 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 html {
@@ -625,7 +627,7 @@ pre code {
 
 @media (min-width: 1200px) {
   .container, .container-sm, .container-md, .container-lg, .container-xl {
-    max-width: 1140px;
+    max-width: 1320px;
   }
 }
 
@@ -5359,6 +5361,10 @@ a.close.disabled {
   padding: 0.75rem;
 }
 
+body.modal-open {
+    overflow-y: scroll;
+    padding-right: 0;
+}
 .modal-open {
   overflow: hidden;
 }
@@ -6179,10 +6185,6 @@ button.bg-dark:focus {
 
 .bg-transparent {
   background-color: transparent !important;
-}
-
-.border {
-  border: 1px solid #EDF1FF !important;
 }
 
 .border-top {

@@ -66,9 +66,11 @@
         </div>
         <div class="col-lg-5 col-8 text-right">
             <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0 justify-content-end">
-                <a href="@Url.Action("Index", "Home")" class="nav-item nav-link">Trang chủ</a>
-                <a href="@Url.Action("Login", "Auth")" class="nav-item nav-link">Đăng nhập</a>
-                <a href="@Url.Action("Register", "Auth")" class="nav-item nav-link">Đăng ký</a>
+                <a href="@Url.Action("Login", "Auth")" id="login-item" class="nav-item nav-link">Đăng nhập</a>
+                <a href="@Url.Action("Register", "Auth")" id="register-item" class="nav-item nav-link">Đăng ký</a>
+                <img id="profile-image" alt="Profile Image" class="rounded-circle ml-2" style="width: 25px; height: 25px; margin-right: 5px; visibility: hidden">
+                <span id="user-info" style="display: none;"></span>
+                <a class="nav-item nav-link" id="logout-item" href="javascript:void(0);" onclick="logout()" style="display: none;">Đăng xuất</a>
                 <a href="@Url.Action("Index", "Cart")" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
                     <span class="badge">0</span>
