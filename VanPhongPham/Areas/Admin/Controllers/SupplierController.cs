@@ -14,16 +14,37 @@ namespace VanPhongPham.Areas.Admin.Controllers
             supplierRepository = new SupplierRepository();
         }
         // GET: Admin/Supplier
-        public ActionResult Index()
+
+        public ActionResult Index(string supplier_id)
         {
+            if (supplier_id != null)
+            {
+                supplier supplier = supplierRepository.GetSupplierById(supplier_id);
+                ViewBag.supplier = supplier;
+            }
             List<supplier> listSupplier = supplierRepository.GetAllSuppliers();
+            ViewBag.supplier_id = supplierRepository.GenerateSupplierId();
             return View(listSupplier);
         }
 
-        [HttpGet]
-        public ActionResult AddSupplier()
+        [HttpPost]
+        public ActionResult AddSupplier(string action, supplier supplier)
         {
-            return View();
+            if (action == "add")
+            {
+                supplierRepository.AddSupplier(supplier);
+            }
+            else
+            {
+                supplierRepository.UpdateSupplier(supplier);
+            }
+            return RedirectToAction("Index", "Admin/Supplier");
+        }
+
+        public ActionResult DeleteSupplier(string supplier_id)
+        {
+            supplierRepository.DeleteSupplier(supplier_id);
+            return RedirectToAction("Index", "Supplier");
         }
     }
 }

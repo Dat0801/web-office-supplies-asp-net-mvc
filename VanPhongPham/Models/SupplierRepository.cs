@@ -18,5 +18,69 @@ namespace VanPhongPham.Models
         {
             return _context.suppliers.ToList();
         }
+
+        public supplier GetSupplierById(string id)
+        {
+            return _context.suppliers.FirstOrDefault(x => x.supplier_id == id);
+        }
+        public bool AddSupplier(supplier supplier)
+        {
+            try
+            {
+                _context.suppliers.InsertOnSubmit(supplier);
+                _context.SubmitChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+
+        }
+        public bool UpdateSupplier(supplier supplier)
+        {
+            supplier supplierToUpdate = GetSupplierById(supplier.supplier_id);
+            try
+            {
+                supplierToUpdate.supplier_name = supplier.supplier_name;
+                supplierToUpdate.phone_number = supplier.phone_number;
+                supplierToUpdate.email = supplier.email;
+                _context.SubmitChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+        public bool DeleteSupplier(string id)
+        {
+            supplier supplierToDelete = GetSupplierById(id);
+            try
+            {
+                _context.suppliers.DeleteOnSubmit(supplierToDelete);
+                _context.SubmitChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+        public string GenerateSupplierId()
+        {
+            supplier supplier = _context.suppliers.ToList().LastOrDefault();
+            int num = int.Parse(supplier.supplier_id.Substring(3)) + 1;
+            string supplier_id = "SUP";
+            if (num < 10)
+                supplier_id = "SUP00";
+            else if (num < 100)
+                supplier_id = "SUP0";
+            supplier_id += num;
+            return supplier_id;
+        }
     }
 }

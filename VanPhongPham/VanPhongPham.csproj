@@ -525,13 +525,14 @@
     <Content Include="Areas\Admin\Views\User\AddUser.cshtml" />
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\Supplier\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\Supplier\AddSupplier.cshtml" />
-    <Content Include="App_Data\firebase-config.json" />
     <Content Include="Models\DB_VanPhongPham.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>DB_VanPhongPham.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="App_Data\firebase-config.json" />
+    <Content Include="Areas\Admin\Views\Product\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\Category.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>
@@ -631,6 +632,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
     <Compile Include="Areas\Admin\Controllers\SupplierController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Controllers\AddressController.cs" />
@@ -647,7 +649,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </Compile>
+    <Compile Include="Models\ProductRepository.cs" />
     <Compile Include="Models\SupplierRepository.cs" />
+    <Compile Include="Models\UserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\FirebaseService.cs" />
   </ItemGroup>

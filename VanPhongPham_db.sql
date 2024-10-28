@@ -91,16 +91,13 @@ create table images
 
 create table users
 (
-	user_id int primary key identity (1,1),
-	username varchar(50) not null unique,
-	password varchar(20) default null,
-	full_name nvarchar(50) not null,
-	email varchar(50) not null unique,
-	phone_number varchar(15) not null unique,
-	status bit default 1,
-	created_at DATETIME NOT NULL DEFAULT GETDATE(),
-    last_login_at DATETIME NULL,
-    is_active BIT NOT NULL DEFAULT 1
+	user_id nvarchar(255) PRIMARY KEY NOT NULL, 
+	full_name nvarchar(max),
+	username varchar(max),
+	email nvarchar(max),
+	gender nvarchar(50),
+	dob date,
+	avt_url nvarchar(max),
 )
 
 create table roles 
@@ -112,29 +109,32 @@ create table roles
 
 create table user_roles
 (
-	user_id int not null,
+	user_id nvarchar(255) not null,
 	role_id int not null,
 	PRIMARY KEY (user_id, role_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (role_id) REFERENCES roles(role_id)
+    	FOREIGN KEY (user_id) REFERENCES users(user_id),
+    	FOREIGN KEY (role_id) REFERENCES roles(role_id)
 )
 
 create table addresses
 (
-	address_id varchar(10) not null,
-	user_id int not null,
-	address_line nvarchar(50) not null,
-	ward nvarchar(50) not null,
-	district nvarchar(50) not null,
-	province nvarchar(50) not null,
-	address_type nvarchar(50) default N'Địa chi nhà',
-)
+    address_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL, -- Thêm IDENTITY(1,1) để tăng tự động
+    user_id NVARCHAR(255) NOT NULL,
+    full_name NVARCHAR(MAX) NOT NULL,
+    phone_number VARCHAR(10) NOT NULL,
+    address_line NVARCHAR(255) NOT NULL,
+    ward NVARCHAR(255) NOT NULL,
+    district INT NOT NULL,
+    province INT NOT NULL,
+    isDefault BIT
+);
+
 
 create table orders
 (
 	order_id varchar(10) not null,
-	employee_id int not null,
-	customer_id int not null,
+	employee_id nvarchar(255) not null,
+	customer_id nvarchar(255) not null,
 	method_id varchar(10) not null,
 	delivery_date datetime default DATEADD(DAY, 7, GETDATE()),
 	total_amount float default 0,
@@ -159,7 +159,7 @@ create table order_details
 create table receipts
 (
 	receipt_id varchar(10) not null,
-	employee_id int not null,
+	employee_id nvarchar(255) not null,
 	supplier_id varchar(10) not null,
 	total_cost float default null,
 	notes nvarchar(200) default null,
@@ -185,7 +185,6 @@ alter table attributes add primary key (attribute_id);
 alter table attribute_values add primary key (attribute_value_id);
 alter table product_attribute_values add primary key (product_id, attribute_value_id);
 alter table images add primary key (image_id);
-alter table addresses add primary key (address_id);
 alter table payment_methods add primary key (method_id);
 alter table orders add primary key (order_id);
 alter table order_details add primary key (order_id, product_id);
@@ -486,19 +485,6 @@ VALUES ('PRO001', 'VAL001'),
 ('PRO001', 'VAL006'),
 ('PRO001', 'VAL007');
 
-INSERT INTO users (full_name, username, password, email, phone_number)
-VALUES 
-(N'Nguyễn Văn A', 'nguyenvana', 'nva123', 'vana@gmail.com', '0961234567'),
-(N'Trần Thị B', 'tranthib', 'ttb123', 'thib@gmail.com', '0912345678 '),
-(N'Lê Văn C', 'levanc', 'password789', 'levanc@gmail.com', '0933445566'),
-(N'Phạm Thị D', 'phamthid', 'password987', 'phamthid@gmail.com', '0966778899');
-
-INSERT INTO addresses (address_id, user_id, address_line, ward, district, province)
-VALUES
-('ADD001', 1, N'123 Nguyễn Thị Minh Khai', N'Phường 6', N'Quận 3', N'TP. Hồ Chí Minh'),
-('ADD002', 2, N'456 Đội Cấn', N'Phường Ngọc Hà', N'Quận Ba Đình', N'TP. Hà Nội');
-
-
 INSERT INTO roles (role_name, description)
 VALUES
 (N'Khách hàng', N'Khách mua hàng'),
@@ -506,34 +492,7 @@ VALUES
 (N'Nhân viên bán hàng', N'Nhân viên bán hàng'),
 (N'Nhân viên nhập hàng', N'Nhân viên nhập hàng');
 
-insert into user_roles (user_id, role_id)
-values 
-(1,1),
-(2,4),
-(3,1),
-(4,3)
-
 INSERT INTO payment_methods (method_id, method_name)
 VALUES
 ('PAY001', N'Thanh toán khi nhận hàng'),
 ('PAY002', N'Thanh toán bằng chuyển khoản')
-
-INSERT INTO orders (order_id, employee_id, customer_id, method_id)
-VALUES
-('ORD001', 4, 1, 'PAY001'),
-('ORD002', 4, 3, 'PAY002');
-
-INSERT INTO order_details (order_id, product_id, quantity)
-VALUES
-('ORD001', 'PRO001', 2),
-('ORD002', 'PRO002', 1);
-
-INSERT INTO receipts (receipt_id, employee_id, supplier_id)
-VALUES
-('REC001', 2, 'SUP001'),
-('REC002', 2, 'SUP001');
-
-INSERT INTO receipt_details (receipt_id, product_id, quantity, purchase_price)
-VALUES
-('REC001', 'PRO001', 10, 2000),
-('REC002', 'PRO002', 5, 3000);
