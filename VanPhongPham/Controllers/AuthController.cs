@@ -45,7 +45,17 @@ namespace VanPhongPham.Controllers
                         full_name = displayName,
                         username = userName
                     };
+
                     db.users.InsertOnSubmit(user);
+                    db.SubmitChanges();
+
+                    user_role usrrole = new user_role
+                    {
+                        user_id = uid,
+                        role_id = 1 
+                    };
+
+                    db.user_roles.InsertOnSubmit(usrrole);
                     db.SubmitChanges();
                 }
                 else

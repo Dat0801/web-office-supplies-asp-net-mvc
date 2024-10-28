@@ -81,6 +81,16 @@ namespace VanPhongPham.Controllers
             {
                 db.users.InsertOnSubmit(userData);
                 db.SubmitChanges();
+
+                user_role usrrole = new user_role
+                {
+                    user_id = userData.user_id,
+                    role_id = 1
+                };
+
+                db.user_roles.InsertOnSubmit(usrrole);
+                db.SubmitChanges();
+
                 return Json(new { success = true, message = "Dữ liệu đã được lưu thành công." });
             }
             catch (Exception ex)
