@@ -314,7 +314,7 @@ async function SignWithPassword(email, password) {
 
 
                     messageContainer.appendChild(errorImage); // Thêm hình ảnh
-                    messageContainer.appendChild(document.createTextNode(" Tên tài khoản của bạn hoặc Mật khẩu không đúng, vui lòng thử lại")); // Thêm văn bản
+                    messageContainer.appendChild(document.createTextNode(" Email của bạn hoặc Mật khẩu không đúng, vui lòng thử lại")); // Thêm văn bản
 
 
                     notification.appendChild(messageContainer); // Thêm cả hai vào phần thông báo
@@ -513,6 +513,38 @@ async function changePassword(email, currentpassword, updatepassword) {
                 logout();
                 return true; // Đổi mật khẩu thành công
             }
+        }
+    } catch (error) {
+        console.error("Có lỗi xảy ra khi kiểm tra password:", error);
+    }
+
+    return false;
+}
+
+async function validatePassword(email, currentpassword) {
+    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
+    const bodydata = {
+        email: email,
+        password: currentpassword,
+        returnSecureToken: true,
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodydata),
+        });
+
+        const result = await response.json();
+        console.log(result);
+
+        // Kiểm tra xem có lỗi từ kết quả không
+        if (result.error) {
+            return false; // Mật khẩu cũ không chính xác
+        } else 
+        {
+            return true;
         }
     } catch (error) {
         console.error("Có lỗi xảy ra khi kiểm tra password:", error);

@@ -87,7 +87,7 @@ namespace VanPhongPham.Models
     #endregion
 		
 		public DB_VanPhongPhamDataContext() : 
-				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString1"].ConnectionString, mappingSource)
+				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString"].ConnectionString, mappingSource)
 		{
 			OnCreated();
 		}
@@ -576,6 +576,8 @@ namespace VanPhongPham.Models
 		
 		private string _avt_url;
 		
+		private string _password;
+		
 		private EntitySet<address> _addresses;
 		
 		private EntitySet<order> _orders;
@@ -604,6 +606,8 @@ namespace VanPhongPham.Models
     partial void OndobChanged();
     partial void Onavt_urlChanging(string value);
     partial void Onavt_urlChanged();
+    partial void OnpasswordChanging(string value);
+    partial void OnpasswordChanged();
     #endregion
 		
 		public user()
@@ -752,6 +756,26 @@ namespace VanPhongPham.Models
 					this._avt_url = value;
 					this.SendPropertyChanged("avt_url");
 					this.Onavt_urlChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_password", DbType="VarChar(255)")]
+		public string password
+		{
+			get
+			{
+				return this._password;
+			}
+			set
+			{
+				if ((this._password != value))
+				{
+					this.OnpasswordChanging(value);
+					this.SendPropertyChanging();
+					this._password = value;
+					this.SendPropertyChanged("password");
+					this.OnpasswordChanged();
 				}
 			}
 		}

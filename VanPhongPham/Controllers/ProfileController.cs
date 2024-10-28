@@ -6,6 +6,8 @@ using System.Data.Entity;
 using System.Web;
 using System.Web.Mvc;
 using VanPhongPham.Models;
+using System.Threading.Tasks;
+using FirebaseAdmin.Auth;
 
 namespace VanPhongPham.Controllers
 {
@@ -131,24 +133,6 @@ namespace VanPhongPham.Controllers
             catch (Exception ex)
             {
                 return View("Error", new { message = ex.Message });
-            }
-        }
-        [HttpPost]
-        public ActionResult UpdateEmail(string user_id, string email)
-        {
-            try
-            {
-                var currentUser = db.users.FirstOrDefault(u => u.user_id == user_id);
-                if (currentUser != null)
-                {
-                    currentUser.email = email;
-                    db.SubmitChanges();
-                }
-                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
         }
     }

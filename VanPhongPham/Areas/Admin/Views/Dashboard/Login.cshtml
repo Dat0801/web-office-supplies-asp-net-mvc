@@ -1,0 +1,149 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Trang quản trị</title>
+    <!-- Google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+
+    <!-- Icon fonts -->
+    <link rel="stylesheet" href="~/Areas/Admin/Public/assets/fonts/fontawesome.css">
+    <link rel="stylesheet" href="~/Areas/Admin/Public/assets/fonts/ionicons.css">
+    <link rel="stylesheet" href="~/Areas/Admin/Public/assets/fonts/linearicons.css">
+    <link rel="stylesheet" href="~/Areas/Admin/Public/assets/fonts/open-iconic.css">
+    <link rel="stylesheet" href="~/Areas/Admin/Public/assets/fonts/pe-icon-7-stroke.css">
+    <link rel="stylesheet" href="~/Areas/Admin/Public/assets/fonts/feather.css">
+
+    <!-- Core stylesheets -->
+    <link rel="stylesheet" href="~/Areas/Admin/Public/assets/css/bootstrap-material.css">
+    <link rel="stylesheet" href="~/Areas/Admin/Public/assets/css/shreerang-material.css">
+    <link rel="stylesheet" href="~/Areas/Admin/Public/assets/css/uikit.css">
+
+    <!-- Libs -->
+    <link rel="stylesheet" href="~/Areas/Admin/Public/assets/libs/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="~/Areas/Admin/Public/assets/libs/flot/flot.css">
+</head>
+<body style="background-color: deepskyblue">
+    <div id="layoutAuthentication">
+        <div id="layoutAuthentication_content">
+            <main>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-5">
+                            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                <div class="card-header"><h3 class="text-center font-weight-light my-4">ĐĂNG NHẬP HỆ THỐNG QUẢN TRỊ</h3></div>
+                                <div class="card-body">
+                                    <form id="loginAdmin">
+                                        <div class="col-12">
+                                            <!-- Thông báo lỗi -->
+                                            <div class="alert alert-danger" id="notificationLogin" style="display: none; color: black">
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating mb-3">
+                                                <label for="username" class="form-label">Tên đăng nhập</label>
+                                                <input type="text" class="form-control border-0 border-bottom rounded-0" name="username" id="username" placeholder="Username">
+                                                <div class="invalid-feedback">Vui lòng nhập tên đăng nhập.</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating mb-3">
+                                                <label for="password" class="form-label">Mật khẩu</label>
+                                                <input type="password" class="form-control border-0 border-bottom rounded-0" name="password" id="password" value="" placeholder="Password">
+                                                <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0" style="text-align:right">
+                                            <a class="small"></a>
+                                            <button class="btn btn-primary" type="submit">Đăng nhập</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="~/Areas/Admin/Public/assets/js/pace.js"></script>
+    <script src="~/Areas/Admin/Public/assets/js/jquery-3.3.1.min.js"></script>
+    <script src="~/Areas/Admin/Public/assets/libs/popper/popper.js"></script>
+    <script src="~/Areas/Admin/Public/assets/js/bootstrap.js"></script>
+    <script src="~/Areas/Admin/Public/assets/js/sidenav.js"></script>
+    <script src="~/Areas/Admin/Public/assets/js/layout-helpers.js"></script>
+    <script src="~/Areas/Admin/Public/assets/js/material-ripple.js"></script>
+
+    <!-- Libs -->
+    <script src="~/Areas/Admin/Public/assets/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="~/Areas/Admin/Public/assets/libs/eve/eve.js"></script>
+    <script src="~/Areas/Admin/Public/assets/libs/flot/flot.js"></script>
+    <script src="~/Areas/Admin/Public/assets/libs/flot/curvedLines.js"></script>
+    <script src="~/Areas/Admin/Public/assets/libs/chart-am4/core.js"></script>
+    <script src="~/Areas/Admin/Public/assets/libs/chart-am4/charts.js"></script>
+    <script src="~/Areas/Admin/Public/assets/libs/chart-am4/animated.js"></script>
+
+    <!-- Demo -->
+    <script src="~/Areas/Admin/Public/assets/js/demo.js"></script>
+    <script src="~/Areas/Admin/Public/assets/js/analytics.js"></script>
+    <script src="~/Areas/Admin/Public/assets/js/pages/dashboards_index.js"></script>
+
+    <script>
+        document.getElementById('loginAdmin').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            let isValid = true;
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (username === "") {
+                document.getElementById('username').classList.add("is-invalid");
+                isValid = false;
+            } else {
+                document.getElementById('username').classList.remove("is-invalid");
+            }
+
+            if (password === "") {
+                document.getElementById('password').classList.add("is-invalid");
+                isValid = false;
+            } else {
+                document.getElementById('password').classList.remove("is-invalid");
+            }
+
+            const notification = document.getElementById('notificationLogin');
+            notification.style.display = 'none'; // Ẩn thông báo lỗi trước đó
+
+            if (isValid) {
+                fetch('/Dashboard/CheckLoginAdmin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username: username, password: password }),
+                })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            window.location.replace('/Admin/Dashboard/Index');
+                        } else {
+                            notification.innerHTML = "Tên đăng nhập hoặc mật khẩu không đúng.";
+                            notification.style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Có lỗi xảy ra khi kiểm tra tên đăng nhập:", error);
+                    });
+            }
+        });
+
+    </script>
+</body>
+</html>
