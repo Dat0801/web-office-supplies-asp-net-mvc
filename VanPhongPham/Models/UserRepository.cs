@@ -36,5 +36,9 @@ namespace VanPhongPham.Models
             _context.users.DeleteOnSubmit(userToDelete);
             _context.SubmitChanges();
         }
+        public user CheckLoginAdmin(string username, string password)
+        {
+            return _context.users.FirstOrDefault(u => u.username == username && u.password == password);
+        }
     }
 }
