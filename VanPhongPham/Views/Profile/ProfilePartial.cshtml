@@ -25,7 +25,7 @@
                 </div>
             </div>
 
-            @{ 
+            @{
                 string maskedEmail = Model.email;
                 if (!string.IsNullOrEmpty(maskedEmail))
                 {
@@ -34,7 +34,7 @@
                     {
                         maskedEmail = maskedEmail.Substring(0, 2) + new string('*', atIndex - 2) + maskedEmail.Substring(atIndex);
                     }
-                } 
+                }
             }
             <div class="form-group row mb-3">
                 <label class="col-sm-3 col-form-label text-end">Email</label>
@@ -61,11 +61,20 @@
                 </div>
             </div>
 
+            @{ 
+                string formattedDob = "Chưa có dữ liệu";
+                if (Model.dob.HasValue)
+                {
+                    var dob = Model.dob.Value;
+                    string year = dob.Year.ToString().Substring(0, 2) + "**";
+                    formattedDob = $"**/{dob:MM}/{year}";
+                } 
+            }
             <div class="form-group row mb-3">
                 <label class="col-sm-3 col-form-label text-end">Ngày sinh</label>
                 <div class="col-sm-9">
                     <p id="display-dob" class="form-control-plaintext">
-                        @(Model.dob == null ? "Chưa có dữ liệu" : Model.dob.Value.ToString("**/MM/yy**"))
+                       @formattedDob
                         <a href="javascript:void(0);" id="change-dob">Thay Đổi</a>
                     </p>
 
