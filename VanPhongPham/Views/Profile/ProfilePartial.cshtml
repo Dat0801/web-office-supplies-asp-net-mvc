@@ -25,10 +25,21 @@
                 </div>
             </div>
 
+            @{ 
+                string maskedEmail = Model.email;
+                if (!string.IsNullOrEmpty(maskedEmail))
+                {
+                    int atIndex = maskedEmail.IndexOf('@');
+                    if (atIndex > 2)
+                    {
+                        maskedEmail = maskedEmail.Substring(0, 2) + new string('*', atIndex - 2) + maskedEmail.Substring(atIndex);
+                    }
+                } 
+            }
             <div class="form-group row mb-3">
                 <label class="col-sm-3 col-form-label text-end">Email</label>
                 <div class="col-sm-9">
-                    <p class="form-control-plaintext">@Model.email <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "ChangeEmailPartial" })">Thay Đổi</a></p>
+                    <p class="form-control-plaintext">@maskedEmail <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "ChangeEmailPartial" })">Thay Đổi</a></p>
                 </div>
             </div>
 
@@ -54,7 +65,7 @@
                 <label class="col-sm-3 col-form-label text-end">Ngày sinh</label>
                 <div class="col-sm-9">
                     <p id="display-dob" class="form-control-plaintext">
-                        @(Model.dob == null ? "Chưa có dữ liệu" : Model.dob.Value.ToString("dd/MM/yyyy"))
+                        @(Model.dob == null ? "Chưa có dữ liệu" : Model.dob.Value.ToString("**/MM/yy**"))
                         <a href="javascript:void(0);" id="change-dob">Thay Đổi</a>
                     </p>
 
