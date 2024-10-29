@@ -576,7 +576,7 @@ namespace VanPhongPham.Models
 		
 		private string _avt_url;
 		
-		private string _password;
+		private System.Data.Linq.Binary _password;
 		
 		private EntitySet<address> _addresses;
 		
@@ -606,7 +606,7 @@ namespace VanPhongPham.Models
     partial void OndobChanged();
     partial void Onavt_urlChanging(string value);
     partial void Onavt_urlChanged();
-    partial void OnpasswordChanging(string value);
+    partial void OnpasswordChanging(System.Data.Linq.Binary value);
     partial void OnpasswordChanged();
     #endregion
 		
@@ -760,8 +760,8 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_password", DbType="VarChar(255)")]
-		public string password
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_password", DbType="VarBinary(16)", UpdateCheck=UpdateCheck.Never)]
+		public System.Data.Linq.Binary password
 		{
 			get
 			{
