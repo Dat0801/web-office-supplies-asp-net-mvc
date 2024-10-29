@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace VanPhongPham.Models
 {
@@ -38,7 +40,15 @@ namespace VanPhongPham.Models
         }
         public user CheckLoginAdmin(string username, string password)
         {
-            return _context.users.FirstOrDefault(u => u.username == username && u.password == password);
+            byte[] hashedPassword = HashPasswordMD5(password);
+            return _context.users.FirstOrDefault(u => u.username == username && u.password == hashedPassword);
+        }
+        private byte[] HashPasswordMD5(string password)
+        {
+            using (MD5 md5 = MD5.Create())
+            {
+                return md5.ComputeHash(Encoding.UTF8.GetBytes(password));
+            }
         }
     }
 }
