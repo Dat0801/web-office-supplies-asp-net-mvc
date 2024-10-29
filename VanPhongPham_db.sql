@@ -98,6 +98,7 @@ create table users
 	gender nvarchar(50),
 	dob date,
 	avt_url nvarchar(max),
+	password varchar(255)
 )
 
 create table roles 
@@ -460,6 +461,9 @@ VALUES
 ('PRO005', 'CAT004', N'Máy tính cầm tay Casio FX 580VN X new', N'Máy tính cầm tay Casio FX 580VN X new là một sản phẩm chất lượng cao, đáp ứng nhu cầu của nhiều đối tượng. Máy có màn hình lớn, rõ ràng, các nút bấm nhạy, dễ sử dụng.', 480000, 0.5, NULL, 40, 1),
 ('PRO006', 'CAT005', N'Vở Hồng Hà 300 trang A4 4532', N'Vở A4 300 trang Hồng Hà là sản phẩm chất lượng, phù hợp với nhu cầu của nhiều đối tượng sử dụng. Vở có giá thành hợp lý, phù hợp với túi tiền của học sinh, sinh viên.', 18000, 0.5, NULL, 50, 1);
 
+INSERT INTO images (image_id, image_url, is_primary, product_id)
+VALUES ('')
+
 INSERT INTO attributes (attribute_id, attribute_name)
 VALUES ('ATT001', N'Thương hiệu'),
 ('ATT002', N'Màu sắc'),
@@ -496,3 +500,11 @@ INSERT INTO payment_methods (method_id, method_name)
 VALUES
 ('PAY001', N'Thanh toán khi nhận hàng'),
 ('PAY002', N'Thanh toán bằng chuyển khoản')
+
+INSERT INTO users (user_id, full_name, username, password)
+VALUES
+('ADMIN001', N'Thành Đạt', 'thanhdat', '123456')
+
+INSERT INTO user_roles
+VALUES
+('ADMIN001', 2)

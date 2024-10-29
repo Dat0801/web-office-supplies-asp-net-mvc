@@ -6,16 +6,22 @@
 <div class="row">
     <div class="navbar-nav my-3 ml-2">
         <!-- Search -->
-        <label class="nav-item navbar-text navbar-search-box p-0 active">
-            <a href="#"><i class="feather icon-search navbar-icon align-middle"></i></a>
-            <span class="navbar-search-input pl-2">
-                <input type="text" class="form-control navbar-text mx-2" placeholder="Tìm kiếm...">
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Index", "Product")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")">
             </span>
-        </label>
+            <button class="btn icon-btn btn-outline-primary" title="Tìm kiếm">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
     </div>
-    <!-- Search -->
-    <a class="btn icon-btn btn-outline-primary my-3 ml-3" href="@Url.Action("AddUser","User")">
-        <i class="feather icon-user-plus navbar-icon align-middle"></i>
+    <!-- Add -->
+    <a class="btn icon-btn btn-outline-success my-3 ml-2" href="@Url.Action("AddProduct","Product")" title="Thêm">
+        <i class="feather icon-plus navbar-icon align-middle"></i>
+    </a>
+    <!-- Recycle -->
+    <a class="btn icon-btn btn-outline-secondary my-3 ml-2" href="@Url.Action("AddUser","User")" title="Phục hồi">
+        <i class="feather icon-rotate-cw navbar-icon align-middle"></i>
     </a>
 </div>
 <div class="card">
@@ -24,8 +30,6 @@
             <tr>
                 <th>Mã sản phẩm</th>
                 <th>Tên sản phẩm</th>
-                <th>Giá nhập</th>
-                <th>Hệ số</th>
                 <th>Giá bán</th>
                 <th>Số lượng tồn</th>
                 <th>Danh mục</th>
@@ -38,8 +42,6 @@
                 <tr>
                     <td>@product.product_id</td>
                     <td>@product.product_name</td>
-                    <td>@product.purchase_price</td>
-                    <td>@product.price_coefficient</td>
                     <td>
                         @if (product.promotion_price != null)
                         {
@@ -56,8 +58,16 @@
                         <a href="">@product.category.category_name</a>
                     </td>
                     <td>
-                        <a class="btn icon-btn btn-outline-danger">
-                            <i class="feather icon-user-minus navbar-icon align-middle"></i>
+                        <a class="btn icon-btn btn-outline-danger"
+                           href="#"
+                           title="Xóa"
+                           onclick="confirmDelete('@Url.Action("DeleteCategory", "Product", new { product_id = product.product_id })'); return false;">
+                            <i class="feather icon-minus navbar-icon align-middle"></i>
+                        </a>
+                        <a class="btn icon-btn btn-outline-info ml-2"
+                           title="Sửa"
+                           href="@Url.Action("Category", "Product", new { product_id = product.product_id })">
+                            <i class="feather icon-edit navbar-icon align-middle"></i>
                         </a>
                     </td>
                 </tr>
