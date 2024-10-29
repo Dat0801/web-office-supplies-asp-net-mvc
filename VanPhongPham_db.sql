@@ -98,7 +98,7 @@ create table users
 	gender nvarchar(50),
 	dob date,
 	avt_url nvarchar(max),
-	password varchar(255)
+	password varbinary(16)
 )
 
 create table roles 
@@ -501,10 +501,16 @@ VALUES
 ('PAY001', N'Thanh toán khi nhận hàng'),
 ('PAY002', N'Thanh toán bằng chuyển khoản')
 
-INSERT INTO users (user_id, full_name, username, password)
+INSERT INTO users (user_id, full_name, username)
 VALUES
-('ADMIN001', N'Thành Đạt', 'thanhdat', '123456')
+('ADMIN001', N'Thành Đạt', 'thanhdat')
 
 INSERT INTO user_roles
 VALUES
 ('ADMIN001', 2)
+
+GO
+
+UPDATE users
+SET password = HASHBYTES('MD5', '123456')
+WHERE username = 'thanhdat';

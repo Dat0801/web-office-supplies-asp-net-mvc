@@ -23,7 +23,7 @@
       <Column Name="gender" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Column Name="dob" Type="System.DateTime" DbType="Date" CanBeNull="true" />
       <Column Name="avt_url" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="password" Type="System.String" DbType="VarChar(255)" CanBeNull="true" />
+      <Column Name="password" Type="System.Data.Linq.Binary" DbType="VarBinary(16)" CanBeNull="true" UpdateCheck="Never" />
       <Association Name="user_address" Member="addresses" ThisKey="user_id" OtherKey="user_id" Type="address" />
       <Association Name="user_order" Member="orders" ThisKey="user_id" OtherKey="customer_id" Type="order" />
       <Association Name="user_order1" Member="orders1" ThisKey="user_id" OtherKey="employee_id" Type="order" />

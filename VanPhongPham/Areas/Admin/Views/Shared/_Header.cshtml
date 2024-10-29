@@ -4,44 +4,55 @@
     Layout = null;
     var login = Session["Admin"] as user;
 }
-<!-- [ Layout navbar ( Header ) ] Start -->
-<nav class="layout-navbar navbar navbar-expand-lg align-items-lg-center bg-dark container-p-x" id="layout-navbar" style="height:70px;">
 
-    <!-- Brand demo (see ~/Areas/Admin/Public/assets/css/demo/demo.css) -->
-    <a href="index.html" class="navbar-brand app-brand demo d-lg-none py-0 mr-4">
-        <span class="app-brand-text demo font-weight-normal ml-2">QVD Admin</span>
-    </a>
+@if (login != null)
+{
+    <!-- [ Layout navbar ( Header ) ] Start -->
+    <nav class="layout-navbar navbar navbar-expand-lg align-items-lg-center bg-dark container-p-x" id="layout-navbar" style="height:70px;">
 
-    <!-- Sidenav toggle (see ~/Areas/Admin/Public/assets/css/demo/demo.css) -->
-    <div class="layout-sidenav-toggle navbar-nav d-lg-none align-items-lg-center mr-auto">
-        <a class="nav-item nav-link px-0 mr-lg-4" href="javascript:">
-            <i class="ion ion-md-menu text-large align-middle"></i>
+        <!-- Brand demo (see ~/Areas/Admin/Public/assets/css/demo/demo.css) -->
+        <a href="index.html" class="navbar-brand app-brand demo d-lg-none py-0 mr-4">
+            <span class="app-brand-text demo font-weight-normal ml-2">QVD Admin</span>
         </a>
-    </div>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#layout-navbar-collapse">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+        <!-- Sidenav toggle (see ~/Areas/Admin/Public/assets/css/demo/demo.css) -->
+        <div class="layout-sidenav-toggle navbar-nav d-lg-none align-items-lg-center mr-auto">
+            <a class="nav-item nav-link px-0 mr-lg-4" href="javascript:">
+                <i class="ion ion-md-menu text-large align-middle"></i>
+            </a>
+        </div>
 
-    <div class="navbar-collapse collapse" id="layout-navbar-collapse">
-        <!-- Divider -->
-        <hr class="d-lg-none w-100 my-2">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#layout-navbar-collapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <div class="navbar-nav align-items-lg-center ml-auto" style="background-color: #606c72">
-            <div class="demo-navbar-user nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                    <span class="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
-                        <img src="~/Areas/Admin/Public/assets/img/avatars/1.png" class="d-block ui-w-30 rounded-circle ml-3">
-                        <span class="px-1 ml-2 ml-lg-0">@login.full_name</span>
-                    </span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <a href="@Url.Action("Logout", "Dashboard")" class="dropdown-item">
-                        <i class="feather icon-power text-danger"></i> &nbsp; Đăng xuất
+        <div class="navbar-collapse collapse" id="layout-navbar-collapse">
+            <!-- Divider -->
+            <hr class="d-lg-none w-100 my-2">
+
+            <div class="navbar-nav align-items-lg-center ml-auto" style="background-color: #606c72">
+                <div class="demo-navbar-user nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                        <span class="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
+                            <img src="~/Areas/Admin/Public/assets/img/avatars/1.png" class="d-block ui-w-30 rounded-circle ml-3">
+                            <span class="px-1 ml-2 ml-lg-0">@login.full_name</span>
+                        </span>
                     </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a href="@Url.Action("Logout", "Dashboard")" class="dropdown-item">
+                            <i class="feather icon-power text-danger"></i> &nbsp; Đăng xuất
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
+}
+else
+{
+    <script>
+        window.location.replace('/Admin/Dashboard/Login');
+    </script>
+}
+
 <!-- [ Layout navbar ( Header ) ] End -->
