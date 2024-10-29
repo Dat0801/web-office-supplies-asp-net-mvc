@@ -20,6 +20,29 @@ namespace VanPhongPham.Models
         {
             return _context.categories.ToList();
         }
+
+        public string GenerateProductId()
+        {
+            product product = _context.products.ToList().LastOrDefault();
+            int num = int.Parse(product.product_id.Substring(3)) + 1;
+            string product_id = "PRO";
+            if (num < 10)
+                product_id = "PRO00";
+            else if (num < 100)
+                product_id = "PRO0";
+            product_id += num;
+            return product_id;
+        }
+
+        public List<product> SearchProduct(string search_str)
+        {
+            return _context.products
+                .Where(p => p.product_name.Contains(search_str) ||
+                            p.product_id.Contains(search_str) ||
+                            p.category.category_name.Contains(search_str))   
+                .ToList();
+        }
+
         public string GenerateCategoryId()
         {
             category category = _context.categories.ToList().LastOrDefault();
@@ -79,6 +102,14 @@ namespace VanPhongPham.Models
         public category GetCategory(string category_id)
         {
             return _context.categories.FirstOrDefault(cat => cat.category_id == category_id);
+        }
+
+        public List<category> SearchCategory(string search_str)
+        {
+            return _context.categories
+                .Where(c => c.category_name.Contains(search_str) ||
+                            c.category_id.Contains(search_str))
+                .ToList();
         }
     }
 }
