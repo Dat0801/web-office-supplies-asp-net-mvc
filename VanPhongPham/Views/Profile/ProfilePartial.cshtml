@@ -103,11 +103,11 @@
     <div class="col-md-4 d-flex flex-column align-items-center text-center">
         @if (Model.avt_url == null)
         {
-            <img src="~/Public/img/icons/icons8-male-user-100.png" class="rounded-circle" alt="Profile Image" id="profileImagePreview" style="width: 100px; height: 100px;">
+            <img src="~/Public/img/icons/icons8-male-user-100.png" class="rounded-circle" alt="Profile Image" id="profileImagePreview" style="width: 100px; height: 100px; object-fit: cover;">
         }
         else
         {
-            <img src="@Model.avt_url" class="rounded-circle" alt="Profile Image" id="profileImagePreview" style="width: 100px; height: 100px;">
+            <img src="@Model.avt_url" class="rounded-circle" alt="Profile Image" id="profileImagePreview" style="width: 100px; height: 100px; object-fit: cover;">
         }
         <input type="file" id="profileImage" accept=".jpg, .jpeg, .png" style="display: none;" />
         <label for="profileImage" class="btn btn-light mt-3">Chọn Ảnh</label>
