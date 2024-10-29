@@ -306,6 +306,7 @@
     <Content Include="Public\img\cat-4.jpg" />
     <Content Include="Public\img\cat-5.jpg" />
     <Content Include="Public\img\cat-6.jpg" />
+    <Content Include="Public\img\icons\clipboard.png" />
     <Content Include="Public\img\icons\icons8-back-100.png" />
     <Content Include="Public\img\icons\icons8-check-100.png" />
     <Content Include="Public\img\icons\icons8-email-100.png" />
@@ -650,6 +651,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </Compile>
+    <Compile Include="Models\OrderDetailViewModel.cs" />
+    <Compile Include="Models\OrderViewModel.cs" />
     <Compile Include="Models\ProductRepository.cs" />
     <Compile Include="Models\SupplierRepository.cs" />
     <Compile Include="Models\UserRepository.cs" />

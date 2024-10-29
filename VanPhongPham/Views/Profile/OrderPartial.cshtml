@@ -1,1 +1,187 @@
-﻿<p>Đơn hàng</p>
+﻿@model IEnumerable<VanPhongPham.Models.OrderViewModel>
+
+@{
+    var orderStatusList = ViewBag.OrderStatus as List<VanPhongPham.Models.order_status>;
+    var currentStatusId = ViewBag.CurrentStatus?.ToString();
+    var MaTaiKhoan = ViewBag.MaTaiKhoan;
+}
+
+<style>
+    .order-status-tabs .nav-tabs {
+        display: flex;
+        flex-wrap: nowrap;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .order-status-tabs .nav-tabs .nav-link {
+        color: #333;
+        font-weight: bold;
+        padding: 10px 0;
+        border: none;
+    }
+
+    .order-status-tabs .nav-tabs .nav-link.active {
+        color: #ff4747;
+        border-bottom: 3px solid #ff4747;
+    }
+
+    .order-container {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        padding: 20px;
+        position: relative;
+    }
+
+    .order-status {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        color: #ff4747;
+    }
+
+    .order-details, .order-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+    }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .product-info img {
+        width: 80px;
+        height: auto;
+        border: 1px solid #ddd;
+    }
+
+    .product-info .product-name {
+        color: #333;
+    }
+
+    .price-info {
+        text-align: right;
+        font-weight: bold;
+        color: #ff4747;
+    }
+
+    .order-details
+    {
+        cursor: pointer;
+    }
+
+    .order-actions button {
+        background-color: #ff4747;
+        font-size: 14px;
+        color: #fff;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .order-actions button:hover {
+        background-color: #ff2e2e;
+    }
+
+    .order-actions .btn-outline-secondary {
+        background-color: #ffffff;
+        color: #555;
+        border: 1px solid rgba(0, 0, 0, 0.09);
+    }
+
+    .order-actions .btn-outline-secondary:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: #555;
+    }
+
+</style>
+
+<div class="order-status-tabs">
+    <ul class="nav nav-tabs justify-content-between w-100">
+        <li class="nav-item flex-fill text-center">
+            <a style="font-weight: normal; font-size: 17px;" class="nav-link @(currentStatusId == "-1" ? "active" : "")"
+               href="@Url.Action("Index", "Profile", new { order_status_id = -1, MaTaiKhoan, view = "OrderPartial" })">
+                Tất cả
+            </a>
+        </li>
+        @if (orderStatusList != null)
+        {
+            foreach (var status in orderStatusList)
+            {
+                <li class="nav-item flex-fill text-center">
+                    <a style="font-weight: normal; font-size: 17px;" class="nav-link @(currentStatusId == status.order_status_id.ToString() ? "active" : "")"
+                       href="@Url.Action("Index", "Profile", new { order_status_id = status.order_status_id, MaTaiKhoan, view = "OrderPartial" })">
+                        @status.order_status_name
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+</div>
+
+<div id="order-details-container" class="mt-3">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var order in Model)
+        {
+            <div class="order-container">
+                <div class="order-status" style="font-size: 15px">@order.OrderStatusName.ToUpper()</div>
+                <hr />
+
+                @foreach (var detail in order.OrderDetails)
+                {
+                    <div class="order-details">
+                        <div class="product-info">
+                            <img src="@detail.ImageUrl" alt="Product Image" />
+                            <div>
+                                <div class="product-name" style="font-size: 17px">@detail.ProductName</div>
+                                <div><span>x</span>@detail.Quantity</div>
+                            </div>
+                        </div>
+                        <span style="color: #ff4747"><span>₫</span>@detail.Price</span>
+                    </div>
+                }
+                <hr />
+                    <!-- Đảm bảo "Thành tiền" căn phải -->
+                    <div class="d-flex justify-content-end">
+                        <span>Thành tiền: <span style="color: #ff4747; font-size: 22px"><span>₫</span>@order.TotalAmount</span></span>
+                    </div>
+                    <!-- Đảm bảo nút hành động căn phải -->
+                    <div class="order-actions d-flex justify-content-end mt-2">
+                        <div>
+                            @if (order.OrderId == "4")
+                            {
+                                <button>Đã Nhận Hàng</button>
+                            }
+                            else if (order.OrderId == "5")
+                            {
+
+                            }
+                            <button>Đã Nhận Hàng</button>
+                            <button class="btn btn-outline-secondary btn-sm">Yêu Cầu Trả Hàng/Hoàn Tiền</button>
+                        </div>
+                    </div>
+            </div> 
+        }
+    }
+    else
+    {
+        <div class="d-flex flex-column align-items-center justify-content-center" style="text-align: center; margin-top: 20px; height: 50vh;">
+            <img src="~/Public/img/icons/clipboard.png" style="width: 100px; height: 100px; margin-bottom: 10px" />
+            @if (currentStatusId == "7")
+            {
+                <p>Bạn hiện không có yêu cầu Trả hàng/Hoàn tiền nào.</p> 
+            }
+            else
+            {
+                <p>Chưa có đơn hàng.</p>
+            }
+        </div>
+    }
+</div>
