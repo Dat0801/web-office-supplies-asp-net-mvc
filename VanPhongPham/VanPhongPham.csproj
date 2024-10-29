@@ -533,6 +533,7 @@
     <Content Include="App_Data\firebase-config.json" />
     <Content Include="Areas\Admin\Views\Product\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Product\Category.cshtml" />
+    <Content Include="Areas\Admin\Views\Dashboard\Login.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>

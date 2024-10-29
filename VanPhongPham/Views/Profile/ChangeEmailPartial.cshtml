@@ -23,9 +23,49 @@
     </div>
 </div>
 
+<!-- Modal nhập mật khẩu -->
+<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="passwordModalLabel">Nhập Mật Khẩu</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="passwordInput">Mật Khẩu</label>
+                    <input type="password" class="form-control" id="passwordInput" />
+                    <div class="invalid-feedback">Mật khẩu không đúng.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="confirmPasswordBtn" class="btn btn-primary">Xác Nhận</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+
 <script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyC7PsMUUTQancVCjMl0NnbDVDl0tpWdZDY",
+        authDomain: "ecommercevpp.firebaseapp.com",
+        projectId: "ecommercevpp",
+        storageBucket: "ecommercevpp.appspot.com",
+        messagingSenderId: "867737625124",
+        appId: "1:867737625124:web:b7df5e4e371340b3ce2eb1"
+    };
+
+    // Khởi tạo Firebase
+    firebase.initializeApp(firebaseConfig);
+
     document.getElementById('submitBtn').addEventListener('click', async function () {
-       let isValid = true;
+        let isValid = true;
 
         const changeemail = document.getElementById('changeemail');
         const emailFeedback = changeemail.parentElement.querySelector('.invalid-feedback');
@@ -34,59 +74,73 @@
         if (changeemail.value.trim() === "") {
             isValid = false;
             changeemail.classList.add("is-invalid");
-            emailFeedback.innerText = "Vui lòng nhập địa chỉ email hợp lệ."
+            emailFeedback.innerText = "Vui lòng nhập địa chỉ email hợp lệ.";
             emailFeedback.style.display = 'block';
-        }
-        else {
+        } else {
             changeemail.classList.remove("is-invalid");
             emailFeedback.style.display = 'none';
         }
 
-        if (isValid)
-        {
+        if (isValid) {
             const checkemail = await checkEmailExists(changeemail.value.trim());
 
             if (checkemail) {
                 changeemail.classList.add("is-invalid");
-                emailFeedback.innerText = "Email đã được đăng ký."
+                emailFeedback.innerText = "Email đã được đăng ký.";
                 emailFeedback.style.display = 'block';
-            }
-            else {
-                const idToken = localStorage.getItem('token');
+            } else {
+                // Hiện modal để nhập mật khẩu
+                $('#passwordModal').modal('show');
+                let wrongPasswordAttempts = 0;
 
-/*                await sendEmailVerification(idToken);*/
+                document.getElementById('confirmPasswordBtn').addEventListener('click', async function () {
+                    const passwordInput = document.getElementById('passwordInput');
+                    const password = passwordInput.value.trim();
 
-                const checkchangeemail = await changeEmail(idToken, changeemail.value.trim());
-
-                if (checkchangeemail) {
-                    try {
-                        const response = await fetch('/Profile/UpdateEmail', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ user_id: '@Model.user_id', email: changeemail.value.trim() }),
+                    // Kiểm tra mật khẩu
+                    const userCredential = await firebase.auth().signInWithEmailAndPassword('@Model.email', password)
+                        .catch(function (error) {
+                            passwordInput.classList.add("is-invalid");
+                            passwordInput.parentElement.querySelector('.invalid-feedback').innerText = "Mật khẩu không đúng.";
+                            passwordInput.parentElement.querySelector('.invalid-feedback').style.display = 'block';
+                            return null; // Trả về null nếu đăng nhập không thành công
                         });
 
-                        const result = await response.json();
+                    if (userCredential) {
+                        // Cập nhật email mới
+                        const user = userCredential.user;
+                        user.updateEmail(changeemail.value.trim())
+                            .then(async function () {
+                                // Xử lý thành công, ví dụ thông báo cho người dùng hoặc đăng xuất
+                                alert("Email đã được thay đổi thành công!");
 
-                        if (result.success) {
+                                // Gửi yêu cầu tới server nếu bạn cần xử lý thêm
+                                const response = await fetch('/Profile/UpdateEmail', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ user_id: '@Model.user_id', email: changeemail.value.trim() })
+                                });
+
+                                const result = await response.json();
+                                if (result.success) {
+                                    logout(); // Đăng xuất nếu cần
+                                }
+                            })
+                            .catch(function (error) {
+                                console.error("Có lỗi xảy ra khi cập nhật email:", error);
+                                alert("Có lỗi xảy ra khi cập nhật email.");
+                            });
+                        $('#passwordModal').modal('hide'); // Đóng modal
+                    } else {
+                        wrongPasswordAttempts++;
+                        if (wrongPasswordAttempts >= 3) {
+                            alert("Bạn đã nhập sai mật khẩu quá 3 lần. Bạn sẽ bị đăng xuất.");
                             logout();
                         }
-                        return result.exists;
-                    } catch (error) {
-                        console.error("Có lỗi xảy ra khi kiểm tra tên đăng nhập:", error);
-                        return false;
                     }
-                }
-                else {
-                    document.getElementById('emailVerificationMessage').classList.remove('alert-success');
-                    document.getElementById('emailVerificationMessage').classList.add('alert-danger');
-                    document.getElementById('emailVerificationMessage').innerText = "Chưa xác thực email. Vui lòng xác thực email!";
-                    document.getElementById('emailVerificationMessage').style.display = 'block';
-                }
-
+                });
             }
         }
     });
 </script>
+
