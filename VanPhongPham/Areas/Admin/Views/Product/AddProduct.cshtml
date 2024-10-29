@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "Thêm mới sản phẩm - Quản Trị";
+}
+<div class="card mb-4">
+    <h6 class="card-header">Thêm mới sản phẩm</h6>
+    <div class="card-body">
+        <form method="post" action="/Supplier/AddSupplier">
+            <div class="form-row">
+                <div class="form-group col-md-1">
+                    <label for="supplier_name">Mã sản phẩm</label>
+                    <input type="text" class="form-control" name="product_id" readonly
+                           value="@(ViewBag.product_id ?? "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="supplier_name">Tên sản phẩm</label>
+                    <input type="text" class="form-control" name="product_name" required
+                           value="@(ViewBag.supplier != null ? ViewBag.supplier.supplier_name : "")" />
+                    <div class="clearfix"></div>
+                </div>
+                
+                <div class="form-group col-md-3">
+                    <label for="phone_number">Số điện thoại</label>
+                    <input type="text" class="form-control" name="phone_number" required
+                           value="@(ViewBag.supplier != null ? ViewBag.supplier.phone_number : "")" />
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="email">
+                        Danh mục
+                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openCategoryModal()">
+                            <i class="feather icon-plus navbar-icon align-middle"></i>
+                        </a>
+                    </label>
+                    <select name="category_id" class="form-control">
+                        @foreach (var category in ViewBag.list_category)
+                        {
+                            <option value="@category.category_id">@category.category_name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
+            <button type="submit" name="action" value="edit" class="btn btn-primary">Sửa</button>
+        </form>
+
+    </div>
+</div>

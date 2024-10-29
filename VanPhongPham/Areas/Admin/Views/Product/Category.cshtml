@@ -1,11 +1,13 @@
-﻿@model List<VanPhongPham.Models.category>
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.category>
 @{
     ViewBag.Title = "Danh mục sản phẩm - Quản Trị";
 }
 <div class="card mb-4">
     <h6 class="card-header">Thêm mới danh mục</h6>
     <div class="card-body">
-        <form method="post" action="AddCategory">
+        <form method="post" action="@Url.Action("AddCategory", "Product")">
             <div class="form-row">
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Mã danh mục</label>
@@ -25,16 +27,18 @@
         </form>
     </div>
 </div>
-<h4 class="font-weight-bold py-3 mb-0">Danh sách sản phẩm</h4>
+<h4 class="font-weight-bold mb-0">Danh sách danh mục</h4>
 <div class="row">
     <div class="navbar-nav my-3 ml-2">
         <!-- Search -->
-        <label class="nav-item navbar-text navbar-search-box p-0 active">
-            <a href="#"><i class="feather icon-search navbar-icon align-middle"></i></a>
-            <span class="navbar-search-input pl-2">
-                <input type="text" class="form-control navbar-text mx-2" placeholder="Tìm kiếm...">
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Category", "Product")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")">
             </span>
-        </label>
+            <button class="btn icon-btn btn-outline-primary">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
     </div>
 </div>
 <div class="card">
@@ -54,16 +58,24 @@
                     <td>@category.category_name</td>
                     <td>
                         <a class="btn icon-btn btn-outline-danger"
-                           href="@Url.Action("DeleteCategory", "Product", new { category_id = category.category_id })">
-                            <i class="feather icon-user-minus navbar-icon align-middle"></i>
+                           href="#"
+                           title="Xóa"
+                           onclick="confirmDelete('@Url.Action("DeleteCategory", "Product", new { category_id = category.category_id })'); return false;">
+                            <i class="feather icon-minus navbar-icon align-middle"></i>
                         </a>
                         <a class="btn icon-btn btn-outline-info ml-2"
+                           title="Sửa"
                            href="@Url.Action("Category", "Product", new { category_id = category.category_id })">
-                            <i class="feather icon-user-check navbar-icon align-middle"></i>
+                            <i class="feather icon-edit navbar-icon align-middle"></i>
                         </a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+    <div class="d-flex justify-content-center">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("Category", new { page }))
+        </div>
+    </div>
 </div>
