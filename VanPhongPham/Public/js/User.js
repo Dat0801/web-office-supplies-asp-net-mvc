@@ -205,7 +205,6 @@ async function fetchUserDataAndSaveToSQL(idToken, tenKhachHang, tentaikhoan, gen
 
 async function saveUserDataToSQL(data) {
     try {
-        console.log(data);
         const response = await fetch('/Account/SaveUserData', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
