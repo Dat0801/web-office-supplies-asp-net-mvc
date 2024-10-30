@@ -1,10 +1,13 @@
 ﻿@model IEnumerable<VanPhongPham.Models.OrderViewModel>
+@using VanPhongPham.Models
 
 @{
     var orderStatusList = ViewBag.OrderStatus as List<VanPhongPham.Models.order_status>;
     var currentStatusId = ViewBag.CurrentStatus?.ToString();
     var MaTaiKhoan = ViewBag.MaTaiKhoan;
 }
+
+<link rel="stylesheet" type="text/css" href="~/Public/css/snippets.css">
 
 <style>
     .order-status-tabs .nav-tabs {
@@ -13,17 +16,17 @@
         border-bottom: 1px solid #ddd;
     }
 
-    .order-status-tabs .nav-tabs .nav-link {
-        color: #333;
-        font-weight: bold;
-        padding: 10px 0;
-        border: none;
-    }
+        .order-status-tabs .nav-tabs .nav-link {
+            color: #333;
+            font-weight: bold;
+            padding: 10px 0;
+            border: none;
+        }
 
-    .order-status-tabs .nav-tabs .nav-link.active {
-        color: #ff4747;
-        border-bottom: 3px solid #ff4747;
-    }
+            .order-status-tabs .nav-tabs .nav-link.active {
+                color: #ff4747;
+                border-bottom: 3px solid #ff4747;
+            }
 
     .order-container {
         background-color: #fff;
@@ -60,18 +63,12 @@
         border: 1px solid #ddd;
     }
 
-    .product-info .product-name {
-        color: #333;
-    }
-
     .price-info {
         text-align: right;
-        font-weight: bold;
         color: #ff4747;
     }
 
-    .order-details
-    {
+    .order-details {
         cursor: pointer;
     }
 
@@ -85,21 +82,58 @@
         cursor: pointer;
     }
 
-    .order-actions button:hover {
-        background-color: #ff2e2e;
-    }
-
     .order-actions .btn-outline-secondary {
         background-color: #ffffff;
         color: #555;
         border: 1px solid rgba(0, 0, 0, 0.09);
     }
 
-    .order-actions .btn-outline-secondary:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-        color: #555;
+    .review-textarea {
+        width: 100%;
+        padding: 8px;
+        resize: none;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-top: 8px;
+    }
+    .modal-dialog {
+        max-width: 700px; /* Đặt chiều rộng mong muốn cho modal */
+        width: 90%; /* Điều chỉnh theo ý thích */
     }
 
+    .modal-body {
+        max-height: 600px;/* Giới hạn chiều cao modal body */
+        overflow-y: auto; /* Bật thanh cuộn dọc */
+    }
+
+    /* Căn chỉnh chữ "Chất lượng sản phẩm" và các ngôi sao đánh giá ngang nhau */
+    .rating-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; /* Căn chỉnh đều giữa các phần tử */
+        margin-top: 10px;
+    }
+
+    .rating-container p {
+        margin: 0;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .rating-container .rating {
+        display: flex;
+        gap: 5px;
+    }
+
+    .rating input[type="radio"] {
+        display: none; /* Ẩn input */
+    }
+
+    .rating label {
+        font-size: 20px;
+        cursor: pointer;
+    }
 </style>
 
 <div class="order-status-tabs">
@@ -131,43 +165,91 @@
         foreach (var order in Model)
         {
             <div class="order-container">
-                <div class="order-status" style="font-size: 15px">@order.OrderStatusName.ToUpper()</div>
+                <div class="order-status">@order.OrderStatusName.ToUpper()</div>
                 <hr />
 
+                @{
+                    var checkReview = false;
+                }
                 @foreach (var detail in order.OrderDetails)
                 {
-                    <div class="order-details">
-                        <div class="product-info">
-                            <img src="@detail.ImageUrl" alt="Product Image" />
-                            <div>
-                                <div class="product-name" style="font-size: 17px">@detail.ProductName</div>
-                                <div><span>x</span>@detail.Quantity</div>
+                    <a style="text-decoration: none; color: #555 " href="@Url.Action("Index", "Profile", new { order_status_id = currentStatusId, MaTaiKhoan, view = "OrderDetailsPartial", ord_id = order.OrderId })">
+                        <div class="order-details">
+                            <div class="product-info">
+                                <img src="@detail.ImageUrl" alt="Product Image" />
+                                <div>
+                                    <div class="product-name">@detail.ProductName</div>
+                                    <div><span>x</span>@detail.Quantity</div>
+                                </div>
                             </div>
+                            <span class="price-info">₫@detail.Price</span>
                         </div>
-                        <span style="color: #ff4747"><span>₫</span>@detail.Price</span>
-                    </div>
+                    </a>
+                    if (detail.isReviewed)
+                    {
+                        checkReview = true;
+                    }
                 }
                 <hr />
-                    <!-- Đảm bảo "Thành tiền" căn phải -->
-                    <div class="d-flex justify-content-end">
-                        <span>Thành tiền: <span style="color: #ff4747; font-size: 22px"><span>₫</span>@order.TotalAmount</span></span>
-                    </div>
-                    <!-- Đảm bảo nút hành động căn phải -->
-                    <div class="order-actions d-flex justify-content-end mt-2">
-                        <div>
-                            @if (order.OrderId == "4")
-                            {
-                                <button>Đã Nhận Hàng</button>
-                            }
-                            else if (order.OrderId == "5")
-                            {
+                <div class="d-flex justify-content-end">
+                    <span>Thành tiền: <span class="price-info">₫@order.TotalAmount</span></span>
+                </div>
+                <div class="order-actions d-flex justify-content-end mt-2">
+                    @if (order.OrderStatusName == "Chờ giao hàng")
+                    {
+                        <button class="btn btn-danger" data-orderid="@order.OrderId">Đã Nhận Hàng</button>
+                    }
+                    else if (order.OrderStatusName == "Hoàn thành" && !checkReview)
+                    {
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reviewModal-@order.OrderId" data-orderid="@order.OrderId">Đánh Giá</button>
+                    }
+                </div>
+            </div>
 
-                            }
-                            <button>Đã Nhận Hàng</button>
-                            <button class="btn btn-outline-secondary btn-sm">Yêu Cầu Trả Hàng/Hoàn Tiền</button>
+            <!-- Modal đánh giá cho từng đơn hàng -->
+            <div id="reviewModal-@order.OrderId" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="reviewLabel-@order.OrderId" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reviewLabel-@order.OrderId">Đánh Giá Sản Phẩm</h5>
+                        </div>
+                        <div class="modal-body">
+                            <form id="reviewForm-@order.OrderId" method="post" action="@Url.Action("SubmitReview", "Order")">
+                                @foreach (var detail in order.OrderDetails)
+                                {
+                                    <div class="form-group">
+                                        <div class="product-info">
+                                            <img src="@detail.ImageUrl" alt="Product Image" />
+                                            <div>
+                                                <div class="product-name">@detail.ProductName</div>
+                                            </div>
+                                        </div>
+                                        <div class="rating-container">
+                                            <p>Chất lượng sản phẩm</p>
+                                            <div class="rating">
+                                                @for (int i = 5; i >= 1; i--)
+                                                {
+                                                    <input type="radio" name="ratings[@detail.ProductID]" value="@i" id="rating-@i-@detail.ProductID-@order.OrderId">
+                                                    <label for="rating-@i-@detail.ProductID-@order.OrderId">☆</label>
+                                                }
+                                            </div>
+                                        </div>
+                                        <label for="reviewContent-@detail.ProductID-@order.OrderId">Nội dung đánh giá</label>
+                                        <textarea id="reviewContent-@detail.ProductID-@order.OrderId" name="reviewContents[@detail.ProductID]" class="review-textarea" maxlength="50" placeholder="Nhập nội dung đánh giá, tối đa 50 ký tự"></textarea>
+                                    </div>
+                                    <hr style="border-top: 2px solid #ff4747; opacity: 0.7;" />
+                                }
+                                <input type="hidden" name="user_id" value="@order.CustomerId" />
+                                <input type="hidden" name="currentStatusId" value="@currentStatusId" />
+                                <input type="hidden" name="orderId" value="@order.OrderId" />
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-danger btn">Hoàn thành</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-            </div> 
+                </div>
+            </div>
         }
     }
     else
@@ -176,7 +258,7 @@
             <img src="~/Public/img/icons/clipboard.png" style="width: 100px; height: 100px; margin-bottom: 10px" />
             @if (currentStatusId == "7")
             {
-                <p>Bạn hiện không có yêu cầu Trả hàng/Hoàn tiền nào.</p> 
+                <p>Bạn hiện không có yêu cầu Trả hàng/Hoàn tiền nào.</p>
             }
             else
             {
@@ -185,3 +267,21 @@
         </div>
     }
 </div>
+
+<script>
+    // Lắng nghe sự kiện mở modal
+    document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            // Lấy ID của modal từ thuộc tính data-target
+            var targetModalId = this.getAttribute('data-bs-target');
+            // Tìm modal theo ID và reset nội dung
+            var modal = document.querySelector(targetModalId);
+            if (modal) {
+                var form = modal.querySelector('form');
+                if (form) {
+                    form.reset(); // Reset form
+                }
+            }
+        });
+    });
+</script>

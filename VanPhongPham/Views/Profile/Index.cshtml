@@ -37,7 +37,7 @@
                 </a>
 
                 <!-- Sub-items for Tài Khoản Của Tôi (Always visible) -->
-                @if (ViewBag.PartialView != "OrderPartial")
+                @if (ViewBag.PartialView != "OrderPartial" && ViewBag.PartialView != "OrderDetailsPartial")
                 {
                     <div class="sub-menu">
                         <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "ProfilePartial" })" style="text-decoration: none;" class="list-group-item sub-item @(ViewBag.PartialView == "ProfilePartial" || ViewBag.PartialView == "ChangeEmailPartial" ? "active" : "")">
@@ -56,7 +56,7 @@
                 <hr>
 
                 <!-- Additional Menu Items -->
-                <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "OrderPartial", order_status_id = ViewBag.CurrentStatus })" style="text-decoration: none;" class="list-group-item @(ViewBag.PartialView == "OrderPartial" ? "active" : "")">
+                <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "OrderPartial", order_status_id = ViewBag.CurrentStatus })" style="text-decoration: none;" class="list-group-item @(ViewBag.PartialView == "OrderPartial" || ViewBag.PartialView == "OrderDetailsPartial" ? "active" : "")">
                     <i class="fas fa-shopping-bag"></i> Đơn Mua
                 </a>
             </div>
@@ -83,6 +83,10 @@
             else if (ViewBag.PartialView == "ChangeEmailPartial")
             {
                 @Html.Action("ChangeEmailPartial", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan })
+            }
+            else if (ViewBag.PartialView == "OrderDetailsPartial")
+            {
+                @Html.Action("OrderDetailsPartial", "Profile", new { ord_id = ViewBag.OrderID })
             }
         </div>
     </div>

@@ -10,8 +10,9 @@ namespace VanPhongPham.Models
         public string OrderId { get; set; }
         public string EmployeeId { get; set; }
         public string CustomerId { get; set; }
-        public int AddressId { get; set; }
+        public string InfoAddress { get; set; }
         public string MethodId { get; set; }
+        public string MethodName { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public double? TotalAmount { get; set; }
         public string OrderStatusName { get; set; }
