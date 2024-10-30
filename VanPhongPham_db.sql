@@ -461,8 +461,7 @@ VALUES
 ('PRO005', 'CAT004', N'Máy tính cầm tay Casio FX 580VN X new', N'Máy tính cầm tay Casio FX 580VN X new là một sản phẩm chất lượng cao, đáp ứng nhu cầu của nhiều đối tượng. Máy có màn hình lớn, rõ ràng, các nút bấm nhạy, dễ sử dụng.', 480000, 0.5, NULL, 40, 1),
 ('PRO006', 'CAT005', N'Vở Hồng Hà 300 trang A4 4532', N'Vở A4 300 trang Hồng Hà là sản phẩm chất lượng, phù hợp với nhu cầu của nhiều đối tượng sử dụng. Vở có giá thành hợp lý, phù hợp với túi tiền của học sinh, sinh viên.', 18000, 0.5, NULL, 50, 1);
 
-INSERT INTO images (image_id, image_url, is_primary, product_id)
-VALUES ('')
+
 
 INSERT INTO attributes (attribute_id, attribute_name)
 VALUES ('ATT001', N'Thương hiệu'),
