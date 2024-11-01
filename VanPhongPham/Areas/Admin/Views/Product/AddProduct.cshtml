@@ -4,25 +4,55 @@
 <div class="card mb-4">
     <h6 class="card-header">Thêm mới sản phẩm</h6>
     <div class="card-body">
-        <form method="post" action="/Supplier/AddSupplier">
+        <form method="post" action="@Url.Action("AddProduct", "Product")" id="ProductForm">
             <div class="form-row">
-                <div class="form-group col-md-1">
+                <div class="form-group col-md-3">
                     <label for="supplier_name">Mã sản phẩm</label>
                     <input type="text" class="form-control" name="product_id" readonly
                            value="@(ViewBag.product_id ?? "")" />
                     <div class="clearfix"></div>
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label for="supplier_name">Tên sản phẩm</label>
                     <input type="text" class="form-control" name="product_name" required
                            value="@(ViewBag.supplier != null ? ViewBag.supplier.supplier_name : "")" />
                     <div class="clearfix"></div>
                 </div>
-                
                 <div class="form-group col-md-3">
-                    <label for="phone_number">Số điện thoại</label>
-                    <input type="text" class="form-control" name="phone_number" required
-                           value="@(ViewBag.supplier != null ? ViewBag.supplier.phone_number : "")" />
+                    <label for="supplier_name">Giá nhập</label>
+                    <input type="text" class="form-control" name="product_id" readonly
+                           placeholder="Giá nhập sẽ có sau khi đặt hàng từ nhà cung cấp" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="he_so">Hệ số</label>
+                    <input type="number" class="form-control" id="he_so" name="price_coefficient" placeholder="Nhập hệ số" step="0.1" min="1" max="2" required />
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="supplier_name">Giá bán</label>
+                    <input type="text" class="form-control" name="product_id" readonly
+                           placeholder="Giá bán = Giá nhập * Hệ số" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="supplier_name">Số lượng tồn</label>
+                    <input type="text" class="form-control" name="product_id" readonly
+                           placeholder="Số lượng tồn sẽ có khi nhập hàng" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="productImage">Hình ảnh sản phẩm</label>
+                    <input type="file" class="form-control" name="productImage" accept="image/*" id="productImage" required />
+                    <img id="imagePreview" src="#" alt="Hình ảnh xem trước" style="display: none; margin-top: 10px; max-width: 25%;" />
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="additionalImages">Các hình ảnh liên quan</label>
+                    <input type="file" class="form-control" name="additionalImages" accept="image/*" id="additionalImages" multiple />
                     <div class="clearfix"></div>
                 </div>
             </div>
@@ -35,16 +65,60 @@
                         </a>
                     </label>
                     <select name="category_id" class="form-control">
-                        @foreach (var category in ViewBag.list_category)
+                        @foreach (var category in ViewBag.categories)
                         {
                             <option value="@category.category_id">@category.category_name</option>
                         }
                     </select>
                 </div>
+                <div class="form-group col-md-3">
+                    <label for="attribute_id">
+                        Thuộc tính
+                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openAttributeModal($(this).closest('select').val())">
+                            <i class="feather icon-plus navbar-icon align-middle"></i>
+                        </a>
+                    </label>
+                    <select name="attribute_id" class="form-control" id="attributeSelect" multiple onchange="updateAttributeValues()">
+                        @foreach (var attribute in ViewBag.attributes)
+                        {
+                            <option value="@attribute.attribute_id">@attribute.attribute_name</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="attribute_value_id">
+                        Giá trị thuộc tính
+                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openAttributeValueModal($('select[name=\'attribute_id\']').val())">
+                            <i class="feather icon-plus navbar-icon align-middle"></i>
+                        </a>
+                    </label>
+                    <select name="attribute_value_id" class="form-control" id="attributeValueSelect" multiple>
+                    </select>
+                </div>
+                <div class="form-group col-md-3 my-2">
+                    <label for="status">Trạng thái hiển thị</label>
+                    <select name="status" id="status" class="form-control">
+                        <option value="true">Hiển thị phía người dùng</option>
+                        <option value="false">Ẩn phía người dùng</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="productDescription">Mô tả sản phẩm</label>
+                    <textarea id="productDescription" name="description" class="form-control"></textarea>
+                    <div class="clearfix"></div>    
+                </div>
             </div>
             <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
-            <button type="submit" name="action" value="edit" class="btn btn-primary">Sửa</button>
+            <a class="btn icon-btn btn-outline-secondary my-3 ml-2" href="@Url.Action("Index","Product")" title="Quay lại">
+                <i class="feather icon-corner-up-left"></i>
+            </a>
         </form>
 
     </div>
 </div>
+
+<script>
+    var attributeValues = @Html.Raw(Json.Encode(ViewBag.attribute_values)); // Chuyển đổi danh sách sang JSON
+</script>

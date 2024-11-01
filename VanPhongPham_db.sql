@@ -8,8 +8,8 @@ create table products
 (
 	product_id varchar(10) not null,
 	category_id varchar(10) not null,
-	product_name nvarchar(50) not null unique,
-	description nvarchar(500) default null,
+	product_name nvarchar(100) not null unique,
+	description nvarchar(1000) default null,
 	purchase_price float not null,
 	price_coefficient float default 0.5,
 	price float default null,
@@ -84,8 +84,8 @@ create table images
 (
 	image_id varchar(10) not null,
 	product_id varchar(10) not null,
-	image_url varchar(50) not null unique,
-	description nvarchar(200) default null,
+	image_url varchar(500) not null unique,
+	description nvarchar(500) default null,
 	is_primary bit default 0,
 )
 
@@ -460,9 +460,6 @@ VALUES
 ('PRO004', 'CAT003', N'Giấy a4 Double A 80gsm', N'Giấy photo a4 Double A DL80 GSM phù hợp với các nhu cầu in ấn văn phòng cơ bản như in ấn tài liệu, văn bản, hợp đồng, báo cáo,... với độ sắc nét nổi bật trong tầm giá cả hợp lý.', 55000, 0.5, NULL, 60, 1),
 ('PRO005', 'CAT004', N'Máy tính cầm tay Casio FX 580VN X new', N'Máy tính cầm tay Casio FX 580VN X new là một sản phẩm chất lượng cao, đáp ứng nhu cầu của nhiều đối tượng. Máy có màn hình lớn, rõ ràng, các nút bấm nhạy, dễ sử dụng.', 480000, 0.5, NULL, 40, 1),
 ('PRO006', 'CAT005', N'Vở Hồng Hà 300 trang A4 4532', N'Vở A4 300 trang Hồng Hà là sản phẩm chất lượng, phù hợp với nhu cầu của nhiều đối tượng sử dụng. Vở có giá thành hợp lý, phù hợp với túi tiền của học sinh, sinh viên.', 18000, 0.5, NULL, 50, 1);
-
-INSERT INTO images (image_id, image_url, is_primary, product_id)
-VALUES ('')
 
 INSERT INTO attributes (attribute_id, attribute_name)
 VALUES ('ATT001', N'Thương hiệu'),
