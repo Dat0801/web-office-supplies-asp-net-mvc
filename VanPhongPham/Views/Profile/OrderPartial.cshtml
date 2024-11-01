@@ -197,7 +197,7 @@
                 <div class="order-actions d-flex justify-content-end mt-2">
                     @if (order.OrderStatusName == "Chờ giao hàng")
                     {
-                        <button class="btn btn-danger" data-orderid="@order.OrderId">Đã Nhận Hàng</button>
+                        <button class="btn btn-danger setOrderStatusFive" data-orderid="@order.OrderId">Đã Nhận Hàng</button>
                     }
                     else if (order.OrderStatusName == "Hoàn thành" && !checkReview)
                     {
@@ -269,6 +269,30 @@
 </div>
 
 <script>
+    document.querySelectorAll('.setOrderStatusFive').forEach(function (button) {
+        button.addEventListener('click', async function () {
+            const orderId = this.getAttribute('data-orderid');
+
+            // Gọi hàm đổi trạng thái đơn hàng
+            const response = await fetch('/Order/ChangeOrder_OrderStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    order_id: orderId,
+                    order_status: 4
+                })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                location.reload();
+            } else {
+                alert(result.message);
+            }
+        });
+    });
     // Lắng nghe sự kiện mở modal
     document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function (button) {
         button.addEventListener('click', function () {
