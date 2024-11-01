@@ -14,7 +14,7 @@ namespace VanPhongPham.Controllers
 {
     public class AccountController : Controller
     {
-        DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
+        private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
         // GET: User
         public async Task<ActionResult> GetUser()
         {

@@ -13,7 +13,7 @@ namespace VanPhongPham.Controllers
 {
     public class ProfileController : Controller
     {
-        DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
+        private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
         // GET: Profile
         public ActionResult Index(string view, string MaTaiKhoan)
         {
