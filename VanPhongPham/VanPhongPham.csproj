@@ -306,6 +306,7 @@
     <Content Include="Content\PagedList.css" />
     <Content Include="Global.asax" />
     <Content Include="Public\css\profile.css" />
+    <Content Include="Public\css\snippets.css" />
     <Content Include="Public\css\style.css" />
     <Content Include="Public\css\style.min.css" />
     <Content Include="Public\img\carousel-1.jpg" />
@@ -316,7 +317,9 @@
     <Content Include="Public\img\cat-4.jpg" />
     <Content Include="Public\img\cat-5.jpg" />
     <Content Include="Public\img\cat-6.jpg" />
+    <Content Include="Public\img\icons\clipboard.png" />
     <Content Include="Public\img\icons\icons8-back-100.png" />
+    <Content Include="Public\img\icons\icons8-backorder.png" />
     <Content Include="Public\img\icons\icons8-check-100.png" />
     <Content Include="Public\img\icons\icons8-email-100.png" />
     <Content Include="Public\img\icons\icons8-error-100.png" />
@@ -652,6 +655,7 @@
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Global.asax.cs">
@@ -663,6 +667,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </Compile>
+    <Compile Include="Models\OrderDetailViewModel.cs" />
+    <Compile Include="Models\OrderViewModel.cs" />
     <Compile Include="Models\ProductRepository.cs" />
     <Compile Include="Models\SupplierRepository.cs" />
     <Compile Include="Models\UserRepository.cs" />
@@ -686,6 +692,7 @@
     <Content Include="Views\Profile\ChangePasswordPartial.cshtml" />
     <Content Include="Views\Profile\OrderPartial.cshtml" />
     <Content Include="Views\Profile\ChangeEmailPartial.cshtml" />
+    <Content Include="Views\Profile\OrderDetailsPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -696,6 +703,7 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Views\Address\" />
+    <Folder Include="Views\Order\" />
     <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>

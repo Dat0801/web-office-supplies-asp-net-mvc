@@ -7,7 +7,7 @@
 
 <link rel="stylesheet" type="text/css" href="~/Public/css/profile.css">
 
-<div class="container p-0">
+<div class="container p-0 mt-5">
     <div class="row">
         <!-- Sidebar bên trái -->
         <div class="col-md-2 p-0 m-0">
@@ -16,11 +16,11 @@
                 <div class="py-3 d-flex align-items-center">
                     @if (Model.avt_url == null)
                     {
-                        <img src="~/Public/img/icons/icons8-male-user-100.png" class="rounded-circle" alt="Profile Image" style="width: 60px; height: 60px; margin-right: 8px">
+                        <img src="~/Public/img/icons/icons8-male-user-100.png" class="rounded-circle" alt="Profile Image" style="width: 60px; height: 60px; object-fit: cover; margin-right: 8px">
                     }
                     else
                     {
-                        <img src="@Model.avt_url" class="rounded-circle" alt="Profile Image" style="width: 60px; height: 60px; margin-right: 8px">
+                        <img src="@Model.avt_url" class="rounded-circle" alt="Profile Image" style="width: 60px; height: 60px; object-fit: cover; margin-right: 8px">
                     }
                     <div>
                         <!-- Khoảng cách giữa ảnh và text -->
@@ -37,7 +37,7 @@
                 </a>
 
                 <!-- Sub-items for Tài Khoản Của Tôi (Always visible) -->
-                @if (ViewBag.PartialView != "OrderPartial")
+                @if (ViewBag.PartialView != "OrderPartial" && ViewBag.PartialView != "OrderDetailsPartial")
                 {
                     <div class="sub-menu">
                         <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "ProfilePartial" })" style="text-decoration: none;" class="list-group-item sub-item @(ViewBag.PartialView == "ProfilePartial" || ViewBag.PartialView == "ChangeEmailPartial" ? "active" : "")">
@@ -56,7 +56,7 @@
                 <hr>
 
                 <!-- Additional Menu Items -->
-                <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "OrderPartial" })" style="text-decoration: none;" class="list-group-item @(ViewBag.PartialView == "OrderPartial" ? "active" : "")">
+                <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "OrderPartial", order_status_id = ViewBag.CurrentStatus })" style="text-decoration: none;" class="list-group-item @(ViewBag.PartialView == "OrderPartial" || ViewBag.PartialView == "OrderDetailsPartial" ? "active" : "")">
                     <i class="fas fa-shopping-bag"></i> Đơn Mua
                 </a>
             </div>
@@ -78,11 +78,15 @@
             }
             else if (ViewBag.PartialView == "OrderPartial")
             {
-                @Html.Action("OrderPartial", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan })
+                @Html.Action("OrderPartial", "Profile", new { order_status_id = ViewBag.CurrentStatus, MaTaiKhoan = ViewBag.MaTaiKhoan })
             }
             else if (ViewBag.PartialView == "ChangeEmailPartial")
             {
                 @Html.Action("ChangeEmailPartial", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan })
+            }
+            else if (ViewBag.PartialView == "OrderDetailsPartial")
+            {
+                @Html.Action("OrderDetailsPartial", "Profile", new { ord_id = ViewBag.OrderID })
             }
         </div>
     </div>

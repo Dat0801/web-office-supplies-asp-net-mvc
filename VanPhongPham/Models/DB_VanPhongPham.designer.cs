@@ -51,6 +51,9 @@ namespace VanPhongPham.Models
     partial void Insertorder_detail(order_detail instance);
     partial void Updateorder_detail(order_detail instance);
     partial void Deleteorder_detail(order_detail instance);
+    partial void Insertorder_status(order_status instance);
+    partial void Updateorder_status(order_status instance);
+    partial void Deleteorder_status(order_status instance);
     partial void Insertorder(order instance);
     partial void Updateorder(order instance);
     partial void Deleteorder(order instance);
@@ -63,6 +66,9 @@ namespace VanPhongPham.Models
     partial void Insertproduct_promotion(product_promotion instance);
     partial void Updateproduct_promotion(product_promotion instance);
     partial void Deleteproduct_promotion(product_promotion instance);
+    partial void Insertproduct_review(product_review instance);
+    partial void Updateproduct_review(product_review instance);
+    partial void Deleteproduct_review(product_review instance);
     partial void Insertproduct(product instance);
     partial void Updateproduct(product instance);
     partial void Deleteproduct(product instance);
@@ -87,7 +93,7 @@ namespace VanPhongPham.Models
     #endregion
 		
 		public DB_VanPhongPhamDataContext() : 
-				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString"].ConnectionString, mappingSource)
+				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString2"].ConnectionString, mappingSource)
 		{
 			OnCreated();
 		}
@@ -172,6 +178,14 @@ namespace VanPhongPham.Models
 			}
 		}
 		
+		public System.Data.Linq.Table<order_status> order_status
+		{
+			get
+			{
+				return this.GetTable<order_status>();
+			}
+		}
+		
 		public System.Data.Linq.Table<order> orders
 		{
 			get
@@ -201,6 +215,14 @@ namespace VanPhongPham.Models
 			get
 			{
 				return this.GetTable<product_promotion>();
+			}
+		}
+		
+		public System.Data.Linq.Table<product_review> product_reviews
+		{
+			get
+			{
+				return this.GetTable<product_review>();
 			}
 		}
 		
@@ -584,6 +606,8 @@ namespace VanPhongPham.Models
 		
 		private EntitySet<order> _orders1;
 		
+		private EntitySet<product_review> _product_reviews;
+		
 		private EntitySet<receipt> _receipts;
 		
 		private EntitySet<user_role> _user_roles;
@@ -615,6 +639,7 @@ namespace VanPhongPham.Models
 			this._addresses = new EntitySet<address>(new Action<address>(this.attach_addresses), new Action<address>(this.detach_addresses));
 			this._orders = new EntitySet<order>(new Action<order>(this.attach_orders), new Action<order>(this.detach_orders));
 			this._orders1 = new EntitySet<order>(new Action<order>(this.attach_orders1), new Action<order>(this.detach_orders1));
+			this._product_reviews = new EntitySet<product_review>(new Action<product_review>(this.attach_product_reviews), new Action<product_review>(this.detach_product_reviews));
 			this._receipts = new EntitySet<receipt>(new Action<receipt>(this.attach_receipts), new Action<receipt>(this.detach_receipts));
 			this._user_roles = new EntitySet<user_role>(new Action<user_role>(this.attach_user_roles), new Action<user_role>(this.detach_user_roles));
 			OnCreated();
@@ -819,6 +844,19 @@ namespace VanPhongPham.Models
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_product_review", Storage="_product_reviews", ThisKey="user_id", OtherKey="user_id")]
+		public EntitySet<product_review> product_reviews
+		{
+			get
+			{
+				return this._product_reviews;
+			}
+			set
+			{
+				this._product_reviews.Assign(value);
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_receipt", Storage="_receipts", ThisKey="user_id", OtherKey="employee_id")]
 		public EntitySet<receipt> receipts
 		{
@@ -899,6 +937,18 @@ namespace VanPhongPham.Models
 		{
 			this.SendPropertyChanging();
 			entity.user1 = null;
+		}
+		
+		private void attach_product_reviews(product_review entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = this;
+		}
+		
+		private void detach_product_reviews(product_review entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = null;
 		}
 		
 		private void attach_receipts(receipt entity)
@@ -1482,7 +1532,7 @@ namespace VanPhongPham.Models
 		
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
-		private string _image_id;
+		private int _image_id;
 		
 		private string _product_id;
 		
@@ -1498,7 +1548,7 @@ namespace VanPhongPham.Models
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
     partial void OnCreated();
-    partial void Onimage_idChanging(string value);
+    partial void Onimage_idChanging(int value);
     partial void Onimage_idChanged();
     partial void Onproduct_idChanging(string value);
     partial void Onproduct_idChanged();
@@ -1516,8 +1566,8 @@ namespace VanPhongPham.Models
 			OnCreated();
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
-		public string image_id
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int image_id
 		{
 			get
 			{
@@ -1560,7 +1610,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image_url", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image_url", DbType="VarChar(255) NOT NULL", CanBeNull=false)]
 		public string image_url
 		{
 			get
@@ -1689,6 +1739,8 @@ namespace VanPhongPham.Models
 		
 		private System.Nullable<double> _total_amount;
 		
+		private System.Nullable<bool> _isReviewed;
+		
 		private EntityRef<order> _order;
 		
 		private EntityRef<product> _product;
@@ -1705,6 +1757,8 @@ namespace VanPhongPham.Models
     partial void OnquantityChanged();
     partial void Ontotal_amountChanging(System.Nullable<double> value);
     partial void Ontotal_amountChanged();
+    partial void OnisReviewedChanging(System.Nullable<bool> value);
+    partial void OnisReviewedChanged();
     #endregion
 		
 		public order_detail()
@@ -1802,6 +1856,26 @@ namespace VanPhongPham.Models
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_isReviewed", DbType="Bit")]
+		public System.Nullable<bool> isReviewed
+		{
+			get
+			{
+				return this._isReviewed;
+			}
+			set
+			{
+				if ((this._isReviewed != value))
+				{
+					this.OnisReviewedChanging(value);
+					this.SendPropertyChanging();
+					this._isReviewed = value;
+					this.SendPropertyChanged("isReviewed");
+					this.OnisReviewedChanged();
+				}
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="order_order_detail", Storage="_order", ThisKey="order_id", OtherKey="order_id", IsForeignKey=true)]
 		public order order
 		{
@@ -1891,6 +1965,120 @@ namespace VanPhongPham.Models
 		}
 	}
 	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.order_status")]
+	public partial class order_status : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _order_status_id;
+		
+		private string _order_status_name;
+		
+		private EntitySet<order> _orders;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onorder_status_idChanging(int value);
+    partial void Onorder_status_idChanged();
+    partial void Onorder_status_nameChanging(string value);
+    partial void Onorder_status_nameChanged();
+    #endregion
+		
+		public order_status()
+		{
+			this._orders = new EntitySet<order>(new Action<order>(this.attach_orders), new Action<order>(this.detach_orders));
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_order_status_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int order_status_id
+		{
+			get
+			{
+				return this._order_status_id;
+			}
+			set
+			{
+				if ((this._order_status_id != value))
+				{
+					this.Onorder_status_idChanging(value);
+					this.SendPropertyChanging();
+					this._order_status_id = value;
+					this.SendPropertyChanged("order_status_id");
+					this.Onorder_status_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_order_status_name", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string order_status_name
+		{
+			get
+			{
+				return this._order_status_name;
+			}
+			set
+			{
+				if ((this._order_status_name != value))
+				{
+					this.Onorder_status_nameChanging(value);
+					this.SendPropertyChanging();
+					this._order_status_name = value;
+					this.SendPropertyChanged("order_status_name");
+					this.Onorder_status_nameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="order_status_order", Storage="_orders", ThisKey="order_status_id", OtherKey="order_status_id")]
+		public EntitySet<order> orders
+		{
+			get
+			{
+				return this._orders;
+			}
+			set
+			{
+				this._orders.Assign(value);
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_orders(order entity)
+		{
+			this.SendPropertyChanging();
+			entity.order_status = this;
+		}
+		
+		private void detach_orders(order entity)
+		{
+			this.SendPropertyChanging();
+			entity.order_status = null;
+		}
+	}
+	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.orders")]
 	public partial class order : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -1903,13 +2091,15 @@ namespace VanPhongPham.Models
 		
 		private string _customer_id;
 		
+		private string _info_address;
+		
 		private string _method_id;
 		
 		private System.Nullable<System.DateTime> _delivery_date;
 		
 		private System.Nullable<double> _total_amount;
 		
-		private string _order_status;
+		private int _order_status_id;
 		
 		private System.Nullable<System.DateTime> _created_at;
 		
@@ -1918,6 +2108,8 @@ namespace VanPhongPham.Models
 		private EntityRef<user> _user;
 		
 		private EntityRef<user> _user1;
+		
+		private EntityRef<order_status> _order_status;
 		
 		private EntityRef<payment_method> _payment_method;
 		
@@ -1931,14 +2123,16 @@ namespace VanPhongPham.Models
     partial void Onemployee_idChanged();
     partial void Oncustomer_idChanging(string value);
     partial void Oncustomer_idChanged();
+    partial void Oninfo_addressChanging(string value);
+    partial void Oninfo_addressChanged();
     partial void Onmethod_idChanging(string value);
     partial void Onmethod_idChanged();
     partial void Ondelivery_dateChanging(System.Nullable<System.DateTime> value);
     partial void Ondelivery_dateChanged();
     partial void Ontotal_amountChanging(System.Nullable<double> value);
     partial void Ontotal_amountChanged();
-    partial void Onorder_statusChanging(string value);
-    partial void Onorder_statusChanged();
+    partial void Onorder_status_idChanging(int value);
+    partial void Onorder_status_idChanged();
     partial void Oncreated_atChanging(System.Nullable<System.DateTime> value);
     partial void Oncreated_atChanged();
     #endregion
@@ -1948,6 +2142,7 @@ namespace VanPhongPham.Models
 			this._order_details = new EntitySet<order_detail>(new Action<order_detail>(this.attach_order_details), new Action<order_detail>(this.detach_order_details));
 			this._user = default(EntityRef<user>);
 			this._user1 = default(EntityRef<user>);
+			this._order_status = default(EntityRef<order_status>);
 			this._payment_method = default(EntityRef<payment_method>);
 			OnCreated();
 		}
@@ -2020,6 +2215,26 @@ namespace VanPhongPham.Models
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_info_address", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string info_address
+		{
+			get
+			{
+				return this._info_address;
+			}
+			set
+			{
+				if ((this._info_address != value))
+				{
+					this.Oninfo_addressChanging(value);
+					this.SendPropertyChanging();
+					this._info_address = value;
+					this.SendPropertyChanged("info_address");
+					this.Oninfo_addressChanged();
+				}
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_method_id", DbType="VarChar(10) NOT NULL", CanBeNull=false)]
 		public string method_id
 		{
@@ -2084,22 +2299,26 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_order_status", DbType="NVarChar(50)")]
-		public string order_status
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_order_status_id", DbType="Int NOT NULL")]
+		public int order_status_id
 		{
 			get
 			{
-				return this._order_status;
+				return this._order_status_id;
 			}
 			set
 			{
-				if ((this._order_status != value))
+				if ((this._order_status_id != value))
 				{
-					this.Onorder_statusChanging(value);
+					if (this._order_status.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onorder_status_idChanging(value);
 					this.SendPropertyChanging();
-					this._order_status = value;
-					this.SendPropertyChanged("order_status");
-					this.Onorder_statusChanged();
+					this._order_status_id = value;
+					this.SendPropertyChanged("order_status_id");
+					this.Onorder_status_idChanged();
 				}
 			}
 		}
@@ -2201,6 +2420,40 @@ namespace VanPhongPham.Models
 						this._employee_id = default(string);
 					}
 					this.SendPropertyChanged("user1");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="order_status_order", Storage="_order_status", ThisKey="order_status_id", OtherKey="order_status_id", IsForeignKey=true)]
+		public order_status order_status
+		{
+			get
+			{
+				return this._order_status.Entity;
+			}
+			set
+			{
+				order_status previousValue = this._order_status.Entity;
+				if (((previousValue != value) 
+							|| (this._order_status.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._order_status.Entity = null;
+						previousValue.orders.Remove(this);
+					}
+					this._order_status.Entity = value;
+					if ((value != null))
+					{
+						value.orders.Add(this);
+						this._order_status_id = value.order_status_id;
+					}
+					else
+					{
+						this._order_status_id = default(int);
+					}
+					this.SendPropertyChanged("order_status");
 				}
 			}
 		}
@@ -2746,6 +2999,270 @@ namespace VanPhongPham.Models
 		}
 	}
 	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.product_review")]
+	public partial class product_review : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _review_id;
+		
+		private string _user_id;
+		
+		private string _product_id;
+		
+		private int _rating;
+		
+		private string _review_content;
+		
+		private System.Nullable<System.DateTime> _created_at;
+		
+		private EntityRef<user> _user;
+		
+		private EntityRef<product> _product;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onreview_idChanging(int value);
+    partial void Onreview_idChanged();
+    partial void Onuser_idChanging(string value);
+    partial void Onuser_idChanged();
+    partial void Onproduct_idChanging(string value);
+    partial void Onproduct_idChanged();
+    partial void OnratingChanging(int value);
+    partial void OnratingChanged();
+    partial void Onreview_contentChanging(string value);
+    partial void Onreview_contentChanged();
+    partial void Oncreated_atChanging(System.Nullable<System.DateTime> value);
+    partial void Oncreated_atChanged();
+    #endregion
+		
+		public product_review()
+		{
+			this._user = default(EntityRef<user>);
+			this._product = default(EntityRef<product>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_review_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int review_id
+		{
+			get
+			{
+				return this._review_id;
+			}
+			set
+			{
+				if ((this._review_id != value))
+				{
+					this.Onreview_idChanging(value);
+					this.SendPropertyChanging();
+					this._review_id = value;
+					this.SendPropertyChanged("review_id");
+					this.Onreview_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string user_id
+		{
+			get
+			{
+				return this._user_id;
+			}
+			set
+			{
+				if ((this._user_id != value))
+				{
+					if (this._user.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onuser_idChanging(value);
+					this.SendPropertyChanging();
+					this._user_id = value;
+					this.SendPropertyChanged("user_id");
+					this.Onuser_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_product_id", DbType="VarChar(10) NOT NULL", CanBeNull=false)]
+		public string product_id
+		{
+			get
+			{
+				return this._product_id;
+			}
+			set
+			{
+				if ((this._product_id != value))
+				{
+					if (this._product.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onproduct_idChanging(value);
+					this.SendPropertyChanging();
+					this._product_id = value;
+					this.SendPropertyChanged("product_id");
+					this.Onproduct_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_rating", DbType="Int NOT NULL")]
+		public int rating
+		{
+			get
+			{
+				return this._rating;
+			}
+			set
+			{
+				if ((this._rating != value))
+				{
+					this.OnratingChanging(value);
+					this.SendPropertyChanging();
+					this._rating = value;
+					this.SendPropertyChanged("rating");
+					this.OnratingChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_review_content", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string review_content
+		{
+			get
+			{
+				return this._review_content;
+			}
+			set
+			{
+				if ((this._review_content != value))
+				{
+					this.Onreview_contentChanging(value);
+					this.SendPropertyChanging();
+					this._review_content = value;
+					this.SendPropertyChanged("review_content");
+					this.Onreview_contentChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_created_at", DbType="DateTime")]
+		public System.Nullable<System.DateTime> created_at
+		{
+			get
+			{
+				return this._created_at;
+			}
+			set
+			{
+				if ((this._created_at != value))
+				{
+					this.Oncreated_atChanging(value);
+					this.SendPropertyChanging();
+					this._created_at = value;
+					this.SendPropertyChanged("created_at");
+					this.Oncreated_atChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_product_review", Storage="_user", ThisKey="user_id", OtherKey="user_id", IsForeignKey=true)]
+		public user user
+		{
+			get
+			{
+				return this._user.Entity;
+			}
+			set
+			{
+				user previousValue = this._user.Entity;
+				if (((previousValue != value) 
+							|| (this._user.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._user.Entity = null;
+						previousValue.product_reviews.Remove(this);
+					}
+					this._user.Entity = value;
+					if ((value != null))
+					{
+						value.product_reviews.Add(this);
+						this._user_id = value.user_id;
+					}
+					else
+					{
+						this._user_id = default(string);
+					}
+					this.SendPropertyChanged("user");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="product_product_review", Storage="_product", ThisKey="product_id", OtherKey="product_id", IsForeignKey=true)]
+		public product product
+		{
+			get
+			{
+				return this._product.Entity;
+			}
+			set
+			{
+				product previousValue = this._product.Entity;
+				if (((previousValue != value) 
+							|| (this._product.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._product.Entity = null;
+						previousValue.product_reviews.Remove(this);
+					}
+					this._product.Entity = value;
+					if ((value != null))
+					{
+						value.product_reviews.Add(this);
+						this._product_id = value.product_id;
+					}
+					else
+					{
+						this._product_id = default(string);
+					}
+					this.SendPropertyChanged("product");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.products")]
 	public partial class product : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -2770,6 +3287,12 @@ namespace VanPhongPham.Models
 		
 		private int _stock_quantity;
 		
+		private System.Nullable<int> _sold;
+		
+		private System.Nullable<double> _avgRating;
+		
+		private System.Nullable<int> _visited;
+		
 		private System.Nullable<bool> _status;
 		
 		private System.Nullable<System.DateTime> _created_at;
@@ -2783,6 +3306,8 @@ namespace VanPhongPham.Models
 		private EntitySet<product_attribute_value> _product_attribute_values;
 		
 		private EntitySet<product_promotion> _product_promotions;
+		
+		private EntitySet<product_review> _product_reviews;
 		
 		private EntitySet<receipt_detail> _receipt_details;
 		
@@ -2810,6 +3335,12 @@ namespace VanPhongPham.Models
     partial void Onpromotion_priceChanged();
     partial void Onstock_quantityChanging(int value);
     partial void Onstock_quantityChanged();
+    partial void OnsoldChanging(System.Nullable<int> value);
+    partial void OnsoldChanged();
+    partial void OnavgRatingChanging(System.Nullable<double> value);
+    partial void OnavgRatingChanged();
+    partial void OnvisitedChanging(System.Nullable<int> value);
+    partial void OnvisitedChanged();
     partial void OnstatusChanging(System.Nullable<bool> value);
     partial void OnstatusChanged();
     partial void Oncreated_atChanging(System.Nullable<System.DateTime> value);
@@ -2824,6 +3355,7 @@ namespace VanPhongPham.Models
 			this._order_details = new EntitySet<order_detail>(new Action<order_detail>(this.attach_order_details), new Action<order_detail>(this.detach_order_details));
 			this._product_attribute_values = new EntitySet<product_attribute_value>(new Action<product_attribute_value>(this.attach_product_attribute_values), new Action<product_attribute_value>(this.detach_product_attribute_values));
 			this._product_promotions = new EntitySet<product_promotion>(new Action<product_promotion>(this.attach_product_promotions), new Action<product_promotion>(this.detach_product_promotions));
+			this._product_reviews = new EntitySet<product_review>(new Action<product_review>(this.attach_product_reviews), new Action<product_review>(this.detach_product_reviews));
 			this._receipt_details = new EntitySet<receipt_detail>(new Action<receipt_detail>(this.attach_receipt_details), new Action<receipt_detail>(this.detach_receipt_details));
 			this._category = default(EntityRef<category>);
 			OnCreated();
@@ -3013,6 +3545,66 @@ namespace VanPhongPham.Models
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_sold", DbType="Int")]
+		public System.Nullable<int> sold
+		{
+			get
+			{
+				return this._sold;
+			}
+			set
+			{
+				if ((this._sold != value))
+				{
+					this.OnsoldChanging(value);
+					this.SendPropertyChanging();
+					this._sold = value;
+					this.SendPropertyChanged("sold");
+					this.OnsoldChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_avgRating", DbType="Float")]
+		public System.Nullable<double> avgRating
+		{
+			get
+			{
+				return this._avgRating;
+			}
+			set
+			{
+				if ((this._avgRating != value))
+				{
+					this.OnavgRatingChanging(value);
+					this.SendPropertyChanging();
+					this._avgRating = value;
+					this.SendPropertyChanged("avgRating");
+					this.OnavgRatingChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_visited", DbType="Int")]
+		public System.Nullable<int> visited
+		{
+			get
+			{
+				return this._visited;
+			}
+			set
+			{
+				if ((this._visited != value))
+				{
+					this.OnvisitedChanging(value);
+					this.SendPropertyChanging();
+					this._visited = value;
+					this.SendPropertyChanged("visited");
+					this.OnvisitedChanged();
+				}
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_status", DbType="Bit")]
 		public System.Nullable<bool> status
 		{
@@ -3122,6 +3714,19 @@ namespace VanPhongPham.Models
 			set
 			{
 				this._product_promotions.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="product_product_review", Storage="_product_reviews", ThisKey="product_id", OtherKey="product_id")]
+		public EntitySet<product_review> product_reviews
+		{
+			get
+			{
+				return this._product_reviews;
+			}
+			set
+			{
+				this._product_reviews.Assign(value);
 			}
 		}
 		
@@ -3235,6 +3840,18 @@ namespace VanPhongPham.Models
 		}
 		
 		private void detach_product_promotions(product_promotion entity)
+		{
+			this.SendPropertyChanging();
+			entity.product = null;
+		}
+		
+		private void attach_product_reviews(product_review entity)
+		{
+			this.SendPropertyChanging();
+			entity.product = this;
+		}
+		
+		private void detach_product_reviews(product_review entity)
 		{
 			this.SendPropertyChanging();
 			entity.product = null;

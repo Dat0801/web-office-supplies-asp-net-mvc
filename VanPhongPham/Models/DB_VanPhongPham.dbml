@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="DB_VanPhongPham" Class="DB_VanPhongPhamDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="WebSettings" ConnectionString="Data Source=DESKTOP-NO8JHRO\VINHYET;Initial Catalog=DB_VanPhongPham;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DB_VanPhongPhamConnectionString" Provider="System.Data.SqlClient" />
+  <Connection Mode="WebSettings" ConnectionString="Data Source=DESKTOP-NO8JHRO\VINHYET;Initial Catalog=DB_VanPhongPham;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DB_VanPhongPhamConnectionString2" Provider="System.Data.SqlClient" />
   <Table Name="dbo.addresses" Member="addresses">
     <Type Name="address">
       <Column Name="address_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -27,6 +27,7 @@
       <Association Name="user_address" Member="addresses" ThisKey="user_id" OtherKey="user_id" Type="address" />
       <Association Name="user_order" Member="orders" ThisKey="user_id" OtherKey="customer_id" Type="order" />
       <Association Name="user_order1" Member="orders1" ThisKey="user_id" OtherKey="employee_id" Type="order" />
+      <Association Name="user_product_review" Member="product_reviews" ThisKey="user_id" OtherKey="user_id" Type="product_review" />
       <Association Name="user_receipt" Member="receipts" ThisKey="user_id" OtherKey="employee_id" Type="receipt" />
       <Association Name="user_user_role" Member="user_roles" ThisKey="user_id" OtherKey="user_id" Type="user_role" />
     </Type>
@@ -62,9 +63,9 @@
   </Table>
   <Table Name="dbo.images" Member="images">
     <Type Name="image">
-      <Column Name="image_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="image_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="product_id" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
-      <Column Name="image_url" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="image_url" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
       <Column Name="description" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
       <Column Name="is_primary" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Association Name="product_image" Member="product" ThisKey="product_id" OtherKey="product_id" Type="product" IsForeignKey="true" />
@@ -76,8 +77,16 @@
       <Column Name="product_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="quantity" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="total_amount" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="isReviewed" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Association Name="order_order_detail" Member="order" ThisKey="order_id" OtherKey="order_id" Type="order" IsForeignKey="true" />
       <Association Name="product_order_detail" Member="product" ThisKey="product_id" OtherKey="product_id" Type="product" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.order_status" Member="order_status">
+    <Type Name="order_status">
+      <Column Name="order_status_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="order_status_name" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Association Name="order_status_order" Member="orders" ThisKey="order_status_id" OtherKey="order_status_id" Type="order" />
     </Type>
   </Table>
   <Table Name="dbo.orders" Member="orders">
@@ -85,14 +94,16 @@
       <Column Name="order_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="employee_id" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
       <Column Name="customer_id" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="info_address" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
       <Column Name="method_id" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
       <Column Name="delivery_date" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="total_amount" Type="System.Double" DbType="Float" CanBeNull="true" />
-      <Column Name="order_status" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="order_status_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Association Name="order_order_detail" Member="order_details" ThisKey="order_id" OtherKey="order_id" Type="order_detail" />
       <Association Name="user_order" Member="user" ThisKey="customer_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
       <Association Name="user_order1" Member="user1" ThisKey="employee_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
+      <Association Name="order_status_order" Member="order_status" ThisKey="order_status_id" OtherKey="order_status_id" Type="order_status" IsForeignKey="true" />
       <Association Name="payment_method_order" Member="payment_method" ThisKey="method_id" OtherKey="method_id" Type="payment_method" IsForeignKey="true" />
     </Type>
   </Table>
@@ -120,6 +131,18 @@
       <Association Name="promotion_product_promotion" Member="promotion" ThisKey="promotion_id" OtherKey="promotion_id" Type="promotion" IsForeignKey="true" />
     </Type>
   </Table>
+  <Table Name="dbo.product_review" Member="product_reviews">
+    <Type Name="product_review">
+      <Column Name="review_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="user_id" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="product_id" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="rating" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="review_content" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="user_product_review" Member="user" ThisKey="user_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
+      <Association Name="product_product_review" Member="product" ThisKey="product_id" OtherKey="product_id" Type="product" IsForeignKey="true" />
+    </Type>
+  </Table>
   <Table Name="dbo.products" Member="products">
     <Type Name="product">
       <Column Name="product_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
@@ -131,6 +154,9 @@
       <Column Name="price" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="promotion_price" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="stock_quantity" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="sold" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="avgRating" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="visited" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="updated_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
@@ -138,6 +164,7 @@
       <Association Name="product_order_detail" Member="order_details" ThisKey="product_id" OtherKey="product_id" Type="order_detail" />
       <Association Name="product_product_attribute_value" Member="product_attribute_values" ThisKey="product_id" OtherKey="product_id" Type="product_attribute_value" />
       <Association Name="product_product_promotion" Member="product_promotions" ThisKey="product_id" OtherKey="product_id" Type="product_promotion" />
+      <Association Name="product_product_review" Member="product_reviews" ThisKey="product_id" OtherKey="product_id" Type="product_review" />
       <Association Name="product_receipt_detail" Member="receipt_details" ThisKey="product_id" OtherKey="product_id" Type="receipt_detail" />
       <Association Name="category_product" Member="category" ThisKey="category_id" OtherKey="category_id" Type="category" IsForeignKey="true" />
     </Type>
