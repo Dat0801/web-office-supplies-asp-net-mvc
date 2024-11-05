@@ -325,6 +325,7 @@
     <Content Include="Public\img\icons\icons8-error-100.png" />
     <Content Include="Public\img\icons\icons8-location-100.png" />
     <Content Include="Public\img\icons\icons8-male-user-100.png" />
+    <Content Include="Public\img\icons\vecteezy_chat-box-with-laptop.png" />
     <Content Include="Public\img\offer-1.png" />
     <Content Include="Public\img\offer-2.png" />
     <Content Include="Public\img\payments.png" />
@@ -693,6 +694,8 @@
     <Content Include="Views\Profile\OrderPartial.cshtml" />
     <Content Include="Views\Profile\ChangeEmailPartial.cshtml" />
     <Content Include="Views\Profile\OrderDetailsPartial.cshtml" />
+    <Content Include="Views\Cart\CartPartial.cshtml" />
+    <Content Include="Views\Cart\CartQuantityPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -197,6 +197,21 @@ create table receipt_details
 	total_amount float default 0,
 )
 
+create table cart_section
+(
+	cart_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	user_id nvarchar(255) NOT NULL,
+)
+
+create table cart_details
+(
+	cart_id int NOT NULL,
+	product_id varchar(10) NOT NULL,
+	quantity int,
+	total_amount float,
+	PRIMARY KEY (cart_id, product_id)
+)
+
 alter table products add primary key (product_id);
 alter table categories add primary key (category_id);
 alter table promotions add primary key (promotion_id);
@@ -291,6 +306,18 @@ foreign key (user_id) references users(user_id)
 alter table product_review
 add constraint FK_ProductReview_Product
 foreign key (product_id) references products(product_id)
+
+alter table cart_section
+add constraint FK_CartSection_Users
+foreign key (user_id) references users(user_id)
+
+alter table cart_details
+add constraint FK_CartDetails_CartSection
+foreign key (cart_id) references cart_section(cart_id);
+
+alter table cart_details
+add constraint FK_CartDetails_Products
+foreign key (product_id) references products(product_id);
 
 go
 

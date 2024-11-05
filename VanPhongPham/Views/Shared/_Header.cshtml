@@ -71,9 +71,9 @@
                 <img class="rounded-circle ml-2" alt="Profile Image" id="profile-image" style="width: 25px; height: 25px; object-fit: cover; margin-right: 5px; visibility: hidden">
                 <span id="user-info" style="display: none;"></span>
                 <a class="nav-item nav-link" id="logout-item" href="javascript:void(0);" onclick="logout()" style="display: none;">Đăng xuất</a>
-                <a href="@Url.Action("Index", "Cart")" class="btn border">
+                <a id="cart-link" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge"></span>
                 </a>
             </nav>
         </div>
