@@ -125,31 +125,6 @@
         </div>
     </div>
     <hr />
-    @{
-        var checkReview = Model.OrderDetails.Any(detail => detail.isReviewed == true);
-    }
-
-    <div class="order-actions d-flex flex-column align-items-end mt-2" style="gap: 8px;">
-        @if (Model.OrderStatusName == "Chờ giao hàng")
-        {
-            <div style="width: 200px;">
-                <!-- Thay đổi kích thước này theo nhu cầu -->
-                <button class="btn btn-danger w-100">Đã Nhận Hàng</button>
-            </div>
-        }
-        else if (Model.OrderStatusName == "Hoàn thành" && !checkReview)
-        {
-            <div style="width: 200px;">
-                <!-- Thay đổi kích thước này theo nhu cầu -->
-                <button class="btn btn-danger w-100">Đánh Giá</button>
-            </div>
-        }
-        <!--<div style="width: 200px;">-->
-            <!-- Thay đổi kích thước này theo nhu cầu -->
-            <!--<button class="btn btn-outline-secondary btn-sm w-100">Yêu Cầu Trả Hàng/Hoàn Tiền</button>
-        </div>-->
-    </div>
-    <hr />
 
     <div>
         <h3>Địa Chỉ Nhận Hàng</h3>

@@ -4,6 +4,7 @@ function fetchUserData() {
     const token = localStorage.getItem('token');
     if (!token) {
         console.error('Không có token, không thể truy cập dữ liệu người dùng.');
+        displayUserName();
         return;
     }
 
@@ -29,7 +30,8 @@ function fetchUserData() {
                 const user = {
                     MaTaiKhoan: data.user_id,
                     TenTaiKhoan: data.username,
-                    ImageProfile: data.avt_url
+                    ImageProfile: data.avt_url,
+                    CartID: data.cart_id
                 };
                 sessionStorage.setItem('user', JSON.stringify(user)); // Lưu đối tượng JSON
 
@@ -62,6 +64,8 @@ function displayUserName() {
     const loginItem = document.getElementById("login-item");
     const registerItem = document.getElementById("register-item");
     const logoutItem = document.getElementById("logout-item");
+    const cartLink = document.getElementById("cart-link");
+    const cartBadge = cartLink.querySelector('.badge'); // Lấy phần tử badge
 
     if (userData) {
         const user = JSON.parse(userData);
@@ -78,6 +82,12 @@ function displayUserName() {
         logoutItem.style.display = 'inline';
         loginItem.style.display = 'none';
         registerItem.style.display = 'none';
+
+        // Đặt liên kết giỏ hàng đến trang giỏ hàng
+        cartLink.href = `/Cart/Index?cart_id=${user.CartID}`;
+
+        // Gọi phương thức để lấy số lượng sản phẩm trong giỏ hàng
+        loadCartQuantity(user.CartID, cartBadge);
     } else {
         // Ẩn các phần tử khi chưa đăng nhập
         userInfoElement.innerHTML = '';
@@ -90,7 +100,37 @@ function displayUserName() {
         loginItem.style.display = 'inline';
         registerItem.style.display = 'inline';
         logoutItem.style.display = 'none';
+
+        // Đặt liên kết giỏ hàng đến trang đăng nhập
+        cartLink.href = "/Auth/Login";
+
+        // Reset số lượng giỏ hàng
+        cartBadge.innerText = '0';
     }
+}
+
+// Hàm mới để tải số lượng sản phẩm trong giỏ hàng
+function loadCartQuantity(cartId, cartBadge) {
+    fetch('/Cart/GetCartQuantity', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cart_id: cartId }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json(); // Chuyển đổi phản hồi thành JSON
+        })
+        .then(data => {
+            cartBadge.innerText = data.quantity; // Cập nhật số lượng giỏ hàng
+        })
+        .catch(error => {
+            console.error("Error loading cart quantity:", error);
+            cartBadge.innerText = '0';
+        });
 }
 
 function logout() {
@@ -198,6 +238,7 @@ async function fetchUserDataAndSaveToSQL(idToken, tenKhachHang, tentaikhoan, gen
         };
 
         await saveUserDataToSQL(saveData);
+        await AddCartSection(saveData.user_id);
     } catch (error) {
         console.error("Có lỗi xảy ra khi lấy dữ liệu người dùng:", error.message);
     }
@@ -225,6 +266,26 @@ async function saveUserDataToSQL(data) {
         }
     } catch (error) {
         console.error("Có lỗi xảy ra khi lưu vào SQL Server:", error);
+    }
+}
+
+
+async function AddCartSection(user_id) {
+    try {
+        const response = await fetch('/Cart/AddCartSection', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id: user_id}),
+        });
+
+        const result = await response.json();
+        console.log(result);
+        return result.success;
+    } catch (error) {
+        console.error("Có lỗi xảy ra khi kiểm tra tên đăng nhập:", error);
+        return false;
     }
 }
 
