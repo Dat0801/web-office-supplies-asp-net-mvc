@@ -8,7 +8,7 @@
         <!-- Search -->
         <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Index", "Product")" method="get">
             <span class="navbar-search-input">
-                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.search_str ?? "")">
             </span>
             <button class="btn icon-btn btn-outline-primary" title="Tìm kiếm">
                 <i class="feather icon-search navbar-icon align-middle"></i>
@@ -61,7 +61,7 @@
                         <a class="btn icon-btn btn-outline-danger"
                            href="#"
                            title="Xóa"
-                           onclick="confirmDelete('@Url.Action("DeleteCategory", "Product", new { product_id = product.product_id })'); return false;">
+                           onclick="confirmDelete('@Url.Action("DeleteProduct", "Product", new { product_id = product.product_id })'); return false;">
                             <i class="feather icon-minus navbar-icon align-middle"></i>
                         </a>
                         <a class="btn icon-btn btn-outline-info ml-2"

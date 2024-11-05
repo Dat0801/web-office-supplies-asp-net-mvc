@@ -240,6 +240,7 @@
     <Content Include="Areas\Admin\Public\assets\img\logo.png" />
     <Content Include="Areas\Admin\Public\assets\js\analytics.js" />
     <Content Include="Areas\Admin\Public\assets\js\bootstrap.js" />
+    <Content Include="Areas\Admin\Public\assets\js\ckeditor.js" />
     <Content Include="Areas\Admin\Public\assets\js\demo.js" />
     <Content Include="Areas\Admin\Public\assets\js\dropdown-hover.js" />
     <Content Include="Areas\Admin\Public\assets\js\jquery-3.2.1.min.js" />
@@ -252,6 +253,7 @@
     <Content Include="Areas\Admin\Public\assets\js\pages\charts_morrisjs.js" />
     <Content Include="Areas\Admin\Public\assets\js\pages\dashboards_index.js" />
     <Content Include="Areas\Admin\Public\assets\js\pages\forms_input-groups.js" />
+    <Content Include="Areas\Admin\Public\assets\js\product.js" />
     <Content Include="Areas\Admin\Public\assets\js\pages\tables_bootstrap-table.js" />
     <Content Include="Areas\Admin\Public\assets\js\pages\ui_button-groups.js" />
     <Content Include="Areas\Admin\Public\assets\js\sidenav.js" />
@@ -660,6 +662,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AttributeValueDTO.cs" />
     <Compile Include="Models\DB_VanPhongPham.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

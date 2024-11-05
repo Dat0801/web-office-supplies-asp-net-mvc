@@ -33,7 +33,7 @@
         <!-- Search -->
         <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Category", "Product")" method="get">
             <span class="navbar-search-input">
-                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.search_str ?? "")">
             </span>
             <button class="btn icon-btn btn-outline-primary">
                 <i class="feather icon-search navbar-icon align-middle"></i>

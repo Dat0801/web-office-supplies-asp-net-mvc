@@ -8,13 +8,16 @@ create table products
 (
 	product_id varchar(10) not null,
 	category_id varchar(10) not null,
-	product_name nvarchar(50) not null unique,
-	description nvarchar(500) default null,
+	product_name nvarchar(200) not null unique,
+	description nvarchar(1000) default null,
 	purchase_price float not null,
 	price_coefficient float default 0.5,
 	price float default null,
 	promotion_price float default null,
 	stock_quantity int not null,
+	sold int default 0,
+	avgRating float default 0,
+	visited int default 0,
 	status bit default 1,
 	created_at datetime default getdate(),
 	updated_at datetime default getdate()
@@ -82,9 +85,9 @@ create table product_attribute_values
 
 create table images
 (
-	image_id varchar(10) not null,
+	image_id int identity (1,1) not null,
 	product_id varchar(10) not null,
-	image_url varchar(50) not null unique,
+	image_url varchar(500) not null unique,
 	description nvarchar(200) default null,
 	is_primary bit default 0,
 )
@@ -130,16 +133,32 @@ create table addresses
     isDefault BIT
 );
 
+create table order_status
+(
+	order_status_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	order_status_name NVARCHAR(255) NOT NULL
+)
 
 create table orders
 (
 	order_id varchar(10) not null,
 	employee_id nvarchar(255) not null,
 	customer_id nvarchar(255) not null,
+	info_address nvarchar(255) not null,
 	method_id varchar(10) not null,
 	delivery_date datetime default DATEADD(DAY, 7, GETDATE()),
 	total_amount float default 0,
-	order_status nvarchar(50) default N'Chờ xác nhận', 
+	order_status_id int not null,
+	created_at datetime default getdate(),
+)
+
+create table product_review
+(
+	review_id int PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	user_id NVARCHAR(255) not null,
+	product_id varchar(10) not null,
+	rating int not null,
+	review_content nvarchar(255) not null,
 	created_at datetime default getdate(),
 )
 
@@ -155,6 +174,7 @@ create table order_details
 	product_id varchar(10) not null,
 	quantity int default 1,
 	total_amount float default 0,
+	isReviewed bit default 0
 )
 
 create table receipts
@@ -236,6 +256,10 @@ alter table orders
 add constraint FK_Orders_PaymentMethods
 foreign key (method_id) references payment_methods(method_id);
 
+alter table orders
+add constraint FK_Orders_OrderStatus
+foreign key (order_status_id) references order_status(order_status_id);
+
 alter table order_details
 add constraint FK_OrderDetails_Orders
 foreign key (order_id) references orders(order_id);
@@ -259,6 +283,15 @@ foreign key (receipt_id) references Receipts(receipt_id);
 alter table receipt_details
 add constraint FK_ReceiptDetails_Products
 foreign key (product_id) references products(product_id);
+
+alter table product_review
+add constraint FK_ProductReview_Users
+foreign key (user_id) references users(user_id)
+
+alter table product_review
+add constraint FK_ProductReview_Product
+foreign key (product_id) references products(product_id)
+
 go
 
 -- Cập nhật trường updated_at trong bảng products mỗi khi có bản ghi bị cập nhật.
@@ -382,14 +415,14 @@ ON orders
 AFTER UPDATE
 AS
 BEGIN
-    IF EXISTS (SELECT 1 FROM inserted WHERE order_status = N'Đã hủy')
+    IF EXISTS (SELECT 1 FROM inserted WHERE order_status_id = 6)
     BEGIN
         UPDATE p
         SET p.stock_quantity = p.stock_quantity + od.quantity
         FROM products p
         INNER JOIN order_details od ON p.product_id = od.product_id
         INNER JOIN inserted i ON od.order_id = i.order_id
-        WHERE i.order_status = N'Đã hủy';
+        WHERE i.order_status_id = 6;
     END;
 END;
 GO
@@ -461,9 +494,6 @@ VALUES
 ('PRO005', 'CAT004', N'Máy tính cầm tay Casio FX 580VN X new', N'Máy tính cầm tay Casio FX 580VN X new là một sản phẩm chất lượng cao, đáp ứng nhu cầu của nhiều đối tượng. Máy có màn hình lớn, rõ ràng, các nút bấm nhạy, dễ sử dụng.', 480000, 0.5, NULL, 40, 1),
 ('PRO006', 'CAT005', N'Vở Hồng Hà 300 trang A4 4532', N'Vở A4 300 trang Hồng Hà là sản phẩm chất lượng, phù hợp với nhu cầu của nhiều đối tượng sử dụng. Vở có giá thành hợp lý, phù hợp với túi tiền của học sinh, sinh viên.', 18000, 0.5, NULL, 50, 1);
 
-INSERT INTO images (image_id, image_url, is_primary, product_id)
-VALUES ('')
-
 INSERT INTO attributes (attribute_id, attribute_name)
 VALUES ('ATT001', N'Thương hiệu'),
 ('ATT002', N'Màu sắc'),
@@ -489,6 +519,16 @@ VALUES ('PRO001', 'VAL001'),
 ('PRO001', 'VAL006'),
 ('PRO001', 'VAL007');
 
+INSERT INTO images (product_id, image_url, description, is_primary)
+VALUES
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/onumc2zaeyfnkrs3q92j.png', N'Test thôi', 1),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/h6ntyymvhnx9nllpfz2q.jpg', N'Test thôi', 0),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/bbdw0hhp9nkaegqfqmh6.jpg', N'Test thôi', 0),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/cxyrbs1upydqmyxnoobj.png', N'Test thôi', 1),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/fxkfvtzliwsp6th6xnuk.png', N'Test thôi', 0),
+('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/uzvymp9snxzaivs9kbyt.png', N'Test thôi', 1),
+('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/krpimoesikznpyo3czhh.png', N'Test thôi', 0)
+
 INSERT INTO roles (role_name, description)
 VALUES
 (N'Khách hàng', N'Khách mua hàng'),
@@ -500,6 +540,16 @@ INSERT INTO payment_methods (method_id, method_name)
 VALUES
 ('PAY001', N'Thanh toán khi nhận hàng'),
 ('PAY002', N'Thanh toán bằng chuyển khoản')
+
+INSERT INTO order_status (order_status_name)
+VALUES
+(N'Chờ thanh toán'),
+(N'Chờ xác nhận'),
+(N'Chờ lấy hàng'),
+(N'Chờ giao hàng'),
+(N'Hoàn thành'),
+(N'Đã hủy'),
+(N'Trả hàng/Hoàn tiền')
 
 INSERT INTO users (user_id, full_name, username)
 VALUES

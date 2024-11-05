@@ -1320,7 +1320,6 @@ namespace VanPhongPham.Models
 				}
 			}
 		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="attribute_attribute_value", Storage="_attribute_values", ThisKey="attribute_id", OtherKey="attribute_id")]
 		public EntitySet<attribute_value> attribute_values
 		{
