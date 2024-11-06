@@ -75,7 +75,7 @@ function openAttributeModal(id = null, name = '') {
 // Hàm lưu thuộc tính (thêm mới)
 function saveAttribute() {
     var attributeName = $('#attributeName').val(); // tên thuộc tính
-    var url = '/Product/AddAttribute'; // URL để thêm thuộc tính mới
+    var url = '/Product/AddAttributeAJAX'; // URL để thêm thuộc tính mới
 
     $.ajax({
         url: url,
@@ -103,18 +103,31 @@ function saveAttribute() {
 }
 
 function updateAttributeValues() {
-    var attributeIds = $('#attributeSelect').val();
+    var attributeIds = $('#attributeSelect').val() || []; // Lấy giá trị được chọn hoặc mảng rỗng
 
     // Xóa tất cả tùy chọn hiện tại
     $('#attributeValueSelect').empty();
 
     // Lọc và thêm các giá trị thuộc tính tương ứng
     $.each(attributeValues, function (index, value) {
+        // Kiểm tra xem attributeId hiện tại có trong danh sách đã chọn không
         if (attributeIds.includes(value.Attribute_id.toString())) {
             $('#attributeValueSelect').append('<option value="' + value.Attribute_value_id + '">' + value.Value + '</option>');
         }
     });
+
+    // Giữ lại các giá trị thuộc tính đã chọn từ sản phẩm
+    if (attributeValuesForProduct) {
+        attributeValuesForProduct.forEach(function (selectedValue) {
+            // Kiểm tra xem giá trị đã được thêm vào dropdown chưa
+            if ($('#attributeValueSelect option[value="' + selectedValue.Attribute_value_id + '"]').length > 0) {
+                $('#attributeValueSelect option[value="' + selectedValue.Attribute_value_id + '"]').prop('selected', true);
+            }
+        });
+    }
 }
+
+updateAttributeValues();
 
 // Mở modal với chức năng thêm giá trị thuộc tính
 function openAttributeValueModal(attributeId = null) {
@@ -128,7 +141,7 @@ function openAttributeValueModal(attributeId = null) {
 function saveAttributeValue() {
     var attributeId = $('#attribute_id').val(); // ID thuộc tính đã chọn
     var attributeValue = $('#attributeValue').val(); // Giá trị thuộc tính
-    var url = '/Product/AddAttributeValue'; // URL để thêm giá trị thuộc tính mới
+    var url = '/Product/AddAttributeValueAJAX'; // URL để thêm giá trị thuộc tính mới
 
     $.ajax({
         url: url,

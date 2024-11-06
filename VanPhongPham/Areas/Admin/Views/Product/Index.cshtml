@@ -1,4 +1,6 @@
-﻿@model List<VanPhongPham.Models.product>
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.product>
 @{
     ViewBag.Title = "Sản phẩm - Quản Trị";
 }
@@ -20,7 +22,7 @@
         <i class="feather icon-plus navbar-icon align-middle"></i>
     </a>
     <!-- Recycle -->
-    <a class="btn icon-btn btn-outline-secondary my-3 ml-2" href="@Url.Action("AddUser","User")" title="Phục hồi">
+    <a class="btn icon-btn btn-outline-secondary my-3 ml-2" href="@Url.Action("RecycleProductIndex","Product")" title="Phục hồi">
         <i class="feather icon-rotate-cw navbar-icon align-middle"></i>
     </a>
 </div>
@@ -66,7 +68,7 @@
                         </a>
                         <a class="btn icon-btn btn-outline-info ml-2"
                            title="Sửa"
-                           href="@Url.Action("Category", "Product", new { product_id = product.product_id })">
+                           href="@Url.Action("UpdateProduct", "Product", new { product_id = product.product_id })">
                             <i class="feather icon-edit navbar-icon align-middle"></i>
                         </a>
                     </td>
@@ -74,4 +76,9 @@
             }
         </tbody>
     </table>
+    <div class="d-flex justify-content-center">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+        </div>
+    </div>
 </div>

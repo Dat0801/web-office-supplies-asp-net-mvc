@@ -1,0 +1,52 @@
+﻿@model List<VanPhongPham.Models.product>
+@{
+    ViewBag.Title = "Khôi phục sản phẩm - Quản Trị";
+}
+<h4 class="font-weight-bold py-3 mb-0">Danh sách sản phẩm</h4>
+<div class="card">
+    <table class="table card-table table-responsive-lg">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã sản phẩm</th>
+                <th>Tên sản phẩm</th>
+                <th>Giá bán</th>
+                <th>Số lượng tồn</th>
+                <th>Danh mục</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.product_id</td>    
+                    <td>@product.product_name</td>
+                    <td>
+                        @if (product.promotion_price != null)
+                        {
+                            <span style="text-decoration: line-through; color: grey;">@product.price</span><br />
+                            <span>@product.promotion_price</span>
+                        }
+                        else
+                        {
+                            <span>@product.price</span><br />
+                        }
+                    </td>
+                    <td>@product.stock_quantity</td>
+                    <td>
+                        <a href="">@product.category.category_name</a>
+                    </td>
+                    <td>
+                        <a class="btn icon-btn btn-outline-secondary ml-3" href="@Url.Action("RecycleProduct","Product",new { product_id = product.product_id })" title="Phục hồi">
+                            <i class="feather icon-rotate-cw navbar-icon align-middle"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("Index","Product")" title="Quay lại">
+    <i class="feather icon-corner-up-left"></i>
+</a>
+

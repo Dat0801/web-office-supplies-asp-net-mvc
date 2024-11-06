@@ -550,6 +550,10 @@
     <Content Include="Areas\Admin\Views\Dashboard\Login.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_Modal.cshtml" />
     <Content Include="Areas\Admin\Views\Product\AddProduct.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\Attribute.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\AttributeValue.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\RecycleProductIndex.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\UpdateProduct.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>

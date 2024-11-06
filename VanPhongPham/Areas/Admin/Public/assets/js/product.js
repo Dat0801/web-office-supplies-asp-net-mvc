@@ -9,7 +9,8 @@ ClassicEditor
     .catch(error => {
         console.error(error);
     });
-async function saveProduct() {
+
+async function saveProduct(productId = null) {
     const formElement = document.getElementById('ProductForm'); // Lấy form theo ID
     if (!formElement) {
         alert('Form không tồn tại!');
@@ -18,6 +19,7 @@ async function saveProduct() {
 
     const formData = new FormData(formElement);
     const productImageFile = document.getElementById('productImage').files[0];
+
     let mainImageUrl = '';
 
     // Lấy dữ liệu từ CKEditor
@@ -26,52 +28,81 @@ async function saveProduct() {
 
     // Thêm trạng thái vào FormData
     formData.append("status", document.querySelector('select[name="status"]').value);
-    console.log('Status:', formData.get('status'));
-    console.log('Description:', formData.get('description')); // Kiểm tra giá trị mô tả
+
+    // Nếu có productId, thêm vào FormData
+    if (productId) {
+        formData.append("productId", productId); // Để biết đây là update
+    }
 
     // Xử lý hình ảnh chính
     if (productImageFile) {
         try {
             mainImageUrl = await uploadToCloudinary(productImageFile, 'product_imgs');
-            formData.append("mainImageUrl", mainImageUrl);
         } catch (error) {
             console.error("Chi tiết lỗi:", error);
             alert('Có lỗi xảy ra khi tải lên hình ảnh chính: ' + error.message);
             return;
         }
+    } else {
+        const imagePreview = document.getElementById('imagePreview');
+        mainImageUrl = imagePreview.src; // Lưu trữ URL của ảnh cũ
     }
+
+    formData.append("mainImageUrl", mainImageUrl);
 
     // Xử lý hình ảnh phụ
     const additionalImages = document.getElementById('additionalImages').files;
     const additionalImageUrls = [];
 
-    for (let i = 0; i < additionalImages.length; i++) {
-        const file = additionalImages[i];
-        try {
-            const url = await uploadToCloudinary(file, 'product_imgs');
-            additionalImageUrls.push(url);
-        } catch (error) {
-            console.error("Chi tiết lỗi:", error);
-            alert('Có lỗi xảy ra khi tải lên hình ảnh phụ: ' + error.message);
-            return;
+    const additionalImagesPreview = document.getElementById('additionalImagesPreview');
+
+    // Lấy tất cả các thẻ img trong additionalImagesPreview
+    const images = additionalImagesPreview.getElementsByTagName('img');
+
+    // Duyệt qua tất cả các thẻ img để lấy src
+    for (let i = 0; i < images.length; i++) {
+        const file = images[i];
+        if (file.src.startsWith('https:')) {
+            additionalImageUrls.push(file.src);
         }
     }
+
+    console.log(additionalImageUrls); // Kiểm tra mảng URL hình ảnh
+
+    if (additionalImages.length > 0) {
+        for (let i = 0; i < additionalImages.length; i++) {
+            const file = additionalImages[i];
+            try {
+                const url = await uploadToCloudinary(file, 'product_imgs');
+                if (!additionalImageUrls.includes(url)) {
+                    additionalImageUrls.push(url);
+                }
+            } catch (error) {
+                console.error("Chi tiết lỗi:", error);
+                alert('Có lỗi xảy ra khi tải lên hình ảnh phụ: ' + error.message);
+                return;
+            }
+        }
+    }
+
+    console.log(additionalImageUrls); // Kiểm tra mảng URL hình ảnh
+
 
     // Thêm danh sách URL hình ảnh phụ vào FormData
     formData.append("additionalImageUrlsJson", JSON.stringify(additionalImageUrls));
 
     try {
-        const response = await fetch('/Product/AddProduct', {
+        const response = await fetch(productId ? '/Product/UpdateProduct' : '/Product/AddProduct', {
             method: 'POST',
             body: formData
         });
 
         const result = await response.json();
         if (result.success) {
-            alert('Sản phẩm đã được thêm thành công!');
+            alert(`Sản phẩm đã ${productId ? 'được cập nhật' : 'thêm mới'} thành công!`);
             window.location.href = '/Admin/Product/Index';
         } else {
-            alert('Có lỗi xảy ra khi thêm sản phẩm!');
+            alert('Có lỗi xảy ra khi xử lý sản phẩm!');
         }
     } catch (error) {
         alert('Lỗi khi gửi yêu cầu đến máy chủ.');
@@ -84,5 +115,80 @@ document.getElementById('ProductForm').onsubmit = function (event) {
     // Đồng bộ nội dung CKEditor với textarea gốc
     editorInstance.updateSourceElement(); // Cập nhật nội dung CKEditor
     // Gọi hàm để xử lý gửi dữ liệu
-    saveProduct();
+    const productId = document.getElementById('productId') ? document.getElementById('productId').value : null; // Lấy productId từ form (nếu có)
+    console.log(productId);
+    saveProduct(productId); // Gọi hàm với productId
 };
+
+const selectedFiles = [];
+
+// Xử lý sự kiện cho nút chọn ảnh sản phẩm
+document.getElementById("customProductImageButton").addEventListener("click", function () {
+    document.getElementById("productImage").click();
+});
+
+document.getElementById("productImage").addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const preview = document.getElementById("imagePreview");
+            preview.src = e.target.result;
+            preview.style.display = "block"; // Hiển thị ảnh xem trước
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Xử lý sự kiện cho nút chọn các hình ảnh liên quan
+document.getElementById("customAdditionalImagesButton").addEventListener("click", function () {
+    document.getElementById("additionalImages").click();
+});
+
+// Tạo nút để thêm từng hình ảnh
+document.getElementById("additionalImages").addEventListener("change", function (event) {
+    const files = event.target.files;
+    const previewContainer = document.getElementById("additionalImagesPreview");
+
+    Array.from(files).forEach(file => {
+        selectedFiles.push(file); // Thêm ảnh vào mảng selectedFiles
+        displayPreview(file, selectedFiles.length - 1, previewContainer);
+    });
+});
+
+// Hiển thị ảnh xem trước
+function displayPreview(file, index, container) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const imageContainer = document.createElement("div");
+        imageContainer.style.position = "relative";
+        imageContainer.style.display = "inline-block";
+        imageContainer.style.maxWidth = "25%";
+        imageContainer.style.marginTop = "10px";
+
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.alt = "Hình ảnh liên quan";
+        img.style.width = "100%";
+
+        const removeButton = document.createElement("button");
+        removeButton.innerHTML = "Xóa";
+        removeButton.style.position = "absolute";
+        removeButton.style.top = "5px";
+        removeButton.style.right = "5px";
+        removeButton.style.backgroundColor = "red";
+        removeButton.style.color = "white";
+        removeButton.style.border = "none";
+        removeButton.style.borderRadius = "5px";
+        removeButton.style.cursor = "pointer";
+        removeButton.addEventListener("click", function () {
+            selectedFiles.splice(index, 1); // Xóa ảnh khỏi mảng
+            container.removeChild(imageContainer); // Xóa ảnh khỏi giao diện
+        });
+
+        imageContainer.appendChild(img);
+        imageContainer.appendChild(removeButton);
+        container.appendChild(imageContainer);
+    };
+    reader.readAsDataURL(file);
+}

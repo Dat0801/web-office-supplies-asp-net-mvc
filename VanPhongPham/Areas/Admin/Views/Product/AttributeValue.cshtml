@@ -1,0 +1,101 @@
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.attribute_value>
+@{
+    ViewBag.Title = "Giá trị giá trị thuộc tính của sản phẩm - Quản Trị";
+}
+<div class="card mb-4">
+    <h6 class="card-header">Thêm mới giá trị thuộc tính</h6>
+    <div class="card-body">
+        <form method="post" action="@Url.Action("AddAttributeValue", "Product")">
+            <div class="form-row">
+                <div class="form-group col-md-3 my-3">
+                    <label for="supplier_name">Mã giá trị thuộc tính</label>
+                    <input type="text" class="form-control" id="supplier_id" name="attribute_value_id" readonly
+                           value="@(ViewBag.attribute_value != null ? ViewBag.attribute_value.attribute_value_id : ViewBag.attribute_value_id ?? "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="attribute_id">
+                        Thuộc tính
+                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openAttributeModal($(this).closest('select').val())">
+                            <i class="feather icon-plus navbar-icon align-middle"></i>
+                        </a>
+                    </label>
+                    <select name="attribute_id" class="form-control" id="attributeSelect">
+                        @foreach (var attribute in ViewBag.attributes)
+                        {
+                            <option value="@attribute.attribute_id">@attribute.attribute_name</option>
+                        }
+                        @if (ViewBag.attribute_value != null)
+                        {
+                            <option value="@ViewBag.attribute_value.attribute.attribute_id" selected>
+                                @ViewBag.attribute_value.attribute.attribute_name
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group col-md-3 my-3">
+                    <label for="supplier_name">Tên giá trị thuộc tính</label>
+                    <input type="text" class="form-control" id="supplier_name" name="value" required
+                           value="@(ViewBag.attribute_value != null ? ViewBag.attribute_value.value : "")" />
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
+            <button type="submit" name="action" value="edit" class="btn btn-primary">Sửa</button>
+        </form>
+    </div>
+</div>
+<h4 class="font-weight-bold mb-0">Danh sách giá trị thuộc tính</h4>
+<div class="row">
+    <div class="navbar-nav my-3 ml-2">
+        <!-- Search -->
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("AttributeValue", "Product")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.search_str ?? "")">
+            </span>
+            <button class="btn icon-btn btn-outline-primary">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <table class="table card-table table-responsive-lg">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã giá trị thuộc tính</th>
+                <th>Tên giá trị thuộc tính</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var attribute_value in Model)
+            {
+                <tr>
+                    <td>@attribute_value.attribute_value_id</td>
+                    <td>@attribute_value.value</td>
+                    <td>
+                        <a class="btn icon-btn btn-outline-danger"
+                           href="#"
+                           title="Xóa"
+                           onclick="confirmDelete('@Url.Action("DeleteAttributeValue", "Product", new { attribute_value_id = attribute_value.attribute_value_id })'); return false;">
+                            <i class="feather icon-minus navbar-icon align-middle"></i>
+                        </a>
+                        <a class="btn icon-btn btn-outline-info ml-2"
+                           title="Sửa"
+                           href="@Url.Action("AttributeValue", "Product", new { attribute_value_id = attribute_value.attribute_value_id })">
+                            <i class="feather icon-edit navbar-icon align-middle"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("AttributeValue", new { page }))
+        </div>
+    </div>
+</div>
