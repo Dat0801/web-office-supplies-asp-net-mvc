@@ -317,6 +317,7 @@
     <Content Include="Public\img\cat-4.jpg" />
     <Content Include="Public\img\cat-5.jpg" />
     <Content Include="Public\img\cat-6.jpg" />
+    <Content Include="Public\img\icons\cartempty.jpg" />
     <Content Include="Public\img\icons\clipboard.png" />
     <Content Include="Public\img\icons\icons8-back-100.png" />
     <Content Include="Public\img\icons\icons8-backorder.png" />
@@ -681,7 +682,6 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.0.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.0.0.min.map" />
-    <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Auth\Register.cshtml" />
@@ -694,8 +694,7 @@
     <Content Include="Views\Profile\OrderPartial.cshtml" />
     <Content Include="Views\Profile\ChangeEmailPartial.cshtml" />
     <Content Include="Views\Profile\OrderDetailsPartial.cshtml" />
-    <Content Include="Views\Cart\CartPartial.cshtml" />
-    <Content Include="Views\Cart\CartQuantityPartial.cshtml" />
+    <Content Include="Views\Cart\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -182,7 +182,7 @@
                                     <div><span>x</span>@detail.Quantity</div>
                                 </div>
                             </div>
-                            <span class="price-info">₫@detail.Price</span>
+                            <span class="price-info">₫@detail.Price.ToString("N0")</span>
                         </div>
                     </a>
                     if (detail.isReviewed)
@@ -192,7 +192,7 @@
                 }
                 <hr />
                 <div class="d-flex justify-content-end">
-                    <span>Thành tiền: <span class="price-info">₫@order.TotalAmount</span></span>
+                    <span>Thành tiền: <span class="price-info">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span>
                 </div>
                 <div class="order-actions d-flex justify-content-end mt-2">
                     @if (order.OrderStatusName == "Chờ giao hàng")
