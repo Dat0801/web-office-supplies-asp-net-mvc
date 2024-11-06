@@ -17,8 +17,10 @@ namespace VanPhongPham.Areas.Admin.Controllers
         {
             productRepository = new ProductRepository();
         }
-        public ActionResult Index(string search_str)
+        public ActionResult Index(int? page, string search_str)
         {
+            int pageSize = 7;
+            int pageNumber = (page ?? 1);
             List<product> listProduct;
             if (search_str != null)
             {
@@ -29,7 +31,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             {
                 listProduct = productRepository.GetProducts();
             }
-            return View(listProduct);
+            return View(listProduct.ToPagedList(pageNumber, pageSize));
         }
 
         [HttpGet]
@@ -59,7 +61,6 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 List<string> additionalImageUrls = JsonConvert.DeserializeObject<List<string>>(additionalImageUrlsJson);
                 image mainImage = new image
                 {
-                    image_id = productRepository.GenerateImageId(),
                     image_url = mainImageUrl,
                     is_primary = true,
                     product_id = product.product_id
@@ -69,7 +70,6 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 {
                     image additionalImage = new image
                     {
-                        image_id = productRepository.GenerateImageId(),
                         image_url = imageUrl,
                         is_primary = false,
                         product_id = product.product_id
@@ -95,9 +95,85 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
         }
 
+        public ActionResult UpdateProduct(string product_id)
+        {
+            product product = productRepository.GetProduct(product_id);
+            ViewBag.categories = productRepository.GetCategories();
+            ViewBag.attributes = productRepository.GetAttributes();
+            var attributeValuesForProduct = productRepository.GetAttributeValueByProduct(product_id)
+                                                                .Select(av => new AttributeValueDTO
+                                                                {
+                                                                    Attribute_value_id = av.attribute_value_id,
+                                                                    Value = av.value,
+                                                                    Attribute_id = av.attribute_id
+                                                                }).ToList();
+            ViewBag.attributeValuesForProduct = attributeValuesForProduct;
+            var attributeValues = productRepository.GetAttributeValues()
+                                                    .Select(av => new AttributeValueDTO
+                                                    {
+                                                        Attribute_value_id = av.attribute_value_id,
+                                                        Value = av.value,
+                                                        Attribute_id = av.attribute_id
+                                                    }).ToList();
+            ViewBag.attribute_values = attributeValues;
+            var attributeIds = attributeValuesForProduct.Select(av => av.Attribute_id).Distinct();
+            var attributesForProduct = productRepository.GetAttributes()
+                                                        .Where(attr => attributeIds.Contains(attr.attribute_id))
+                                                        .ToList();
+            ViewBag.attributesForProduct = attributesForProduct;
+            ViewBag.mainImage = productRepository.GetMainImageByProductId(product_id);
+            ViewBag.additionalImages = productRepository.GetAdditionalImageByProductId(product_id);
+            return View(product);
+        }
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public Task<JsonResult> UpdateProduct(product product, string[] attribute_value_id, string mainImageUrl, string additionalImageUrlsJson)
+        {
+            try
+            {
+                bool result = productRepository.UpdateProduct(product);
+
+                List<string> additionalImageUrls = JsonConvert.DeserializeObject<List<string>>(additionalImageUrlsJson);
+
+                List<string> attributeValueIdsList = attribute_value_id.ToList();
+
+                image mainImage = new image
+                {
+                    image_url = mainImageUrl,
+                    is_primary = true,
+                    product_id = product.product_id
+                };
+
+                productRepository.UpdateImage(mainImage);
+
+                productRepository.UpdateAdditionalImages(product.product_id, additionalImageUrls);
+
+                productRepository.UpdateProductAttributeValue(product.product_id, attributeValueIdsList);
+
+                return Task.FromResult(Json(new { success = true }));
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(Json(new { success = false, message = ex.Message }));
+            }
+        }
+
         public ActionResult DeleteProduct(string product_id)
         {
             productRepository.DeleteProduct(product_id);
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult RecycleProductIndex()
+        {
+            List<product> listProduct = productRepository.GetRecycleProducts();
+            return View(listProduct);
+        }
+
+        public ActionResult RecycleProduct(string product_id)
+        {
+            bool result = productRepository.RecycleProduct(product_id);
             return RedirectToAction("Index");
         }
 
@@ -165,8 +241,45 @@ namespace VanPhongPham.Areas.Admin.Controllers
             return RedirectToAction("Category");
         }
 
+        public ActionResult Attribute(int? page, string attribute_id, string search_str)
+        {
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            List<attribute> listAttribute;
+            if (attribute_id != null)
+            {
+                attribute attribute = productRepository.GetAttribute(attribute_id);
+                ViewBag.attribute = attribute;
+            }
+            if (search_str != null)
+            {
+                listAttribute = productRepository.SearchAttribute(search_str);
+                ViewBag.search_str = search_str;
+            }
+            else
+            {
+                listAttribute = productRepository.GetAttributes();
+            }
+            ViewBag.attribute_id = productRepository.GenerateAttributeId();
+            return View(listAttribute.ToPagedList(pageNumber, pageSize));
+        }
+
         [HttpPost]
-        public JsonResult AddAttribute(string attributeName)
+        public ActionResult AddAttribute(string action, attribute attribute)
+        {
+            if (action == "add")
+            {
+                productRepository.AddAttribute(attribute);
+            }
+            else
+            {
+                productRepository.UpdateAttribute(attribute);
+            }
+            return RedirectToAction("Attribute", "/Product");
+        }
+
+        [HttpPost]
+        public JsonResult AddAttributeAJAX(string attributeName)
         {
             attribute attribute = new attribute
             {
@@ -184,8 +297,38 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
         }
 
+        public ActionResult DeleteAttribute(string attribute_id)
+        {
+            productRepository.DeleteAttribute(attribute_id);
+            return RedirectToAction("Attribute");
+        }
+
+        public ActionResult AttributeValue(int? page, string attribute_value_id, string search_str)
+        {
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            List<attribute_value> listAttributeValue;
+            ViewBag.attributes = productRepository.GetAttributes();
+            if (attribute_value_id != null)
+            {
+                attribute_value attribute_Value = productRepository.GetAttributeValue(attribute_value_id);
+                ViewBag.attribute_value = attribute_Value;
+            }
+            if (search_str != null)
+            {
+                listAttributeValue = productRepository.SearchAttributeValue(search_str);
+                ViewBag.search_str = search_str;
+            }
+            else
+            {
+                listAttributeValue = productRepository.GetAttributeValues();
+            }
+            ViewBag.attribute_value_id = productRepository.GenerateAttributeValueId();
+            return View(listAttributeValue.ToPagedList(pageNumber, pageSize));
+        }
+
         [HttpPost]
-        public JsonResult AddAttributeValue(string attribute_id, string value)
+        public JsonResult AddAttributeValueAJAX(string attribute_id, string value)
         {
             attribute_value attribute_Value = new attribute_value
             {
@@ -205,40 +348,23 @@ namespace VanPhongPham.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public JsonResult UpdateAttributeValue(string attributeValueId, string attributeValue, string attributeId)
+        public ActionResult AddAttributeValue(string action, attribute_value attribute_Value)
         {
-            attribute_value attributeValueToUpdate = new attribute_value
+            if (action == "add")
             {
-                attribute_value_id = attributeValueId,
-                attribute_id = attributeId,
-                value = attributeValue
-            };
-
-            bool result = productRepository.UpdateAttributeValue(attributeValueToUpdate);
-
-            if (result)
-            {
-                return Json(new { success = true });
+                productRepository.AddAttributeValue(attribute_Value);
             }
             else
             {
-                return Json(new { success = false });
+                productRepository.UpdateAttributeValue(attribute_Value);
             }
+            return RedirectToAction("AttributeValue", "/Product");
         }
 
-        [HttpPost]
-        public JsonResult DeleteAttributeValue(string attributeValueId)
+        public ActionResult DeleteAttributeValue(string attribute_value_id)
         {
-            bool result = productRepository.DeleteAttributeValue(attributeValueId);
-
-            if (result)
-            {
-                return Json(new { success = true });
-            }
-            else
-            {
-                return Json(new { success = false });
-            }
+            productRepository.DeleteAttributeValue(attribute_value_id);
+            return RedirectToAction("AttributeValue");
         }
     }
 }
