@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="DB_VanPhongPham" Class="DB_VanPhongPhamDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="WebSettings" ConnectionString="Data Source=DESKTOP-NO8JHRO\VINHYET;Initial Catalog=DB_VanPhongPham;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DB_VanPhongPhamConnectionString2" Provider="System.Data.SqlClient" />
+  <Connection Mode="WebSettings" ConnectionString="Data Source=.;Initial Catalog=DB_VanPhongPham;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DB_VanPhongPhamConnectionString1" Provider="System.Data.SqlClient" />
   <Table Name="dbo.addresses" Member="addresses">
     <Type Name="address">
       <Column Name="address_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -25,6 +25,7 @@
       <Column Name="avt_url" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="password" Type="System.Data.Linq.Binary" DbType="VarBinary(16)" CanBeNull="true" UpdateCheck="Never" />
       <Association Name="user_address" Member="addresses" ThisKey="user_id" OtherKey="user_id" Type="address" />
+      <Association Name="user_cart_section" Member="cart_sections" ThisKey="user_id" OtherKey="user_id" Type="cart_section" />
       <Association Name="user_order" Member="orders" ThisKey="user_id" OtherKey="customer_id" Type="order" />
       <Association Name="user_order1" Member="orders1" ThisKey="user_id" OtherKey="employee_id" Type="order" />
       <Association Name="user_product_review" Member="product_reviews" ThisKey="user_id" OtherKey="user_id" Type="product_review" />
@@ -48,6 +49,24 @@
       <Column Name="attribute_name" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
       <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Association Name="attribute_attribute_value" Member="attribute_values" ThisKey="attribute_id" OtherKey="attribute_id" Type="attribute_value" />
+    </Type>
+  </Table>
+  <Table Name="dbo.cart_details" Member="cart_details">
+    <Type Name="cart_detail">
+      <Column Name="cart_id" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="product_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="quantity" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="total_amount" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Association Name="cart_section_cart_detail" Member="cart_section" ThisKey="cart_id" OtherKey="cart_id" Type="cart_section" IsForeignKey="true" />
+      <Association Name="product_cart_detail" Member="product" ThisKey="product_id" OtherKey="product_id" Type="product" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.cart_section" Member="cart_sections">
+    <Type Name="cart_section">
+      <Column Name="cart_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="user_id" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Association Name="cart_section_cart_detail" Member="cart_details" ThisKey="cart_id" OtherKey="cart_id" Type="cart_detail" />
+      <Association Name="user_cart_section" Member="user" ThisKey="user_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.categories" Member="categories">
@@ -160,6 +179,7 @@
       <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="updated_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="product_cart_detail" Member="cart_details" ThisKey="product_id" OtherKey="product_id" Type="cart_detail" />
       <Association Name="product_image" Member="images" ThisKey="product_id" OtherKey="product_id" Type="image" />
       <Association Name="product_order_detail" Member="order_details" ThisKey="product_id" OtherKey="product_id" Type="order_detail" />
       <Association Name="product_product_attribute_value" Member="product_attribute_values" ThisKey="product_id" OtherKey="product_id" Type="product_attribute_value" />

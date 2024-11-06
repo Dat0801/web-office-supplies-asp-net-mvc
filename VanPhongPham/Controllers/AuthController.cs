@@ -57,10 +57,12 @@ namespace VanPhongPham.Controllers
 
                     db.user_roles.InsertOnSubmit(usrrole);
                     db.SubmitChanges();
-                }
-                else
-                {
-                    user.full_name = displayName;
+
+                    cart_section cart = new cart_section
+                    {
+                        user_id = uid
+                    };
+                    db.cart_sections.InsertOnSubmit(cart);
                     db.SubmitChanges();
                 }
 
