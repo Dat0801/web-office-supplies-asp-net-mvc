@@ -28,64 +28,6 @@
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top mb-5"><i class="fa fa-angle-double-up"></i></a>
 
-    <!-- Chat toggle button -->
-    <button onclick="toggleChat()" id="chatToggle" class="chat-toggle-btn" style="display: none;">
-        <i class="fa fa-comments"></i> <!-- Icon mặc định là chat -->
-    </button>
-
-    <!-- Khung chat -->
-    <div class="chat-box" id="chatBox" style="display: none;">
-        <div class="chat-container">
-            <!-- Danh sách chat bên trái -->
-            <div class="chat-sidebar">
-                <input type="text" class="form-control mb-3" placeholder="Tìm kiếm" />
-                <div class="chat-list">
-                    <div class="chat-item" data-chat-id="0nUSOP5ylAWinZcYTpASb2GGeFp2">
-                        <img src="~/Areas/Admin/Public/assets/img/avatars/1.png" alt="Avatar" class="avatar">
-                        <div class="chat-info">
-                            <div class="chat-name">QVD</div>
-                            <div class="chat-preview">Bạn đã đặt lại hàng...</div>
-                        </div>
-                        <div class="chat-date">14/10</div>
-                        <span class="unread-count">2</span>
-                    </div>
-                    <!-- Thêm nhiều chat-item tương tự cho danh sách -->
-                </div>
-            </div>
-
-            <!-- Nội dung chat bên phải -->
-            <div class="chat-main">
-                <!-- Nút đóng chat -->
-                <button id="closeChatButton" class="close-chat-btn" onclick="toggleChat()" style="display: none;">
-                    <i class="fa fa-times"></i>
-                </button>
-
-                <div class="chat-header">
-                    <span class="chat-title">Chào mừng bạn đến với QVD Chat</span>
-                </div>
-                <div id="welcomeMessage" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; margin-top: 100px">
-                    <img src="~/Public/img/icons/vecteezy_chat-box-with-laptop.png" alt="Welcome Image" style="max-width: 50%; max-height: 50%; margin-bottom: 5px;" />
-                    <p style="font-weight: bold">Chào mừng bạn đến với QVD Chat</p>
-                </div>
-                <div class="chat-messages" id="chatMessages">
-                    <!-- Các tin nhắn sẽ hiển thị tại đây -->
-                </div>
-                <nav id="chatInput" class="chat-input navbar bg-white" style="display: none;">
-                    <div class="input-container">
-                        <textarea id="messageInput" name="text" class="form-control" placeholder="Nhập nội dung tin nhắn..." rows="2" style="resize: none;"></textarea>
-                        <div class="icondiv">
-                            <i class="fa fa-arrow-circle-right icon2" id="sendMessage"></i>
-                        </div>
-                        <label for="upload" class="icon1">
-                            <i class="fa fa-paperclip"></i>
-                        </label>
-                        <input type="file" name="upload" id="upload" class="d-none" placeholder="Upload File">
-                    </div>
-                </nav>
-            </div>
-        </div>
-    </div>
-
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>

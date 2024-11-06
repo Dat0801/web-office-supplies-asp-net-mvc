@@ -155,7 +155,7 @@
                         <div><span>x</span>@detail.Quantity</div>
                     </div>
                 </div>
-                <span style="color: #ff4747"><span>₫</span>@detail.Price</span>
+                <span style="color: #ff4747"><span>₫</span>@detail.Price.ToString("N0")</span>
             </div>
         </a>
     }
@@ -163,19 +163,19 @@
     <div class="order-cost-details">
         <div class="d-flex justify-content-end">
             <div class="col-8 text-right p-0">
-                <span style="font-size: 12px">Tổng tiền hàng</span>
+                <span style="font-size: 13px">Tổng tiền hàng</span>
             </div>
             <div class="col-4 text-right p-0">
-                <span>₫@totalItemCost</span>
+                <span>₫@totalItemCost.ToString("N0")</span>
             </div>
         </div>
         <hr />
         <div class="d-flex justify-content-end">
             <div class="col-8 text-right p-0">
-                <span style="font-size: 12px">Thành tiền</span>
+                <span style="font-size: 13px">Thành tiền</span>
             </div>
             <div class="col-4 text-right p-0">
-                <span>₫@Model.TotalAmount</span>
+                <span>₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span>
             </div>
         </div>
     </div>
@@ -190,7 +190,7 @@
     <div class="order-cost-details mt-3">
         <div class="d-flex">
             <div class="col-8 text-right p-0">
-                <span style="font-size: 12px;">Phương thức Thanh toán</span>
+                <span style="font-size: 13px;">Phương thức Thanh toán</span>
             </div>
             <div class="col-4 text-right p-0">
                 <span>@Model.MethodName</span>

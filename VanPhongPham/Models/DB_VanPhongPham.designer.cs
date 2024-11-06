@@ -1320,6 +1320,7 @@ namespace VanPhongPham.Models
 				}
 			}
 		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="attribute_attribute_value", Storage="_attribute_values", ThisKey="attribute_id", OtherKey="attribute_id")]
 		public EntitySet<attribute_value> attribute_values
 		{
@@ -1380,6 +1381,8 @@ namespace VanPhongPham.Models
 		
 		private System.Nullable<double> _total_amount;
 		
+		private System.Nullable<int> _isSelected;
+		
 		private EntityRef<cart_section> _cart_section;
 		
 		private EntityRef<product> _product;
@@ -1396,6 +1399,8 @@ namespace VanPhongPham.Models
     partial void OnquantityChanged();
     partial void Ontotal_amountChanging(System.Nullable<double> value);
     partial void Ontotal_amountChanged();
+    partial void OnisSelectedChanging(System.Nullable<int> value);
+    partial void OnisSelectedChanged();
     #endregion
 		
 		public cart_detail()
@@ -1489,6 +1494,26 @@ namespace VanPhongPham.Models
 					this._total_amount = value;
 					this.SendPropertyChanged("total_amount");
 					this.Ontotal_amountChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_isSelected", DbType="Int")]
+		public System.Nullable<int> isSelected
+		{
+			get
+			{
+				return this._isSelected;
+			}
+			set
+			{
+				if ((this._isSelected != value))
+				{
+					this.OnisSelectedChanging(value);
+					this.SendPropertyChanging();
+					this._isSelected = value;
+					this.SendPropertyChanged("isSelected");
+					this.OnisSelectedChanged();
 				}
 			}
 		}
@@ -1953,7 +1978,7 @@ namespace VanPhongPham.Models
 		
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
-		private int _image_id;
+		private string _image_id;
 		
 		private string _product_id;
 		
@@ -1969,7 +1994,7 @@ namespace VanPhongPham.Models
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
     partial void OnCreated();
-    partial void Onimage_idChanging(int value);
+    partial void Onimage_idChanging(string value);
     partial void Onimage_idChanged();
     partial void Onproduct_idChanging(string value);
     partial void Onproduct_idChanged();
@@ -1987,8 +2012,8 @@ namespace VanPhongPham.Models
 			OnCreated();
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int image_id
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string image_id
 		{
 			get
 			{
@@ -2031,7 +2056,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image_url", DbType="VarChar(255) NOT NULL", CanBeNull=false)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image_url", DbType="VarChar(500) NOT NULL", CanBeNull=false)]
 		public string image_url
 		{
 			get
@@ -3829,7 +3854,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_product_name", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_product_name", DbType="NVarChar(200) NOT NULL", CanBeNull=false)]
 		public string product_name
 		{
 			get
@@ -3849,7 +3874,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_description", DbType="NVarChar(500)")]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_description", DbType="NVarChar(1000)")]
 		public string description
 		{
 			get
