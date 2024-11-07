@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Web;
 
 namespace VanPhongPham.Models
@@ -12,13 +14,28 @@ namespace VanPhongPham.Models
         {
             _context = new DB_VanPhongPhamDataContext();
         }
-        public List<product> GetAllProduct()
-        {
-            return _context.products.ToList();
-        }
+        //public List<product> GetAllProductsWithImages()
+        //{            
+        //    var productsWithImages = from p in _context.products
+        //                                where p.status == true
+        //                                select new product
+        //                                {
+        //                                    product_id = p.product_id,
+        //                                    product_name= p.product_name,
+        //                                    description = p.description,
+        //                                    purchase_price= p.purchase_price,
+        //                                    price = p.price,
+        //                                    promotion_price= p.promotion_price,
+        //                                    stock_quantity = p.stock_quantity,
+        //                                    images = p.images.ToList(),
+        //                                };
+
+        //    return productsWithImages.ToList();
+            
+        //}
         public List<category> GetAllCategory()
         {
-            return _context.categories.ToList();
+            return _context.categories.Where(c => c.status == true).ToList();
         }
 
         public string GenerateProductId()
@@ -37,9 +54,10 @@ namespace VanPhongPham.Models
         public List<product> SearchProduct(string search_str)
         {
             return _context.products
-                .Where(p => p.product_name.Contains(search_str) ||
+                .Where(p => p.status == true &&
+                            (p.product_name.Contains(search_str) ||
                             p.product_id.Contains(search_str) ||
-                            p.category.category_name.Contains(search_str))   
+                            p.category.category_name.Contains(search_str)))   
                 .ToList();
         }
 
@@ -107,8 +125,9 @@ namespace VanPhongPham.Models
         public List<category> SearchCategory(string search_str)
         {
             return _context.categories
-                .Where(c => c.category_name.Contains(search_str) ||
-                            c.category_id.Contains(search_str))
+                .Where(c => c.status == true &&
+                            (c.category_name.Contains(search_str) ||
+                            c.category_id.Contains(search_str)))
                 .ToList();
         }
     }

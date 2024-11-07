@@ -90,15 +90,13 @@ namespace VanPhongPham.Models
     partial void Insertuser_role(user_role instance);
     partial void Updateuser_role(user_role instance);
     partial void Deleteuser_role(user_role instance);
-    #endregion
-		
-		public DB_VanPhongPhamDataContext() : 
-				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString"].ConnectionString, mappingSource)
-		{
-			OnCreated();
-		}
-		
-		public DB_VanPhongPhamDataContext(string connection) : 
+        #endregion
+        public DB_VanPhongPhamDataContext() :
+                base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString"].ConnectionString, mappingSource)
+        {
+            OnCreated();
+        }
+        public DB_VanPhongPhamDataContext(string connection) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
@@ -307,8 +305,6 @@ namespace VanPhongPham.Models
 		
 		private System.Nullable<bool> _isDefault;
 		
-		private EntitySet<order> _orders;
-		
 		private EntityRef<user> _user;
 		
     #region Extensibility Method Definitions
@@ -337,7 +333,6 @@ namespace VanPhongPham.Models
 		
 		public address()
 		{
-			this._orders = new EntitySet<order>(new Action<order>(this.attach_orders), new Action<order>(this.detach_orders));
 			this._user = default(EntityRef<user>);
 			OnCreated();
 		}
@@ -526,19 +521,6 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="address_order", Storage="_orders", ThisKey="address_id", OtherKey="address_id")]
-		public EntitySet<order> orders
-		{
-			get
-			{
-				return this._orders;
-			}
-			set
-			{
-				this._orders.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_address", Storage="_user", ThisKey="user_id", OtherKey="user_id", IsForeignKey=true)]
 		public user user
 		{
@@ -592,18 +574,6 @@ namespace VanPhongPham.Models
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
-		
-		private void attach_orders(order entity)
-		{
-			this.SendPropertyChanging();
-			entity.address = this;
-		}
-		
-		private void detach_orders(order entity)
-		{
-			this.SendPropertyChanging();
-			entity.address = null;
-		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.users")]
@@ -626,7 +596,9 @@ namespace VanPhongPham.Models
 		
 		private string _avt_url;
 		
-		private System.Data.Linq.Binary _password;
+		private string _password;
+		
+		private System.Nullable<bool> _status;
 		
 		private EntitySet<address> _addresses;
 		
@@ -658,8 +630,10 @@ namespace VanPhongPham.Models
     partial void OndobChanged();
     partial void Onavt_urlChanging(string value);
     partial void Onavt_urlChanged();
-    partial void OnpasswordChanging(System.Data.Linq.Binary value);
+    partial void OnpasswordChanging(string value);
     partial void OnpasswordChanged();
+    partial void OnstatusChanging(System.Nullable<bool> value);
+    partial void OnstatusChanged();
     #endregion
 		
 		public user()
@@ -813,8 +787,8 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_password", DbType="VarBinary(16)", UpdateCheck=UpdateCheck.Never)]
-		public System.Data.Linq.Binary password
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_password", DbType="VarChar(32)")]
+		public string password
 		{
 			get
 			{
@@ -829,6 +803,26 @@ namespace VanPhongPham.Models
 					this._password = value;
 					this.SendPropertyChanged("password");
 					this.OnpasswordChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_status", DbType="Bit")]
+		public System.Nullable<bool> status
+		{
+			get
+			{
+				return this._status;
+			}
+			set
+			{
+				if ((this._status != value))
+				{
+					this.OnstatusChanging(value);
+					this.SendPropertyChanging();
+					this._status = value;
+					this.SendPropertyChanged("status");
+					this.OnstatusChanged();
 				}
 			}
 		}
@@ -1353,6 +1347,8 @@ namespace VanPhongPham.Models
 		
 		private string _category_id;
 		
+		private string _parent_category_id;
+		
 		private string _category_name;
 		
 		private string _description;
@@ -1371,6 +1367,8 @@ namespace VanPhongPham.Models
     partial void OnCreated();
     partial void Oncategory_idChanging(string value);
     partial void Oncategory_idChanged();
+    partial void Onparent_category_idChanging(string value);
+    partial void Onparent_category_idChanged();
     partial void Oncategory_nameChanging(string value);
     partial void Oncategory_nameChanged();
     partial void OndescriptionChanging(string value);
@@ -1405,6 +1403,26 @@ namespace VanPhongPham.Models
 					this._category_id = value;
 					this.SendPropertyChanged("category_id");
 					this.Oncategory_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_parent_category_id", DbType="VarChar(10)")]
+		public string parent_category_id
+		{
+			get
+			{
+				return this._parent_category_id;
+			}
+			set
+			{
+				if ((this._parent_category_id != value))
+				{
+					this.Onparent_category_idChanging(value);
+					this.SendPropertyChanging();
+					this._parent_category_id = value;
+					this.SendPropertyChanged("parent_category_id");
+					this.Onparent_category_idChanged();
 				}
 			}
 		}
@@ -2120,7 +2138,7 @@ namespace VanPhongPham.Models
 		
 		private string _customer_id;
 		
-		private int _address_id;
+		private string _info_address;
 		
 		private string _method_id;
 		
@@ -2133,8 +2151,6 @@ namespace VanPhongPham.Models
 		private System.Nullable<System.DateTime> _created_at;
 		
 		private EntitySet<order_detail> _order_details;
-		
-		private EntityRef<address> _address;
 		
 		private EntityRef<user> _user;
 		
@@ -2154,8 +2170,8 @@ namespace VanPhongPham.Models
     partial void Onemployee_idChanged();
     partial void Oncustomer_idChanging(string value);
     partial void Oncustomer_idChanged();
-    partial void Onaddress_idChanging(int value);
-    partial void Onaddress_idChanged();
+    partial void Oninfo_addressChanging(string value);
+    partial void Oninfo_addressChanged();
     partial void Onmethod_idChanging(string value);
     partial void Onmethod_idChanged();
     partial void Ondelivery_dateChanging(System.Nullable<System.DateTime> value);
@@ -2171,7 +2187,6 @@ namespace VanPhongPham.Models
 		public order()
 		{
 			this._order_details = new EntitySet<order_detail>(new Action<order_detail>(this.attach_order_details), new Action<order_detail>(this.detach_order_details));
-			this._address = default(EntityRef<address>);
 			this._user = default(EntityRef<user>);
 			this._user1 = default(EntityRef<user>);
 			this._order_status = default(EntityRef<order_status>);
@@ -2247,26 +2262,22 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_address_id", DbType="Int NOT NULL")]
-		public int address_id
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_info_address", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string info_address
 		{
 			get
 			{
-				return this._address_id;
+				return this._info_address;
 			}
 			set
 			{
-				if ((this._address_id != value))
+				if ((this._info_address != value))
 				{
-					if (this._address.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onaddress_idChanging(value);
+					this.Oninfo_addressChanging(value);
 					this.SendPropertyChanging();
-					this._address_id = value;
-					this.SendPropertyChanged("address_id");
-					this.Onaddress_idChanged();
+					this._info_address = value;
+					this.SendPropertyChanged("info_address");
+					this.Oninfo_addressChanged();
 				}
 			}
 		}
@@ -2389,40 +2400,6 @@ namespace VanPhongPham.Models
 			set
 			{
 				this._order_details.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="address_order", Storage="_address", ThisKey="address_id", OtherKey="address_id", IsForeignKey=true)]
-		public address address
-		{
-			get
-			{
-				return this._address.Entity;
-			}
-			set
-			{
-				address previousValue = this._address.Entity;
-				if (((previousValue != value) 
-							|| (this._address.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._address.Entity = null;
-						previousValue.orders.Remove(this);
-					}
-					this._address.Entity = value;
-					if ((value != null))
-					{
-						value.orders.Add(this);
-						this._address_id = value.address_id;
-					}
-					else
-					{
-						this._address_id = default(int);
-					}
-					this.SendPropertyChanged("address");
-				}
 			}
 		}
 		

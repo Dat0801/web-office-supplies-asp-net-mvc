@@ -1,4 +1,5 @@
-﻿<!-- Topbar Start -->
+﻿@model IEnumerable<VanPhongPham.Models.category>
+<!-- Topbar Start -->
 <div class="container-fluid">
     <div class="row bg-secondary py-2 px-xl-5">
         <div class="col-lg-6 text-center text-lg-left">
@@ -38,17 +39,19 @@
             </a>
             <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 10;">
                 <div class="navbar-nav w-100 overflow-hidden" style="height: 410px">
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link" data-toggle="dropdown">Bút viết <i class="fa fa-angle-down float-right mt-1"></i></a>
-                        <div class="dropdown-menu position-absolute bg-secondary border-0 rounded-0 w-100 m-0">
-                            <a href="" class="dropdown-item">Bút bi</a>
-                            <a href="" class="dropdown-item">Bút màu</a>
-                            <a href="" class="dropdown-item">Bút dạ quang</a>
+                    @foreach (var category in Model)
+                    {
+                        // Kiểm tra xem category có phải là category cha hay không (tùy thuộc vào logic của bạn)
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link" data-toggle="dropdown">@category.category_name <i class="fa fa-angle-down float-right mt-1"></i></a>
+                            <div class="dropdown-menu position-absolute bg-secondary border-0 rounded-0 w-100 m-0">                                
+                                @foreach (var subCategory in Model.Where(c => c.parent_category_id == category.category_id))
+                                {
+                                    <a href="@Url.Action("Index", "Product", new { categoryId = subCategory.category_id })" class="dropdown-item">@subCategory.category_name</a>
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <a href="" class="nav-item nav-link">Máy tính</a>
-                    <a href="" class="nav-item nav-link">Giấy in</a>
-                    <a href="" class="nav-item nav-link">Sách tiếng anh</a>
+                    }
                 </div>
             </nav>
         </div>
