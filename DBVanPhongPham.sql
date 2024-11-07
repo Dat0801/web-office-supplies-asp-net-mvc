@@ -8,8 +8,8 @@ create table products
 (
 	product_id varchar(10) not null,
 	category_id varchar(10) not null,
-	product_name nvarchar(50) not null unique,
-	description nvarchar(500) default null,
+	product_name nvarchar(200) not null unique,
+	description nvarchar(1000) default null,
 	purchase_price float not null,
 	price_coefficient float default 0.5,
 	price float default null,
@@ -88,7 +88,7 @@ create table images
 (
 	image_id int identity (1,1) not null,
 	product_id varchar(10) not null,
-	image_url varchar(255) not null unique,
+	image_url varchar(500) not null unique,
 	description nvarchar(200) default null,
 	is_primary bit default 0,
 )
@@ -199,6 +199,22 @@ create table receipt_details
 	total_amount float default 0,
 )
 
+create table cart_section
+(
+	cart_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	user_id nvarchar(255) NOT NULL,
+)
+
+create table cart_details
+(
+	cart_id int NOT NULL,
+	product_id varchar(10) NOT NULL,
+	quantity int,
+	total_amount float,
+	isSelected INT DEFAULT 0,
+	PRIMARY KEY (cart_id, product_id)
+)
+
 alter table products add primary key (product_id);
 alter table categories add primary key (category_id);
 alter table promotions add primary key (promotion_id);
@@ -294,6 +310,17 @@ alter table product_review
 add constraint FK_ProductReview_Product
 foreign key (product_id) references products(product_id)
 
+alter table cart_section
+add constraint FK_CartSection_Users
+foreign key (user_id) references users(user_id)
+
+alter table cart_details
+add constraint FK_CartDetails_CartSection
+foreign key (cart_id) references cart_section(cart_id);
+
+alter table cart_details
+add constraint FK_CartDetails_Products
+foreign key (product_id) references products(product_id);
 go
 
 -- Cập nhật trường updated_at trong bảng products mỗi khi có bản ghi bị cập nhật.
@@ -531,6 +558,17 @@ VALUES
 ('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/fxkfvtzliwsp6th6xnuk.png', N'Test thôi', 0),
 ('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/uzvymp9snxzaivs9kbyt.png', N'Test thôi', 1),
 ('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/krpimoesikznpyo3czhh.png', N'Test thôi', 0)
+--=======
+--INSERT INTO images (image_id, product_id, image_url, description, is_primary)
+--VALUES
+--('IMG001', 'PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/onumc2zaeyfnkrs3q92j.png', N'Test thôi', 1),
+--('IMG002', 'PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/h6ntyymvhnx9nllpfz2q.jpg', N'Test thôi', 0),
+--('IMG003', 'PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/bbdw0hhp9nkaegqfqmh6.jpg', N'Test thôi', 0),
+--('IMG004', 'PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/cxyrbs1upydqmyxnoobj.png', N'Test thôi', 1),
+--('IMG005', 'PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/fxkfvtzliwsp6th6xnuk.png', N'Test thôi', 0),
+--('IMG006', 'PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/uzvymp9snxzaivs9kbyt.png', N'Test thôi', 1),
+--('IMG007', 'PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/krpimoesikznpyo3czhh.png', N'Test thôi', 0)
+-->>>>>>> a28c84148908bcb4541dee1e75b401364df26814:DBVanPhongPham.sql
 
 INSERT INTO roles (role_name, description)
 VALUES

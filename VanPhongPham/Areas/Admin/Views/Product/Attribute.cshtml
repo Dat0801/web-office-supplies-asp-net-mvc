@@ -1,24 +1,24 @@
 ﻿@using PagedList.Mvc;
 @using PagedList;
-@model IPagedList<VanPhongPham.Models.category>
+@model IPagedList<VanPhongPham.Models.attribute>
 @{
-    ViewBag.Title = "Danh mục sản phẩm - Quản Trị";
+    ViewBag.Title = "Thuộc tính của sản phẩm - Quản Trị";
 }
 <div class="card mb-4">
-    <h6 class="card-header">Thêm mới danh mục</h6>
+    <h6 class="card-header">Thêm mới thuộc tính</h6>
     <div class="card-body">
-        <form method="post" action="@Url.Action("AddCategory", "Product")">
+        <form method="post" action="@Url.Action("AddAttribute", "Product")">
             <div class="form-row">
                 <div class="form-group col-md-3">
-                    <label for="supplier_name">Mã danh mục</label>
-                    <input type="text" class="form-control" id="supplier_id" name="category_id" readonly
-                           value="@(ViewBag.category != null ? ViewBag.category.category_id : ViewBag.category_id ?? "")" />
+                    <label for="supplier_name">Mã thuộc tính</label>
+                    <input type="text" class="form-control" id="supplier_id" name="attribute_id" readonly
+                           value="@(ViewBag.attribute != null ? ViewBag.attribute.attribute_id : ViewBag.attribute_id ?? "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
-                    <label for="supplier_name">Tên danh mục</label>
-                    <input type="text" class="form-control" id="supplier_name" name="category_name" required
-                           value="@(ViewBag.category != null ? ViewBag.category.category_name : "")" />
+                    <label for="supplier_name">Tên thuộc tính</label>
+                    <input type="text" class="form-control" id="supplier_name" name="attribute_name" required
+                           value="@(ViewBag.attribute != null ? ViewBag.attribute.attribute_name : "")" />
                     <div class="clearfix"></div>
                 </div>
             </div>
@@ -27,11 +27,11 @@
         </form>
     </div>
 </div>
-<h4 class="font-weight-bold mb-0">Danh sách danh mục</h4>
+<h4 class="font-weight-bold mb-0">Danh sách thuộc tính</h4>
 <div class="row">
     <div class="navbar-nav my-3 ml-2">
         <!-- Search -->
-        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Category", "Product")" method="get">
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Attribute", "Product")" method="get">
             <span class="navbar-search-input">
                 <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.search_str ?? "")">
             </span>
@@ -45,27 +45,27 @@
     <table class="table card-table table-responsive-lg">
         <thead class="thead-light">
             <tr>
-                <th>Mã danh mục</th>
-                <th>Tên danh mục</th>
+                <th>Mã thuộc tính</th>
+                <th>Tên thuộc tính</th>
                 <th>Hành động</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var category in Model)
+            @foreach (var attribute in Model)
             {
                 <tr>
-                    <td>@category.category_id</td>
-                    <td>@category.category_name</td>
+                    <td>@attribute.attribute_id</td>
+                    <td>@attribute.attribute_name</td>
                     <td>
                         <a class="btn icon-btn btn-outline-danger"
                            href="#"
                            title="Xóa"
-                           onclick="confirmDelete('@Url.Action("DeleteCategory", "Product", new { category_id = category.category_id })'); return false;">
+                           onclick="confirmDelete('@Url.Action("DeleteAttribute", "Product", new { attribute_id = attribute.attribute_id })'); return false;">
                             <i class="feather icon-minus navbar-icon align-middle"></i>
                         </a>
                         <a class="btn icon-btn btn-outline-info ml-2"
                            title="Sửa"
-                           href="@Url.Action("Category", "Product", new { category_id = category.category_id })">
+                           href="@Url.Action("Attribute", "Product", new { attribute_id = attribute.attribute_id })">
                             <i class="feather icon-edit navbar-icon align-middle"></i>
                         </a>
                     </td>
@@ -75,7 +75,7 @@
     </table>
     <div class="d-flex justify-content-center">
         <div class="pagination-container">
-            @Html.PagedListPager(Model, page => Url.Action("Category", new { page }))
+            @Html.PagedListPager(Model, page => Url.Action("Attribute", new { page }))
         </div>
     </div>
 </div>

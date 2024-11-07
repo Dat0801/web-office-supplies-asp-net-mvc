@@ -14,7 +14,7 @@ namespace VanPhongPham.Controllers
 {
     public class AccountController : Controller
     {
-        DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
+        private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
         // GET: User
         public async Task<ActionResult> GetUser()
         {
@@ -30,9 +30,10 @@ namespace VanPhongPham.Controllers
                 string uid = decodedToken.Uid;
 
                 var user = db.users.SingleOrDefault(u => u.user_id == uid);
+                var cartsection = db.cart_sections.FirstOrDefault(c => c.user_id == user.user_id);
                 if (user != null)
                 {
-                    return Json(new { success = true, user.user_id, user.username, user.avt_url }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = true, user.user_id, user.username, user.avt_url, cartsection.cart_id }, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {

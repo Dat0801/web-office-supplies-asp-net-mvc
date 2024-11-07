@@ -1,31 +1,38 @@
-﻿@{
-    ViewBag.Title = "Thêm mới sản phẩm - Quản Trị";
+﻿@model VanPhongPham.Models.product
+@using VanPhongPham.Models
+@{
+    ViewBag.Title = "Sửa sản phẩm - Quản Trị";
+    var attributeValuesForProduct = ViewBag.attributeValuesForProduct as List<AttributeValueDTO>;
 }
 <div class="card mb-4">
-    <h6 class="card-header">Thêm mới sản phẩm</h6>
+    <h6 class="card-header">Sửa sản phẩm</h6>
     <div class="card-body">
         <form method="post" action="@Url.Action("AddProduct", "Product")" id="ProductForm">
             <div class="form-row">
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Mã sản phẩm</label>
-                    <input type="text" class="form-control" name="product_id" readonly
-                           value="@(ViewBag.product_id ?? "")" />
+                    <input type="text" class="form-control" name="product_id" id="productId" readonly
+                           value="@(Model.product_id)" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Tên sản phẩm</label>
-                    <input type="text" class="form-control" name="product_name" required />
+                    <input type="text" class="form-control" name="product_name" required
+                           value="@Model.product_name" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Giá nhập</label>
                     <input type="text" class="form-control" name="product_id" readonly
-                           placeholder="Giá nhập sẽ có sau khi đặt hàng từ nhà cung cấp" />
+                           placeholder="Giá nhập sẽ có sau khi đặt hàng từ nhà cung cấp"
+                           value="@Model.purchase_price" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="he_so">Hệ số</label>
-                    <input type="number" class="form-control" id="he_so" name="price_coefficient" placeholder="Nhập hệ số" step="0.1" min="1" max="2" required />
+                    <input type="number" class="form-control" id="he_so" name="price_coefficient"
+                           placeholder="Nhập hệ số" step="0.1" min="1" max="2" required
+                           value="@Model.price_coefficient" />
                     <div class="clearfix"></div>
                 </div>
             </div>
@@ -33,27 +40,44 @@
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Giá bán</label>
                     <input type="text" class="form-control" name="product_id" readonly
-                           placeholder="Giá bán = Giá nhập * Hệ số" />
+                           placeholder="Giá bán = Giá nhập * Hệ số"
+                           value="@Model.price" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Số lượng tồn</label>
                     <input type="text" class="form-control" name="product_id" readonly
-                           placeholder="Số lượng tồn sẽ có khi nhập hàng" />
+                           placeholder="Số lượng tồn sẽ có khi nhập hàng"
+                           value="@Model.stock_quantity" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="productImage">Hình ảnh sản phẩm</label>
-                    <input type="file" class="form-control" name="productImage" accept="image/*" id="productImage" required style="display: none;" />
+                    <input type="file" class="form-control" name="productImage" accept="image/*" id="productImage" style="display: none;" />
                     <button type="button" id="customProductImageButton" class="btn btn-primary form-control" style="margin-top: 5px;">Chọn ảnh sản phẩm</button>
-                    <img id="imagePreview" src="#" alt="Hình ảnh xem trước" style="display: none; margin-top: 10px; max-width: 25%;" />
+                    <img id="imagePreview" src="@(ViewBag.mainImage?.image_url ?? '#')" alt="Hình ảnh xem trước"
+                         style="margin-top: 10px; max-width: 25%; display: @(ViewBag.mainImage != null ? "block" : "none");" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="additionalImages">Các hình ảnh liên quan</label>
                     <input type="file" class="form-control" accept="image/*" id="additionalImages" multiple style="display: none;" />
                     <button type="button" id="customAdditionalImagesButton" class="btn btn-primary form-control" style="margin-top: 5px;">Chọn các hình ảnh liên quan</button>
-                    <div id="additionalImagesPreview" style="margin-top: 10px;"></div>
+                    <div id="additionalImagesPreview" style="margin-top: 10px;">
+                        @if (ViewBag.additionalImages != null)
+                        {
+                            foreach (var image in ViewBag.additionalImages)
+                            {
+                                <div style="position: relative; display: inline-block; max-width: 25%; margin-top: 10px;">
+                                    <img src="@image.image_url" alt="Hình ảnh liên quan" style="width: 100%;" />
+                                    <button type="button" style="position: absolute; top: 5px; right: 5px; background-color: red; color: white; border: none; border-radius: 5px; cursor: pointer;"
+                                            onclick="removeImage(this)">
+                                        Xóa
+                                    </button>
+                                </div>
+                            }
+                        }
+                    </div>
                     <div class="clearfix"></div>
                 </div>
             </div>
@@ -68,7 +92,10 @@
                     <select name="category_id" class="form-control">
                         @foreach (var category in ViewBag.categories)
                         {
-                            <option value="@category.category_id">@category.category_name</option>
+                            <option value="@category.category_id"
+                                    @(Model != null && category.category_id == Model.category.category_id ? "selected" : "")>
+                                @category.category_name
+                            </option>
                         }
                     </select>
                 </div>
@@ -82,10 +109,11 @@
                     <select name="attribute_id" class="form-control" id="attributeSelect" multiple onchange="updateAttributeValues()">
                         @foreach (var attribute in ViewBag.attributes)
                         {
-                            <option value="@attribute.attribute_id">@attribute.attribute_name</option>
+                            <option value="@attribute.attribute_id" @(ViewBag.attributesForProduct.Contains(attribute) ? "selected" : "")>@attribute.attribute_name</option>
                         }
                     </select>
                 </div>
+
                 <div class="form-group col-md-3">
                     <label for="attribute_value_id">
                         Giá trị thuộc tính
@@ -94,24 +122,30 @@
                         </a>
                     </label>
                     <select name="attribute_value_id" class="form-control" id="attributeValueSelect" multiple>
+                        @foreach (var value in ViewBag.attribute_values)
+                        {
+                            <option value="@value.Attribute_value_id" @(attributeValuesForProduct.Any(selectedValue => selectedValue.Attribute_value_id == value.Attribute_value_id) ? "selected" : "")>@value.Value</option>
+                        }
                     </select>
                 </div>
+
                 <div class="form-group col-md-3 my-2">
                     <label for="status">Trạng thái hiển thị</label>
                     <select name="status" id="status" class="form-control">
-                        <option value="true">Hiển thị phía người dùng</option>
-                        <option value="false">Ẩn phía người dùng</option>
+                        <option value="true" @(Model.status == true ? "selected" : "")>Hiển thị phía người dùng</option>
+                        <option value="false" @(Model.status == false ? "selected" : "")>Ẩn phía người dùng</option>
                     </select>
                 </div>
+
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="productDescription">Mô tả sản phẩm</label>
-                    <textarea id="productDescription" name="description" class="form-control"></textarea>
-                    <div class="clearfix"></div>    
+                    <textarea id="productDescription" name="description" class="form-control">@Model.description</textarea>
+                    <div class="clearfix"></div>
                 </div>
             </div>
-            <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
+            <button type="submit" name="action" value="add" class="btn btn-primary">Sửa</button>
             <a class="btn icon-btn btn-outline-secondary my-3 ml-2" href="@Url.Action("Index","Product")" title="Quay lại">
                 <i class="feather icon-corner-up-left"></i>
             </a>
@@ -121,4 +155,22 @@
 
 <script>
     var attributeValues = @Html.Raw(Json.Encode(ViewBag.attribute_values)); // Chuyển đổi danh sách sang JSON
+     var attributeValuesForProduct = @Html.Raw(Json.Encode(ViewBag.attributeValuesForProduct));
+    function removeImage(button) {
+        const imageContainer = button.parentElement; // Lấy div chứa ảnh
+        const previewContainer = document.getElementById("additionalImagesPreview");
+
+        // Xóa ảnh khỏi giao diện
+        previewContainer.removeChild(imageContainer);
+
+        // Cập nhật selectedFiles
+        const indexToRemove = parseInt(button.getAttribute("data-index")); // Lấy chỉ số file
+        selectedFiles.splice(indexToRemove, 1); // Xóa ảnh khỏi mảng selectedFiles
+
+        // Cập nhật lại chỉ số cho các nút xóa còn lại
+        const remainingButtons = previewContainer.querySelectorAll('button');
+        remainingButtons.forEach((btn, i) => {
+            btn.setAttribute("data-index", i); // Cập nhật chỉ số cho các nút xóa còn lại
+        });
+    }
 </script>

@@ -32,16 +32,84 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="categoryForm">
+                <form id="categoryForm" onsubmit="event.preventDefault(); saveCategory();">
                     <div class="form-group">
                         <label for="categoryName">Tên Danh Mục</label>
                         <input type="text" class="form-control" id="categoryName" required />
                     </div>
-                    <button type="button" class="btn btn-primary" onclick="saveCategory()">Lưu</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal thêm thuộc tính -->
+<div class="modal fade" id="attributeModal" tabindex="-1" role="dialog" aria-labelledby="attributeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attributeModalLabel">Thêm Thuộc Tính</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">
+                        <i class="feather icon-x"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="attributeForm" onsubmit="event.preventDefault(); saveAttribute();">
+                    <div class="form-group">
+                        <label for="attributeName">Tên Thuộc Tính</label>
+                        <input type="text" class="form-control" id="attributeName" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm giá trị thuộc tính -->
+<div class="modal fade" id="attributeValueModal" tabindex="-1" role="dialog" aria-labelledby="attributeValueModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attributeValueModalLabel">Thêm Giá Trị Thuộc Tính</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">
+                        <i class="feather icon-x"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="attributeValueForm" onsubmit="event.preventDefault(); saveAttributeValue();">
+                    <div class="form-group">
+                        <label for="attribute_id">Chọn Thuộc Tính</label>
+                        <select id="attribute_id" class="form-control" required>
+                            @if (ViewBag.attributes != null)
+                            {
+                                foreach (var attribute in ViewBag.attributes)
+                                {
+                                    <option value="@attribute.attribute_id">@attribute.attribute_name</option>
+                                }
+                            }
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="attributeValue">Giá Trị Thuộc Tính</label>
+                        <input type="text" class="form-control" id="attributeValue" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 

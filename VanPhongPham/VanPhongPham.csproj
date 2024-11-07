@@ -288,6 +288,7 @@
     <Content Include="Areas\Admin\Public\assets\img\logo.png" />
     <Content Include="Areas\Admin\Public\assets\js\analytics.js" />
     <Content Include="Areas\Admin\Public\assets\js\bootstrap.js" />
+    <Content Include="Areas\Admin\Public\assets\js\ckeditor.js" />
     <Content Include="Areas\Admin\Public\assets\js\demo.js" />
     <Content Include="Areas\Admin\Public\assets\js\dropdown-hover.js" />
     <Content Include="Areas\Admin\Public\assets\js\jquery-3.2.1.min.js" />
@@ -300,6 +301,7 @@
     <Content Include="Areas\Admin\Public\assets\js\pages\charts_morrisjs.js" />
     <Content Include="Areas\Admin\Public\assets\js\pages\dashboards_index.js" />
     <Content Include="Areas\Admin\Public\assets\js\pages\forms_input-groups.js" />
+    <Content Include="Areas\Admin\Public\assets\js\product.js" />
     <Content Include="Areas\Admin\Public\assets\js\pages\tables_bootstrap-table.js" />
     <Content Include="Areas\Admin\Public\assets\js\pages\ui_button-groups.js" />
     <Content Include="Areas\Admin\Public\assets\js\sidenav.js" />
@@ -352,6 +354,7 @@
     <Content Include="Content\PagedList.css" />
     <Content Include="Global.asax" />
     <Content Include="Public\css\profile.css" />
+    <Content Include="Public\css\snippets.css" />
     <Content Include="Public\css\style.css" />
     <Content Include="Public\css\style.min.css" />
     <Content Include="Public\img\carousel-1.jpg" />
@@ -362,13 +365,16 @@
     <Content Include="Public\img\cat-4.jpg" />
     <Content Include="Public\img\cat-5.jpg" />
     <Content Include="Public\img\cat-6.jpg" />
+    <Content Include="Public\img\icons\cartempty.jpg" />
     <Content Include="Public\img\icons\clipboard.png" />
     <Content Include="Public\img\icons\icons8-back-100.png" />
+    <Content Include="Public\img\icons\icons8-backorder.png" />
     <Content Include="Public\img\icons\icons8-check-100.png" />
     <Content Include="Public\img\icons\icons8-email-100.png" />
     <Content Include="Public\img\icons\icons8-error-100.png" />
     <Content Include="Public\img\icons\icons8-location-100.png" />
     <Content Include="Public\img\icons\icons8-male-user-100.png" />
+    <Content Include="Public\img\icons\vecteezy_chat-box-with-laptop.png" />
     <Content Include="Public\img\offer-1.png" />
     <Content Include="Public\img\offer-2.png" />
     <Content Include="Public\img\payments.png" />
@@ -587,13 +593,17 @@
     <Content Include="Areas\Admin\Views\Shared\_Modal.cshtml" />
     <Content Include="Areas\Admin\Views\Product\AddProduct.cshtml" />
     <Content Include="Areas\Admin\Views\Supplier\RecoverSupplier.cshtml" />
+    <Content Include="Areas\Admin\Views\User\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\User\RecoverUser.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\Attribute.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\AttributeValue.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\RecycleProductIndex.cshtml" />
+    <Content Include="Areas\Admin\Views\Product\UpdateProduct.cshtml" />
     <Content Include="Models\DB_VanPhongPham.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>DB_VanPhongPham.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Areas\Admin\Views\User\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\User\RecoverUser.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>
@@ -700,11 +710,13 @@
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AttributeValueDTO.cs" />
     <Compile Include="Models\DB_VanPhongPham.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -724,7 +736,6 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.0.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.0.0.min.map" />
-    <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Auth\Register.cshtml" />
@@ -736,6 +747,8 @@
     <Content Include="Views\Profile\ChangePasswordPartial.cshtml" />
     <Content Include="Views\Profile\OrderPartial.cshtml" />
     <Content Include="Views\Profile\ChangeEmailPartial.cshtml" />
+    <Content Include="Views\Profile\OrderDetailsPartial.cshtml" />
+    <Content Include="Views\Cart\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -746,6 +759,7 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Views\Address\" />
+    <Folder Include="Views\Order\" />
     <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>

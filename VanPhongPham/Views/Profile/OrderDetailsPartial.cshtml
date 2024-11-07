@@ -1,0 +1,201 @@
+﻿@model VanPhongPham.Models.OrderViewModel
+
+<style>
+    .order-status-tabs .nav-tabs {
+        display: flex;
+        flex-wrap: nowrap;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .order-status-tabs .nav-tabs .nav-link {
+        color: #333;
+        font-weight: bold;
+        padding: 10px 0;
+        border: none;
+    }
+
+    .order-status-tabs .nav-tabs .nav-link.active {
+        color: #ff4747;
+        border-bottom: 3px solid #ff4747;
+    }
+
+    .order-container {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        padding: 20px;
+        position: relative;
+    }
+
+    .order-status {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .order-details, .order-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+    }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .product-info img {
+        width: 80px;
+        height: auto;
+        border: 1px solid #ddd;
+    }
+
+    .product-info .product-name {
+        color: #333;
+    }
+
+    .price-info {
+        text-align: right;
+        font-weight: bold;
+        color: #ff4747;
+    }
+
+    .back-button {
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .order-actions button {
+        background-color: #ff4747;
+        font-size: 14px;
+        color: #fff;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .order-actions button:hover {
+        background-color: #ff2e2e;
+    }
+
+    .order-actions .btn-outline-secondary {
+        background-color: #ffffff;
+        color: #555;
+        border: 1px solid rgba(0, 0, 0, 0.09);
+    }
+
+    .order-actions .btn-outline-secondary:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: #555;
+    }
+
+    .order-cost-details {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .payment-info p {
+        margin: 0;
+    }
+</style>
+
+@if (Model != null)
+{
+<div class="order-container">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <!-- Nút Trở lại có thể quay lại trang trước -->
+        <a href="javascript:history.back()" style="display: flex; align-items: center; font-size: 15px; color: inherit; text-decoration: none;">
+            <img src="~/Public/img/icons/icons8-backorder.png" width="15" height="15" style="margin-right: 5px;" /> TRỞ LẠI
+        </a>
+
+        <!-- Hiển thị trạng thái đơn hàng -->
+        <div class="order-status" style="font-size: 14px;">
+            <span style="color: #555">
+                MÃ ĐƠN HÀNG. @Model.OrderId <span style="margin: 0px 12px">|</span>
+            </span>
+            <span style="color: #ff4747;">
+                @Model.OrderStatusName.ToUpper()
+            </span>
+        </div>
+    </div>
+    <hr />
+
+    <div>
+        <h3>Địa Chỉ Nhận Hàng</h3>
+        @{
+            var addressParts = Model.InfoAddress.Split(new[] { ", " }, StringSplitOptions.None);
+            var name = addressParts.ElementAtOrDefault(0) ?? "";
+            var phone = addressParts.ElementAtOrDefault(1) ?? "";
+            var address = string.Join(", ", addressParts.Skip(2));
+        }
+        <p style="font-size:16px">@name</p>
+        <p style="font-size:14px">@phone</p>
+        <p style="font-size:14px;">@address</p>
+    </div>
+    <hr />
+    @{
+        var totalItemCost = 0.0;
+    }
+
+    @foreach (var detail in Model.OrderDetails)
+    {
+        totalItemCost += detail.TotalAmount;
+        <a href="#" style="text-decoration: none; color: #555 ">
+            <div class="order-details">
+                <div class="product-info">
+                    <img src="@detail.ImageUrl" alt="Product Image" />
+                    <div>
+                        <div class="product-name" style="font-size: 17px">@detail.ProductName</div>
+                        <div><span>x</span>@detail.Quantity</div>
+                    </div>
+                </div>
+                <span style="color: #ff4747"><span>₫</span>@detail.Price.ToString("N0")</span>
+            </div>
+        </a>
+    }
+    <hr />
+    <div class="order-cost-details">
+        <div class="d-flex justify-content-end">
+            <div class="col-8 text-right p-0">
+                <span style="font-size: 13px">Tổng tiền hàng</span>
+            </div>
+            <div class="col-4 text-right p-0">
+                <span>₫@totalItemCost.ToString("N0")</span>
+            </div>
+        </div>
+        <hr />
+        <div class="d-flex justify-content-end">
+            <div class="col-8 text-right p-0">
+                <span style="font-size: 13px">Thành tiền</span>
+            </div>
+            <div class="col-4 text-right p-0">
+                <span>₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+    <div class="payment-info mt-3" style="background-color: #fff7e6; padding: 15px; border-radius: 8px; border: 1px solid #ffd28a; display: flex; align-items: center;">
+        <i class="fa fa-exclamation-circle" style="color: #ff4747; font-size: 13px; margin-right: 10px;"></i>
+        <p style="margin: 0; color: #555; font-size: 14px">Vui lòng thanh toán <span style="color: #ff4747;">₫@Model.TotalAmount</span> khi nhận hàng.</p>
+    </div>
+
+    <hr />
+    <div class="order-cost-details mt-3">
+        <div class="d-flex">
+            <div class="col-8 text-right p-0">
+                <span style="font-size: 13px;">Phương thức Thanh toán</span>
+            </div>
+            <div class="col-4 text-right p-0">
+                <span>@Model.MethodName</span>
+            </div>
+        </div>
+    </div>
+</div>
+}

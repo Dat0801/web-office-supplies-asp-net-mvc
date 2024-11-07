@@ -1,163 +1,432 @@
-﻿
+﻿@model IEnumerable<VanPhongPham.Models.OrderDetailViewModel>
+
+<style>
+    /* Ẩn mũi tên tăng giảm của input type number */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+</style>
+
 @{
     ViewBag.Title = "Index";
 }
 
-<!-- Cart Start -->
-<div class="container-fluid pt-5">
-    <div class="row px-xl-5">
-        <div class="col-lg-8 table-responsive mb-5">
-            <table class="table table-bordered text-center mb-0">
-                <thead class="bg-secondary text-dark">
-                    <tr>
-                        <th>Products</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>Remove</th>
-                    </tr>
-                </thead>
-                <tbody class="align-middle">
-                    <tr>
-                        <td class="align-middle"><img src="~/Public/img/product-1.jpg" alt="" style="width: 50px;"> Colorful Stylish Shirt</td>
-                        <td class="align-middle">$150</td>
-                        <td class="align-middle">
-                            <div class="input-group quantity mx-auto" style="width: 100px;">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-primary btn-minus">
-                                        <i class="fa fa-minus"></i>
+@{ bool allItemsSelected = Model.All(item => item.isSelected == 1); }
+
+@if (Model != null && Model.Any())
+{
+    <!-- Cart Start -->
+    <div class="container-fluid pt-5">
+        <div class="row px-xl-5">
+            <div class="col-lg-8 table-responsive mb-5">
+                <table class="table table-bordered text-center mb-0">
+                    <thead class="bg-secondary text-dark">
+                        <tr>
+                            <td>
+                                <input type="checkbox" id="mainProductCheckbox" style="margin-right: 15px" onclick="toggleSelectAll(this)" @(allItemsSelected ? "checked" : "") />
+                            </td>
+                            <td style="text-align:left">
+                                Sản Phẩm
+                            </td>
+                            <td>Đơn Giá</td>
+                            <td>Số Lượng</td>
+                            <td>Số Tiền</td>
+                            <td>Thao Tác</td>
+                        </tr>
+                    </thead>
+                    <tbody class="align-middle">
+                        @foreach (var item in Model)
+                        {
+                        <tr style="@(item.QuantityProduct == 0 ? "background-color: #FAFAFA;" : "")">
+                            @if (item.QuantityProduct == 0)
+                            {
+                                <td class="align-middle">
+                                    <span style="color: white; font-weight: bold; background-color: #A3A3A3; padding: 5px; font-size: 10px; border-radius: 10px">HẾT HÀNG</span>
+                                </td>
+                                <td style="text-align:left">
+                                    <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px">
+                                    @item.ProductName
+                                </td>
+                                <td class="align-middle">₫0</td>
+                                <td class="align-middle">0</td>
+                                <td class="align-middle" style="color: #ff4747;">₫0</td>
+                                <td class="align-middle">
+                                    <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
+                                        <i class="fa fa-times"></i>
                                     </button>
-                                </div>
-                                <input type="text" class="form-control form-control-sm bg-secondary text-center" value="1">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-primary btn-plus">
-                                        <i class="fa fa-plus"></i>
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="align-middle">
+                                    <input type="checkbox" data-product-id="@item.ProductID" style="margin-right: 15px" @(item.isSelected == 1 ? "checked" : "") />
+                                </td>
+                                <td style="text-align:left">
+                                    <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px">
+                                    @item.ProductName
+                                </td>
+                                <td class="align-middle">₫@item.Price.ToString("N0")</td>
+                                <td class="align-middle">
+                                    <div class="input-group quantity mx-auto" style="width: 100px;">
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-sm btn-primary" onclick="changeQuantity(this, -1)">
+                                                <i class="fa fa-minus"></i>
+                                            </button>
+                                        </div>
+                                        <input type="number"
+                                               class="form-control form-control-sm bg-secondary text-center"
+                                               value="@item.Quantity"
+                                               min="1"
+                                               step="1"
+                                               oninput="preventLeadingZero(this)"
+                                               data-cartdetail-quantity="@item.Quantity"
+                                               data-product-id="@item.ProductID"
+                                               data-product-price="@item.Price"
+                                               onblur="checkStock(this)">
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-sm btn-primary" onclick="changeQuantity(this, 1)">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="align-middle" style="color: #ff4747;">₫@item.TotalAmount.ToString("N0")</td>
+                                <td class="align-middle">
+                                    <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
+                                        <i class="fa fa-times"></i>
                                     </button>
-                                </div>
+                                </td>
+                            }
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+
+
+            <div class="col-lg-4">
+                @*<form class="mb-5" action="">
+                        <div class="input-group">
+                            <input type="text" class="form-control p-4" placeholder="Coupon Code">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary">Apply Coupon</button>
                             </div>
-                        </td>
-                        <td class="align-middle">$150</td>
-                        <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td class="align-middle"><img src="~/Public/img/product-2.jpg" alt="" style="width: 50px;"> Colorful Stylish Shirt</td>
-                        <td class="align-middle">$150</td>
-                        <td class="align-middle">
-                            <div class="input-group quantity mx-auto" style="width: 100px;">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-primary btn-minus">
-                                        <i class="fa fa-minus"></i>
-                                    </button>
-                                </div>
-                                <input type="text" class="form-control form-control-sm bg-secondary text-center" value="1">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-primary btn-plus">
-                                        <i class="fa fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="align-middle">$150</td>
-                        <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td class="align-middle"><img src="~/Public/img/product-3.jpg" alt="" style="width: 50px;"> Colorful Stylish Shirt</td>
-                        <td class="align-middle">$150</td>
-                        <td class="align-middle">
-                            <div class="input-group quantity mx-auto" style="width: 100px;">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-primary btn-minus">
-                                        <i class="fa fa-minus"></i>
-                                    </button>
-                                </div>
-                                <input type="text" class="form-control form-control-sm bg-secondary text-center" value="1">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-primary btn-plus">
-                                        <i class="fa fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="align-middle">$150</td>
-                        <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td class="align-middle"><img src="~/Public/img/product-4.jpg" alt="" style="width: 50px;"> Colorful Stylish Shirt</td>
-                        <td class="align-middle">$150</td>
-                        <td class="align-middle">
-                            <div class="input-group quantity mx-auto" style="width: 100px;">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-primary btn-minus">
-                                        <i class="fa fa-minus"></i>
-                                    </button>
-                                </div>
-                                <input type="text" class="form-control form-control-sm bg-secondary text-center" value="1">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-primary btn-plus">
-                                        <i class="fa fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="align-middle">$150</td>
-                        <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td class="align-middle"><img src="~/Public/img/product-5.jpg" alt="" style="width: 50px;"> Colorful Stylish Shirt</td>
-                        <td class="align-middle">$150</td>
-                        <td class="align-middle">
-                            <div class="input-group quantity mx-auto" style="width: 100px;">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-primary btn-minus">
-                                        <i class="fa fa-minus"></i>
-                                    </button>
-                                </div>
-                                <input type="text" class="form-control form-control-sm bg-secondary text-center" value="1">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-primary btn-plus">
-                                        <i class="fa fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="align-middle">$150</td>
-                        <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="col-lg-4">
-            <form class="mb-5" action="">
-                <div class="input-group">
-                    <input type="text" class="form-control p-4" placeholder="Coupon Code">
-                    <div class="input-group-append">
-                        <button class="btn btn-primary">Apply Coupon</button>
+                        </div>
+                    </form>*@
+                <div class="card border-secondary mb-5">
+                    <div class="card-header bg-secondary border-0">
+                        <input type="checkbox" id="summaryCheckbox" style="margin-right: 15px; background-color: transparent" onclick="toggleSelectAll(this)" @(allItemsSelected ? "checked" : "") />
+                        <input type="button" id="selectAllButton" style="margin-right: 15px; background-color: transparent; border: none" value="Chọn Tất Cả" onclick="selectAllProducts()" />
+                        <input type="button" value="Xóa" style="background-color: transparent; border: none" onclick="deleteSelectedItems()" />
                     </div>
-                </div>
-            </form>
-            <div class="card border-secondary mb-5">
-                <div class="card-header bg-secondary border-0">
-                    <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-3 pt-1">
-                        <h6 class="font-weight-medium">Subtotal</h6>
-                        <h6 class="font-weight-medium">$150</h6>
+                    <div class="card-footer border-secondary bg-transparent">
+                        <div id="paymentSummary" class="d-flex justify-content-between mt-2">
+                            <h5 style="font-size: 18px; font-weight: normal">Tổng thanh toán (<span id="selectedCount">0</span> sản phẩm): </h5>
+                            <h5 id="totalAmount" style="color: #ff4747; font-size: 25px; font-weight: normal">₫0</h5>
+                        </div>
+                        <button class="btn btn-block btn-primary my-3 py-3">Mua Hàng</button>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <h6 class="font-weight-medium">Shipping</h6>
-                        <h6 class="font-weight-medium">$10</h6>
-                    </div>
-                </div>
-                <div class="card-footer border-secondary bg-transparent">
-                    <div class="d-flex justify-content-between mt-2">
-                        <h5 class="font-weight-bold">Total</h5>
-                        <h5 class="font-weight-bold">$160</h5>
-                    </div>
-                    <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Cart End -->
+}
+else
+{
+    <div class="d-flex flex-column align-items-center justify-content-center" style="text-align: center; margin-top: 20px; height: 50vh;">
+        <img src="~/Public/img/icons/cartempty.jpg" style="width: 100px; height: 100px; margin-bottom: 10px" />
+        <p>Giỏ hàng của bạn còn trống.</p>
+        <a href="@Url.Action("Index", "Home")">
+            <button class="btn btn-danger" id="addAddressButton" data-toggle="modal" data-target="#addAddressModal">MUA NGAY</button>
+        </a>
+    </div>
+}
+
+
+<div id="stockModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="stockModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p style="text-align: center"></p>
+            </div>
+        </div>
+    </div>
 </div>
-<!-- Cart End -->
+
+<script>
+    // Gọi updatePaymentSummary khi trang được load lần đầu
+    document.addEventListener('DOMContentLoaded', function () {
+        checkAllCheckboxes();
+        updatePaymentSummary(); // Cập nhật lại tổng khi trang vừa load
+    });
+
+    function preventLeadingZero(element) {
+        // Lấy giá trị nhập vào và loại bỏ tất cả ký tự không phải số
+        let value = element.value.replace(/[^0-9]/g, '');
+
+        // Nếu giá trị bắt đầu bằng 0 và có độ dài lớn hơn 1, xóa số 0 đầu tiên
+        if (value.length > 1 && value.startsWith('0')) {
+            value = value.slice(1); // Bỏ số 0 ở đầu
+        }
+
+        // Đặt lại giá trị cho input
+        element.value = value;
+
+        // Nếu giá trị nhỏ hơn 1, đặt lại giá trị về 1
+        if (parseInt(value) === 0) {
+            element.value = '';
+        }
+    }
+
+    async function removeFromCart(productId) {
+        const response = await fetch('/Cart/RemoveFromCart', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cart_id: @ViewBag.CartID, productId })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            location.reload();
+        }
+        else {
+            alert("Xóa sản phẩm không thành công.");
+        }
+    }
+
+
+
+    async function checkStock(element) {
+        const productId = element.getAttribute("data-product-id");
+        const quantity = element.value;
+        const cartdetailquantity = element.getAttribute("data-cartdetail-quantity");
+
+        if (quantity === '') {
+            element.value = cartdetailquantity;
+        } else {
+            const response = await fetch('/Cart/CheckStock', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId, quantity })
+            });
+
+            const result = await response.json();
+
+            if (!result.isInStock) {
+                // Cập nhật nội dung modal
+                const modalBody = document.querySelector("#stockModal .modal-body p");
+                modalBody.textContent = `Sản phẩm "${result.productName}" chỉ còn lại ${result.availableQuantity} trong kho.`;
+
+                // Cập nhật lại số lượng trong ô input với số tối đa có thể mua
+                element.value = result.availableQuantity;
+
+                // Lưu productId vào modal
+                document.getElementById("stockModal").setAttribute("data-product-id", productId);
+
+                // Hiển thị modal
+                $("#stockModal").modal("show");
+
+                // Khôi phục thanh cuộn khi modal mở
+                document.body.style.overflowY = "scroll";
+            }
+            else
+            {
+                // Nếu sản phẩm còn hàng, cập nhật số lượng trong cơ sở dữ liệu
+                const updateResponse = await fetch('/Cart/UpdateQuantity', {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cart_id: @ViewBag.CartID, productId, quantity })
+                });
+
+                const updateResult = await updateResponse.json();
+
+                if (updateResult.success) {
+                    location.reload();
+                }
+                else {
+                    // Xử lý trường hợp cập nhật không thành công
+                    alert("Cập nhật số lượng không thành công.");
+                }
+            }
+        }
+    }
+
+    function changeQuantity(button, delta) {
+        const input = button.closest('.input-group').querySelector('input[type="number"]');
+        let quantity = parseInt(input.value) || 0; // Lấy số lượng hiện tại
+
+        // Tính số lượng mới
+        quantity += delta;
+
+        // Nếu số lượng nhỏ hơn 1 thì không cho giảm xuống
+        if (quantity < 1) {
+            quantity = 1;
+        }
+
+        input.value = quantity; // Cập nhật giá trị vào input
+
+        // Gọi hàm kiểm tra hàng tồn kho
+        checkStock(input);
+    }
+
+    document.getElementById('stockModal').addEventListener('hide.bs.modal', async function () {
+        const productId = document.getElementById("stockModal").getAttribute("data-product-id"); // Lấy productId từ modal
+        const quantityInput = document.querySelector('input[type="number"][data-product-id="' + productId + '"]'); // Lấy input tương ứng
+        const quantity = quantityInput.value;
+
+        const response = await fetch('/Cart/UpdateQuantity', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cart_id: @ViewBag.CartID, productId, quantity })
+        });
+
+        const updateResult = await response.json();
+
+        if (updateResult.success) {
+            location.reload(); // Tải lại trang nếu cập nhật thành công
+        } else {
+            alert("Cập nhật số lượng không thành công.");
+        }
+
+        $("#stockModal").modal("hide");
+        document.body.style.overflowY = "auto";  // Đặt lại overflow khi modal đóng
+    });
+
+    function toggleSelectAll(mainCheckbox) {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][data-product-id]');
+        const isChecked = mainCheckbox.checked;
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+            updateIsSelected(checkbox.getAttribute("data-product-id"), isChecked);
+            updatePaymentSummary()
+        });
+
+        // Cập nhật trạng thái của checkbox ở Cart Summary và nút "Chọn Tất Cả"
+        document.getElementById('summaryCheckbox').checked = isChecked;
+        document.getElementById('mainProductCheckbox').checked = isChecked;
+    }
+
+    function selectAllProducts() {
+        const mainCheckbox = document.getElementById("mainProductCheckbox");
+        const isChecked = !mainCheckbox.checked;
+
+        mainCheckbox.checked = isChecked;
+        toggleSelectAll(mainCheckbox);
+    }
+
+    async function updateIsSelected(productId, isSelected) {
+        try {
+            await fetch('/Cart/UpdateIsSelected', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cart_id: @ViewBag.CartID, productId, isSelected })
+            });
+        } catch (error) {
+            console.error("Không thể cập nhật trạng thái isSelected:", error);
+        }
+    }
+
+    // Sự kiện thay đổi cho các checkbox con
+    document.querySelectorAll('input[type="checkbox"][data-product-id]').forEach(checkbox => {
+        checkbox.addEventListener("change", function () {
+            const allChecked = [...document.querySelectorAll('input[type="checkbox"][data-product-id]')].every(cb => cb.checked);
+
+            // Cập nhật trạng thái của các checkbox chính
+            document.getElementById("mainProductCheckbox").checked = allChecked;
+            document.getElementById("summaryCheckbox").checked = allChecked;
+
+            updateIsSelected(this.getAttribute("data-product-id"), this.checked);
+            updatePaymentSummary();
+        });
+    });
+
+    async function deleteSelectedItems() {
+        // Lấy danh sách productId của các sản phẩm được chọn
+        const selectedProductIds = [...document.querySelectorAll('input[type="checkbox"][data-product-id]:checked')]
+            .map(checkbox => checkbox.getAttribute("data-product-id"));
+
+        // Kiểm tra nếu không có sản phẩm nào được chọn
+        if (selectedProductIds.length === 0) {
+            const modalBody = document.querySelector("#stockModal .modal-body p");
+            modalBody.textContent = `Vui lòng chọn sản phẩm để xóa.`;
+
+            // Hiển thị modal
+            $("#stockModal").modal("show");
+
+            // Khôi phục thanh cuộn khi modal mở
+            document.body.style.overflowY = "scroll";
+        }
+
+        // Gửi yêu cầu xóa tới server
+        const response = await fetch('/Cart/DeleteSelectedItems', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cart_id: @ViewBag.CartID, productIds: selectedProductIds })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            location.reload(); // Tải lại trang nếu xóa thành công
+        }
+        else
+        {
+            alert("Xóa sản phẩm không thành công.");
+        }
+    }   
+
+    function updatePaymentSummary() {
+        const selectedCheckboxes = document.querySelectorAll('input[type="checkbox"][data-product-id]:checked');
+        let totalQuantity = 0;
+        let totalAmount = 0;
+
+        selectedCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const productId = checkbox.getAttribute("data-product-id");
+                const quantityInput = document.querySelector(`input[type="number"][data-product-id="${productId}"]`);
+                const productPrice = parseFloat(quantityInput.getAttribute("data-product-price")) || 0;
+                const quantity = parseInt(quantityInput.value) || 0;
+
+                totalQuantity++;
+                totalAmount += productPrice * quantity;
+            }
+        });
+
+        // Update the display elements with calculated values
+        document.getElementById("selectedCount").textContent = totalQuantity;
+        document.getElementById("totalAmount").textContent = `₫${totalAmount.toLocaleString('de-DE')}`;
+    }
+
+    // Hàm để duyệt qua các checkbox con và kiểm tra tất cả
+    function checkAllCheckboxes() {
+        const childCheckboxes = document.querySelectorAll('input[type="checkbox"][data-product-id]'); // Lấy tất cả checkbox con
+        let allChecked = true;  // Biến để kiểm tra tất cả checkbox con có được checked hay không
+
+        // Duyệt qua tất cả các checkbox con
+        childCheckboxes.forEach(function (checkbox) {
+            if (!checkbox.checked) {
+                allChecked = false; // Nếu có checkbox con nào chưa checked thì set allChecked = false
+            }
+        });
+
+        // Nếu tất cả checkbox con được checked, checked cả hai checkbox chính
+        if (allChecked) {
+            document.getElementById('summaryCheckbox').checked = true;
+            document.getElementById('mainProductCheckbox').checked = true;
+        } else {
+            // Nếu không thì bỏ unchecked checkbox chính
+            document.getElementById('summaryCheckbox').checked = false;
+            document.getElementById('mainProductCheckbox').checked = false;
+        }
+    }
+</script>

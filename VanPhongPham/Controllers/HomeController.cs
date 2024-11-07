@@ -15,9 +15,9 @@ namespace VanPhongPham.Controllers
             _productRepository = new ProductRepository();
         }
         // GET: Home
-        public ActionResult Index()
+        public ActionResult Index(string productID)
         {
-            var products = _productRepository.GetAllProduct();
+            var products = _productRepository.GetMainImageByProductId(productID);
             return View(products);
         }
 

@@ -42,6 +42,12 @@ namespace VanPhongPham.Models
     partial void Insertattribute(attribute instance);
     partial void Updateattribute(attribute instance);
     partial void Deleteattribute(attribute instance);
+    partial void Insertcart_detail(cart_detail instance);
+    partial void Updatecart_detail(cart_detail instance);
+    partial void Deletecart_detail(cart_detail instance);
+    partial void Insertcart_section(cart_section instance);
+    partial void Updatecart_section(cart_section instance);
+    partial void Deletecart_section(cart_section instance);
     partial void Insertcategory(category instance);
     partial void Updatecategory(category instance);
     partial void Deletecategory(category instance);
@@ -149,6 +155,22 @@ namespace VanPhongPham.Models
 			get
 			{
 				return this.GetTable<attribute>();
+			}
+		}
+		
+		public System.Data.Linq.Table<cart_detail> cart_details
+		{
+			get
+			{
+				return this.GetTable<cart_detail>();
+			}
+		}
+		
+		public System.Data.Linq.Table<cart_section> cart_sections
+		{
+			get
+			{
+				return this.GetTable<cart_section>();
 			}
 		}
 		
@@ -602,6 +624,8 @@ namespace VanPhongPham.Models
 		
 		private EntitySet<address> _addresses;
 		
+		private EntitySet<cart_section> _cart_sections;
+		
 		private EntitySet<order> _orders;
 		
 		private EntitySet<order> _orders1;
@@ -639,6 +663,7 @@ namespace VanPhongPham.Models
 		public user()
 		{
 			this._addresses = new EntitySet<address>(new Action<address>(this.attach_addresses), new Action<address>(this.detach_addresses));
+			this._cart_sections = new EntitySet<cart_section>(new Action<cart_section>(this.attach_cart_sections), new Action<cart_section>(this.detach_cart_sections));
 			this._orders = new EntitySet<order>(new Action<order>(this.attach_orders), new Action<order>(this.detach_orders));
 			this._orders1 = new EntitySet<order>(new Action<order>(this.attach_orders1), new Action<order>(this.detach_orders1));
 			this._product_reviews = new EntitySet<product_review>(new Action<product_review>(this.attach_product_reviews), new Action<product_review>(this.detach_product_reviews));
@@ -840,6 +865,19 @@ namespace VanPhongPham.Models
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_cart_section", Storage="_cart_sections", ThisKey="user_id", OtherKey="user_id")]
+		public EntitySet<cart_section> cart_sections
+		{
+			get
+			{
+				return this._cart_sections;
+			}
+			set
+			{
+				this._cart_sections.Assign(value);
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_order", Storage="_orders", ThisKey="user_id", OtherKey="customer_id")]
 		public EntitySet<order> orders
 		{
@@ -932,6 +970,18 @@ namespace VanPhongPham.Models
 		}
 		
 		private void detach_addresses(address entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = null;
+		}
+		
+		private void attach_cart_sections(cart_section entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = this;
+		}
+		
+		private void detach_cart_sections(cart_section entity)
 		{
 			this.SendPropertyChanging();
 			entity.user = null;
@@ -1339,6 +1389,401 @@ namespace VanPhongPham.Models
 		}
 	}
 	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.cart_details")]
+	public partial class cart_detail : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _cart_id;
+		
+		private string _product_id;
+		
+		private System.Nullable<int> _quantity;
+		
+		private System.Nullable<double> _total_amount;
+		
+		private System.Nullable<int> _isSelected;
+		
+		private EntityRef<cart_section> _cart_section;
+		
+		private EntityRef<product> _product;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Oncart_idChanging(int value);
+    partial void Oncart_idChanged();
+    partial void Onproduct_idChanging(string value);
+    partial void Onproduct_idChanged();
+    partial void OnquantityChanging(System.Nullable<int> value);
+    partial void OnquantityChanged();
+    partial void Ontotal_amountChanging(System.Nullable<double> value);
+    partial void Ontotal_amountChanged();
+    partial void OnisSelectedChanging(System.Nullable<int> value);
+    partial void OnisSelectedChanged();
+    #endregion
+		
+		public cart_detail()
+		{
+			this._cart_section = default(EntityRef<cart_section>);
+			this._product = default(EntityRef<product>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cart_id", DbType="Int NOT NULL", IsPrimaryKey=true)]
+		public int cart_id
+		{
+			get
+			{
+				return this._cart_id;
+			}
+			set
+			{
+				if ((this._cart_id != value))
+				{
+					if (this._cart_section.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Oncart_idChanging(value);
+					this.SendPropertyChanging();
+					this._cart_id = value;
+					this.SendPropertyChanged("cart_id");
+					this.Oncart_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_product_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string product_id
+		{
+			get
+			{
+				return this._product_id;
+			}
+			set
+			{
+				if ((this._product_id != value))
+				{
+					if (this._product.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onproduct_idChanging(value);
+					this.SendPropertyChanging();
+					this._product_id = value;
+					this.SendPropertyChanged("product_id");
+					this.Onproduct_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_quantity", DbType="Int")]
+		public System.Nullable<int> quantity
+		{
+			get
+			{
+				return this._quantity;
+			}
+			set
+			{
+				if ((this._quantity != value))
+				{
+					this.OnquantityChanging(value);
+					this.SendPropertyChanging();
+					this._quantity = value;
+					this.SendPropertyChanged("quantity");
+					this.OnquantityChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_total_amount", DbType="Float")]
+		public System.Nullable<double> total_amount
+		{
+			get
+			{
+				return this._total_amount;
+			}
+			set
+			{
+				if ((this._total_amount != value))
+				{
+					this.Ontotal_amountChanging(value);
+					this.SendPropertyChanging();
+					this._total_amount = value;
+					this.SendPropertyChanged("total_amount");
+					this.Ontotal_amountChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_isSelected", DbType="Int")]
+		public System.Nullable<int> isSelected
+		{
+			get
+			{
+				return this._isSelected;
+			}
+			set
+			{
+				if ((this._isSelected != value))
+				{
+					this.OnisSelectedChanging(value);
+					this.SendPropertyChanging();
+					this._isSelected = value;
+					this.SendPropertyChanged("isSelected");
+					this.OnisSelectedChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="cart_section_cart_detail", Storage="_cart_section", ThisKey="cart_id", OtherKey="cart_id", IsForeignKey=true)]
+		public cart_section cart_section
+		{
+			get
+			{
+				return this._cart_section.Entity;
+			}
+			set
+			{
+				cart_section previousValue = this._cart_section.Entity;
+				if (((previousValue != value) 
+							|| (this._cart_section.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._cart_section.Entity = null;
+						previousValue.cart_details.Remove(this);
+					}
+					this._cart_section.Entity = value;
+					if ((value != null))
+					{
+						value.cart_details.Add(this);
+						this._cart_id = value.cart_id;
+					}
+					else
+					{
+						this._cart_id = default(int);
+					}
+					this.SendPropertyChanged("cart_section");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="product_cart_detail", Storage="_product", ThisKey="product_id", OtherKey="product_id", IsForeignKey=true)]
+		public product product
+		{
+			get
+			{
+				return this._product.Entity;
+			}
+			set
+			{
+				product previousValue = this._product.Entity;
+				if (((previousValue != value) 
+							|| (this._product.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._product.Entity = null;
+						previousValue.cart_details.Remove(this);
+					}
+					this._product.Entity = value;
+					if ((value != null))
+					{
+						value.cart_details.Add(this);
+						this._product_id = value.product_id;
+					}
+					else
+					{
+						this._product_id = default(string);
+					}
+					this.SendPropertyChanged("product");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.cart_section")]
+	public partial class cart_section : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _cart_id;
+		
+		private string _user_id;
+		
+		private EntitySet<cart_detail> _cart_details;
+		
+		private EntityRef<user> _user;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Oncart_idChanging(int value);
+    partial void Oncart_idChanged();
+    partial void Onuser_idChanging(string value);
+    partial void Onuser_idChanged();
+    #endregion
+		
+		public cart_section()
+		{
+			this._cart_details = new EntitySet<cart_detail>(new Action<cart_detail>(this.attach_cart_details), new Action<cart_detail>(this.detach_cart_details));
+			this._user = default(EntityRef<user>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cart_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int cart_id
+		{
+			get
+			{
+				return this._cart_id;
+			}
+			set
+			{
+				if ((this._cart_id != value))
+				{
+					this.Oncart_idChanging(value);
+					this.SendPropertyChanging();
+					this._cart_id = value;
+					this.SendPropertyChanged("cart_id");
+					this.Oncart_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string user_id
+		{
+			get
+			{
+				return this._user_id;
+			}
+			set
+			{
+				if ((this._user_id != value))
+				{
+					if (this._user.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onuser_idChanging(value);
+					this.SendPropertyChanging();
+					this._user_id = value;
+					this.SendPropertyChanged("user_id");
+					this.Onuser_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="cart_section_cart_detail", Storage="_cart_details", ThisKey="cart_id", OtherKey="cart_id")]
+		public EntitySet<cart_detail> cart_details
+		{
+			get
+			{
+				return this._cart_details;
+			}
+			set
+			{
+				this._cart_details.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_cart_section", Storage="_user", ThisKey="user_id", OtherKey="user_id", IsForeignKey=true)]
+		public user user
+		{
+			get
+			{
+				return this._user.Entity;
+			}
+			set
+			{
+				user previousValue = this._user.Entity;
+				if (((previousValue != value) 
+							|| (this._user.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._user.Entity = null;
+						previousValue.cart_sections.Remove(this);
+					}
+					this._user.Entity = value;
+					if ((value != null))
+					{
+						value.cart_sections.Add(this);
+						this._user_id = value.user_id;
+					}
+					else
+					{
+						this._user_id = default(string);
+					}
+					this.SendPropertyChanged("user");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_cart_details(cart_detail entity)
+		{
+			this.SendPropertyChanging();
+			entity.cart_section = this;
+		}
+		
+		private void detach_cart_details(cart_detail entity)
+		{
+			this.SendPropertyChanging();
+			entity.cart_section = null;
+		}
+	}
+	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.categories")]
 	public partial class category : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -1657,7 +2102,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image_url", DbType="VarChar(255) NOT NULL", CanBeNull=false)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image_url", DbType="VarChar(500) NOT NULL", CanBeNull=false)]
 		public string image_url
 		{
 			get
@@ -3346,6 +3791,8 @@ namespace VanPhongPham.Models
 		
 		private System.Nullable<System.DateTime> _updated_at;
 		
+		private EntitySet<cart_detail> _cart_details;
+		
 		private EntitySet<image> _images;
 		
 		private EntitySet<order_detail> _order_details;
@@ -3398,6 +3845,7 @@ namespace VanPhongPham.Models
 		
 		public product()
 		{
+			this._cart_details = new EntitySet<cart_detail>(new Action<cart_detail>(this.attach_cart_details), new Action<cart_detail>(this.detach_cart_details));
 			this._images = new EntitySet<image>(new Action<image>(this.attach_images), new Action<image>(this.detach_images));
 			this._order_details = new EntitySet<order_detail>(new Action<order_detail>(this.attach_order_details), new Action<order_detail>(this.detach_order_details));
 			this._product_attribute_values = new EntitySet<product_attribute_value>(new Action<product_attribute_value>(this.attach_product_attribute_values), new Action<product_attribute_value>(this.detach_product_attribute_values));
@@ -3452,7 +3900,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_product_name", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_product_name", DbType="NVarChar(200) NOT NULL", CanBeNull=false)]
 		public string product_name
 		{
 			get
@@ -3472,7 +3920,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_description", DbType="NVarChar(500)")]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_description", DbType="NVarChar(1000)")]
 		public string description
 		{
 			get
@@ -3712,6 +4160,19 @@ namespace VanPhongPham.Models
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="product_cart_detail", Storage="_cart_details", ThisKey="product_id", OtherKey="product_id")]
+		public EntitySet<cart_detail> cart_details
+		{
+			get
+			{
+				return this._cart_details;
+			}
+			set
+			{
+				this._cart_details.Assign(value);
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="product_image", Storage="_images", ThisKey="product_id", OtherKey="product_id")]
 		public EntitySet<image> images
 		{
@@ -3842,6 +4303,18 @@ namespace VanPhongPham.Models
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
+		}
+		
+		private void attach_cart_details(cart_detail entity)
+		{
+			this.SendPropertyChanging();
+			entity.product = this;
+		}
+		
+		private void detach_cart_details(cart_detail entity)
+		{
+			this.SendPropertyChanging();
+			entity.product = null;
 		}
 		
 		private void attach_images(image entity)
