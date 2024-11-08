@@ -67,9 +67,11 @@ async function saveProduct(productId = null) {
         }
     }
 
+    console.log(additionalImageUrls); // Kiểm tra mảng URL hình ảnh
+
     if (additionalImages.length > 0) {
-        for (let i = 0; i < selectedFiles.length; i++) {
-            const file = selectedFiles[i];
+        for (let i = 0; i < additionalImages.length; i++) {
+            const file = additionalImages[i];
             try {
                 const url = await uploadToCloudinary(file, 'product_imgs');
                 if (!additionalImageUrls.includes(url)) {
@@ -82,6 +84,9 @@ async function saveProduct(productId = null) {
             }
         }
     }
+
+    console.log(additionalImageUrls); // Kiểm tra mảng URL hình ảnh
+
 
     // Thêm danh sách URL hình ảnh phụ vào FormData
     formData.append("additionalImageUrlsJson", JSON.stringify(additionalImageUrls));
@@ -111,6 +116,7 @@ document.getElementById('ProductForm').onsubmit = function (event) {
     editorInstance.updateSourceElement(); // Cập nhật nội dung CKEditor
     // Gọi hàm để xử lý gửi dữ liệu
     const productId = document.getElementById('productId') ? document.getElementById('productId').value : null; // Lấy productId từ form (nếu có)
+    console.log(productId);
     saveProduct(productId); // Gọi hàm với productId
 };
 
