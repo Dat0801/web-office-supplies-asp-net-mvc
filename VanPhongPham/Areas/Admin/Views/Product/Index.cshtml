@@ -32,6 +32,7 @@
             <tr>
                 <th>Mã sản phẩm</th>
                 <th>Tên sản phẩm</th>
+                <th>Giá nhập</th>
                 <th>Giá bán</th>
                 <th>Số lượng tồn</th>
                 <th>Danh mục</th>
@@ -44,8 +45,9 @@
                 <tr>
                     <td>@product.product_id</td>
                     <td>@product.product_name</td>
+                    <td>@product.purchase_price</td>
                     <td>
-                        @if (product.promotion_price != null)
+                        @if (product.promotion_price != null && product.promotion_price != 0)
                         {
                             <span style="text-decoration: line-through; color: grey;">@product.price</span><br />
                             <span>@product.promotion_price</span>
