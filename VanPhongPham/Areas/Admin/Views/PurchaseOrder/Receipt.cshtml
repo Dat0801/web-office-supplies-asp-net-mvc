@@ -1,0 +1,62 @@
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.receipt>
+@{
+    ViewBag.Title = "Nhập hàng từ nhà cung cấp - Quản Trị";
+}
+<h4 class="font-weight-bold mb-0">Danh sách phiếu nhập</h4>
+<div class="row">
+    <div class="navbar-nav my-3 ml-2">
+        <!-- Search -->
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Reciept", "PurchaseOrder")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.search_str ?? "")">
+            </span>
+            <button class="btn icon-btn btn-outline-primary">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <table class="table card-table table-responsive-lg">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã phiếu nhập</th>
+                <th>Mã phiếu đặt</th>
+                <th>Mã nhà cung cấp</th>
+                <th>Mã nhân viên</th>
+                <th>Lần nhập</th>
+                <th>Ngày đặt</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var receipt in Model)
+            {
+                <tr>
+                    <td>@receipt.receipt_id</td>
+                    <td>@receipt.purchase_order.purchase_order_id</td>
+                    <td>@receipt.purchase_order.supplier_id</td>
+                    <td>@receipt.purchase_order.employee_id</td>
+                    <td>@receipt.entry_count</td>
+                    <td>@receipt.created_at</td>
+                    <td>
+                        <a class="btn icon-btn btn-outline-info"
+                           title="Xem chi tiết"
+                           href="@Url.Action("ReceiptDetail", "PurchaseOrder", new { receipt_id = receipt.receipt_id })">
+                            <i class="feather icon-eye navbar-icon align-middle"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("Receipt", new { page }))
+        </div>
+    </div>
+</div>
+
+

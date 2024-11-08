@@ -1,0 +1,82 @@
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.receipt_detail>
+@{
+    ViewBag.Title = "Chi tiết phiếu nhập - Quản Trị";
+}
+<div class="card mb-4">
+    <h6 class="card-header">Chi tiết phiếu nhập</h6>
+    <div class="card-body">
+        <form method="post" action="">
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="">Mã phiếu nhập</label>
+                    <input type="text" class="form-control" name="receipt_id" readonly
+                           value="@(Model[0].receipt.receipt_id ?? "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="">Mã phiếu đặt</label>
+                    <input type="text" class="form-control" name="purchase_order_id" readonly
+                           value="@(Model[0].purchase_order_detail.purchase_order.purchase_order_id ?? "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="supplier_name">Tên nhà cung cấp</label>
+                    <input type="text" class="form-control" name="supplier_name" readonly
+                           value="@(Model[0].purchase_order_detail.purchase_order.supplier.supplier_name ?? "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="supplier_name">Tên nhân viên</label>
+                    <input type="text" class="form-control" name="employee_id" readonly
+                           value="@(Model[0].purchase_order_detail.purchase_order.user.full_name ?? "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="supplier_name">Lần nhập</label>
+                    <input type="text" class="form-control" name="item_count" readonly
+                           value="@(Model[0].receipt.entry_count)" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="supplier_name">Ngày nhập</label>
+                    <input type="text" class="form-control" name="created_at" readonly
+                           value="@(Model[0].receipt.created_at)" />
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <table class="table card-table table-responsive-lg">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã sản phẩm</th>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng đặt</th>
+                <th>Số lượng nhập</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var receipt in Model)
+            {
+            <tr>
+                <td>@receipt.product_id</td>
+                <td>@receipt.purchase_order_detail.product.product_name</td>
+                <td>@receipt.purchase_order_detail.quantity</td>
+                <td>@receipt.quantity</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("ReceiptDetail", new { page, Model[0].receipt.receipt_id }))
+        </div>
+    </div>
+</div>
+<a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("Receipt","PurchaseOrder")" title="Quay lại">
+    <i class="feather icon-corner-up-left"></i>
+</a>

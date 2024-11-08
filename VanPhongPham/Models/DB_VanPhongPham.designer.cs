@@ -81,12 +81,6 @@ namespace VanPhongPham.Models
     partial void Insertpromotion(promotion instance);
     partial void Updatepromotion(promotion instance);
     partial void Deletepromotion(promotion instance);
-    partial void Insertreceipt_detail(receipt_detail instance);
-    partial void Updatereceipt_detail(receipt_detail instance);
-    partial void Deletereceipt_detail(receipt_detail instance);
-    partial void Insertreceipt(receipt instance);
-    partial void Updatereceipt(receipt instance);
-    partial void Deletereceipt(receipt instance);
     partial void Insertrole(role instance);
     partial void Updaterole(role instance);
     partial void Deleterole(role instance);
@@ -96,6 +90,18 @@ namespace VanPhongPham.Models
     partial void Insertuser_role(user_role instance);
     partial void Updateuser_role(user_role instance);
     partial void Deleteuser_role(user_role instance);
+    partial void Insertpurchase_order(purchase_order instance);
+    partial void Updatepurchase_order(purchase_order instance);
+    partial void Deletepurchase_order(purchase_order instance);
+    partial void Insertreceipt(receipt instance);
+    partial void Updatereceipt(receipt instance);
+    partial void Deletereceipt(receipt instance);
+    partial void Insertreceipt_detail(receipt_detail instance);
+    partial void Updatereceipt_detail(receipt_detail instance);
+    partial void Deletereceipt_detail(receipt_detail instance);
+    partial void Insertpurchase_order_detail(purchase_order_detail instance);
+    partial void Updatepurchase_order_detail(purchase_order_detail instance);
+    partial void Deletepurchase_order_detail(purchase_order_detail instance);
     #endregion
 		
 		public DB_VanPhongPhamDataContext() : 
@@ -264,22 +270,6 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		public System.Data.Linq.Table<receipt_detail> receipt_details
-		{
-			get
-			{
-				return this.GetTable<receipt_detail>();
-			}
-		}
-		
-		public System.Data.Linq.Table<receipt> receipts
-		{
-			get
-			{
-				return this.GetTable<receipt>();
-			}
-		}
-		
 		public System.Data.Linq.Table<role> roles
 		{
 			get
@@ -301,6 +291,38 @@ namespace VanPhongPham.Models
 			get
 			{
 				return this.GetTable<user_role>();
+			}
+		}
+		
+		public System.Data.Linq.Table<purchase_order> purchase_orders
+		{
+			get
+			{
+				return this.GetTable<purchase_order>();
+			}
+		}
+		
+		public System.Data.Linq.Table<receipt> receipts
+		{
+			get
+			{
+				return this.GetTable<receipt>();
+			}
+		}
+		
+		public System.Data.Linq.Table<receipt_detail> receipt_details
+		{
+			get
+			{
+				return this.GetTable<receipt_detail>();
+			}
+		}
+		
+		public System.Data.Linq.Table<purchase_order_detail> purchase_order_details
+		{
+			get
+			{
+				return this.GetTable<purchase_order_detail>();
 			}
 		}
 	}
@@ -632,9 +654,9 @@ namespace VanPhongPham.Models
 		
 		private EntitySet<product_review> _product_reviews;
 		
-		private EntitySet<receipt> _receipts;
-		
 		private EntitySet<user_role> _user_roles;
+		
+		private EntitySet<purchase_order> _purchase_orders;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -665,8 +687,8 @@ namespace VanPhongPham.Models
 			this._orders = new EntitySet<order>(new Action<order>(this.attach_orders), new Action<order>(this.detach_orders));
 			this._orders1 = new EntitySet<order>(new Action<order>(this.attach_orders1), new Action<order>(this.detach_orders1));
 			this._product_reviews = new EntitySet<product_review>(new Action<product_review>(this.attach_product_reviews), new Action<product_review>(this.detach_product_reviews));
-			this._receipts = new EntitySet<receipt>(new Action<receipt>(this.attach_receipts), new Action<receipt>(this.detach_receipts));
 			this._user_roles = new EntitySet<user_role>(new Action<user_role>(this.attach_user_roles), new Action<user_role>(this.detach_user_roles));
+			this._purchase_orders = new EntitySet<purchase_order>(new Action<purchase_order>(this.attach_purchase_orders), new Action<purchase_order>(this.detach_purchase_orders));
 			OnCreated();
 		}
 		
@@ -895,19 +917,6 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_receipt", Storage="_receipts", ThisKey="user_id", OtherKey="employee_id")]
-		public EntitySet<receipt> receipts
-		{
-			get
-			{
-				return this._receipts;
-			}
-			set
-			{
-				this._receipts.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_user_role", Storage="_user_roles", ThisKey="user_id", OtherKey="user_id")]
 		public EntitySet<user_role> user_roles
 		{
@@ -918,6 +927,19 @@ namespace VanPhongPham.Models
 			set
 			{
 				this._user_roles.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_purchase_order", Storage="_purchase_orders", ThisKey="user_id", OtherKey="employee_id")]
+		public EntitySet<purchase_order> purchase_orders
+		{
+			get
+			{
+				return this._purchase_orders;
+			}
+			set
+			{
+				this._purchase_orders.Assign(value);
 			}
 		}
 		
@@ -1001,18 +1023,6 @@ namespace VanPhongPham.Models
 			entity.user = null;
 		}
 		
-		private void attach_receipts(receipt entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = this;
-		}
-		
-		private void detach_receipts(receipt entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = null;
-		}
-		
 		private void attach_user_roles(user_role entity)
 		{
 			this.SendPropertyChanging();
@@ -1020,6 +1030,18 @@ namespace VanPhongPham.Models
 		}
 		
 		private void detach_user_roles(user_role entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = null;
+		}
+		
+		private void attach_purchase_orders(purchase_order entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = this;
+		}
+		
+		private void detach_purchase_orders(purchase_order entity)
 		{
 			this.SendPropertyChanging();
 			entity.user = null;
@@ -3757,7 +3779,7 @@ namespace VanPhongPham.Models
 		
 		private EntitySet<product_review> _product_reviews;
 		
-		private EntitySet<receipt_detail> _receipt_details;
+		private EntitySet<purchase_order_detail> _purchase_order_details;
 		
 		private EntityRef<category> _category;
 		
@@ -3805,7 +3827,7 @@ namespace VanPhongPham.Models
 			this._product_attribute_values = new EntitySet<product_attribute_value>(new Action<product_attribute_value>(this.attach_product_attribute_values), new Action<product_attribute_value>(this.detach_product_attribute_values));
 			this._product_promotions = new EntitySet<product_promotion>(new Action<product_promotion>(this.attach_product_promotions), new Action<product_promotion>(this.detach_product_promotions));
 			this._product_reviews = new EntitySet<product_review>(new Action<product_review>(this.attach_product_reviews), new Action<product_review>(this.detach_product_reviews));
-			this._receipt_details = new EntitySet<receipt_detail>(new Action<receipt_detail>(this.attach_receipt_details), new Action<receipt_detail>(this.detach_receipt_details));
+			this._purchase_order_details = new EntitySet<purchase_order_detail>(new Action<purchase_order_detail>(this.attach_purchase_order_details), new Action<purchase_order_detail>(this.detach_purchase_order_details));
 			this._category = default(EntityRef<category>);
 			OnCreated();
 		}
@@ -4192,16 +4214,16 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="product_receipt_detail", Storage="_receipt_details", ThisKey="product_id", OtherKey="product_id")]
-		public EntitySet<receipt_detail> receipt_details
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="product_purchase_order_detail", Storage="_purchase_order_details", ThisKey="product_id", OtherKey="product_id")]
+		public EntitySet<purchase_order_detail> purchase_order_details
 		{
 			get
 			{
-				return this._receipt_details;
+				return this._purchase_order_details;
 			}
 			set
 			{
-				this._receipt_details.Assign(value);
+				this._purchase_order_details.Assign(value);
 			}
 		}
 		
@@ -4331,13 +4353,13 @@ namespace VanPhongPham.Models
 			entity.product = null;
 		}
 		
-		private void attach_receipt_details(receipt_detail entity)
+		private void attach_purchase_order_details(purchase_order_detail entity)
 		{
 			this.SendPropertyChanging();
 			entity.product = this;
 		}
 		
-		private void detach_receipt_details(receipt_detail entity)
+		private void detach_purchase_order_details(purchase_order_detail entity)
 		{
 			this.SendPropertyChanging();
 			entity.product = null;
@@ -4578,562 +4600,6 @@ namespace VanPhongPham.Models
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.receipt_details")]
-	public partial class receipt_detail : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private string _receipt_id;
-		
-		private string _product_id;
-		
-		private System.Nullable<int> _quantity;
-		
-		private double _purchase_price;
-		
-		private System.Nullable<double> _total_amount;
-		
-		private EntityRef<product> _product;
-		
-		private EntityRef<receipt> _receipt;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void Onreceipt_idChanging(string value);
-    partial void Onreceipt_idChanged();
-    partial void Onproduct_idChanging(string value);
-    partial void Onproduct_idChanged();
-    partial void OnquantityChanging(System.Nullable<int> value);
-    partial void OnquantityChanged();
-    partial void Onpurchase_priceChanging(double value);
-    partial void Onpurchase_priceChanged();
-    partial void Ontotal_amountChanging(System.Nullable<double> value);
-    partial void Ontotal_amountChanged();
-    #endregion
-		
-		public receipt_detail()
-		{
-			this._product = default(EntityRef<product>);
-			this._receipt = default(EntityRef<receipt>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_receipt_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
-		public string receipt_id
-		{
-			get
-			{
-				return this._receipt_id;
-			}
-			set
-			{
-				if ((this._receipt_id != value))
-				{
-					if (this._receipt.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onreceipt_idChanging(value);
-					this.SendPropertyChanging();
-					this._receipt_id = value;
-					this.SendPropertyChanged("receipt_id");
-					this.Onreceipt_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_product_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
-		public string product_id
-		{
-			get
-			{
-				return this._product_id;
-			}
-			set
-			{
-				if ((this._product_id != value))
-				{
-					if (this._product.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onproduct_idChanging(value);
-					this.SendPropertyChanging();
-					this._product_id = value;
-					this.SendPropertyChanged("product_id");
-					this.Onproduct_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_quantity", DbType="Int")]
-		public System.Nullable<int> quantity
-		{
-			get
-			{
-				return this._quantity;
-			}
-			set
-			{
-				if ((this._quantity != value))
-				{
-					this.OnquantityChanging(value);
-					this.SendPropertyChanging();
-					this._quantity = value;
-					this.SendPropertyChanged("quantity");
-					this.OnquantityChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_purchase_price", DbType="Float NOT NULL")]
-		public double purchase_price
-		{
-			get
-			{
-				return this._purchase_price;
-			}
-			set
-			{
-				if ((this._purchase_price != value))
-				{
-					this.Onpurchase_priceChanging(value);
-					this.SendPropertyChanging();
-					this._purchase_price = value;
-					this.SendPropertyChanged("purchase_price");
-					this.Onpurchase_priceChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_total_amount", DbType="Float")]
-		public System.Nullable<double> total_amount
-		{
-			get
-			{
-				return this._total_amount;
-			}
-			set
-			{
-				if ((this._total_amount != value))
-				{
-					this.Ontotal_amountChanging(value);
-					this.SendPropertyChanging();
-					this._total_amount = value;
-					this.SendPropertyChanged("total_amount");
-					this.Ontotal_amountChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="product_receipt_detail", Storage="_product", ThisKey="product_id", OtherKey="product_id", IsForeignKey=true)]
-		public product product
-		{
-			get
-			{
-				return this._product.Entity;
-			}
-			set
-			{
-				product previousValue = this._product.Entity;
-				if (((previousValue != value) 
-							|| (this._product.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._product.Entity = null;
-						previousValue.receipt_details.Remove(this);
-					}
-					this._product.Entity = value;
-					if ((value != null))
-					{
-						value.receipt_details.Add(this);
-						this._product_id = value.product_id;
-					}
-					else
-					{
-						this._product_id = default(string);
-					}
-					this.SendPropertyChanged("product");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="receipt_receipt_detail", Storage="_receipt", ThisKey="receipt_id", OtherKey="receipt_id", IsForeignKey=true)]
-		public receipt receipt
-		{
-			get
-			{
-				return this._receipt.Entity;
-			}
-			set
-			{
-				receipt previousValue = this._receipt.Entity;
-				if (((previousValue != value) 
-							|| (this._receipt.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._receipt.Entity = null;
-						previousValue.receipt_details.Remove(this);
-					}
-					this._receipt.Entity = value;
-					if ((value != null))
-					{
-						value.receipt_details.Add(this);
-						this._receipt_id = value.receipt_id;
-					}
-					else
-					{
-						this._receipt_id = default(string);
-					}
-					this.SendPropertyChanged("receipt");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.receipts")]
-	public partial class receipt : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private string _receipt_id;
-		
-		private string _employee_id;
-		
-		private string _supplier_id;
-		
-		private System.Nullable<double> _total_cost;
-		
-		private string _notes;
-		
-		private string _receipt_status;
-		
-		private System.Nullable<System.DateTime> _created_at;
-		
-		private EntitySet<receipt_detail> _receipt_details;
-		
-		private EntityRef<user> _user;
-		
-		private EntityRef<supplier> _supplier;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void Onreceipt_idChanging(string value);
-    partial void Onreceipt_idChanged();
-    partial void Onemployee_idChanging(string value);
-    partial void Onemployee_idChanged();
-    partial void Onsupplier_idChanging(string value);
-    partial void Onsupplier_idChanged();
-    partial void Ontotal_costChanging(System.Nullable<double> value);
-    partial void Ontotal_costChanged();
-    partial void OnnotesChanging(string value);
-    partial void OnnotesChanged();
-    partial void Onreceipt_statusChanging(string value);
-    partial void Onreceipt_statusChanged();
-    partial void Oncreated_atChanging(System.Nullable<System.DateTime> value);
-    partial void Oncreated_atChanged();
-    #endregion
-		
-		public receipt()
-		{
-			this._receipt_details = new EntitySet<receipt_detail>(new Action<receipt_detail>(this.attach_receipt_details), new Action<receipt_detail>(this.detach_receipt_details));
-			this._user = default(EntityRef<user>);
-			this._supplier = default(EntityRef<supplier>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_receipt_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
-		public string receipt_id
-		{
-			get
-			{
-				return this._receipt_id;
-			}
-			set
-			{
-				if ((this._receipt_id != value))
-				{
-					this.Onreceipt_idChanging(value);
-					this.SendPropertyChanging();
-					this._receipt_id = value;
-					this.SendPropertyChanged("receipt_id");
-					this.Onreceipt_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_employee_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
-		public string employee_id
-		{
-			get
-			{
-				return this._employee_id;
-			}
-			set
-			{
-				if ((this._employee_id != value))
-				{
-					if (this._user.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onemployee_idChanging(value);
-					this.SendPropertyChanging();
-					this._employee_id = value;
-					this.SendPropertyChanged("employee_id");
-					this.Onemployee_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_supplier_id", DbType="VarChar(10) NOT NULL", CanBeNull=false)]
-		public string supplier_id
-		{
-			get
-			{
-				return this._supplier_id;
-			}
-			set
-			{
-				if ((this._supplier_id != value))
-				{
-					if (this._supplier.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onsupplier_idChanging(value);
-					this.SendPropertyChanging();
-					this._supplier_id = value;
-					this.SendPropertyChanged("supplier_id");
-					this.Onsupplier_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_total_cost", DbType="Float")]
-		public System.Nullable<double> total_cost
-		{
-			get
-			{
-				return this._total_cost;
-			}
-			set
-			{
-				if ((this._total_cost != value))
-				{
-					this.Ontotal_costChanging(value);
-					this.SendPropertyChanging();
-					this._total_cost = value;
-					this.SendPropertyChanged("total_cost");
-					this.Ontotal_costChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_notes", DbType="NVarChar(200)")]
-		public string notes
-		{
-			get
-			{
-				return this._notes;
-			}
-			set
-			{
-				if ((this._notes != value))
-				{
-					this.OnnotesChanging(value);
-					this.SendPropertyChanging();
-					this._notes = value;
-					this.SendPropertyChanged("notes");
-					this.OnnotesChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_receipt_status", DbType="NVarChar(50)")]
-		public string receipt_status
-		{
-			get
-			{
-				return this._receipt_status;
-			}
-			set
-			{
-				if ((this._receipt_status != value))
-				{
-					this.Onreceipt_statusChanging(value);
-					this.SendPropertyChanging();
-					this._receipt_status = value;
-					this.SendPropertyChanged("receipt_status");
-					this.Onreceipt_statusChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_created_at", DbType="DateTime")]
-		public System.Nullable<System.DateTime> created_at
-		{
-			get
-			{
-				return this._created_at;
-			}
-			set
-			{
-				if ((this._created_at != value))
-				{
-					this.Oncreated_atChanging(value);
-					this.SendPropertyChanging();
-					this._created_at = value;
-					this.SendPropertyChanged("created_at");
-					this.Oncreated_atChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="receipt_receipt_detail", Storage="_receipt_details", ThisKey="receipt_id", OtherKey="receipt_id")]
-		public EntitySet<receipt_detail> receipt_details
-		{
-			get
-			{
-				return this._receipt_details;
-			}
-			set
-			{
-				this._receipt_details.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_receipt", Storage="_user", ThisKey="employee_id", OtherKey="user_id", IsForeignKey=true)]
-		public user user
-		{
-			get
-			{
-				return this._user.Entity;
-			}
-			set
-			{
-				user previousValue = this._user.Entity;
-				if (((previousValue != value) 
-							|| (this._user.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._user.Entity = null;
-						previousValue.receipts.Remove(this);
-					}
-					this._user.Entity = value;
-					if ((value != null))
-					{
-						value.receipts.Add(this);
-						this._employee_id = value.user_id;
-					}
-					else
-					{
-						this._employee_id = default(string);
-					}
-					this.SendPropertyChanged("user");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="supplier_receipt", Storage="_supplier", ThisKey="supplier_id", OtherKey="supplier_id", IsForeignKey=true)]
-		public supplier supplier
-		{
-			get
-			{
-				return this._supplier.Entity;
-			}
-			set
-			{
-				supplier previousValue = this._supplier.Entity;
-				if (((previousValue != value) 
-							|| (this._supplier.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._supplier.Entity = null;
-						previousValue.receipts.Remove(this);
-					}
-					this._supplier.Entity = value;
-					if ((value != null))
-					{
-						value.receipts.Add(this);
-						this._supplier_id = value.supplier_id;
-					}
-					else
-					{
-						this._supplier_id = default(string);
-					}
-					this.SendPropertyChanged("supplier");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_receipt_details(receipt_detail entity)
-		{
-			this.SendPropertyChanging();
-			entity.receipt = this;
-		}
-		
-		private void detach_receipt_details(receipt_detail entity)
-		{
-			this.SendPropertyChanging();
-			entity.receipt = null;
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.roles")]
 	public partial class role : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -5292,7 +4758,7 @@ namespace VanPhongPham.Models
 		
 		private System.Nullable<System.DateTime> _updated_at;
 		
-		private EntitySet<receipt> _receipts;
+		private EntitySet<purchase_order> _purchase_orders;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -5316,7 +4782,7 @@ namespace VanPhongPham.Models
 		
 		public supplier()
 		{
-			this._receipts = new EntitySet<receipt>(new Action<receipt>(this.attach_receipts), new Action<receipt>(this.detach_receipts));
+			this._purchase_orders = new EntitySet<purchase_order>(new Action<purchase_order>(this.attach_purchase_orders), new Action<purchase_order>(this.detach_purchase_orders));
 			OnCreated();
 		}
 		
@@ -5460,16 +4926,16 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="supplier_receipt", Storage="_receipts", ThisKey="supplier_id", OtherKey="supplier_id")]
-		public EntitySet<receipt> receipts
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="supplier_purchase_order", Storage="_purchase_orders", ThisKey="supplier_id", OtherKey="supplier_id")]
+		public EntitySet<purchase_order> purchase_orders
 		{
 			get
 			{
-				return this._receipts;
+				return this._purchase_orders;
 			}
 			set
 			{
-				this._receipts.Assign(value);
+				this._purchase_orders.Assign(value);
 			}
 		}
 		
@@ -5493,13 +4959,13 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		private void attach_receipts(receipt entity)
+		private void attach_purchase_orders(purchase_order entity)
 		{
 			this.SendPropertyChanging();
 			entity.supplier = this;
 		}
 		
-		private void detach_receipts(receipt entity)
+		private void detach_purchase_orders(purchase_order entity)
 		{
 			this.SendPropertyChanging();
 			entity.supplier = null;
@@ -5671,6 +5137,1019 @@ namespace VanPhongPham.Models
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.purchase_order")]
+	public partial class purchase_order : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private string _purchase_order_id;
+		
+		private string _supplier_id;
+		
+		private string _employee_id;
+		
+		private System.Nullable<int> _item_count;
+		
+		private string _status;
+		
+		private System.Nullable<System.DateTime> _created_at;
+		
+		private EntitySet<receipt> _receipts;
+		
+		private EntitySet<purchase_order_detail> _purchase_order_details;
+		
+		private EntityRef<user> _user;
+		
+		private EntityRef<supplier> _supplier;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onpurchase_order_idChanging(string value);
+    partial void Onpurchase_order_idChanged();
+    partial void Onsupplier_idChanging(string value);
+    partial void Onsupplier_idChanged();
+    partial void Onemployee_idChanging(string value);
+    partial void Onemployee_idChanged();
+    partial void Onitem_countChanging(System.Nullable<int> value);
+    partial void Onitem_countChanged();
+    partial void OnstatusChanging(string value);
+    partial void OnstatusChanged();
+    partial void Oncreated_atChanging(System.Nullable<System.DateTime> value);
+    partial void Oncreated_atChanged();
+    #endregion
+		
+		public purchase_order()
+		{
+			this._receipts = new EntitySet<receipt>(new Action<receipt>(this.attach_receipts), new Action<receipt>(this.detach_receipts));
+			this._purchase_order_details = new EntitySet<purchase_order_detail>(new Action<purchase_order_detail>(this.attach_purchase_order_details), new Action<purchase_order_detail>(this.detach_purchase_order_details));
+			this._user = default(EntityRef<user>);
+			this._supplier = default(EntityRef<supplier>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_purchase_order_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string purchase_order_id
+		{
+			get
+			{
+				return this._purchase_order_id;
+			}
+			set
+			{
+				if ((this._purchase_order_id != value))
+				{
+					this.Onpurchase_order_idChanging(value);
+					this.SendPropertyChanging();
+					this._purchase_order_id = value;
+					this.SendPropertyChanged("purchase_order_id");
+					this.Onpurchase_order_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_supplier_id", DbType="VarChar(10) NOT NULL", CanBeNull=false)]
+		public string supplier_id
+		{
+			get
+			{
+				return this._supplier_id;
+			}
+			set
+			{
+				if ((this._supplier_id != value))
+				{
+					if (this._supplier.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onsupplier_idChanging(value);
+					this.SendPropertyChanging();
+					this._supplier_id = value;
+					this.SendPropertyChanged("supplier_id");
+					this.Onsupplier_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_employee_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string employee_id
+		{
+			get
+			{
+				return this._employee_id;
+			}
+			set
+			{
+				if ((this._employee_id != value))
+				{
+					if (this._user.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onemployee_idChanging(value);
+					this.SendPropertyChanging();
+					this._employee_id = value;
+					this.SendPropertyChanged("employee_id");
+					this.Onemployee_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_item_count", DbType="Int")]
+		public System.Nullable<int> item_count
+		{
+			get
+			{
+				return this._item_count;
+			}
+			set
+			{
+				if ((this._item_count != value))
+				{
+					this.Onitem_countChanging(value);
+					this.SendPropertyChanging();
+					this._item_count = value;
+					this.SendPropertyChanged("item_count");
+					this.Onitem_countChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_status", DbType="NVarChar(50)")]
+		public string status
+		{
+			get
+			{
+				return this._status;
+			}
+			set
+			{
+				if ((this._status != value))
+				{
+					this.OnstatusChanging(value);
+					this.SendPropertyChanging();
+					this._status = value;
+					this.SendPropertyChanged("status");
+					this.OnstatusChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_created_at", DbType="DateTime")]
+		public System.Nullable<System.DateTime> created_at
+		{
+			get
+			{
+				return this._created_at;
+			}
+			set
+			{
+				if ((this._created_at != value))
+				{
+					this.Oncreated_atChanging(value);
+					this.SendPropertyChanging();
+					this._created_at = value;
+					this.SendPropertyChanged("created_at");
+					this.Oncreated_atChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="purchase_order_receipt", Storage="_receipts", ThisKey="purchase_order_id", OtherKey="purchase_order_id")]
+		public EntitySet<receipt> receipts
+		{
+			get
+			{
+				return this._receipts;
+			}
+			set
+			{
+				this._receipts.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="purchase_order_purchase_order_detail", Storage="_purchase_order_details", ThisKey="purchase_order_id", OtherKey="purchase_order_id")]
+		public EntitySet<purchase_order_detail> purchase_order_details
+		{
+			get
+			{
+				return this._purchase_order_details;
+			}
+			set
+			{
+				this._purchase_order_details.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_purchase_order", Storage="_user", ThisKey="employee_id", OtherKey="user_id", IsForeignKey=true)]
+		public user user
+		{
+			get
+			{
+				return this._user.Entity;
+			}
+			set
+			{
+				user previousValue = this._user.Entity;
+				if (((previousValue != value) 
+							|| (this._user.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._user.Entity = null;
+						previousValue.purchase_orders.Remove(this);
+					}
+					this._user.Entity = value;
+					if ((value != null))
+					{
+						value.purchase_orders.Add(this);
+						this._employee_id = value.user_id;
+					}
+					else
+					{
+						this._employee_id = default(string);
+					}
+					this.SendPropertyChanged("user");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="supplier_purchase_order", Storage="_supplier", ThisKey="supplier_id", OtherKey="supplier_id", IsForeignKey=true)]
+		public supplier supplier
+		{
+			get
+			{
+				return this._supplier.Entity;
+			}
+			set
+			{
+				supplier previousValue = this._supplier.Entity;
+				if (((previousValue != value) 
+							|| (this._supplier.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._supplier.Entity = null;
+						previousValue.purchase_orders.Remove(this);
+					}
+					this._supplier.Entity = value;
+					if ((value != null))
+					{
+						value.purchase_orders.Add(this);
+						this._supplier_id = value.supplier_id;
+					}
+					else
+					{
+						this._supplier_id = default(string);
+					}
+					this.SendPropertyChanged("supplier");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_receipts(receipt entity)
+		{
+			this.SendPropertyChanging();
+			entity.purchase_order = this;
+		}
+		
+		private void detach_receipts(receipt entity)
+		{
+			this.SendPropertyChanging();
+			entity.purchase_order = null;
+		}
+		
+		private void attach_purchase_order_details(purchase_order_detail entity)
+		{
+			this.SendPropertyChanging();
+			entity.purchase_order = this;
+		}
+		
+		private void detach_purchase_order_details(purchase_order_detail entity)
+		{
+			this.SendPropertyChanging();
+			entity.purchase_order = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.receipts")]
+	public partial class receipt : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private string _receipt_id;
+		
+		private string _purchase_order_id;
+		
+		private System.Nullable<int> _entry_count;
+		
+		private System.Nullable<System.DateTime> _created_at;
+		
+		private EntitySet<receipt_detail> _receipt_details;
+		
+		private EntityRef<purchase_order> _purchase_order;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onreceipt_idChanging(string value);
+    partial void Onreceipt_idChanged();
+    partial void Onpurchase_order_idChanging(string value);
+    partial void Onpurchase_order_idChanged();
+    partial void Onentry_countChanging(System.Nullable<int> value);
+    partial void Onentry_countChanged();
+    partial void Oncreated_atChanging(System.Nullable<System.DateTime> value);
+    partial void Oncreated_atChanged();
+    #endregion
+		
+		public receipt()
+		{
+			this._receipt_details = new EntitySet<receipt_detail>(new Action<receipt_detail>(this.attach_receipt_details), new Action<receipt_detail>(this.detach_receipt_details));
+			this._purchase_order = default(EntityRef<purchase_order>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_receipt_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string receipt_id
+		{
+			get
+			{
+				return this._receipt_id;
+			}
+			set
+			{
+				if ((this._receipt_id != value))
+				{
+					this.Onreceipt_idChanging(value);
+					this.SendPropertyChanging();
+					this._receipt_id = value;
+					this.SendPropertyChanged("receipt_id");
+					this.Onreceipt_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_purchase_order_id", DbType="VarChar(10) NOT NULL", CanBeNull=false)]
+		public string purchase_order_id
+		{
+			get
+			{
+				return this._purchase_order_id;
+			}
+			set
+			{
+				if ((this._purchase_order_id != value))
+				{
+					if (this._purchase_order.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onpurchase_order_idChanging(value);
+					this.SendPropertyChanging();
+					this._purchase_order_id = value;
+					this.SendPropertyChanged("purchase_order_id");
+					this.Onpurchase_order_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_entry_count", DbType="Int")]
+		public System.Nullable<int> entry_count
+		{
+			get
+			{
+				return this._entry_count;
+			}
+			set
+			{
+				if ((this._entry_count != value))
+				{
+					this.Onentry_countChanging(value);
+					this.SendPropertyChanging();
+					this._entry_count = value;
+					this.SendPropertyChanged("entry_count");
+					this.Onentry_countChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_created_at", DbType="DateTime")]
+		public System.Nullable<System.DateTime> created_at
+		{
+			get
+			{
+				return this._created_at;
+			}
+			set
+			{
+				if ((this._created_at != value))
+				{
+					this.Oncreated_atChanging(value);
+					this.SendPropertyChanging();
+					this._created_at = value;
+					this.SendPropertyChanged("created_at");
+					this.Oncreated_atChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="receipt_receipt_detail", Storage="_receipt_details", ThisKey="receipt_id", OtherKey="receipt_id")]
+		public EntitySet<receipt_detail> receipt_details
+		{
+			get
+			{
+				return this._receipt_details;
+			}
+			set
+			{
+				this._receipt_details.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="purchase_order_receipt", Storage="_purchase_order", ThisKey="purchase_order_id", OtherKey="purchase_order_id", IsForeignKey=true)]
+		public purchase_order purchase_order
+		{
+			get
+			{
+				return this._purchase_order.Entity;
+			}
+			set
+			{
+				purchase_order previousValue = this._purchase_order.Entity;
+				if (((previousValue != value) 
+							|| (this._purchase_order.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._purchase_order.Entity = null;
+						previousValue.receipts.Remove(this);
+					}
+					this._purchase_order.Entity = value;
+					if ((value != null))
+					{
+						value.receipts.Add(this);
+						this._purchase_order_id = value.purchase_order_id;
+					}
+					else
+					{
+						this._purchase_order_id = default(string);
+					}
+					this.SendPropertyChanged("purchase_order");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_receipt_details(receipt_detail entity)
+		{
+			this.SendPropertyChanging();
+			entity.receipt = this;
+		}
+		
+		private void detach_receipt_details(receipt_detail entity)
+		{
+			this.SendPropertyChanging();
+			entity.receipt = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.receipt_details")]
+	public partial class receipt_detail : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private string _receipt_id;
+		
+		private string _purchase_order_id;
+		
+		private string _product_id;
+		
+		private System.Nullable<int> _quantity;
+		
+		private EntityRef<receipt> _receipt;
+		
+		private EntityRef<purchase_order_detail> _purchase_order_detail;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onreceipt_idChanging(string value);
+    partial void Onreceipt_idChanged();
+    partial void Onpurchase_order_idChanging(string value);
+    partial void Onpurchase_order_idChanged();
+    partial void Onproduct_idChanging(string value);
+    partial void Onproduct_idChanged();
+    partial void OnquantityChanging(System.Nullable<int> value);
+    partial void OnquantityChanged();
+    #endregion
+		
+		public receipt_detail()
+		{
+			this._receipt = default(EntityRef<receipt>);
+			this._purchase_order_detail = default(EntityRef<purchase_order_detail>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_receipt_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string receipt_id
+		{
+			get
+			{
+				return this._receipt_id;
+			}
+			set
+			{
+				if ((this._receipt_id != value))
+				{
+					if (this._receipt.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onreceipt_idChanging(value);
+					this.SendPropertyChanging();
+					this._receipt_id = value;
+					this.SendPropertyChanged("receipt_id");
+					this.Onreceipt_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_purchase_order_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string purchase_order_id
+		{
+			get
+			{
+				return this._purchase_order_id;
+			}
+			set
+			{
+				if ((this._purchase_order_id != value))
+				{
+					if (this._purchase_order_detail.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onpurchase_order_idChanging(value);
+					this.SendPropertyChanging();
+					this._purchase_order_id = value;
+					this.SendPropertyChanged("purchase_order_id");
+					this.Onpurchase_order_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_product_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string product_id
+		{
+			get
+			{
+				return this._product_id;
+			}
+			set
+			{
+				if ((this._product_id != value))
+				{
+					if (this._purchase_order_detail.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onproduct_idChanging(value);
+					this.SendPropertyChanging();
+					this._product_id = value;
+					this.SendPropertyChanged("product_id");
+					this.Onproduct_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_quantity", DbType="Int")]
+		public System.Nullable<int> quantity
+		{
+			get
+			{
+				return this._quantity;
+			}
+			set
+			{
+				if ((this._quantity != value))
+				{
+					this.OnquantityChanging(value);
+					this.SendPropertyChanging();
+					this._quantity = value;
+					this.SendPropertyChanged("quantity");
+					this.OnquantityChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="receipt_receipt_detail", Storage="_receipt", ThisKey="receipt_id", OtherKey="receipt_id", IsForeignKey=true)]
+		public receipt receipt
+		{
+			get
+			{
+				return this._receipt.Entity;
+			}
+			set
+			{
+				receipt previousValue = this._receipt.Entity;
+				if (((previousValue != value) 
+							|| (this._receipt.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._receipt.Entity = null;
+						previousValue.receipt_details.Remove(this);
+					}
+					this._receipt.Entity = value;
+					if ((value != null))
+					{
+						value.receipt_details.Add(this);
+						this._receipt_id = value.receipt_id;
+					}
+					else
+					{
+						this._receipt_id = default(string);
+					}
+					this.SendPropertyChanged("receipt");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="purchase_order_detail_receipt_detail", Storage="_purchase_order_detail", ThisKey="purchase_order_id,product_id", OtherKey="purchase_order_id,product_id", IsForeignKey=true)]
+		public purchase_order_detail purchase_order_detail
+		{
+			get
+			{
+				return this._purchase_order_detail.Entity;
+			}
+			set
+			{
+				purchase_order_detail previousValue = this._purchase_order_detail.Entity;
+				if (((previousValue != value) 
+							|| (this._purchase_order_detail.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._purchase_order_detail.Entity = null;
+						previousValue.receipt_details.Remove(this);
+					}
+					this._purchase_order_detail.Entity = value;
+					if ((value != null))
+					{
+						value.receipt_details.Add(this);
+						this._purchase_order_id = value.purchase_order_id;
+						this._product_id = value.product_id;
+					}
+					else
+					{
+						this._purchase_order_id = default(string);
+						this._product_id = default(string);
+					}
+					this.SendPropertyChanged("purchase_order_detail");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.purchase_order_detail")]
+	public partial class purchase_order_detail : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private string _purchase_order_id;
+		
+		private string _product_id;
+		
+		private System.Nullable<int> _quantity;
+		
+		private System.Nullable<double> _price;
+		
+		private System.Nullable<int> _quantity_received;
+		
+		private EntitySet<receipt_detail> _receipt_details;
+		
+		private EntityRef<product> _product;
+		
+		private EntityRef<purchase_order> _purchase_order;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onpurchase_order_idChanging(string value);
+    partial void Onpurchase_order_idChanged();
+    partial void Onproduct_idChanging(string value);
+    partial void Onproduct_idChanged();
+    partial void OnquantityChanging(System.Nullable<int> value);
+    partial void OnquantityChanged();
+    partial void OnpriceChanging(System.Nullable<double> value);
+    partial void OnpriceChanged();
+    partial void Onquantity_receivedChanging(System.Nullable<int> value);
+    partial void Onquantity_receivedChanged();
+    #endregion
+		
+		public purchase_order_detail()
+		{
+			this._receipt_details = new EntitySet<receipt_detail>(new Action<receipt_detail>(this.attach_receipt_details), new Action<receipt_detail>(this.detach_receipt_details));
+			this._product = default(EntityRef<product>);
+			this._purchase_order = default(EntityRef<purchase_order>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_purchase_order_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string purchase_order_id
+		{
+			get
+			{
+				return this._purchase_order_id;
+			}
+			set
+			{
+				if ((this._purchase_order_id != value))
+				{
+					if (this._purchase_order.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onpurchase_order_idChanging(value);
+					this.SendPropertyChanging();
+					this._purchase_order_id = value;
+					this.SendPropertyChanged("purchase_order_id");
+					this.Onpurchase_order_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_product_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string product_id
+		{
+			get
+			{
+				return this._product_id;
+			}
+			set
+			{
+				if ((this._product_id != value))
+				{
+					if (this._product.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onproduct_idChanging(value);
+					this.SendPropertyChanging();
+					this._product_id = value;
+					this.SendPropertyChanged("product_id");
+					this.Onproduct_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_quantity", DbType="Int")]
+		public System.Nullable<int> quantity
+		{
+			get
+			{
+				return this._quantity;
+			}
+			set
+			{
+				if ((this._quantity != value))
+				{
+					this.OnquantityChanging(value);
+					this.SendPropertyChanging();
+					this._quantity = value;
+					this.SendPropertyChanged("quantity");
+					this.OnquantityChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_price", DbType="Float")]
+		public System.Nullable<double> price
+		{
+			get
+			{
+				return this._price;
+			}
+			set
+			{
+				if ((this._price != value))
+				{
+					this.OnpriceChanging(value);
+					this.SendPropertyChanging();
+					this._price = value;
+					this.SendPropertyChanged("price");
+					this.OnpriceChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_quantity_received", DbType="Int")]
+		public System.Nullable<int> quantity_received
+		{
+			get
+			{
+				return this._quantity_received;
+			}
+			set
+			{
+				if ((this._quantity_received != value))
+				{
+					this.Onquantity_receivedChanging(value);
+					this.SendPropertyChanging();
+					this._quantity_received = value;
+					this.SendPropertyChanged("quantity_received");
+					this.Onquantity_receivedChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="purchase_order_detail_receipt_detail", Storage="_receipt_details", ThisKey="purchase_order_id,product_id", OtherKey="purchase_order_id,product_id")]
+		public EntitySet<receipt_detail> receipt_details
+		{
+			get
+			{
+				return this._receipt_details;
+			}
+			set
+			{
+				this._receipt_details.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="product_purchase_order_detail", Storage="_product", ThisKey="product_id", OtherKey="product_id", IsForeignKey=true)]
+		public product product
+		{
+			get
+			{
+				return this._product.Entity;
+			}
+			set
+			{
+				product previousValue = this._product.Entity;
+				if (((previousValue != value) 
+							|| (this._product.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._product.Entity = null;
+						previousValue.purchase_order_details.Remove(this);
+					}
+					this._product.Entity = value;
+					if ((value != null))
+					{
+						value.purchase_order_details.Add(this);
+						this._product_id = value.product_id;
+					}
+					else
+					{
+						this._product_id = default(string);
+					}
+					this.SendPropertyChanged("product");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="purchase_order_purchase_order_detail", Storage="_purchase_order", ThisKey="purchase_order_id", OtherKey="purchase_order_id", IsForeignKey=true)]
+		public purchase_order purchase_order
+		{
+			get
+			{
+				return this._purchase_order.Entity;
+			}
+			set
+			{
+				purchase_order previousValue = this._purchase_order.Entity;
+				if (((previousValue != value) 
+							|| (this._purchase_order.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._purchase_order.Entity = null;
+						previousValue.purchase_order_details.Remove(this);
+					}
+					this._purchase_order.Entity = value;
+					if ((value != null))
+					{
+						value.purchase_order_details.Add(this);
+						this._purchase_order_id = value.purchase_order_id;
+					}
+					else
+					{
+						this._purchase_order_id = default(string);
+					}
+					this.SendPropertyChanged("purchase_order");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_receipt_details(receipt_detail entity)
+		{
+			this.SendPropertyChanging();
+			entity.purchase_order_detail = this;
+		}
+		
+		private void detach_receipt_details(receipt_detail entity)
+		{
+			this.SendPropertyChanging();
+			entity.purchase_order_detail = null;
 		}
 	}
 }

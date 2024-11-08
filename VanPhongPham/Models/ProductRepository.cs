@@ -71,6 +71,11 @@ namespace VanPhongPham.Models
         {
             try
             {
+                if (product.created_at == null)
+                {
+                    product.created_at = DateTime.Now;
+                }
+
                 _context.products.InsertOnSubmit(product);
                 _context.SubmitChanges();
                 return true;
