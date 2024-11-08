@@ -29,8 +29,8 @@
       <Association Name="user_order" Member="orders" ThisKey="user_id" OtherKey="customer_id" Type="order" />
       <Association Name="user_order1" Member="orders1" ThisKey="user_id" OtherKey="employee_id" Type="order" />
       <Association Name="user_product_review" Member="product_reviews" ThisKey="user_id" OtherKey="user_id" Type="product_review" />
-      <Association Name="user_receipt" Member="receipts" ThisKey="user_id" OtherKey="employee_id" Type="receipt" />
       <Association Name="user_user_role" Member="user_roles" ThisKey="user_id" OtherKey="user_id" Type="user_role" />
+      <Association Name="user_purchase_order" Member="purchase_orders" ThisKey="user_id" OtherKey="employee_id" Type="purchase_order" />
     </Type>
   </Table>
   <Table Name="dbo.attribute_values" Member="attribute_values">
@@ -185,7 +185,7 @@
       <Association Name="product_product_attribute_value" Member="product_attribute_values" ThisKey="product_id" OtherKey="product_id" Type="product_attribute_value" />
       <Association Name="product_product_promotion" Member="product_promotions" ThisKey="product_id" OtherKey="product_id" Type="product_promotion" />
       <Association Name="product_product_review" Member="product_reviews" ThisKey="product_id" OtherKey="product_id" Type="product_review" />
-      <Association Name="product_receipt_detail" Member="receipt_details" ThisKey="product_id" OtherKey="product_id" Type="receipt_detail" />
+      <Association Name="product_purchase_order_detail" Member="purchase_order_details" ThisKey="product_id" OtherKey="product_id" Type="purchase_order_detail" />
       <Association Name="category_product" Member="category" ThisKey="category_id" OtherKey="category_id" Type="category" IsForeignKey="true" />
     </Type>
   </Table>
@@ -199,31 +199,6 @@
       <Column Name="description" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
       <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Association Name="promotion_product_promotion" Member="product_promotions" ThisKey="promotion_id" OtherKey="promotion_id" Type="product_promotion" />
-    </Type>
-  </Table>
-  <Table Name="dbo.receipt_details" Member="receipt_details">
-    <Type Name="receipt_detail">
-      <Column Name="receipt_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="product_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="quantity" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="purchase_price" Type="System.Double" DbType="Float NOT NULL" CanBeNull="false" />
-      <Column Name="total_amount" Type="System.Double" DbType="Float" CanBeNull="true" />
-      <Association Name="product_receipt_detail" Member="product" ThisKey="product_id" OtherKey="product_id" Type="product" IsForeignKey="true" />
-      <Association Name="receipt_receipt_detail" Member="receipt" ThisKey="receipt_id" OtherKey="receipt_id" Type="receipt" IsForeignKey="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.receipts" Member="receipts">
-    <Type Name="receipt">
-      <Column Name="receipt_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="employee_id" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
-      <Column Name="supplier_id" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
-      <Column Name="total_cost" Type="System.Double" DbType="Float" CanBeNull="true" />
-      <Column Name="notes" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
-      <Column Name="receipt_status" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Association Name="receipt_receipt_detail" Member="receipt_details" ThisKey="receipt_id" OtherKey="receipt_id" Type="receipt_detail" />
-      <Association Name="user_receipt" Member="user" ThisKey="employee_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
-      <Association Name="supplier_receipt" Member="supplier" ThisKey="supplier_id" OtherKey="supplier_id" Type="supplier" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.roles" Member="roles">
@@ -243,7 +218,7 @@
       <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="updated_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Association Name="supplier_receipt" Member="receipts" ThisKey="supplier_id" OtherKey="supplier_id" Type="receipt" />
+      <Association Name="supplier_purchase_order" Member="purchase_orders" ThisKey="supplier_id" OtherKey="supplier_id" Type="purchase_order" />
     </Type>
   </Table>
   <Table Name="dbo.user_roles" Member="user_roles">
@@ -252,6 +227,52 @@
       <Column Name="role_id" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Association Name="role_user_role" Member="role" ThisKey="role_id" OtherKey="role_id" Type="role" IsForeignKey="true" />
       <Association Name="user_user_role" Member="user" ThisKey="user_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.purchase_order" Member="purchase_orders">
+    <Type Name="purchase_order">
+      <Column Name="purchase_order_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="supplier_id" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="employee_id" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="item_count" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="status" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="purchase_order_receipt" Member="receipts" ThisKey="purchase_order_id" OtherKey="purchase_order_id" Type="receipt" />
+      <Association Name="purchase_order_purchase_order_detail" Member="purchase_order_details" ThisKey="purchase_order_id" OtherKey="purchase_order_id" Type="purchase_order_detail" />
+      <Association Name="user_purchase_order" Member="user" ThisKey="employee_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
+      <Association Name="supplier_purchase_order" Member="supplier" ThisKey="supplier_id" OtherKey="supplier_id" Type="supplier" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.receipts" Member="receipts">
+    <Type Name="receipt">
+      <Column Name="receipt_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="purchase_order_id" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="entry_count" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="receipt_receipt_detail" Member="receipt_details" ThisKey="receipt_id" OtherKey="receipt_id" Type="receipt_detail" />
+      <Association Name="purchase_order_receipt" Member="purchase_order" ThisKey="purchase_order_id" OtherKey="purchase_order_id" Type="purchase_order" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.receipt_details" Member="receipt_details">
+    <Type Name="receipt_detail">
+      <Column Name="receipt_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="purchase_order_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="product_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="quantity" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="receipt_receipt_detail" Member="receipt" ThisKey="receipt_id" OtherKey="receipt_id" Type="receipt" IsForeignKey="true" />
+      <Association Name="purchase_order_detail_receipt_detail" Member="purchase_order_detail" ThisKey="purchase_order_id,product_id" OtherKey="purchase_order_id,product_id" Type="purchase_order_detail" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.purchase_order_detail" Member="purchase_order_details">
+    <Type Name="purchase_order_detail">
+      <Column Name="purchase_order_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="product_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="quantity" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="price" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="quantity_received" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="purchase_order_detail_receipt_detail" Member="receipt_details" ThisKey="purchase_order_id,product_id" OtherKey="purchase_order_id,product_id" Type="receipt_detail" />
+      <Association Name="product_purchase_order_detail" Member="product" ThisKey="product_id" OtherKey="product_id" Type="product" IsForeignKey="true" />
+      <Association Name="purchase_order_purchase_order_detail" Member="purchase_order" ThisKey="purchase_order_id" OtherKey="purchase_order_id" Type="purchase_order" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

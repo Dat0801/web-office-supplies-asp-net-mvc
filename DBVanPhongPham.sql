@@ -10,11 +10,11 @@ create table products
 	category_id varchar(10) not null,
 	product_name nvarchar(200) not null unique,
 	description nvarchar(1000) default null,
-	purchase_price float not null,
+	purchase_price float default 0,
 	price_coefficient float default 0.5,
-	price float default null,
-	promotion_price float default null,
-	stock_quantity int not null,
+	price float default 0,
+	promotion_price float default 0,
+	stock_quantity int default 0,
 	sold int default 0,
 	avgRating float default 0,
 	visited int default 0,
@@ -177,24 +177,39 @@ create table order_details
 	isReviewed bit default 0
 )
 
+create table purchase_order
+(
+	purchase_order_id varchar(10) not null,
+	supplier_id varchar(10) not null,
+	employee_id nvarchar(255) not null,
+	item_count int default 0,
+	status nvarchar(50) default N'Đang giao',
+	created_at datetime default getdate(),
+)
+
+create table purchase_order_detail
+(
+	purchase_order_id varchar(10) not null,
+	product_id varchar(10) not null,
+	quantity int default 1,
+	price float default 0,
+	quantity_received int default 0
+)
+
 create table receipts
 (
 	receipt_id varchar(10) not null,
-	employee_id nvarchar(255) not null,
-	supplier_id varchar(10) not null,
-	total_cost float default null,
-	notes nvarchar(200) default null,
-	receipt_status nvarchar(50) default N'Đã nhập hàng',
+	purchase_order_id varchar(10) not null,
+	entry_count int default 1,
 	created_at datetime default getdate(),
 )
 
 create table receipt_details 
 (
 	receipt_id varchar(10) not null,
+	purchase_order_id varchar(10) not null,
 	product_id varchar(10) not null,
 	quantity int default 1,
-	purchase_price float not null,
-	total_amount float default 0,
 )
 
 create table cart_section
@@ -224,8 +239,10 @@ alter table images add primary key (image_id);
 alter table payment_methods add primary key (method_id);
 alter table orders add primary key (order_id);
 alter table order_details add primary key (order_id, product_id);
+alter table purchase_order add primary key (purchase_order_id);
+alter table purchase_order_detail add primary key (purchase_order_id, product_id);
 alter table receipts add primary key (receipt_id);
-alter table receipt_details add primary key (receipt_id, product_id);
+alter table receipt_details add primary key (receipt_id, purchase_order_id, product_id);
 
 alter table product_promotions
 add constraint FK_ProductPromotions_Products
@@ -283,21 +300,33 @@ alter table order_details
 add constraint FK_OrderDetails_Products
 foreign key (product_id) references products(product_id);
 
-alter table receipts
-add constraint FK_Receipts_Users
-foreign key (employee_id) references users(user_id);
+ALTER TABLE purchase_order
+ADD CONSTRAINT FK_PurchaseOrder_Suppliers
+FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id);
 
-alter table receipts
-add constraint FK_Receipts_Suppliers
-foreign key (supplier_id) references suppliers(supplier_id);
+ALTER TABLE purchase_order
+ADD CONSTRAINT FK_PurchaseOrder_Employees
+FOREIGN KEY (employee_id) REFERENCES users(user_id);
+
+ALTER TABLE purchase_order_detail
+ADD CONSTRAINT FK_PurchaseOrderDetail_PurchaseOrder
+FOREIGN KEY (purchase_order_id) REFERENCES purchase_order(purchase_order_id);
+
+ALTER TABLE purchase_order_detail
+ADD CONSTRAINT FK_PurchaseOrderDetail_Products
+FOREIGN KEY (product_id) REFERENCES products(product_id);
+
+ALTER TABLE receipts
+ADD CONSTRAINT FK_Receipts_PurchaseOrder
+FOREIGN KEY (purchase_order_id) REFERENCES purchase_order(purchase_order_id);
 
 alter table receipt_details
 add constraint FK_Receipt_Details_Receipts
 foreign key (receipt_id) references Receipts(receipt_id);
 
 alter table receipt_details
-add constraint FK_ReceiptDetails_Products
-foreign key (product_id) references products(product_id);
+add constraint FK_Receipt_Details_Purchase_Order_Detail
+foreign key (purchase_order_id, product_id) references purchase_order_detail(purchase_order_id, product_id);
 
 alter table product_review
 add constraint FK_ProductReview_Users
@@ -318,7 +347,6 @@ foreign key (cart_id) references cart_section(cart_id);
 alter table cart_details
 add constraint FK_CartDetails_Products
 foreign key (product_id) references products(product_id);
-
 go
 
 -- Cập nhật trường updated_at trong bảng products mỗi khi có bản ghi bị cập nhật.
@@ -362,17 +390,18 @@ BEGIN
 END;
 GO
 
--- Trigger tính toán giá bán sản phẩm dựa trên giá mua và hệ số giá.
+-- Trigger tính toán giá bán sản phẩm dựa trên giá mua và hệ số giá, với làm tròn giá
 CREATE TRIGGER trg_CalculateProductPrice
 ON products
 AFTER INSERT, UPDATE
 AS
 BEGIN
     UPDATE products
-    SET price = purchase_price * (1 + price_coefficient)
+    SET price = ROUND(purchase_price * price_coefficient, 2)  -- Làm tròn đến 2 chữ số thập phân
     WHERE product_id IN (SELECT product_id FROM inserted);
 END;
 GO
+
 
 -- Trigger tính toán giá khuyến mãi sản phẩm dựa bảng khuyến mãi.
 CREATE TRIGGER trg_UpdatePromotionPrice
@@ -454,48 +483,86 @@ BEGIN
 END;
 GO
 
+-- Trigger để cập nhật item_count sau khi thêm mới chi tiết đơn hàng
+CREATE TRIGGER trg_AfterInsertPurchaseOrderDetail
+ON purchase_order_detail
+AFTER INSERT
+AS
+BEGIN
+    UPDATE purchase_order
+    SET item_count = (
+        SELECT COUNT(*)
+        FROM purchase_order_detail
+        WHERE purchase_order_detail.purchase_order_id = purchase_order.purchase_order_id
+    )
+    WHERE purchase_order.purchase_order_id IN (SELECT purchase_order_id FROM INSERTED);
+END;
+GO
+
 -- Trigger cập nhật giá mua của sản phẩm nếu giá mua mới lớn hơn giá mua hiện tại.
 CREATE TRIGGER trg_UpdatePurchasePrice
-ON receipt_details
+ON purchase_order_detail
 AFTER INSERT
 AS
 BEGIN
     UPDATE products
-    SET purchase_price = i.purchase_price
+    SET purchase_price = i.price
     FROM products p
     INNER JOIN inserted i ON p.product_id = i.product_id
-    WHERE i.purchase_price > p.purchase_price;
+    WHERE i.price > p.purchase_price;
 END;
 GO
 
--- Trigger tính toán tổng số tiền cho từng chi tiết phiếu nhập.
-CREATE TRIGGER trg_CalculateReceiptDetailsTotalAmount
+-- Trigger để cập nhật stock_quantity trong bảng products khi có hàng nhập vào
+CREATE TRIGGER trg_UpdateStockQuantityInReceipt
 ON receipt_details
 AFTER INSERT
 AS
 BEGIN
-    UPDATE rd
-    SET total_amount = rd.purchase_price * rd.quantity
-    FROM receipt_details rd
-    INNER JOIN inserted i ON rd.receipt_id = i.receipt_id AND rd.product_id = i.product_id;
+    -- Cập nhật số lượng tồn kho trong bảng products
+    UPDATE p
+    SET p.stock_quantity = p.stock_quantity + i.quantity
+    FROM products p
+    INNER JOIN inserted i
+        ON p.product_id = i.product_id;
 END;
 GO
 
--- Trigger Tính toán tổng chi phí của một phiếu nhập.
-CREATE TRIGGER trg_CalculateReceiptTotalCost
+
+-- Trigger cập nhật số lượng đã nhận trong bảng purchase_order_detail
+CREATE TRIGGER trg_UpdateQuantityReceived
 ON receipt_details
 AFTER INSERT
 AS
 BEGIN
-    UPDATE receipts
-    SET total_cost = (
-        SELECT SUM(rd.total_amount)
-        FROM receipt_details rd
-        WHERE rd.receipt_id = receipts.receipt_id
-    )
-    FROM receipts
-    INNER JOIN (SELECT DISTINCT receipt_id FROM inserted) i
-    ON receipts.receipt_id = i.receipt_id;
+    -- Cập nhật số lượng đã nhận trong bảng purchase_order_detail
+    UPDATE pod
+    SET pod.quantity_received = pod.quantity_received + i.quantity
+    FROM purchase_order_detail pod
+    INNER JOIN inserted i
+        ON pod.purchase_order_id = i.purchase_order_id
+        AND pod.product_id = i.product_id;
+END;
+GO
+
+-- Trigger để kiểm tra và cập nhật trạng thái đơn hàng nếu tất cả sản phẩm đã nhập đủ
+CREATE TRIGGER trg_CheckAndUpdateOrderStatus
+ON receipt_details
+AFTER INSERT
+AS
+BEGIN
+    -- Cập nhật trạng thái đơn hàng thành 'Đã giao' nếu tất cả sản phẩm trong đơn hàng đã nhập đủ số lượng
+    UPDATE po
+    SET po.status = N'Đã giao'
+    FROM purchase_order po
+    INNER JOIN purchase_order_detail pod ON po.purchase_order_id = pod.purchase_order_id
+    INNER JOIN inserted i ON i.purchase_order_id = po.purchase_order_id
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM purchase_order_detail pod2
+        WHERE pod2.purchase_order_id = po.purchase_order_id
+        AND pod2.quantity > pod2.quantity_received
+    );  -- Kiểm tra nếu có sản phẩm nào chưa nhập đủ số lượng đã yêu cầu
 END;
 GO
 
@@ -514,12 +581,12 @@ VALUES
 
 INSERT INTO products (product_id, category_id, product_name, description, purchase_price, price_coefficient, price, stock_quantity, status)
 VALUES 
-('PRO001', 'CAT001', N'Bút bi Thiên Long TL 023', N'Bút bi Thiên Long TL 023 được sử dụng rộng rãi trong các trường học, văn phòng, công sở,... Đây là một sản phẩm chất lượng cao, giá cả phải chăng, phù hợp với nhiều mục đích sử dụng.', 3500, 0.5, NULL, 100, 1),
-('PRO002', 'CAT001', N'Bút bi Thiên Long TL 025', N'Bút bi Thiên Long TL 025 được thiết kế đơn giản và dễ sử dụng, phù hợp cho nhiều người. Đây là lựa chọn tuyệt vời cho công việc văn phòng và học tập.', 4000, 0.5, NULL, 80, 1),
-('PRO003', 'CAT002', N'Bút chì Stabilo 2B 288', N'Bút chì Stabilo 2B 288 cho nét vẽ đậm dày, thích hợp dùng để tập viết chữ, vẽ phác thảo, vẽ bóng mờ, sáng tối hoặc tô trắc nghiệm. Chì có độ bền màu cao, lâu phai và dễ dàng xóa sạch bằng gôm tẩy khi sử dụng.', 14000, 0.5, NULL, 70, 1),
-('PRO004', 'CAT003', N'Giấy a4 Double A 80gsm', N'Giấy photo a4 Double A DL80 GSM phù hợp với các nhu cầu in ấn văn phòng cơ bản như in ấn tài liệu, văn bản, hợp đồng, báo cáo,... với độ sắc nét nổi bật trong tầm giá cả hợp lý.', 55000, 0.5, NULL, 60, 1),
-('PRO005', 'CAT004', N'Máy tính cầm tay Casio FX 580VN X new', N'Máy tính cầm tay Casio FX 580VN X new là một sản phẩm chất lượng cao, đáp ứng nhu cầu của nhiều đối tượng. Máy có màn hình lớn, rõ ràng, các nút bấm nhạy, dễ sử dụng.', 480000, 0.5, NULL, 40, 1),
-('PRO006', 'CAT005', N'Vở Hồng Hà 300 trang A4 4532', N'Vở A4 300 trang Hồng Hà là sản phẩm chất lượng, phù hợp với nhu cầu của nhiều đối tượng sử dụng. Vở có giá thành hợp lý, phù hợp với túi tiền của học sinh, sinh viên.', 18000, 0.5, NULL, 50, 1);
+('PRO001', 'CAT001', N'Bút bi Thiên Long TL 023', N'Bút bi Thiên Long TL 023 được sử dụng rộng rãi trong các trường học, văn phòng, công sở,... Đây là một sản phẩm chất lượng cao, giá cả phải chăng, phù hợp với nhiều mục đích sử dụng.', 0, 1.5, 0, 0, 1),
+('PRO002', 'CAT001', N'Bút bi Thiên Long TL 025', N'Bút bi Thiên Long TL 025 được thiết kế đơn giản và dễ sử dụng, phù hợp cho nhiều người. Đây là lựa chọn tuyệt vời cho công việc văn phòng và học tập.', 0, 1.5, NULL, 80, 1),
+('PRO003', 'CAT002', N'Bút chì Stabilo 2B 288', N'Bút chì Stabilo 2B 288 cho nét vẽ đậm dày, thích hợp dùng để tập viết chữ, vẽ phác thảo, vẽ bóng mờ, sáng tối hoặc tô trắc nghiệm. Chì có độ bền màu cao, lâu phai và dễ dàng xóa sạch bằng gôm tẩy khi sử dụng.', 0, 1.5, 0, 0, 1),
+('PRO004', 'CAT003', N'Giấy a4 Double A 80gsm', N'Giấy photo a4 Double A DL80 GSM phù hợp với các nhu cầu in ấn văn phòng cơ bản như in ấn tài liệu, văn bản, hợp đồng, báo cáo,... với độ sắc nét nổi bật trong tầm giá cả hợp lý.', 0, 1.5, 0, 0, 1),
+('PRO005', 'CAT004', N'Máy tính cầm tay Casio FX 580VN X new', N'Máy tính cầm tay Casio FX 580VN X new là một sản phẩm chất lượng cao, đáp ứng nhu cầu của nhiều đối tượng. Máy có màn hình lớn, rõ ràng, các nút bấm nhạy, dễ sử dụng.', 0, 1.5, 0, 0, 1),
+('PRO006', 'CAT005', N'Vở Hồng Hà 300 trang A4 4532', N'Vở A4 300 trang Hồng Hà là sản phẩm chất lượng, phù hợp với nhu cầu của nhiều đối tượng sử dụng. Vở có giá thành hợp lý, phù hợp với túi tiền của học sinh, sinh viên.', 0, 1.5, 0, 0, 1);
 
 INSERT INTO attributes (attribute_id, attribute_name)
 VALUES ('ATT001', N'Thương hiệu'),
@@ -585,9 +652,35 @@ VALUES
 INSERT INTO user_roles
 VALUES
 ('ADMIN001', 2)
-
 GO
 
 UPDATE users
 SET password = HASHBYTES('MD5', '123456')
 WHERE username = 'thanhdat';
+
+
+INSERT INTO purchase_order (purchase_order_id, supplier_id, employee_id)
+VALUES
+('POD001', 'SUP001', 'ADMIN001')
+
+INSERT INTO purchase_order_detail
+VALUES
+('POD001', 'PRO001', 100, 3500, 0),
+('POD001', 'PRO002', 80, 4000, 0),
+('POD001', 'PRO003', 70, 14000, 0),
+('POD001', 'PRO004', 60, 55000, 0),
+('POD001', 'PRO005', 40, 480000, 0),
+('POD001', 'PRO006', 50, 18000, 0)
+
+INSERT INTO receipts (receipt_id, purchase_order_id, entry_count)
+VALUES 
+('REC001', 'POD001', 1)
+
+INSERT INTO receipt_details
+VALUES
+('REC001', 'POD001', 'PRO001', 100),
+('REC001', 'POD001', 'PRO002', 80),
+('REC001', 'POD001', 'PRO003', 70),
+('REC001', 'POD001', 'PRO004', 60),
+('REC001', 'POD001', 'PRO005', 40),
+('REC001', 'POD001', 'PRO006', 50)

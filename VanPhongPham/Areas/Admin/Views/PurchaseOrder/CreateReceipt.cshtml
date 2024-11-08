@@ -1,0 +1,75 @@
+﻿@model List<VanPhongPham.Models.purchase_order_detail>
+@{
+    ViewBag.Title = "Tạo phiếu nhập hàng - Quản trị";
+    int receiptDetailIndex = 0;
+}
+
+<div class="card mb-4">
+    <h6 class="card-header">Tạo phiếu nhập hàng</h6>
+    <div class="card-body">
+        <form method="post" action="">
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="supplier_name">Mã phiếu nhập</label>
+                    <input type="text" class="form-control" name="receipt_id" readonly
+                           value="@(ViewBag.receipt_id ?? "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="supplier_name">Mã phiếu đặt</label>
+                    <input type="text" class="form-control" name="purchase_order_id" readonly
+                           value="@Model[0].purchase_order.purchase_order_id" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="supplier_name">Lần nhập</label>
+                    <input type="text" class="form-control" name="entry_count" readonly
+                           value="@ViewBag.entry_count" />
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div id="receiptDetailsContainer">
+                <div class="receipt-detail">
+                    @foreach (var order in Model)
+                    {
+                        <div class="form-row">
+
+                            <div class="form-group col-md-6">
+                                <label for="quantity">Tên sản phẩm</label>
+                                <input type="text" class="form-control" value="@order.product.product_name" readonly />
+                                <input type="hidden" class="form-control" name="receiptDetails[@receiptDetailIndex].product_id" value="@order.product_id" />
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                <label for="quantity">Số lượng đặt</label>
+                                <input type="number" class="form-control" value="@order.quantity" readonly />
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                <label for="quantity">Số lượng còn lại</label>
+                                <input type="number" class="form-control" value="@(order.quantity - order.quantity_received)" readonly />
+                                <div class="clearfix"></div>
+                            </div>
+
+                            <div class="form-group col-md-2">
+                                <label for="quantity">Số lượng nhập</label>
+                                <input type="number" class="form-control" name="receiptDetails[@receiptDetailIndex].quantity" step="1" min="1" max="@(order.quantity - order.quantity_received)" required />
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                        { 
+                            receiptDetailIndex++;
+                        }
+                    }
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Tạo phiếu nhập</button>
+            <a class="btn icon-btn btn-outline-secondary my-3 ml-2" href="@Url.Action("Index","PurchaseOrder")" title="Quay lại">
+                <i class="feather icon-corner-up-left"></i>
+            </a>
+        </form>
+    </div>
+</div>

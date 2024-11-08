@@ -1,0 +1,71 @@
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.purchase_order>
+@{
+    ViewBag.Title = "Đặt hàng từ nhà cung cấp - Quản Trị";
+}
+<h4 class="font-weight-bold mb-0">Danh sách phiếu đặt</h4>
+<div class="row">
+    <div class="navbar-nav my-3 ml-2">
+        <!-- Search -->
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Index", "PurchaseOrder")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.search_str ?? "")">
+            </span>
+            <button class="btn icon-btn btn-outline-primary">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
+    </div>
+    <!-- Add -->
+    <a class="btn icon-btn btn-outline-success my-3 ml-2" href="@Url.Action("Create", "PurchaseOrder")" title="Thêm">
+        <i class="feather icon-plus navbar-icon align-middle"></i>
+    </a>
+</div>
+<div class="card">
+    <table class="table card-table table-responsive-lg">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã phiếu đặt</th>
+                <th>Mã nhà cung cấp</th>
+                <th>Mã nhân viên</th>
+                <th>Số lượng hàng hóa</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.purchase_order_id</td>
+                    <td>@order.supplier_id</td>
+                    <td>@order.employee_id</td>
+                    <td>@order.item_count</td>
+                    <td>@order.status</td>
+                    <td>
+                        <a class="btn icon-btn btn-outline-info"
+                           title="Xem chi tiết"
+                           href="@Url.Action("Detail", "PurchaseOrder", new { purchase_order_id = order.purchase_order_id })">
+                            <i class="feather icon-eye navbar-icon align-middle"></i>
+                        </a>
+                        @if (order.status != "Đã giao")
+                        {
+                            <a class="btn icon-btn btn-outline-success ml-2"
+                               href="@Url.Action("CreateReceipt", "PurchaseOrder", new { purchase_order_id = order.purchase_order_id })"
+                               title="Nhập hàng">
+                                <i class="feather icon-package navbar-icon align-middle"></i>
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+        </div>
+    </div>
+</div>
+
