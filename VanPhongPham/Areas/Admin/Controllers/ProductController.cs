@@ -173,7 +173,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
         public ActionResult RecycleProduct(string product_id)
         {
-            productRepository.RecycleProduct(product_id);
+            bool result = productRepository.RecycleProduct(product_id);
             return RedirectToAction("Index");
         }
 
