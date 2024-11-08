@@ -10,8 +10,10 @@ namespace VanPhongPham.Models
         public string ProductID { get; set; }
         public string ProductName { get; set; }
         public int Quantity { get; set; }
+        public int QuantityProduct { get; set; }
         public double TotalAmount { get; set; }
         public bool isReviewed { get; set; }
+        public int isSelected { get; set; }
         public string ImageUrl { get; set; }
         public double Price { get; set; }
     }

@@ -134,6 +134,22 @@
         font-size: 20px;
         cursor: pointer;
     }
+
+    .messagesmodal 
+    {
+        display: none; /* Mặc định là ẩn */
+        position: fixed;
+        top: 20px; /* Đưa lên trên một chút */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        background-color: rgba(0, 0, 0, 0.8); /* Màu nền đen nhạt */
+        color: white; /* Chữ màu trắng */
+        border-radius: 5px;
+        font-size: 14px;
+        z-index: 9999;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
 </style>
 
 <div class="order-status-tabs">
@@ -182,7 +198,7 @@
                                     <div><span>x</span>@detail.Quantity</div>
                                 </div>
                             </div>
-                            <span class="price-info">₫@detail.Price</span>
+                            <span class="price-info">₫@detail.Price.ToString("N0")</span>
                         </div>
                     </a>
                     if (detail.isReviewed)
@@ -192,7 +208,7 @@
                 }
                 <hr />
                 <div class="d-flex justify-content-end">
-                    <span>Thành tiền: <span class="price-info">₫@order.TotalAmount</span></span>
+                    <span>Thành tiền: <span class="price-info">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span>
                 </div>
                 <div class="order-actions d-flex justify-content-end mt-2">
                     @if (order.OrderStatusName == "Chờ giao hàng")
@@ -268,6 +284,16 @@
     }
 </div>
 
+<div id="MessagesModal" class="messagesmodal" tabindex="-1" role="dialog" aria-labelledby="MessagesModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" style="background-color: rgba(0, 0, 0, 0.8);" role="document">
+        <div class="modal-content" style="background-color: rgba(0, 0, 0, 0.8);">
+            <div class="modal-body p-0">
+                <p style="text-align: center"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.querySelectorAll('.setOrderStatusFive').forEach(function (button) {
         button.addEventListener('click', async function () {
@@ -305,7 +331,57 @@
                 if (form) {
                     form.reset(); // Reset form
                 }
+                document.body.style.overflowY = "scroll";
             }
         });
     });
+
+    document.querySelectorAll('.modal-footer button[type="submit"]').forEach(function (button) {
+        button.addEventListener('click', function (event) {
+            var form = this.closest('form');
+            var isValid = true;
+
+            // Kiểm tra tất cả các radio button (rating)
+            form.querySelectorAll('.rating input[type="radio"]').forEach(function (radioGroup) {
+                var ratingSelected = false;
+                // Kiểm tra nếu một trong các radio button trong nhóm này được chọn
+                radioGroup.closest('.rating').querySelectorAll('input[type="radio"]').forEach(function (radio) {
+                    if (radio.checked) {
+                        ratingSelected = true;
+                    }
+                });
+                // Nếu không có radio button nào được chọn
+                if (!ratingSelected) {
+                    isValid = false;
+                }
+            });
+
+            // Kiểm tra tất cả các textarea (review content)
+            form.querySelectorAll('textarea').forEach(function (textarea) {
+                if (textarea.value.trim() === "") {
+                    isValid = false;
+                }
+            });
+
+            // Nếu không hợp lệ, ngừng gửi form
+            if (!isValid) {
+                const modalBody = document.querySelector("#MessagesModal .modal-body p");
+                modalBody.textContent = `Để gửi, hãy thêm đánh giá.`; // Thông báo lỗi
+
+                // Hiển thị modal với jQuery
+                $("#MessagesModal").modal("show");
+
+                // Tự động tắt modal sau 3 giây
+                setTimeout(function () {
+                    $("#MessagesModal").modal("hide");
+                }, 1500);
+
+                // Khôi phục thanh cuộn khi modal mở
+                document.body.style.overflowY = "scroll"; // Đảm bảo trang có thể cuộn lại
+
+                event.preventDefault(); // Ngừng submit form
+            }
+        });
+    });
+
 </script>
