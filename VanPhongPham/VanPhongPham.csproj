@@ -660,6 +660,7 @@
     <Compile Include="Controllers\AddressController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\CartController.cs" />
+    <Compile Include="Controllers\CheckoutController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
@@ -699,6 +700,10 @@
     <Content Include="Views\Profile\ChangeEmailPartial.cshtml" />
     <Content Include="Views\Profile\OrderDetailsPartial.cshtml" />
     <Content Include="Views\Cart\Index.cshtml" />
+    <Content Include="Views\Checkout\Index.cshtml" />
+    <Content Include="Views\Checkout\AddressCheckoutPartial.cshtml" />
+    <Content Include="Views\Checkout\ProductsCheckoutPartial.cshtml" />
+    <Content Include="Views\Checkout\PaymentCheckoutPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

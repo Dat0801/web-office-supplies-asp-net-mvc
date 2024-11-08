@@ -58,7 +58,6 @@
 
     .price-info {
         text-align: right;
-        font-weight: bold;
         color: #ff4747;
     }
 
@@ -155,7 +154,14 @@
                         <div><span>x</span>@detail.Quantity</div>
                     </div>
                 </div>
-                <span style="color: #ff4747"><span>₫</span>@detail.Price.ToString("N0")</span>
+                @if (detail.Promotion_Price == 0)
+                {
+                    <span class="price-info" style="color: #272727;">₫@detail.Price.ToString("N0")</span>
+                }
+                else
+                {
+                    <span class="price-info"><del style="margin-right:10px; color: #777777">₫@detail.Price.ToString("N0")</del>₫@detail.Promotion_Price.ToString("N0")</span>
+                }
             </div>
         </a>
     }
@@ -183,7 +189,7 @@
     <hr />
     <div class="payment-info mt-3" style="background-color: #fff7e6; padding: 15px; border-radius: 8px; border: 1px solid #ffd28a; display: flex; align-items: center;">
         <i class="fa fa-exclamation-circle" style="color: #ff4747; font-size: 13px; margin-right: 10px;"></i>
-        <p style="margin: 0; color: #555; font-size: 14px">Vui lòng thanh toán <span style="color: #ff4747;">₫@Model.TotalAmount</span> khi nhận hàng.</p>
+        <p style="margin: 0; color: #555; font-size: 14px">Vui lòng thanh toán <span style="color: #ff4747;">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span> khi nhận hàng.</p>
     </div>
 
     <hr />
