@@ -145,6 +145,7 @@ create table orders
 	employee_id nvarchar(255),
 	customer_id nvarchar(255) not null,
 	info_address nvarchar(255) not null,
+	ordernote nvarchar(255),
 	method_id varchar(10) not null,
 	delivery_date datetime default DATEADD(DAY, 7, GETDATE()),
 	total_amount float default 0,
@@ -420,31 +421,49 @@ BEGIN
 END;
 GO
 
+--Trigger cập nhật số lượng sản phẩm tồn kho dựa trên số lượng sản phẩm trong đơn hàng.
+CREATE TRIGGER trg_UpdateProductStock
+ON order_details
+AFTER INSERT
+AS
+BEGIN
+    -- Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+    SET NOCOUNT ON;
 
---Trigger cập nhật số lượng tồn kho và số lượng bán ra trong bảng products khi một đơn hàng được cập nhật trạng thái = 2.
-CREATE TRIGGER trg_UpdateStockAndSoldOnStatusChange
+    -- Cập nhật bảng products dựa trên chi tiết đơn hàng vừa thêm
+    UPDATE p
+    SET p.stock_quantity = p.stock_quantity - inserted.quantity
+    FROM products p
+    INNER JOIN inserted ON p.product_id = inserted.product_id;
+
+    -- Kết thúc transaction
+END;
+
+GO
+
+--Trigger cập nhật số lượng bán ra trong bảng products khi một đơn hàng được cập nhật trạng thái = 2.
+CREATE TRIGGER trg_UpdateProductSoldOnOrderStatus
 ON orders
 AFTER UPDATE
 AS
 BEGIN
-    DECLARE @order_id VARCHAR(10), @old_status INT, @new_status INT;
-
-    -- Lấy order_id, trạng thái trước và sau khi cập nhật
-    SELECT @order_id = i.order_id, @old_status = d.order_status_id, @new_status = i.order_status_id
-    FROM inserted i
-    JOIN deleted d ON i.order_id = d.order_id;
-
-    -- Kiểm tra nếu trạng thái trước đó khác 2 và trạng thái mới là 2 (Chờ giao hàng)
-    IF @old_status <> 2 AND @new_status = 2
+    -- Chỉ cập nhật khi trạng thái đơn hàng chuyển thành 2 (Chờ giao hàng)
+    IF UPDATE(order_status_id)
     BEGIN
-        UPDATE products
-        SET stock_quantity = stock_quantity - od.quantity,
-            sold = sold + od.quantity
-        FROM order_details od
-        INNER JOIN products p ON od.product_id = p.product_id
-        WHERE od.order_id = @order_id;
+        -- Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+        SET NOCOUNT ON;
+
+        -- Cập nhật số lượng bán ra trong bảng products dựa trên các sản phẩm trong đơn hàng khi order_status_id = 2
+        UPDATE p
+        SET p.sold = p.sold + od.quantity  -- Tăng số lượng đã bán
+        FROM products p
+        INNER JOIN order_details od ON p.product_id = od.product_id
+        INNER JOIN inserted i ON od.order_id = i.order_id
+        WHERE i.order_status_id = 2;  -- Kiểm tra trạng thái đơn hàng là 2 (Chờ giao hàng)
+
+        -- Kết thúc transaction
     END
-END
+END;
 
 GO
 
@@ -507,6 +526,32 @@ END
 
 GO
 
+-- Trigger khôi phục số lượng tồn kho khi một đơn hàng bị hủy.
+CREATE TRIGGER trg_RestoreProductStockOnOrderCancel
+ON orders
+AFTER UPDATE
+AS
+BEGIN
+    -- Chỉ cập nhật khi trạng thái đơn hàng chuyển thành 4 (Đã hủy)
+    IF UPDATE(order_status_id)
+    BEGIN
+        -- Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+        SET NOCOUNT ON;
+
+        -- Khôi phục số lượng tồn kho trong bảng products dựa trên các sản phẩm trong đơn hàng khi order_status_id = 4
+        UPDATE p
+        SET p.stock_quantity = p.stock_quantity + od.quantity  -- Tăng số lượng tồn kho
+        FROM products p
+        INNER JOIN order_details od ON p.product_id = od.product_id
+        INNER JOIN inserted i ON od.order_id = i.order_id
+        WHERE i.order_status_id = 4;  -- Kiểm tra trạng thái đơn hàng là 4 (Đã hủy)
+
+        -- Kết thúc transaction
+    END
+END;
+
+GO
+
 -- Trigger tính toán tổng số tiền của một đơn hàng.
 CREATE TRIGGER trg_CalculateOrderTotalAmount
 ON order_details
@@ -523,24 +568,7 @@ BEGIN
     INNER JOIN (SELECT DISTINCT order_id FROM inserted) od 
     ON orders.order_id = od.order_id;
 END;
-GO
 
--- Trigger khôi phục số lượng tồn kho khi một đơn hàng bị hủy.
-CREATE TRIGGER trg_RestoreStockOnOrderCancellation
-ON orders
-AFTER UPDATE
-AS
-BEGIN
-    IF EXISTS (SELECT 1 FROM inserted WHERE order_status_id = 6)
-    BEGIN
-        UPDATE p
-        SET p.stock_quantity = p.stock_quantity + od.quantity
-        FROM products p
-        INNER JOIN order_details od ON p.product_id = od.product_id
-        INNER JOIN inserted i ON od.order_id = i.order_id
-        WHERE i.order_status_id = 6;
-    END;
-END;
 GO
 
 -- Trigger để cập nhật item_count sau khi thêm mới chi tiết đơn hàng

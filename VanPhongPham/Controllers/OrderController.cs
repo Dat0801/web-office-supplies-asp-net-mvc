@@ -21,6 +21,10 @@ namespace VanPhongPham.Controllers
 
                     if (ord != null)
                     {
+                        if (order_status == 1)
+                        {
+                            ord.order_status_id = 4;
+                        }    
                         if (order_status == 2)
                         {
                             ord.order_status_id = 3;
