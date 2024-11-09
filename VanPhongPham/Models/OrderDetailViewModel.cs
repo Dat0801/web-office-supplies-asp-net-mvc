@@ -13,8 +13,10 @@ namespace VanPhongPham.Models
         public int QuantityProduct { get; set; }
         public double TotalAmount { get; set; }
         public bool isReviewed { get; set; }
+        public bool Product_status { get; set; }
         public int isSelected { get; set; }
         public string ImageUrl { get; set; }
         public double Price { get; set; }
+        public double Promotion_Price { get; set; }
     }
 }

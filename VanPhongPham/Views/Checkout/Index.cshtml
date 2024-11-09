@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutClient.cshtml";
+}
+
+<div class="container p-0">
+    <div class="row">
+        <div class="col-12" style="background-color: #f1f3f5">
+            @Html.Action("AddressCheckoutPartial", "Checkout", new { userid = ViewBag.UserID })
+
+            @Html.Action("ProductsCheckoutPartial", "Checkout", new { cart_id = ViewBag.CartID })
+
+            @Html.Action("PaymentCheckoutPartial", "Checkout")
+        </div>
+    </div>
+</div>
+

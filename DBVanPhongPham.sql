@@ -1,4 +1,4 @@
-﻿create database DB_VanPhongPham
+﻿CREATE DATABASE DB_VanPhongPham
 go
 
 use DB_VanPhongPham
@@ -85,7 +85,7 @@ create table product_attribute_values
 
 create table images
 (
-	image_id varchar(10) not null,
+	image_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
 	product_id varchar(10) not null,
 	image_url varchar(500) not null unique,
 	description nvarchar(200) default null,
@@ -142,7 +142,7 @@ create table order_status
 create table orders
 (
 	order_id varchar(10) not null,
-	employee_id nvarchar(255) not null,
+	employee_id nvarchar(255),
 	customer_id nvarchar(255) not null,
 	info_address nvarchar(255) not null,
 	method_id varchar(10) not null,
@@ -173,6 +173,7 @@ create table order_details
 	order_id varchar(10) not null,
 	product_id varchar(10) not null,
 	quantity int default 1,
+	discountPrice float default 0,
 	total_amount float default 0,
 	isReviewed bit default 0
 )
@@ -236,7 +237,6 @@ alter table suppliers add primary key (supplier_id);
 alter table attributes add primary key (attribute_id);
 alter table attribute_values add primary key (attribute_value_id);
 alter table product_attribute_values add primary key (product_id, attribute_value_id);
-alter table images add primary key (image_id);
 alter table payment_methods add primary key (method_id);
 alter table orders add primary key (order_id);
 alter table order_details add primary key (order_id, product_id);
@@ -421,31 +421,90 @@ END;
 GO
 
 
--- Trigger cập nhật số lượng tồn kho trong bảng products khi một đơn hàng được đặt.
-CREATE TRIGGER trg_UpdateStockQuantity
-ON order_details
-AFTER INSERT
+--Trigger cập nhật số lượng tồn kho và số lượng bán ra trong bảng products khi một đơn hàng được cập nhật trạng thái = 2.
+CREATE TRIGGER trg_UpdateStockAndSoldOnStatusChange
+ON orders
+AFTER UPDATE
 AS
 BEGIN
-    UPDATE products
-    SET stock_quantity = stock_quantity - inserted.quantity
-    FROM products
-    INNER JOIN inserted ON products.product_id = inserted.product_id
-END;
-GO	
+    DECLARE @order_id VARCHAR(10), @old_status INT, @new_status INT;
 
--- Trigger tính toán tổng số tiền cho từng chi tiết đơn hàng.
-CREATE TRIGGER trg_CalculateOrderDetailsTotalAmount
+    -- Lấy order_id, trạng thái trước và sau khi cập nhật
+    SELECT @order_id = i.order_id, @old_status = d.order_status_id, @new_status = i.order_status_id
+    FROM inserted i
+    JOIN deleted d ON i.order_id = d.order_id;
+
+    -- Kiểm tra nếu trạng thái trước đó khác 2 và trạng thái mới là 2 (Chờ giao hàng)
+    IF @old_status <> 2 AND @new_status = 2
+    BEGIN
+        UPDATE products
+        SET stock_quantity = stock_quantity - od.quantity,
+            sold = sold + od.quantity
+        FROM order_details od
+        INNER JOIN products p ON od.product_id = p.product_id
+        WHERE od.order_id = @order_id;
+    END
+END
+
+GO
+
+--Trigger kiểm tra khi stock sản phẩm bằng 0, cập nhật isSelected trong cart_details
+CREATE TRIGGER trg_UpdateCartDetails
+ON products
+AFTER UPDATE
+AS
+BEGIN
+    -- Kiểm tra nếu stock của sản phẩm bằng 0 thì cập nhật isSelected trong cart_details thành 0
+    UPDATE cd
+    SET cd.isSelected = 0
+    FROM cart_details cd
+    INNER JOIN inserted i ON cd.product_id = i.product_id
+    WHERE i.stock_quantity = 0;  -- Nếu số lượng tồn của sản phẩm bằng 0
+END;
+
+GO
+
+--Trigger kiểm tra khi status sản phẩm bằng 0, cập nhật isSelected trong cart_details
+CREATE TRIGGER trg_UpdateCartDetailsOnStatus
+ON products
+AFTER UPDATE
+AS
+BEGIN
+    -- Kiểm tra nếu status của sản phẩm bằng 0, cập nhật isSelected trong cart_details thành 0
+    UPDATE cd
+    SET cd.isSelected = 0
+    FROM cart_details cd
+    INNER JOIN inserted i ON cd.product_id = i.product_id
+    WHERE i.status = 0;  -- Nếu status của sản phẩm là 0
+END;
+
+GO
+
+--Trigger xóa các sản phẩm có product_id từ order_details trong cart_details
+CREATE TRIGGER trg_ClearSpecificCartDetailsOnOrder
 ON order_details
 AFTER INSERT
 AS
 BEGIN
-    UPDATE order_details
-    SET total_amount = od.quantity * p.price
-    FROM order_details od
-    INNER JOIN products p ON od.product_id = p.product_id
-    INNER JOIN inserted i ON od.order_id = i.order_id AND od.product_id = i.product_id;
-END;
+    DECLARE @order_id VARCHAR(10), @user_id NVARCHAR(255);
+
+    -- Lấy order_id từ bản ghi mới thêm vào order_details
+    SELECT @order_id = order_id
+    FROM inserted;
+
+    -- Lấy user_id từ bảng orders của order_id tương ứng
+    SELECT @user_id = customer_id
+    FROM orders
+    WHERE order_id = @order_id;
+
+    -- Xóa các sản phẩm có product_id từ order_details trong cart_details của user_id tương ứng
+    DELETE cd
+    FROM cart_details cd
+    INNER JOIN cart_section cs ON cd.cart_id = cs.cart_id
+    INNER JOIN inserted i ON cd.product_id = i.product_id
+    WHERE cs.user_id = @user_id AND i.order_id = @order_id;
+END
+
 GO
 
 -- Trigger tính toán tổng số tiền của một đơn hàng.
@@ -614,15 +673,15 @@ VALUES ('PRO001', 'VAL001'),
 ('PRO001', 'VAL006'),
 ('PRO001', 'VAL007');
 
-INSERT INTO images (image_id, product_id, image_url, description, is_primary)
+INSERT INTO images (product_id, image_url, description, is_primary)
 VALUES
-('IMG001', 'PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/onumc2zaeyfnkrs3q92j.png', N'Test thôi', 1),
-('IMG002', 'PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/h6ntyymvhnx9nllpfz2q.jpg', N'Test thôi', 0),
-('IMG003', 'PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/bbdw0hhp9nkaegqfqmh6.jpg', N'Test thôi', 0),
-('IMG004', 'PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/cxyrbs1upydqmyxnoobj.png', N'Test thôi', 1),
-('IMG005', 'PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/fxkfvtzliwsp6th6xnuk.png', N'Test thôi', 0),
-('IMG006', 'PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/uzvymp9snxzaivs9kbyt.png', N'Test thôi', 1),
-('IMG007', 'PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/krpimoesikznpyo3czhh.png', N'Test thôi', 0)
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/onumc2zaeyfnkrs3q92j.png', N'Test thôi', 1),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/h6ntyymvhnx9nllpfz2q.jpg', N'Test thôi', 0),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/bbdw0hhp9nkaegqfqmh6.jpg', N'Test thôi', 0),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/cxyrbs1upydqmyxnoobj.png', N'Test thôi', 1),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/fxkfvtzliwsp6th6xnuk.png', N'Test thôi', 0),
+('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/uzvymp9snxzaivs9kbyt.png', N'Test thôi', 1),
+('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/krpimoesikznpyo3czhh.png', N'Test thôi', 0)
 
 INSERT INTO roles (role_name, description)
 VALUES
@@ -638,13 +697,10 @@ VALUES
 
 INSERT INTO order_status (order_status_name)
 VALUES
-(N'Chờ thanh toán'),
 (N'Chờ xác nhận'),
-(N'Chờ lấy hàng'),
 (N'Chờ giao hàng'),
 (N'Hoàn thành'),
-(N'Đã hủy'),
-(N'Trả hàng/Hoàn tiền')
+(N'Đã hủy')
 
 INSERT INTO users (user_id, full_name, username)
 VALUES

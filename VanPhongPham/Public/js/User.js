@@ -106,6 +106,7 @@ function displayUserName() {
 
         // Reset số lượng giỏ hàng
         cartBadge.innerText = '0';
+
     }
 }
 
@@ -136,7 +137,12 @@ function loadCartQuantity(cartId, cartBadge) {
 function logout() {
     localStorage.removeItem('token');
     sessionStorage.removeItem('user');
-    window.location.replace('/Home/Index');
+
+    // Kiểm tra xem đã chuyển hướng hay chưa
+    if (!sessionStorage.getItem('redirected')) {
+        sessionStorage.setItem('redirected', 'true'); // Đánh dấu đã chuyển hướng
+        window.location.replace('/Home/Index');
+    }
 }
 
 
