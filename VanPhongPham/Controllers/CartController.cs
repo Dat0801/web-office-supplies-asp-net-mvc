@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Linq;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -31,6 +32,7 @@ namespace VanPhongPham.Controllers
                     }
                 }
             }
+            db.Refresh(RefreshMode.KeepChanges, cart_items);
             db.SubmitChanges();
 
             // Lấy danh sách đơn hàng theo điều kiện

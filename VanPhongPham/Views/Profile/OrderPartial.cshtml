@@ -42,6 +42,7 @@
         top: 10px;
         right: 20px;
         color: #ff4747;
+        font-size: 14px;
     }
 
     .order-details, .order-actions {
@@ -215,10 +216,14 @@
                 }
                 <hr />
                 <div class="d-flex justify-content-end">
-                    <span style="color: #272727;">Thành tiền: <span class="price-info" style="font-size: 24px">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span>
+                    <span style="color: #272727;">Thành tiền: <span class="price-info" style="font-size: 24px">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span></span>
                 </div>
                 <div class="order-actions d-flex justify-content-end mt-2">
-                    @if (order.OrderStatusName == "Chờ giao hàng")
+                    @if (order.OrderStatusName == "Chờ xác nhận")
+                    {
+                        <button class="btn btn-danger setOrderStatusOne" data-orderid="@order.OrderId">Hủy Đơn Hàng</button>
+                    }
+                    else if (order.OrderStatusName == "Chờ giao hàng")
                     {
                         <button class="btn btn-danger setOrderStatusTwo" data-orderid="@order.OrderId">Đã Nhận Hàng</button>
                     }
@@ -308,6 +313,31 @@
                 body: JSON.stringify({
                     order_id: orderId,
                     order_status: 2
+                })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                location.reload();
+            } else {
+                alert(result.message);
+            }
+        });
+    });
+    
+    document.querySelectorAll('.setOrderStatusOne').forEach(function (button) {
+        button.addEventListener('click', async function () {
+            const orderId = this.getAttribute('data-orderid');
+
+            // Gọi hàm đổi trạng thái đơn hàng
+            const response = await fetch('/Order/ChangeOrder_OrderStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    order_id: orderId,
+                    order_status: 1
                 })
             });
 

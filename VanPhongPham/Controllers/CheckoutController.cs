@@ -84,8 +84,13 @@ namespace VanPhongPham.Controllers
             return order_id;
         }
 
-        public ActionResult SaveOrder(string user_id, int cart_id, string info_adrs, string method_id)
+        public ActionResult SaveOrder(string user_id, int cart_id, string info_adrs, string ordernote, string method_id)
         {
+            if (ordernote == "")
+            {
+                ordernote = null;
+            }  
+            
             var current_orderid = GenerateOrderId();
 
             var dbuser = db.users.FirstOrDefault(u => u.user_id == user_id);
@@ -97,6 +102,7 @@ namespace VanPhongPham.Controllers
                     order_id = current_orderid,
                     customer_id = user_id,
                     info_address = info_adrs,
+                    ordernote = ordernote,
                     method_id = method_id,
                     order_status_id = 1,
                     created_at = DateTime.Now
@@ -112,6 +118,7 @@ namespace VanPhongPham.Controllers
                     order_id = current_orderid,
                     customer_id = user_id,
                     info_address = address_str,
+                    ordernote = ordernote,
                     method_id = method_id,
                     order_status_id = 1,
                     created_at = DateTime.Now

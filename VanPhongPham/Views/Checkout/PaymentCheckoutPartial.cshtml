@@ -80,9 +80,16 @@
     <div class="checkout-header-row">
         <div class="checkout-header">Phương thức thanh toán</div>
         <select id="payment-method-select" class="custom-select">
-            @foreach (var method in Model)
+            @if (totalAmount >= 2000000)
             {
-                <option value="@method.method_id">@method.method_name</option>
+                <option value="@Model.FirstOrDefault(m => m.method_id == "PAY002").method_id">@Model.FirstOrDefault(m => m.method_id == "PAY002").method_name</option>
+            }
+            else
+            {
+                foreach (var method in Model)
+                {
+                    <option value="@method.method_id">@method.method_name</option>
+                }
             }
         </select>
     </div>
@@ -91,35 +98,42 @@
 
     <!-- Middle Section with Order Summary -->
     <div class="checkout-content">
-        <div class="checkout-item d-flex justify-content-end">
-            <div class="col-8">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Lời nhắn:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="ordernote" id="ordernote" placeholder="Lưu ý cho người bán...." />
+                    </div>
+                </div>
             </div>
-            <div class="col-2 text-left p-0" style="color: #777777">
-                <span>Tổng tiền hàng</span>
-            </div>
-            <div class="col-2 text-right p-0" style="color: #272727">
-                <span>₫@totalAmount.ToString("N0")</span>
-            </div>
-        </div>
+            <div class="col-6">
+                <div class="checkout-item d-flex justify-content-end">
+                    <div class="col-6 text-left p-0" style="color: #777777">
+                        <span>Tổng tiền hàng</span>
+                    </div>
+                    <div class="col-2 text-right p-0" style="color: #272727">
+                        <span>₫@totalAmount.ToString("N0")</span>
+                    </div>
+                </div>
 
-        <div class="checkout-item d-flex justify-content-end" style="margin-top: 20px">
-            <div class="col-8">
-            </div>
-            <div class="col-2 text-left p-0" style="color: #777777">
-                <span>Tổng tiền phí vận chuyển</span>
-            </div>
-            <div class="col-2 text-right p-0" style="color: #272727">
-                <span>₫45.100</span>
-            </div>
-        </div>
+                <div class="checkout-item d-flex justify-content-end" style="margin-top: 20px">
+                    <div class="col-6 text-left p-0" style="color: #777777">
+                        <span>Tổng tiền phí vận chuyển</span>
+                    </div>
+                    <div class="col-2 text-right p-0" style="color: #272727">
+                        <span>₫45.100</span>
+                    </div>
+                </div>
 
-        <div class="checkout-item d-flex justify-content-end" style="margin-top: 20px;">
-            <div class="col-8"></div>
-            <div class="col-2 d-flex align-items-center justify-content-start p-0" style="color: #777777;">
-                <span>Tổng thanh toán</span>
-            </div>
-            <div class="col-2 d-flex align-items-center justify-content-end p-0">
-                <span class="total-payment">₫@totalAmount.ToString("N0")</span>
+                <div class="checkout-item d-flex justify-content-end" style="margin-top: 20px;">
+                    <div class="col-6 d-flex align-items-center justify-content-start p-0" style="color: #777777;">
+                        <span>Tổng thanh toán</span>
+                    </div>
+                    <div class="col-2 d-flex align-items-center justify-content-end p-0">
+                        <span class="total-payment">₫@totalAmount.ToString("N0")</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -139,6 +153,7 @@
 
     document.querySelector('.order-button').addEventListener('click', async () => {
         try {
+            const ordnote = document.getElementById('ordernote');
             const selectedMethod = document.getElementById('payment-method-select').value;
 
             // Kiểm tra và tạo chuỗi thông tin địa chỉ
@@ -146,23 +161,27 @@
                 `${JSON.parse(storedAddress1).fullName}, ${JSON.parse(storedAddress1).phone}, ${JSON.parse(storedAddress1).addressLine}`
                 : null;
 
-            const response = await fetch('/Checkout/SaveOrder', {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userData1.MaTaiKhoan,
-                    cart_id: userData1.CartID,
-                    info_adrs: addressData,
-                    method_id: selectedMethod
-                })
-            });
+            if (selectedMethod === "PAY001") {
+                const response = await fetch('/Checkout/SaveOrder', {
+                            method: "POST",
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                user_id: userData1.MaTaiKhoan,
+                                cart_id: userData1.CartID,
+                                info_adrs: addressData,
+                                ordernote: ordnote.value.trim(),
+                                method_id: selectedMethod
+                            })
+                });
 
-            const result = await response.json();
+                const result = await response.json();
 
-            if (result.success) {
-                const url = `@Url.Action("Index", "Profile")?order_status_id=${1}&MaTaiKhoan=${userData.MaTaiKhoan}&view=OrderPartial`;
-                window.location.href = url;
+                if (result.success) {
+                    const url = `@Url.Action("Index", "Profile")?order_status_id=${1}&MaTaiKhoan=${userData.MaTaiKhoan}&view=OrderPartial`;
+                    window.location.href = url;
+                }
             }
+            
         } catch (error) {
             console.error("Không thể lưu Order", error);
         }
