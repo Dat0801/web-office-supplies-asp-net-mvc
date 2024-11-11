@@ -16,17 +16,17 @@
         border-bottom: 1px solid #ddd;
     }
 
-        .order-status-tabs .nav-tabs .nav-link {
-            color: #333;
-            font-weight: bold;
-            padding: 10px 0;
-            border: none;
-        }
+    .order-status-tabs .nav-tabs .nav-link {
+        color: #333;
+        font-weight: bold;
+        padding: 10px 0;
+        border: none;
+    }
 
-            .order-status-tabs .nav-tabs .nav-link.active {
-                color: #ff4747;
-                border-bottom: 3px solid #ff4747;
-            }
+    .order-status-tabs .nav-tabs .nav-link.active {
+        color: #ff4747;
+        border-bottom: 3px solid #ff4747;
+    }
 
     .order-container {
         background-color: #fff;
@@ -42,6 +42,7 @@
         top: 10px;
         right: 20px;
         color: #ff4747;
+        font-size: 14px;
     }
 
     .order-details, .order-actions {
@@ -194,11 +195,18 @@
                             <div class="product-info">
                                 <img src="@detail.ImageUrl" alt="Product Image" />
                                 <div>
-                                    <div class="product-name">@detail.ProductName</div>
-                                    <div><span>x</span>@detail.Quantity</div>
+                                    <div class="product-name" style="color: #272727;">@detail.ProductName</div>
+                                    <div style="color: #272727;"><span>x</span>@detail.Quantity</div>
                                 </div>
                             </div>
-                            <span class="price-info">₫@detail.Price.ToString("N0")</span>
+                            @if (detail.Promotion_Price == 0)
+                            {
+                                <span class="price-info" style="color: #272727;">₫@detail.Price.ToString("N0")</span>
+                            }
+                            else
+                            {
+                                <span class="price-info"><del style="margin-right:10px; color: #777777">₫@detail.Price.ToString("N0")</del>₫@detail.Promotion_Price.ToString("N0")</span>
+                            }
                         </div>
                     </a>
                     if (detail.isReviewed)
@@ -208,12 +216,16 @@
                 }
                 <hr />
                 <div class="d-flex justify-content-end">
-                    <span>Thành tiền: <span class="price-info">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span>
+                    <span style="color: #272727;">Thành tiền: <span class="price-info" style="font-size: 24px">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span></span>
                 </div>
                 <div class="order-actions d-flex justify-content-end mt-2">
-                    @if (order.OrderStatusName == "Chờ giao hàng")
+                    @if (order.OrderStatusName == "Chờ xác nhận")
                     {
-                        <button class="btn btn-danger setOrderStatusFive" data-orderid="@order.OrderId">Đã Nhận Hàng</button>
+                        <button class="btn btn-danger setOrderStatusOne" data-orderid="@order.OrderId">Hủy Đơn Hàng</button>
+                    }
+                    else if (order.OrderStatusName == "Chờ giao hàng")
+                    {
+                        <button class="btn btn-danger setOrderStatusTwo" data-orderid="@order.OrderId">Đã Nhận Hàng</button>
                     }
                     else if (order.OrderStatusName == "Hoàn thành" && !checkReview)
                     {
@@ -272,14 +284,7 @@
     {
         <div class="d-flex flex-column align-items-center justify-content-center" style="text-align: center; margin-top: 20px; height: 50vh;">
             <img src="~/Public/img/icons/clipboard.png" style="width: 100px; height: 100px; margin-bottom: 10px" />
-            @if (currentStatusId == "7")
-            {
-                <p>Bạn hiện không có yêu cầu Trả hàng/Hoàn tiền nào.</p>
-            }
-            else
-            {
-                <p>Chưa có đơn hàng.</p>
-            }
+            <p>Chưa có đơn hàng.</p>
         </div>
     }
 </div>
@@ -295,7 +300,7 @@
 </div>
 
 <script>
-    document.querySelectorAll('.setOrderStatusFive').forEach(function (button) {
+    document.querySelectorAll('.setOrderStatusTwo').forEach(function (button) {
         button.addEventListener('click', async function () {
             const orderId = this.getAttribute('data-orderid');
 
@@ -307,7 +312,32 @@
                 },
                 body: JSON.stringify({
                     order_id: orderId,
-                    order_status: 4
+                    order_status: 2
+                })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                location.reload();
+            } else {
+                alert(result.message);
+            }
+        });
+    });
+    
+    document.querySelectorAll('.setOrderStatusOne').forEach(function (button) {
+        button.addEventListener('click', async function () {
+            const orderId = this.getAttribute('data-orderid');
+
+            // Gọi hàm đổi trạng thái đơn hàng
+            const response = await fetch('/Order/ChangeOrder_OrderStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    order_id: orderId,
+                    order_status: 1
                 })
             });
 

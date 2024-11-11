@@ -58,10 +58,9 @@ namespace VanPhongPham.Controllers
         {
             if (!string.IsNullOrEmpty(MaTaiKhoan))
             {
-                var dbUser = db.users.Include("addresses").FirstOrDefault(u => u.user_id == MaTaiKhoan);
                 var adrs = db.addresses.Where(a => a.user_id == MaTaiKhoan).ToList();
 
-                if (dbUser != null)
+                if (adrs != null)
                 {
                     return PartialView(adrs); // Truyền thông tin user từ database vào view
                 }
@@ -129,6 +128,7 @@ namespace VanPhongPham.Controllers
                                     .Select(img => img.image_url)
                                     .FirstOrDefault(), // Lấy hình ảnh đầu tiên
                         Price = od.product.price.HasValue ? od.product.price.Value : 0, // Gán giá trị 0 nếu null
+                        Promotion_Price = od.discountPrice.HasValue ? od.discountPrice.Value : 0,
                         isReviewed = od.isReviewed ?? false, // Giả sử có thuộc tính này trong order_detail
                     }).ToList()
                 }).ToList();
@@ -166,6 +166,7 @@ namespace VanPhongPham.Controllers
                                     .Select(img => img.image_url)
                                     .FirstOrDefault(),
                         Price = od.product.price ?? 0,
+                        Promotion_Price = od.discountPrice.HasValue ? od.discountPrice.Value : 0,
                         isReviewed = od.isReviewed ?? false,
                     }).ToList()
                 })

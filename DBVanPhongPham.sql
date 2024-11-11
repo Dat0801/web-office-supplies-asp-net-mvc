@@ -1,4 +1,4 @@
-﻿create database DB_VanPhongPham
+﻿CREATE DATABASE DB_VanPhongPham
 go
 
 use DB_VanPhongPham
@@ -84,7 +84,7 @@ create table product_attribute_values
 
 create table images
 (
-	image_id varchar(10) not null,
+	image_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
 	product_id varchar(10) not null,
 	image_url varchar(500) not null unique,
 	is_primary bit default 0,
@@ -140,9 +140,10 @@ create table order_status
 create table orders
 (
 	order_id varchar(10) not null,
-	employee_id nvarchar(255) not null,
+	employee_id nvarchar(255),
 	customer_id nvarchar(255) not null,
 	info_address nvarchar(255) not null,
+	ordernote nvarchar(255),
 	method_id varchar(10) not null,
 	delivery_date datetime default DATEADD(DAY, 7, GETDATE()),
 	total_amount float default 0,
@@ -171,6 +172,7 @@ create table order_details
 	order_id varchar(10) not null,
 	product_id varchar(10) not null,
 	quantity int default 1,
+	discountPrice float default 0,
 	total_amount float default 0,
 	isReviewed bit default 0
 )
@@ -234,7 +236,6 @@ alter table suppliers add primary key (supplier_id);
 alter table attributes add primary key (attribute_id);
 alter table attribute_values add primary key (attribute_value_id);
 alter table product_attribute_values add primary key (product_id, attribute_value_id);
-alter table images add primary key (image_id);
 alter table payment_methods add primary key (method_id);
 alter table orders add primary key (order_id);
 alter table order_details add primary key (order_id, product_id);
@@ -418,32 +419,135 @@ BEGIN
 END;
 GO
 
-
--- Trigger cập nhật số lượng tồn kho trong bảng products khi một đơn hàng được đặt.
-CREATE TRIGGER trg_UpdateStockQuantity
+--Trigger cập nhật số lượng sản phẩm tồn kho dựa trên số lượng sản phẩm trong đơn hàng.
+CREATE TRIGGER trg_UpdateProductStock
 ON order_details
 AFTER INSERT
 AS
 BEGIN
-    UPDATE products
-    SET stock_quantity = stock_quantity - inserted.quantity
-    FROM products
-    INNER JOIN inserted ON products.product_id = inserted.product_id
-END;
-GO	
+    -- Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+    SET NOCOUNT ON;
 
--- Trigger tính toán tổng số tiền cho từng chi tiết đơn hàng.
-CREATE TRIGGER trg_CalculateOrderDetailsTotalAmount
+    -- Cập nhật bảng products dựa trên chi tiết đơn hàng vừa thêm
+    UPDATE p
+    SET p.stock_quantity = p.stock_quantity - inserted.quantity
+    FROM products p
+    INNER JOIN inserted ON p.product_id = inserted.product_id;
+
+    -- Kết thúc transaction
+END;
+
+GO
+
+--Trigger cập nhật số lượng bán ra trong bảng products khi một đơn hàng được cập nhật trạng thái = 2.
+CREATE TRIGGER trg_UpdateProductSoldOnOrderStatus
+ON orders
+AFTER UPDATE
+AS
+BEGIN
+    -- Chỉ cập nhật khi trạng thái đơn hàng chuyển thành 2 (Chờ giao hàng)
+    IF UPDATE(order_status_id)
+    BEGIN
+        -- Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+        SET NOCOUNT ON;
+
+        -- Cập nhật số lượng bán ra trong bảng products dựa trên các sản phẩm trong đơn hàng khi order_status_id = 2
+        UPDATE p
+        SET p.sold = p.sold + od.quantity  -- Tăng số lượng đã bán
+        FROM products p
+        INNER JOIN order_details od ON p.product_id = od.product_id
+        INNER JOIN inserted i ON od.order_id = i.order_id
+        WHERE i.order_status_id = 2;  -- Kiểm tra trạng thái đơn hàng là 2 (Chờ giao hàng)
+
+        -- Kết thúc transaction
+    END
+END;
+
+GO
+
+--Trigger kiểm tra khi stock sản phẩm bằng 0, cập nhật isSelected trong cart_details
+CREATE TRIGGER trg_UpdateCartDetails
+ON products
+AFTER UPDATE
+AS
+BEGIN
+    -- Kiểm tra nếu stock của sản phẩm bằng 0 thì cập nhật isSelected trong cart_details thành 0
+    UPDATE cd
+    SET cd.isSelected = 0
+    FROM cart_details cd
+    INNER JOIN inserted i ON cd.product_id = i.product_id
+    WHERE i.stock_quantity = 0;  -- Nếu số lượng tồn của sản phẩm bằng 0
+END;
+
+GO
+
+--Trigger kiểm tra khi status sản phẩm bằng 0, cập nhật isSelected trong cart_details
+CREATE TRIGGER trg_UpdateCartDetailsOnStatus
+ON products
+AFTER UPDATE
+AS
+BEGIN
+    -- Kiểm tra nếu status của sản phẩm bằng 0, cập nhật isSelected trong cart_details thành 0
+    UPDATE cd
+    SET cd.isSelected = 0
+    FROM cart_details cd
+    INNER JOIN inserted i ON cd.product_id = i.product_id
+    WHERE i.status = 0;  -- Nếu status của sản phẩm là 0
+END;
+
+GO
+
+--Trigger xóa các sản phẩm có product_id từ order_details trong cart_details
+CREATE TRIGGER trg_ClearSpecificCartDetailsOnOrder
 ON order_details
 AFTER INSERT
 AS
 BEGIN
-    UPDATE order_details
-    SET total_amount = od.quantity * p.price
-    FROM order_details od
-    INNER JOIN products p ON od.product_id = p.product_id
-    INNER JOIN inserted i ON od.order_id = i.order_id AND od.product_id = i.product_id;
+    DECLARE @order_id VARCHAR(10), @user_id NVARCHAR(255);
+
+    -- Lấy order_id từ bản ghi mới thêm vào order_details
+    SELECT @order_id = order_id
+    FROM inserted;
+
+    -- Lấy user_id từ bảng orders của order_id tương ứng
+    SELECT @user_id = customer_id
+    FROM orders
+    WHERE order_id = @order_id;
+
+    -- Xóa các sản phẩm có product_id từ order_details trong cart_details của user_id tương ứng
+    DELETE cd
+    FROM cart_details cd
+    INNER JOIN cart_section cs ON cd.cart_id = cs.cart_id
+    INNER JOIN inserted i ON cd.product_id = i.product_id
+    WHERE cs.user_id = @user_id AND i.order_id = @order_id;
+END
+
+GO
+
+-- Trigger khôi phục số lượng tồn kho khi một đơn hàng bị hủy.
+CREATE TRIGGER trg_RestoreProductStockOnOrderCancel
+ON orders
+AFTER UPDATE
+AS
+BEGIN
+    -- Chỉ cập nhật khi trạng thái đơn hàng chuyển thành 4 (Đã hủy)
+    IF UPDATE(order_status_id)
+    BEGIN
+        -- Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+        SET NOCOUNT ON;
+
+        -- Khôi phục số lượng tồn kho trong bảng products dựa trên các sản phẩm trong đơn hàng khi order_status_id = 4
+        UPDATE p
+        SET p.stock_quantity = p.stock_quantity + od.quantity  -- Tăng số lượng tồn kho
+        FROM products p
+        INNER JOIN order_details od ON p.product_id = od.product_id
+        INNER JOIN inserted i ON od.order_id = i.order_id
+        WHERE i.order_status_id = 4;  -- Kiểm tra trạng thái đơn hàng là 4 (Đã hủy)
+
+        -- Kết thúc transaction
+    END
 END;
+
 GO
 
 -- Trigger tính toán tổng số tiền của một đơn hàng.
@@ -462,24 +566,7 @@ BEGIN
     INNER JOIN (SELECT DISTINCT order_id FROM inserted) od 
     ON orders.order_id = od.order_id;
 END;
-GO
 
--- Trigger khôi phục số lượng tồn kho khi một đơn hàng bị hủy.
-CREATE TRIGGER trg_RestoreStockOnOrderCancellation
-ON orders
-AFTER UPDATE
-AS
-BEGIN
-    IF EXISTS (SELECT 1 FROM inserted WHERE order_status_id = 6)
-    BEGIN
-        UPDATE p
-        SET p.stock_quantity = p.stock_quantity + od.quantity
-        FROM products p
-        INNER JOIN order_details od ON p.product_id = od.product_id
-        INNER JOIN inserted i ON od.order_id = i.order_id
-        WHERE i.order_status_id = 6;
-    END;
-END;
 GO
 
 -- Trigger để cập nhật item_count sau khi thêm mới chi tiết đơn hàng
@@ -637,19 +724,18 @@ VALUES ('PRO001', 'VAL001'),
 
 INSERT INTO images (image_id, product_id, image_url, is_primary)
 VALUES
-('IMG001', 'PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052395/xaxsqpih3wlkhn3svtzu.webp', 1),
-('IMG002', 'PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052396/e7f3ibtwciwnirlyrfy5.webp', 0),
-('IMG003', 'PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052397/acrcxyujqymmsmwjhptv.webp', 0),
-('IMG004', 'PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052428/ilsoqolpotlhrrz4lvgp.webp', 0),
-('IMG005', 'PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052512/ijhq94a3uxjmzsxxug1b.webp', 1),
-('IMG006', 'PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052513/crckzpsnajdaal5wxxjs.webp', 0),
-('IMG007', 'PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052513/jrh6zvjikf4e99cunqyr.webp', 0),
-('IMG008', 'PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052514/lwcgnvtxuxihrgxl42ln.webp', 0),
-('IMG009', 'PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731053976/ookezmryr9dg2d6kwmsb.webp', 1),
-('IMG010', 'PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731054041/cskuxusg6kbrllcsl6x9.jpg', 0),
-('IMG011', 'PRO004', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731055234/u4oje3oyhrzadlw9glms.webp', 1),
-('IMG012', 'PRO004', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731055235/sn45tefezfkholxonrip.webp', 0);
-
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052395/xaxsqpih3wlkhn3svtzu.webp', 1),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052396/e7f3ibtwciwnirlyrfy5.webp', 0),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052397/acrcxyujqymmsmwjhptv.webp', 0),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052428/ilsoqolpotlhrrz4lvgp.webp', 0),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052512/ijhq94a3uxjmzsxxug1b.webp', 1),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052513/crckzpsnajdaal5wxxjs.webp', 0),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052513/jrh6zvjikf4e99cunqyr.webp', 0),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052514/lwcgnvtxuxihrgxl42ln.webp', 0),
+('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731053976/ookezmryr9dg2d6kwmsb.webp', 1),
+('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731054041/cskuxusg6kbrllcsl6x9.jpg', 0),
+('PRO004', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731055234/u4oje3oyhrzadlw9glms.webp', 1),
+('PRO004', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731055235/sn45tefezfkholxonrip.webp', 0);
 
 INSERT INTO roles (role_name, description)
 VALUES
@@ -665,13 +751,10 @@ VALUES
 
 INSERT INTO order_status (order_status_name)
 VALUES
-(N'Chờ thanh toán'),
 (N'Chờ xác nhận'),
-(N'Chờ lấy hàng'),
 (N'Chờ giao hàng'),
 (N'Hoàn thành'),
-(N'Đã hủy'),
-(N'Trả hàng/Hoàn tiền')
+(N'Đã hủy')
 
 INSERT INTO users (user_id, full_name, username)
 VALUES

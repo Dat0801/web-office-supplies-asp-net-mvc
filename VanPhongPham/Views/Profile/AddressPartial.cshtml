@@ -12,14 +12,12 @@
         position: relative; /* Thêm thuộc tính này */
     }
 
-    .btn-outline-danger {
+    .default-badge {
         color: #ff0000;
-        border-color: #ff0000;
-    }
-
-    .btn-outline-danger:hover {
-        background-color: #ff0000;
-        color: #fff;
+        border: 1px solid #ff0000;
+        font-size: 12px;
+        padding: 2px 5px;
+        border-radius: 3px;
     }
 
     .btn-outline-secondary {
@@ -107,7 +105,7 @@
                     <div>
                         @if (address.isDefault == true)
                         {
-                            <button class="btn btn-outline-danger btn-sm mr-2">Mặc định</button>
+                            <span class="default-badge">Mặc Định</span>
                         }
                     </div>
                     <div class="button-group">
@@ -289,7 +287,6 @@
             event.preventDefault();
 
             adrsid = this.getAttribute('data-addressid'); // Lấy address_id từ nút đã nhấp
-            console.log("Address ID:", adrsid);
 
             const fullName = this.getAttribute('data-fullname');
             const phone = this.getAttribute('data-phone');
@@ -461,8 +458,6 @@
             location.reload();
         }
     });
-
-
 
     document.getElementById('addAddressModal').addEventListener('hide.bs.modal', function () {
         location.reload();

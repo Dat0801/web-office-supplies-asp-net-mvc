@@ -1,0 +1,190 @@
+﻿@model IEnumerable<VanPhongPham.Models.payment_method>
+
+@{
+    var totalAmount = ViewBag.TotalAmount;
+}
+<style>
+    .checkoutlayout {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        font-family: Arial, sans-serif;
+    }
+
+    .checkout-header {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    .checkout-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .checkout-content {
+        margin-top: 20px;
+    }
+
+    .checkout-item {
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+        .checkout-item .total-payment {
+            color: red;
+            font-size: 24px;
+        }
+
+    .checkout-footer-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #777;
+    }
+
+    .order-button {
+        background-color: #ff4d4f;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .custom-select {
+        width: 250px;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        text-align: right;
+        border-radius: 5px;
+        appearance: none;
+        background-color: #f9f9f9;
+        background-image: url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/svgs/solid/angle-down.svg");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 12px;
+        cursor: pointer;
+    }
+
+        .custom-select:focus {
+            outline: none;
+            border-color: #ff4d4f;
+            box-shadow: 0 0 3px rgba(255, 77, 79, 0.5);
+        }
+</style>
+
+<div class="checkoutlayout p-4" style="margin-top: 20px;">
+    <!-- Header with Payment Method Select -->
+    <div class="checkout-header-row">
+        <div class="checkout-header">Phương thức thanh toán</div>
+        <select id="payment-method-select" class="custom-select">
+            @if (totalAmount >= 2000000)
+            {
+                <option value="@Model.FirstOrDefault(m => m.method_id == "PAY002").method_id">@Model.FirstOrDefault(m => m.method_id == "PAY002").method_name</option>
+            }
+            else
+            {
+                foreach (var method in Model)
+                {
+                    <option value="@method.method_id">@method.method_name</option>
+                }
+            }
+        </select>
+    </div>
+
+    <hr />
+
+    <!-- Middle Section with Order Summary -->
+    <div class="checkout-content">
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Lời nhắn:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="ordernote" id="ordernote" placeholder="Lưu ý cho người bán...." />
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="checkout-item d-flex justify-content-end">
+                    <div class="col-6 text-left p-0" style="color: #777777">
+                        <span>Tổng tiền hàng</span>
+                    </div>
+                    <div class="col-2 text-right p-0" style="color: #272727">
+                        <span>₫@totalAmount.ToString("N0")</span>
+                    </div>
+                </div>
+
+                <div class="checkout-item d-flex justify-content-end" style="margin-top: 20px">
+                    <div class="col-6 text-left p-0" style="color: #777777">
+                        <span>Tổng tiền phí vận chuyển</span>
+                    </div>
+                    <div class="col-2 text-right p-0" style="color: #272727">
+                        <span>₫45.100</span>
+                    </div>
+                </div>
+
+                <div class="checkout-item d-flex justify-content-end" style="margin-top: 20px;">
+                    <div class="col-6 d-flex align-items-center justify-content-start p-0" style="color: #777777;">
+                        <span>Tổng thanh toán</span>
+                    </div>
+                    <div class="col-2 d-flex align-items-center justify-content-end p-0">
+                        <span class="total-payment">₫@totalAmount.ToString("N0")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Footer with Terms and Order Button -->
+    <div class="checkout-footer-row">
+        <div>Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo <a href="#" style="text-decoration: none">Điều khoản QVD</a></div>
+        <button class="order-button">Đặt hàng</button>
+    </div>
+</div>
+
+<script>
+    const userData1 = JSON.parse(sessionStorage.getItem('user'));
+    var storedAddress1 = sessionStorage.getItem("selectedAddress");
+
+    document.querySelector('.order-button').addEventListener('click', async () => {
+        try {
+            const ordnote = document.getElementById('ordernote');
+            const selectedMethod = document.getElementById('payment-method-select').value;
+
+            // Kiểm tra và tạo chuỗi thông tin địa chỉ
+            const addressData = storedAddress1 ?
+                `${JSON.parse(storedAddress1).fullName}, ${JSON.parse(storedAddress1).phone}, ${JSON.parse(storedAddress1).addressLine}`
+                : null;
+
+            if (selectedMethod === "PAY001") {
+                const response = await fetch('/Checkout/SaveOrder', {
+                            method: "POST",
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                user_id: userData1.MaTaiKhoan,
+                                cart_id: userData1.CartID,
+                                info_adrs: addressData,
+                                ordernote: ordnote.value.trim(),
+                                method_id: selectedMethod
+                            })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const url = `@Url.Action("Index", "Profile")?order_status_id=${1}&MaTaiKhoan=${userData.MaTaiKhoan}&view=OrderPartial`;
+                    window.location.href = url;
+                }
+            }
+            
+        } catch (error) {
+            console.error("Không thể lưu Order", error);
+        }
+    });
+</script>
+

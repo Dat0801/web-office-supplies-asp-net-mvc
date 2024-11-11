@@ -43,67 +43,93 @@
                     <tbody class="align-middle">
                         @foreach (var item in Model)
                         {
-                        <tr style="@(item.QuantityProduct == 0 ? "background-color: #FAFAFA;" : "")">
-                            @if (item.QuantityProduct == 0)
-                            {
-                                <td class="align-middle">
-                                    <span style="color: white; font-weight: bold; background-color: #A3A3A3; padding: 5px; font-size: 10px; border-radius: 10px">HẾT HÀNG</span>
-                                </td>
-                                <td style="text-align:left">
-                                    <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px">
-                                    @item.ProductName
-                                </td>
-                                <td class="align-middle">₫0</td>
-                                <td class="align-middle">0</td>
-                                <td class="align-middle" style="color: #ff4747;">₫0</td>
-                                <td class="align-middle">
-                                    <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
-                                        <i class="fa fa-times"></i>
-                                    </button>
-                                </td>
-                            }
-                            else
-                            {
-                                <td class="align-middle">
-                                    <input type="checkbox" data-product-id="@item.ProductID" style="margin-right: 15px" @(item.isSelected == 1 ? "checked" : "") />
-                                </td>
-                                <td style="text-align:left">
-                                    <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px">
-                                    @item.ProductName
-                                </td>
-                                <td class="align-middle">₫@item.Price.ToString("N0")</td>
-                                <td class="align-middle">
-                                    <div class="input-group quantity mx-auto" style="width: 100px;">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary" onclick="changeQuantity(this, -1)">
-                                                <i class="fa fa-minus"></i>
-                                            </button>
+                            <tr style="@(item.QuantityProduct == 0 ? "background-color: #FAFAFA;" : "")">
+                                @if (item.Product_status == false)
+                                {
+                                    <td class="align-middle">
+                                        <span style="color: white; font-weight: bold; background-color: #A3A3A3; padding: 5px; font-size: 10px; border-radius: 10px">ĐÃ ẨN</span>
+                                    </td>
+                                    <td style="text-align:left">
+                                        <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px">
+                                        @item.ProductName
+                                    </td>
+                                    <td class="align-middle">₫0</td>
+                                    <td class="align-middle">0</td>
+                                    <td class="align-middle" style="color: #ff4747;">₫0</td>
+                                    <td class="align-middle">
+                                        <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </td>
+                                }
+                                else if (item.QuantityProduct == 0)
+                                {
+                                    <td class="align-middle">
+                                        <span style="color: white; font-weight: bold; background-color: #A3A3A3; padding: 5px; font-size: 10px; border-radius: 10px">HẾT HÀNG</span>
+                                    </td>
+                                    <td style="text-align:left">
+                                        <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px">
+                                        @item.ProductName
+                                    </td>
+                                    <td class="align-middle">₫0</td>
+                                    <td class="align-middle">0</td>
+                                    <td class="align-middle" style="color: #ff4747;">₫0</td>
+                                    <td class="align-middle">
+                                        <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="align-middle">
+                                        <input type="checkbox" data-product-id="@item.ProductID" style="margin-right: 15px" @(item.isSelected == 1 ? "checked" : "") />
+                                    </td>
+                                    <td style="text-align:left">
+                                        <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px">
+                                        @item.ProductName
+                                    </td>
+                                    if (item.Promotion_Price == 0)
+                                    {
+                                        <td class="align-middle" style="color: #272727;">₫@item.Price.ToString("N0")</td>
+                                    }
+                                    else
+                                    {
+                                        <td class="align-middle" style="color: #272727;"><del style="margin-right:10px; color: #777777">₫@item.Price.ToString("N0")</del>₫@item.Promotion_Price.ToString("N0")</td>
+                                    }
+                                    <td class="align-middle">
+                                        <div class="input-group quantity mx-auto" style="width: 100px;">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-sm btn-primary" onclick="changeQuantity(this, -1)">
+                                                    <i class="fa fa-minus"></i>
+                                                </button>
+                                            </div>
+                                            <input type="number"
+                                                   class="form-control form-control-sm bg-secondary text-center"
+                                                   value="@item.Quantity"
+                                                   min="1"
+                                                   step="1"
+                                                   oninput="preventLeadingZero(this)"
+                                                   data-cartdetail-quantity="@item.Quantity"
+                                                   data-product-id="@item.ProductID"
+                                                   data-product-price="@item.Price"
+                                                   data-product-totalamount="@item.TotalAmount"
+                                                   onblur="checkStock(this)" style="padding: 2px">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-sm btn-primary" onclick="changeQuantity(this, 1)">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <input type="number"
-                                               class="form-control form-control-sm bg-secondary text-center"
-                                               value="@item.Quantity"
-                                               min="1"
-                                               step="1"
-                                               oninput="preventLeadingZero(this)"
-                                               data-cartdetail-quantity="@item.Quantity"
-                                               data-product-id="@item.ProductID"
-                                               data-product-price="@item.Price"
-                                               onblur="checkStock(this)">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary" onclick="changeQuantity(this, 1)">
-                                                <i class="fa fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="align-middle" style="color: #ff4747;">₫@item.TotalAmount.ToString("N0")</td>
-                                <td class="align-middle">
-                                    <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
-                                        <i class="fa fa-times"></i>
-                                    </button>
-                                </td>
-                            }
-                        </tr>
+                                    </td>
+                                    <td class="align-middle" style="color: #ff4747;">₫@item.TotalAmount.ToString("N0")</td>
+                                    <td class="align-middle">
+                                        <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </td>
+                                }
+                            </tr>
                         }
                     </tbody>
                 </table>
@@ -131,7 +157,7 @@
                             <h5 style="font-size: 18px; font-weight: normal">Tổng thanh toán (<span id="selectedCount">0</span> sản phẩm): </h5>
                             <h5 id="totalAmount" style="color: #ff4747; font-size: 25px; font-weight: normal">₫0</h5>
                         </div>
-                        <button class="btn btn-block btn-primary my-3 py-3">Mua Hàng</button>
+                        <button class="btn btn-block btn-primary my-3 py-3" onclick="redirectToCheckout()">Mua Hàng</button>
                     </div>
                 </div>
             </div>
@@ -314,6 +340,8 @@ else
         // Cập nhật trạng thái của checkbox ở Cart Summary và nút "Chọn Tất Cả"
         document.getElementById('summaryCheckbox').checked = isChecked;
         document.getElementById('mainProductCheckbox').checked = isChecked;
+
+        location.reload();
     }
 
     function selectAllProducts() {
@@ -347,6 +375,8 @@ else
 
             updateIsSelected(this.getAttribute("data-product-id"), this.checked);
             updatePaymentSummary();
+
+            location.reload();
         });
     });
 
@@ -366,24 +396,26 @@ else
             // Khôi phục thanh cuộn khi modal mở
             document.body.style.overflowY = "scroll";
         }
-
-        // Gửi yêu cầu xóa tới server
-        const response = await fetch('/Cart/DeleteSelectedItems', {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cart_id: @ViewBag.CartID, productIds: selectedProductIds })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            location.reload(); // Tải lại trang nếu xóa thành công
-        }
         else
         {
-            alert("Xóa sản phẩm không thành công.");
+            // Gửi yêu cầu xóa tới server
+            const response = await fetch('/Cart/DeleteSelectedItems', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cart_id: @ViewBag.CartID, productIds: selectedProductIds })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                location.reload(); // Tải lại trang nếu xóa thành công
+            }
+            else
+            {
+                alert("Xóa sản phẩm không thành công.");
+            }
         }
-    }   
+    }
 
     function updatePaymentSummary() {
         const selectedCheckboxes = document.querySelectorAll('input[type="checkbox"][data-product-id]:checked');
@@ -394,17 +426,17 @@ else
             if (checkbox.checked) {
                 const productId = checkbox.getAttribute("data-product-id");
                 const quantityInput = document.querySelector(`input[type="number"][data-product-id="${productId}"]`);
-                const productPrice = parseFloat(quantityInput.getAttribute("data-product-price")) || 0;
-                const quantity = parseInt(quantityInput.value) || 0;
+                const totalamount = parseFloat(quantityInput.getAttribute("data-product-totalamount")) || 0;
 
                 totalQuantity++;
-                totalAmount += productPrice * quantity;
+                totalAmount += totalamount;
             }
         });
 
         // Update the display elements with calculated values
         document.getElementById("selectedCount").textContent = totalQuantity;
         document.getElementById("totalAmount").textContent = `₫${totalAmount.toLocaleString('de-DE')}`;
+
     }
 
     // Hàm để duyệt qua các checkbox con và kiểm tra tất cả
@@ -427,6 +459,60 @@ else
             // Nếu không thì bỏ unchecked checkbox chính
             document.getElementById('summaryCheckbox').checked = false;
             document.getElementById('mainProductCheckbox').checked = false;
+        }
+    }
+
+    async function redirectToCheckout() {
+        // Lấy danh sách productId của các sản phẩm được chọn
+        const selectedProductIds = [...document.querySelectorAll('input[type="checkbox"][data-product-id]:checked')]
+            .map(checkbox => checkbox.getAttribute("data-product-id"));
+
+        // Kiểm tra nếu không có sản phẩm nào được chọn
+        if (selectedProductIds.length === 0) {
+            const modalBody = document.querySelector("#stockModal .modal-body p");
+            modalBody.textContent = `Bạn vẫn chưa chọn sản phẩm nào để mua.`;
+
+            // Hiển thị modal
+            $("#stockModal").modal("show");
+
+            // Khôi phục thanh cuộn khi modal mở
+            document.body.style.overflowY = "scroll";
+        }
+        else {
+            // Lấy userid và cartId từ sessionStorage
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            var storedAddress = sessionStorage.getItem("selectedAddress");
+
+            if (userData) {
+                if (storedAddress) {
+                    sessionStorage.removeItem('selectedAddress');
+                }
+
+                // Gửi yêu cầu xóa tới server
+                const response = await fetch('/Cart/UpdateCartDetailsPromotionPrice', {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cart_id: @ViewBag.CartID })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                     // Tạo URL cho trang Checkout với userid và cartId
+                    const url = `@Url.Action("Index", "Checkout")?userid=${userData.MaTaiKhoan}&cartid=${userData.CartID}`;
+
+                    // Chuyển hướng sang URL
+                    window.location.href = url;
+                }
+                else
+                {
+                    alert("Cập nhật sản phẩm không thành công.");
+                }
+            }
+            else
+            {
+                logout();
+            }
         }
     }
 </script>
