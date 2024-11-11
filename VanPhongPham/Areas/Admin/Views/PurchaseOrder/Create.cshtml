@@ -43,15 +43,16 @@
                                 }
                             </select>
                         </div>
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-3">
                             <label for="quantity">Số Lượng</label>
                             <input type="number" class="form-control" name="orderDetails[0].quantity" placeholder="Nhập số lượng" step="1" min="1" required />
                             <div class="clearfix"></div>
                         </div>
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-3">
                             <label for="price">Giá</label>
-                            <input type="number" step="500" min="3000" class="form-control" name="orderDetails[0].price" />
+                            <input type="number" step="500" min="3000" class="form-control" placeholder="Nhập giá bán" name="orderDetails[0].price" />
                         </div>
+                        <div id="removeButtonContainer" class="form-group col-md-2 my-4"></div>
                     </div>
                 </div>
             </div>
@@ -68,7 +69,6 @@
 <script>
     let orderDetailIndex = 1;
 
-    // Thêm một sản phẩm mới vào danh sách
     document.getElementById("addProduct").addEventListener("click", function () {
         let newOrderDetail = document.querySelector(".order-detail").cloneNode(true);
         let select = newOrderDetail.querySelector("select");
@@ -79,6 +79,24 @@
         select.name = `orderDetails[${orderDetailIndex}].product_id`;
         quantity.name = `orderDetails[${orderDetailIndex}].quantity`;
         price.name = `orderDetails[${orderDetailIndex}].price`;
+
+        // Xóa các giá trị hiện tại trong input khi thêm phần tử mới
+        quantity.value = "";
+        price.value = "";
+
+        let removeButtonContainer = newOrderDetail.querySelector("#removeButtonContainer");
+
+        // Tạo nút "Xóa Sản Phẩm" cho các sản phẩm bổ sung
+        let removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "btn btn-danger btn-sm remove-product";
+        removeButton.textContent = "Xóa Sản Phẩm";
+
+        removeButton.addEventListener("click", function () {
+            this.closest(".order-detail").remove();
+        });
+
+        removeButtonContainer.appendChild(removeButton);
 
         // Thêm phần tử vào container
         document.getElementById("orderDetailsContainer").appendChild(newOrderDetail);

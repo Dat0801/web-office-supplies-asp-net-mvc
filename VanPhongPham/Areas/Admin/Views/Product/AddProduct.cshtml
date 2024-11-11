@@ -20,7 +20,7 @@
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Giá nhập</label>
                     <input type="text" class="form-control" name="product_id" readonly
-                           placeholder="Giá nhập sẽ có sau khi đặt hàng từ nhà cung cấp" />
+                           placeholder="Giá nhập sẽ có sau khi đặt hàng từ nhà cung cấp"/>
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
@@ -33,13 +33,13 @@
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Giá bán</label>
                     <input type="text" class="form-control" name="product_id" readonly
-                           placeholder="Giá bán = Giá nhập * Hệ số" />
+                           placeholder="Giá bán = Giá nhập * Hệ số"/>
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Số lượng tồn</label>
                     <input type="text" class="form-control" name="product_id" readonly
-                           placeholder="Số lượng tồn sẽ có khi nhập hàng" />
+                           placeholder="Số lượng tồn sẽ có khi nhập hàng"/>
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
@@ -75,26 +75,31 @@
                 <div class="form-group col-md-3">
                     <label for="attribute_id">
                         Thuộc tính
-                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openAttributeModal($(this).closest('select').val())">
+                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openAttributeModal()">
                             <i class="feather icon-plus navbar-icon align-middle"></i>
                         </a>
                     </label>
-                    <select name="attribute_id" class="form-control" id="attributeSelect" multiple onchange="updateAttributeValues()">
+                    <div id="attributeCheckboxes">
                         @foreach (var attribute in ViewBag.attributes)
                         {
-                            <option value="@attribute.attribute_id">@attribute.attribute_name</option>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="attribute_id" value="@attribute.attribute_id" id="attribute_@attribute.attribute_id" onchange="updateAttributeValues()">
+                                <label class="form-check-label" for="attribute_@attribute.attribute_id">
+                                    @attribute.attribute_name
+                                </label>
+                            </div>
                         }
-                    </select>
+                    </div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="attribute_value_id">
                         Giá trị thuộc tính
-                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openAttributeValueModal($('select[name=\'attribute_id\']').val())">
+                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openAttributeValueModalFromCheckbox()">
                             <i class="feather icon-plus navbar-icon align-middle"></i>
                         </a>
                     </label>
-                    <select name="attribute_value_id" class="form-control" id="attributeValueSelect" multiple>
-                    </select>
+                    <div id="attributeValueCheckboxes">
+                    </div>
                 </div>
                 <div class="form-group col-md-3 my-2">
                     <label for="status">Trạng thái hiển thị</label>
@@ -108,7 +113,7 @@
                 <div class="form-group col-md-6">
                     <label for="productDescription">Mô tả sản phẩm</label>
                     <textarea id="productDescription" name="description" class="form-control"></textarea>
-                    <div class="clearfix"></div>    
+                    <div class="clearfix"></div>
                 </div>
             </div>
             <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>

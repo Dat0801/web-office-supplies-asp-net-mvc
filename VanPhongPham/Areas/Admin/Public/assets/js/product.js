@@ -131,6 +131,9 @@ document.getElementById("productImage").addEventListener("change", function (eve
             preview.style.display = "block"; // Hiển thị ảnh xem trước
         };
         reader.readAsDataURL(file);
+    } else {
+        alert("Vui lòng chọn một ảnh sản phẩm!");
+        return; // Dừng lại nếu không có file nào được chọn
     }
 });
 
