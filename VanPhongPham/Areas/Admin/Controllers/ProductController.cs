@@ -136,7 +136,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
                 List<string> additionalImageUrls = JsonConvert.DeserializeObject<List<string>>(additionalImageUrlsJson);
 
-                List<string> attributeValueIdsList = attribute_value_id.ToList();
+                List<string> attributeValueIdsList = attribute_value_id?.ToList() ?? new List<string>();
 
                 image mainImage = new image
                 {

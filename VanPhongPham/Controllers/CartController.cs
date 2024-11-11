@@ -22,7 +22,7 @@ namespace VanPhongPham.Controllers
                     ProductID = o.product.product_id, // Thêm thuộc tính ProductID nếu cần
                     ProductName = o.product.product_name,
                     Quantity = o.quantity.HasValue ? o.quantity.Value : 0, // Gán giá trị 0 nếu null
-                    QuantityProduct = o.product.stock_quantity,
+                    QuantityProduct = (int)o.product.stock_quantity,
                     TotalAmount = o.total_amount.HasValue ? o.total_amount.Value : 0, // Gán giá trị 0 nếu null
                     ImageUrl = o.product.images
                                 .Where(img => img.is_primary == true) // Kiểm tra hình ảnh chính
