@@ -54,6 +54,45 @@ async function getWards(districtId) {
     }
 }
 
+async function getService(to_disctrict) {
+    const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services`, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+            'Token': TokenAPI
+        },
+        body: JSON.stringify({ shop_id: 195136, from_district: 1456, to_disctrict: to_disctrict })
+    });
+
+    if (response.ok) {
+        const result = await response.json();
+        return result.data;
+    }
+    else {
+        console.error("Lỗi khi tính")
+    }
+}
+
+async function getFee(serviceid, todistrict, toward, weight) {
+    const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee`, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+            'Token': TokenAPI,
+            'ShopId': 195136
+        },
+        body: JSON.stringify({ service_type_id: serviceid, to_district_id: todistrict, to_ward_code: toward, weight: weight })
+    });
+
+    if (response.ok) {
+        const result = await response.json();
+        return result.data;
+    }
+    else {
+        console.error("Lỗi khi tính")
+    }
+}
+
 async function initAddressDropdowns() {
     const provinces = await getProvinces();
     const citySelect = document.getElementById('city');
