@@ -712,7 +712,6 @@
     <Content Include="Views\Checkout\Index.cshtml" />
     <Content Include="Views\Checkout\PaymentCheckoutPartial.cshtml" />
     <Content Include="Views\Checkout\ProductsCheckoutPartial.cshtml" />
-    <Content Include="Views\Profile\EmailStepTwoPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

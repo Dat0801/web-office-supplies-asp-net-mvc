@@ -101,12 +101,6 @@ namespace VanPhongPham.Controllers
             return PartialView();
         }
 
-        [HttpGet]
-        public ActionResult EmailStepTwoPartial()
-        {
-            return PartialView();
-        }
-
         public ActionResult OrderPartial(int? page, int order_status_id, string MaTaiKhoan) // Thêm tham số MaTaiKhoan
         {
             // Lấy danh sách đơn hàng theo điều kiện
