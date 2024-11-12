@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using VanPhongPham.Models;
 using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
+using PagedList;
 
 namespace VanPhongPham.Controllers
 {
@@ -15,12 +16,13 @@ namespace VanPhongPham.Controllers
     {
         private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
         // GET: Profile
-        public ActionResult Index(string view, string MaTaiKhoan, string ord_id, int order_status_id = -1)
+        public ActionResult Index(string view, string MaTaiKhoan, string ord_id, int? page, int order_status_id = -1)
         {
             ViewBag.PartialView = string.IsNullOrEmpty(view) ? "ProfilePartial" : view;
             ViewBag.MaTaiKhoan = MaTaiKhoan;
             ViewBag.CurrentStatus = order_status_id;
             ViewBag.OrderID = ord_id;
+            ViewBag.Page = page ?? 1;
 
             if (!string.IsNullOrEmpty(MaTaiKhoan))
             {
@@ -99,7 +101,7 @@ namespace VanPhongPham.Controllers
             return PartialView();
         }
 
-        public ActionResult OrderPartial(int order_status_id, string MaTaiKhoan) // Thêm tham số MaTaiKhoan
+        public ActionResult OrderPartial(int? page, int order_status_id, string MaTaiKhoan) // Thêm tham số MaTaiKhoan
         {
             // Lấy danh sách đơn hàng theo điều kiện
             var orders = db.orders
@@ -136,7 +138,9 @@ namespace VanPhongPham.Controllers
             ViewBag.OrderStatus = db.order_status.ToList();
             ViewBag.CurrentStatus = order_status_id; // Thêm dòng này để lưu trạng thái hiện tại
 
-            return PartialView(orders);
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return PartialView(orders.ToPagedList(pageNumber, pageSize));
         }
 
         public ActionResult OrderDetailsPartial(string ord_id)
