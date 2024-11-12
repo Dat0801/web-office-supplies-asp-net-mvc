@@ -14,6 +14,7 @@ namespace VanPhongPham.Models
         public string MethodId { get; set; }
         public string MethodName { get; set; }
         public DateTime? DeliveryDate { get; set; }
+        public double? ShippingFee { get; set; }
         public double? TotalAmount { get; set; }
         public string OrderStatusName { get; set; }
         public DateTime? CreatedAt { get; set; }

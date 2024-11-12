@@ -2,6 +2,7 @@
 
 @{
     var totalAmount = ViewBag.TotalAmount;
+    var adrs = ViewBag.adrs as VanPhongPham.Models.address;
 }
 <style>
     .checkoutlayout {
@@ -122,7 +123,7 @@
                         <span>Tổng tiền phí vận chuyển</span>
                     </div>
                     <div class="col-2 text-right p-0" style="color: #272727">
-                        <span>₫45.100</span>
+                        <span class="fee-ship"></span>
                     </div>
                 </div>
 
@@ -131,7 +132,7 @@
                         <span>Tổng thanh toán</span>
                     </div>
                     <div class="col-2 d-flex align-items-center justify-content-end p-0">
-                        <span class="total-payment">₫@totalAmount.ToString("N0")</span>
+                        <span class="total-payment" data-order-totalamount="@totalAmount"></span>
                     </div>
                 </div>
             </div>
@@ -150,11 +151,77 @@
 <script>
     const userData1 = JSON.parse(sessionStorage.getItem('user'));
     var storedAddress1 = sessionStorage.getItem("selectedAddress");
+    const todistrict = storedAddress1 ? JSON.parse(storedAddress1).district : '@(adrs != null ? adrs.district.ToString() : "default-district")';
+    const toward = storedAddress1 ? JSON.parse(storedAddress1).ward : '@(adrs != null ? adrs.ward.ToString() : "default-ward")';
+
+
+    document.addEventListener('DOMContentLoaded', async function () {
+        try {
+            const responseService = await getService(todistrict);
+            const totalWeight = JSON.parse(sessionStorage.getItem('items')).totalWeight; // Lấy trọng lượng từ sessionStorage
+
+            // Kiểm tra nếu responseService và responseService.data hợp lệ
+            if (!responseService) {
+                console.error("Không có dữ liệu dịch vụ vận chuyển.");
+                return; // Dừng lại nếu không có dữ liệu
+            }
+
+            // Kiểm tra xem totalWeight có lớn hơn hoặc nhỏ hơn 20000 hay không
+            let serviceTypeId;
+            if (totalWeight < 20000) {
+                // Lấy service_type_id = 2 cho "Hàng nhẹ"
+                const lightItem = responseService.find(item => item.service_type_id === 2);
+                serviceTypeId = lightItem ? lightItem.service_type_id : null;
+            }
+            else {
+                // Lấy service_type_id = 5 cho "Hàng nặng"
+                const heavyItem = responseService.find(item => item.service_type_id === 5);
+                serviceTypeId = heavyItem ? heavyItem.service_type_id : null;
+            }
+
+            // Gọi hàm getFee để lấy phí vận chuyển
+            if (serviceTypeId)
+            {
+                const feeResponse = await getFee(serviceTypeId, todistrict, toward, totalWeight, JSON.parse(sessionStorage.getItem('items')).items);
+
+                // Kiểm tra nếu feeResponse hợp lệ
+                if (feeResponse) {
+                    // Lấy giá trị phí vận chuyển từ feeResponse
+                    const serviceFee = feeResponse.service_fee;
+
+                    // Cập nhật phí vận chuyển vào phần tử HTML
+                    document.querySelector('.fee-ship').innerText = `₫${serviceFee.toLocaleString('de-DE')}`;
+
+                    const totalamount = parseFloat(document.querySelector('.total-payment').getAttribute("data-order-totalamount")) || 0;
+
+                    // Cập nhật phần tổng thanh toán
+                    const totalAmountWithFee = totalamount + serviceFee;
+                    document.querySelector('.total-payment').innerText = `₫${totalAmountWithFee.toLocaleString('de-DE')}`;
+                } else {
+                    console.error("Lỗi khi lấy phí vận chuyển.");
+                }
+            }
+            else
+            {
+                console.error("Không tìm thấy dịch vụ vận chuyển phù hợp.");
+            }
+
+            // Tiếp tục xử lý với serviceTypeId nếu cần
+        } catch (error) {
+            console.error("Lỗi trong quá trình xử lý:", error);
+        }
+    });
+
 
     document.querySelector('.order-button').addEventListener('click', async () => {
         try {
             const ordnote = document.getElementById('ordernote');
             const selectedMethod = document.getElementById('payment-method-select').value;
+            // Lấy giá trị từ phần tử HTML có chứa phí vận chuyển
+            let shipping_fee_text = document.querySelector('.fee-ship').innerText;
+
+            // Loại bỏ ký tự ₫ và dấu phân cách, sau đó chuyển đổi thành số thực
+            let shipping_fee = parseFloat(shipping_fee_text.replace(/[₫,.]/g, ''));
 
             // Kiểm tra và tạo chuỗi thông tin địa chỉ
             const addressData = storedAddress1 ?
@@ -170,7 +237,8 @@
                                 cart_id: userData1.CartID,
                                 info_adrs: addressData,
                                 ordernote: ordnote.value.trim(),
-                                method_id: selectedMethod
+                                method_id: selectedMethod,
+                                shipping_fee: shipping_fee
                             })
                 });
 

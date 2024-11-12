@@ -156,6 +156,7 @@ namespace VanPhongPham.Controllers
                     MethodId = o.method_id,
                     MethodName = o.payment_method.method_name,
                     DeliveryDate = o.delivery_date,
+                    ShippingFee = o.shipping_fee,
                     TotalAmount = o.total_amount,
                     OrderStatusName = o.order_status.order_status_name,
                     CreatedAt = o.created_at,
