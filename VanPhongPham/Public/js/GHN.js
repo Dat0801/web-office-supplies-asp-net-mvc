@@ -54,34 +54,45 @@ async function getWards(districtId) {
     }
 }
 
-async function getService(to_disctrict) {
-    const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services`, {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json',
-            'Token': TokenAPI
-        },
-        body: JSON.stringify({ shop_id: 195136, from_district: 1456, to_disctrict: to_disctrict })
-    });
+async function getService(to_district) {
+    try {
 
-    if (response.ok) {
-        const result = await response.json();
-        return result.data;
-    }
-    else {
-        console.error("Lỗi khi tính")
+        const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Token': TokenAPI
+            },
+            body: JSON.stringify({
+                shop_id: 195136,
+                from_district: 1456,
+                to_district: parseInt(to_district)  // Truyền to_district như một số nguyên
+            })
+        });
+
+        if (!response.ok) {
+            const errorDetails = await response.json();
+            console.error("Lỗi khi tính toán dịch vụ vận chuyển:", errorDetails);
+        } else {
+            const result = await response.json();
+            return result.data;
+        }
+    } catch (error) {
+        console.error("Lỗi trong quá trình gửi yêu cầu:", error);
     }
 }
 
-async function getFee(serviceid, todistrict, toward, weight) {
+
+
+async function getFee(serviceid, todistrict, toward, weight, items) {
     const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee`, {
-        method: "GET",
+        method: "POST",
         headers: {
             'Content-Type': 'application/json',
             'Token': TokenAPI,
             'ShopId': 195136
         },
-        body: JSON.stringify({ service_type_id: serviceid, to_district_id: todistrict, to_ward_code: toward, weight: weight })
+        body: JSON.stringify({ service_type_id: serviceid, to_district_id: parseInt(todistrict), to_ward_code: toward, weight: parseInt(weight), items: items })
     });
 
     if (response.ok) {

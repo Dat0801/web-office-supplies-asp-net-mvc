@@ -1,4 +1,4 @@
-﻿
+﻿@model VanPhongPham.Models.address
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_LayoutClient.cshtml";
@@ -11,7 +11,7 @@
 
             @Html.Action("ProductsCheckoutPartial", "Checkout", new { cart_id = ViewBag.CartID })
 
-            @Html.Action("PaymentCheckoutPartial", "Checkout")
+            @Html.Action("PaymentCheckoutPartial", "Checkout", new { adrs = Model })
         </div>
     </div>
 </div>
