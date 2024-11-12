@@ -1,4 +1,6 @@
-﻿@model IEnumerable<VanPhongPham.Models.OrderViewModel>
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.OrderViewModel>
 @using VanPhongPham.Models
 
 @{
@@ -16,17 +18,17 @@
         border-bottom: 1px solid #ddd;
     }
 
-    .order-status-tabs .nav-tabs .nav-link {
-        color: #333;
-        font-weight: bold;
-        padding: 10px 0;
-        border: none;
-    }
+        .order-status-tabs .nav-tabs .nav-link {
+            color: #333;
+            font-weight: bold;
+            padding: 10px 0;
+            border: none;
+        }
 
-    .order-status-tabs .nav-tabs .nav-link.active {
-        color: #ff4747;
-        border-bottom: 3px solid #ff4747;
-    }
+            .order-status-tabs .nav-tabs .nav-link.active {
+                color: #ff4747;
+                border-bottom: 3px solid #ff4747;
+            }
 
     .order-container {
         background-color: #fff;
@@ -58,11 +60,11 @@
         gap: 15px;
     }
 
-    .product-info img {
-        width: 80px;
-        height: auto;
-        border: 1px solid #ddd;
-    }
+        .product-info img {
+            width: 80px;
+            height: auto;
+            border: 1px solid #ddd;
+        }
 
     .price-info {
         text-align: right;
@@ -98,13 +100,14 @@
         border-radius: 4px;
         margin-top: 8px;
     }
+
     .modal-dialog {
         max-width: 700px; /* Đặt chiều rộng mong muốn cho modal */
         width: 90%; /* Điều chỉnh theo ý thích */
     }
 
     .modal-body {
-        max-height: 600px;/* Giới hạn chiều cao modal body */
+        max-height: 600px; /* Giới hạn chiều cao modal body */
         overflow-y: auto; /* Bật thanh cuộn dọc */
     }
 
@@ -116,16 +119,16 @@
         margin-top: 10px;
     }
 
-    .rating-container p {
-        margin: 0;
-        font-weight: bold;
-        color: #333;
-    }
+        .rating-container p {
+            margin: 0;
+            font-weight: bold;
+            color: #333;
+        }
 
-    .rating-container .rating {
-        display: flex;
-        gap: 5px;
-    }
+        .rating-container .rating {
+            display: flex;
+            gap: 5px;
+        }
 
     .rating input[type="radio"] {
         display: none; /* Ẩn input */
@@ -136,8 +139,7 @@
         cursor: pointer;
     }
 
-    .messagesmodal 
-    {
+    .messagesmodal {
         display: none; /* Mặc định là ẩn */
         position: fixed;
         top: 20px; /* Đưa lên trên một chút */
@@ -151,6 +153,58 @@
         z-index: 9999;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .pagination li {
+        margin: 0 5px;
+    }
+
+    .pagination .page-link {
+        color: #777777; /* Màu chữ mặc định */
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        transition: background-color 0.3s, color 0.3s;
+        text-decoration: none;
+    }
+
+        .pagination .page-link:hover {
+            background-color: #f0f0f0; /* Màu nền khi hover */
+            color: #333; /* Màu chữ khi hover */
+        }
+
+    .pagination .active .page-link {
+        background-color: #ff5733; /* Màu nền cho trang hiện tại */
+        color: #fff; /* Màu chữ cho trang hiện tại */
+        cursor: default; /* Con trỏ chuột mặc định khi active */
+        pointer-events: none; /* Vô hiệu hóa hover */
+    }
+
+    .pagination-container nav ul.pagination li a,
+    .pagination-container nav ul.pagination li span {
+        padding: 8px 12px;
+        margin: 0 5px;
+        color: #B4B2B2;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .pagination-container nav ul.pagination li.active span,
+    .pagination-container nav ul.pagination li.active a {
+        background-color: #e91e63; /* Màu nền cho trang hiện tại */
+        color: #fff;
+        pointer-events: none; /* Vô hiệu hóa hover */
+    }
+
+    .pagination-container nav ul.pagination li a:hover {
+        color: #e91e63;
+    }
+
 </style>
 
 <div class="order-status-tabs">
@@ -279,6 +333,28 @@
                 </div>
             </div>
         }
+        <div class="pagination-container d-flex justify-content-center mt-4">
+            <nav>
+                <ul class="pagination">
+                    @Html.PagedListPager(
+                        Model,
+                        page => Url.Action("Index", "Profile", new { order_status_id = currentStatusId, MaTaiKhoan, view = "OrderPartial", page }),
+                        new PagedListRenderOptions
+                        {
+                            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                            DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                            MaximumPageNumbersToDisplay = 5,
+                            Display = PagedListDisplayMode.Always,
+                            LinkToPreviousPageFormat = "<img src='/Public/img/icons/icons8-backorder.png' widht='20' height='20'  />",
+                            LinkToNextPageFormat = "<img src='/Public/img/icons/icons8-next-100.png' widht='20' height='20' />"
+                        }
+                    )
+                </ul>
+            </nav>
+        </div>
+
+
     }
     else
     {
@@ -324,7 +400,7 @@
             }
         });
     });
-    
+
     document.querySelectorAll('.setOrderStatusOne').forEach(function (button) {
         button.addEventListener('click', async function () {
             const orderId = this.getAttribute('data-orderid');
