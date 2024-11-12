@@ -78,7 +78,7 @@
             }
             else if (ViewBag.PartialView == "OrderPartial")
             {
-                @Html.Action("OrderPartial", "Profile", new { order_status_id = ViewBag.CurrentStatus, MaTaiKhoan = ViewBag.MaTaiKhoan })
+                @Html.Action("OrderPartial", "Profile", new { page = ViewBag.Page, order_status_id = ViewBag.CurrentStatus, MaTaiKhoan = ViewBag.MaTaiKhoan })
             }
             else if (ViewBag.PartialView == "ChangeEmailPartial")
             {
