@@ -102,33 +102,38 @@
                 <div class="form-group col-md-3">
                     <label for="attribute_id">
                         Thuộc tính
-                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openAttributeModal($(this).closest('select').val())">
+                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openAttributeModal()">
                             <i class="feather icon-plus navbar-icon align-middle"></i>
                         </a>
                     </label>
-                    <select name="attribute_id" class="form-control" id="attributeSelect" multiple onchange="updateAttributeValues()">
+                    <div id="attributeCheckboxes">
                         @foreach (var attribute in ViewBag.attributes)
                         {
-                            <option value="@attribute.attribute_id" @(ViewBag.attributesForProduct.Contains(attribute) ? "selected" : "")>@attribute.attribute_name</option>
+                            <div class="form-check">
+                                <input type="checkbox" name="attribute_id" class="form-check-input" value="@attribute.attribute_id" @(ViewBag.attributesForProduct.Contains(attribute) ? "checked" : "") id="attribute_@attribute.attribute_id" onchange="updateAttributeValues()">
+                                <label class="form-check-label" for="attribute_@attribute.attribute_id">@attribute.attribute_name</label>
+                            </div>
                         }
-                    </select>
+                    </div>
                 </div>
 
                 <div class="form-group col-md-3">
                     <label for="attribute_value_id">
                         Giá trị thuộc tính
-                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openAttributeValueModal($('select[name=\'attribute_id\']').val())">
+                        <a class="btn icon-btn btn-outline-success ml-2" title="Thêm" onclick="openAttributeValueModal()">
                             <i class="feather icon-plus navbar-icon align-middle"></i>
                         </a>
                     </label>
-                    <select name="attribute_value_id" class="form-control" id="attributeValueSelect" multiple>
+                    <div id="attributeValueCheckboxes">
                         @foreach (var value in ViewBag.attribute_values)
                         {
-                            <option value="@value.Attribute_value_id" @(attributeValuesForProduct.Any(selectedValue => selectedValue.Attribute_value_id == value.Attribute_value_id) ? "selected" : "")>@value.Value</option>
+                            <div class="form-check">
+                                <input type="checkbox" name="attribute_value_id" class="form-check-input" value="@value.Attribute_value_id" @(attributeValuesForProduct.Any(selectedValue => selectedValue.Attribute_value_id == value.Attribute_value_id) ? "checked" : "") id="attributeValue_@value.Attribute_value_id">
+                                <label class="form-check-label" for="attributeValue_@value.Attribute_value_id">@value.Value</label>
+                            </div>
                         }
-                    </select>
+                    </div>
                 </div>
-
                 <div class="form-group col-md-3 my-2">
                     <label for="status">Trạng thái hiển thị</label>
                     <select name="status" id="status" class="form-control">

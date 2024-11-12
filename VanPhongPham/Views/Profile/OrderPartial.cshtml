@@ -153,6 +153,58 @@
         z-index: 9999;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .pagination li {
+        margin: 0 5px;
+    }
+
+    .pagination .page-link {
+        color: #777777; /* Màu chữ mặc định */
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        transition: background-color 0.3s, color 0.3s;
+        text-decoration: none;
+    }
+
+        .pagination .page-link:hover {
+            background-color: #f0f0f0; /* Màu nền khi hover */
+            color: #333; /* Màu chữ khi hover */
+        }
+
+    .pagination .active .page-link {
+        background-color: #ff5733; /* Màu nền cho trang hiện tại */
+        color: #fff; /* Màu chữ cho trang hiện tại */
+        cursor: default; /* Con trỏ chuột mặc định khi active */
+        pointer-events: none; /* Vô hiệu hóa hover */
+    }
+
+    .pagination-container nav ul.pagination li a,
+    .pagination-container nav ul.pagination li span {
+        padding: 8px 12px;
+        margin: 0 5px;
+        color: #B4B2B2;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .pagination-container nav ul.pagination li.active span,
+    .pagination-container nav ul.pagination li.active a {
+        background-color: #e91e63; /* Màu nền cho trang hiện tại */
+        color: #fff;
+        pointer-events: none; /* Vô hiệu hóa hover */
+    }
+
+    .pagination-container nav ul.pagination li a:hover {
+        color: #e91e63;
+    }
+
 </style>
 
 <div class="order-status-tabs">
@@ -281,10 +333,25 @@
                 </div>
             </div>
         }
-        <div class="d-flex justify-content-center">
-            <div class="pagination-container">
-                @Html.PagedListPager(Model, page => Url.Action("Index", "Profile", new { order_status_id = currentStatusId, MaTaiKhoan, view = "OrderPartial", page }))
-            </div>
+        <div class="pagination-container d-flex justify-content-center mt-4">
+            <nav>
+                <ul class="pagination">
+                    @Html.PagedListPager(
+                        Model,
+                        page => Url.Action("Index", "Profile", new { order_status_id = currentStatusId, MaTaiKhoan, view = "OrderPartial", page }),
+                        new PagedListRenderOptions
+                        {
+                            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                            DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                            MaximumPageNumbersToDisplay = 5,
+                            Display = PagedListDisplayMode.Always,
+                            LinkToPreviousPageFormat = "<img src='/Public/img/icons/icons8-backorder.png' widht='20' height='20'  />",
+                            LinkToNextPageFormat = "<img src='/Public/img/icons/icons8-next-100.png' widht='20' height='20' />"
+                        }
+                    )
+                </ul>
+            </nav>
         </div>
     }
     else

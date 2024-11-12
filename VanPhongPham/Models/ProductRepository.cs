@@ -71,10 +71,10 @@ namespace VanPhongPham.Models
         {
             try
             {
-                if (product.created_at == null)
-                {
-                    product.created_at = DateTime.Now;
-                }
+                product.price = string.IsNullOrEmpty(product.price.ToString()) ? 0 : product.price;
+                product.purchase_price = string.IsNullOrEmpty(product.purchase_price.ToString()) ? 0 : product.purchase_price;
+                product.stock_quantity = string.IsNullOrEmpty(product.stock_quantity.ToString()) ? 0 : product.stock_quantity;
+                product.created_at = string.IsNullOrEmpty(product.created_at.ToString()) ? DateTime.Now : product.created_at;
 
                 _context.products.InsertOnSubmit(product);
                 _context.SubmitChanges();
@@ -123,7 +123,7 @@ namespace VanPhongPham.Models
             }
         }
 
-        /*public string GenerateImageId()
+        public string GenerateImageId()
         {
             image image = _context.images.ToList().LastOrDefault();
             int num = 1;
@@ -138,7 +138,7 @@ namespace VanPhongPham.Models
                 image_id = "IMG0";
             image_id += num;
             return image_id;
-        }*/
+        }
 
         public image GetMainImageByProductId(string product_id)
         {
@@ -159,6 +159,10 @@ namespace VanPhongPham.Models
         {
             try
             {
+                if(image.image_id == null)
+                {
+                    image.image_id = GenerateImageId();
+                }
                 _context.images.InsertOnSubmit(image);
                 _context.SubmitChanges();
                 return true;
