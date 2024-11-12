@@ -32,7 +32,7 @@
                 </div>
 
                 <!-- Sidebar Menu Items -->
-                <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "ProfilePartial" })" style="text-decoration: none;" class="list-group-item account-item @(ViewBag.PartialView == "ProfilePartial" || ViewBag.PartialView == "AddressPartial" || ViewBag.PartialView == "ChangePasswordPartial" || ViewBag.PartialView == "ChangeEmailPartial" ? "active" : "")">
+                <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "ProfilePartial" })" style="text-decoration: none;" class="list-group-item account-item @(ViewBag.PartialView == "ProfilePartial" || ViewBag.PartialView == "AddressPartial" || ViewBag.PartialView == "ChangePasswordPartial" ? "active" : "")">
                     <i class="fas fa-user"></i> Tài Khoản Của Tôi
                 </a>
 
