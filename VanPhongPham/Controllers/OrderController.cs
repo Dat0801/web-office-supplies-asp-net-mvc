@@ -24,7 +24,7 @@ namespace VanPhongPham.Controllers
                         if (order_status == 1)
                         {
                             ord.order_status_id = 4;
-                        }    
+                        }
                         if (order_status == 2)
                         {
                             ord.order_status_id = 3;
@@ -39,7 +39,7 @@ namespace VanPhongPham.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
-            }    
+            }
         }
         [HttpPost]
         public ActionResult SubmitReview(string user_id, string orderId, string currentStatusId, Dictionary<string, int> ratings, Dictionary<string, string> reviewContents)

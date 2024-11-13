@@ -65,7 +65,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     is_primary = true,
                     product_id = product.product_id
                 };
-                productRepository.AddImages(mainImage);
+                //productRepository.AddImages(mainImage);
                 foreach (var imageUrl in additionalImageUrls)
                 {
                     image additionalImage = new image
@@ -75,7 +75,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                         product_id = product.product_id
 
                     };
-                    productRepository.AddImages(additionalImage);
+                    //productRepository.AddImages(additionalImage);
                 }
                 foreach (var value_id in attribute_value_id)
                 {
