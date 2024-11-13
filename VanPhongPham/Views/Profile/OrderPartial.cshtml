@@ -273,9 +273,12 @@
                     <span style="color: #272727;">Thành tiền: <span class="price-info" style="font-size: 24px">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span></span>
                 </div>
                 <div class="order-actions d-flex justify-content-end mt-2">
-                    @if (order.OrderStatusName == "Chờ xác nhận")
+                    @{ 
+                        var isOrderCancelable = (DateTime.Now - order.CreatedAt.GetValueOrDefault()).TotalMinutes <= 10;
+                    }
+                    @if (order.OrderStatusName == "Chờ xác nhận" && isOrderCancelable)
                     {
-                        <button class="btn btn-danger setOrderStatusOne" data-orderid="@order.OrderId">Hủy Đơn Hàng</button>
+                        <button class="btn btn-danger setOrderStatusOne" data-orderid="@order.OrderId" data-ordercreatat="@order.CreatedAt">Hủy Đơn Hàng</button>
                     }
                     else if (order.OrderStatusName == "Chờ giao hàng")
                     {
@@ -402,24 +405,47 @@
     document.querySelectorAll('.setOrderStatusOne').forEach(function (button) {
         button.addEventListener('click', async function () {
             const orderId = this.getAttribute('data-orderid');
+            const createdAt = this.getAttribute('data-ordercreatat'); // Lấy thời gian tạo đơn hàng
+            const createdAtDate = new Date(createdAt); // Chuyển đổi sang đối tượng Date
+            const currentTime = new Date(); // Thời gian hiện tại
+            const timeDiffInMinutes = (currentTime - createdAtDate) / 60000; // Tính sự chênh lệch thời gian tính bằng phút
 
-            // Gọi hàm đổi trạng thái đơn hàng
-            const response = await fetch('/Order/ChangeOrder_OrderStatus', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    order_id: orderId,
-                    order_status: 1
-                })
-            });
+            if (timeDiffInMinutes > 10) {
+                const modalBody = document.querySelector("#MessagesModal .modal-body p");
+                modalBody.textContent = `Đã quá 10 phút không thể hủy.`;
 
-            const result = await response.json();
-            if (result.success) {
-                location.reload();
-            } else {
-                alert(result.message);
+                // Hiển thị modal với jQuery
+                $("#MessagesModal").modal("show");
+
+                // Tự động tắt modal sau 3 giây
+                setTimeout(function () {
+                    $("#MessagesModal").modal("hide");
+                }, 1500);
+
+                // Khôi phục thanh cuộn khi modal mở
+                document.body.style.overflowY = "scroll";
+            }
+            else
+            {
+                // Gọi hàm đổi trạng thái đơn hàng
+                const response = await fetch('/Order/ChangeOrder_OrderStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        order_status: 1
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                }
+                else {
+                    alert(result.message);
+                }
             }
         });
     });
