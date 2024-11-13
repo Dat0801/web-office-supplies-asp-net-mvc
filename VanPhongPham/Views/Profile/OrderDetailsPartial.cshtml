@@ -109,6 +109,53 @@
     .payment-info p {
         margin: 0;
     }
+    .shipping-timeline {
+        position: relative;
+        margin-top: 15px;
+        padding-left: 20px;
+        border-left: 2px solid #ddd;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        padding-left: 40px;
+    }
+
+    .timeline-icon {
+        position: absolute;
+        left: -10px;
+        top: 0;
+        font-size: 20px;
+        color: #4caf50;
+    }
+
+    .timeline-item.completed .timeline-icon {
+        color: #e91e63; /* Xanh lá cây cho trạng thái đã hoàn tất */
+        font-size: 20px;
+    }
+
+    .status-text {
+        font-weight: bold;
+        color: #26AA99;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .timestamp {
+        font-size: 12px;
+    }
+
+    .timeline-content p {
+        margin-top: 5px;
+    }
+
+    .order-container .row > .col-4.d-flex {
+        display: flex;
+        justify-content: flex-end; /* Đặt nút sát phải */
+        align-items: center; /* Đặt nút vào giữa chiều cao */
+    }
+
 </style>
 
 @if (Model != null)
@@ -132,28 +179,49 @@
         </div>
         <hr />
 
-        <div>
-            <p style="font-size: 14px; color: #555">
-                ĐƠN HÀNG ĐÃ ĐẶT: 
-                @if (Model.CreatedAt.HasValue)
-                {
-                    <span>@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
-                }
-            </p>
+        <div class="row m-0 p-0">
+            <div class="col-8">
+                <p style="font-size: 14px; color: #555">
+                    ĐƠN HÀNG ĐÃ ĐẶT:
+                    @if (Model.CreatedAt.HasValue)
+                    {
+                        <span>@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
+                    }
+                </p>
+                <p id="leadtime" style="font-size: 14px; color: #555">
+                </p>
+            </div>
+            <div class="col-4 p-0 d-flex justify-content-end align-items-center" id="buttonContainer">
+            </div>
         </div>
 
-        <div>
+        @if (Model.OrderStatusName == "Hoàn thành")
+        {
+            <hr />
+            <div class="payment-info mt-3" style="background-color: #fff7e6; padding: 15px; border-radius: 8px; border: 1px solid #ffd28a; display: flex; align-items: center;">
+                <p style="margin: 0; color: #555; font-size: 14px">Cảm ơn bạn đã mua sắm tại QVD!</p>
+            </div>
+            <hr />
+        }
+
+        <div class="row">
             <div class="xBNaac"></div>
-            <h5 style="margin-top: 20px">Địa Chỉ Nhận Hàng</h5>
-            @{
-                var addressParts = Model.InfoAddress.Split(new[] { ", " }, StringSplitOptions.None);
-                var name = addressParts.ElementAtOrDefault(0) ?? "";
-                var phone = addressParts.ElementAtOrDefault(1) ?? "";
-                var address = string.Join(", ", addressParts.Skip(2));
-            }
-            <p style="font-size:16px">@name</p>
-            <p style="font-size:14px">@phone</p>
-            <p style="font-size:14px;">@address</p>
+            <div style="margin-top: 20px" class="col-5">
+                <h5>Địa Chỉ Nhận Hàng</h5>
+                @{
+                    var addressParts = Model.InfoAddress.Split(new[] { ", " }, StringSplitOptions.None);
+                    var name = addressParts.ElementAtOrDefault(0) ?? "";
+                    var phone = addressParts.ElementAtOrDefault(1) ?? "";
+                    var address = string.Join(", ", addressParts.Skip(2));
+                }
+                <p style="font-size:16px">@name</p>
+                <p style="font-size:14px">@phone</p>
+                <p style="font-size:14px;">@address</p>
+            </div>
+            <div style="margin-top: 20px" class="col-7">
+                <div id="shipping_items" class="shipping-timeline">
+                </div>
+            </div>
         </div>
         <hr />
         @{
@@ -236,3 +304,134 @@
         </div>
     </div>
 }
+
+<script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        const orderCode = "@Model.OrderCode";
+        try {
+            const shippingDetail = await getShippingDetail(orderCode);
+
+            const timelineContainer = document.getElementById("shipping_items");
+            const leadtime = document.getElementById("leadtime");
+
+            const timelead = new Date(shippingDetail.leadtime);
+
+            // Lấy ngày, tháng và năm
+            const day = String(timelead.getDate()).padStart(2, '0'); // Thêm 0 nếu ngày có 1 chữ số
+            const month = String(timelead.getMonth() + 1).padStart(2, '0'); // Thêm 0 nếu tháng có 1 chữ số
+            const year = timelead.getFullYear();
+
+            if (shippingDetail.status === "delivered" && "@Model.OrderStatusName" === "Chờ giao hàng") {
+                const formattimelead = `${day}-${month}-${year}`;
+                leadtime.innerHTML = `NGÀY GIAO DỰ KIẾN: ${formattimelead}`;
+
+                var button = document.createElement("button");
+                button.classList.add("btn", "btn-danger", "setOrderStatusTwo");
+                button.setAttribute("data-orderid", "@Model.OrderId");
+                button.textContent = "Đã Nhận Hàng";
+                button.onclick = function () {
+                    setOrderStatusTwo(this); // Gọi hàm setOrderStatusTwo khi nút được nhấn
+                };
+
+                document.getElementById("buttonContainer").appendChild(button);
+            }
+
+
+            const statusItem = document.createElement("div");
+
+            statusItem.classList.add("timeline-item", "completed");
+
+            const createdDate = new Date(shippingDetail.created_date);
+            const formattedDate = formatDate(createdDate); // Hàm định dạng ngày giờ
+
+            statusItem.innerHTML = `
+                <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                <div class="timeline-content">
+                    <p class="status-text">Chờ lấy hàng</p>
+                    <span class="timestamp">${formattedDate}</span>
+                </div>
+            `;
+
+            timelineContainer.prepend(statusItem);
+
+            if (shippingDetail.log.length > 0 && Array.isArray(shippingDetail.log)) {
+                shippingDetail.log.forEach(logEntry => {
+                    const logDate = new Date(logEntry.updated_date);
+                    const formattedLogDate = formatDate(logDate); // Hàm định dạng ngày giờ
+
+                    const statusItem = document.createElement("div");
+                    statusItem.classList.add("timeline-item", "completed");
+                    statusItem.innerHTML = `
+                    <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                    <div class="timeline-content">
+                        <p class="status-text">${getStatusText(logEntry.status)}</p>
+                        <span class="timestamp">${formattedLogDate}</span>
+                    </div>
+                `;
+                    timelineContainer.prepend(statusItem);
+                });
+            }
+        }
+        catch (error) {
+            console.error("Lỗi trong quá trình xử lý:", error);
+        }
+    });
+
+    // Hàm định dạng ngày và giờ theo kiểu "HH:mm dd-MM-yyyy"
+    function formatDate(date) {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${hours}:${minutes} ${day}-${month}-${year}`;
+    }
+
+    // Hàm xử lý trạng thái logEntry.status
+    function getStatusText(status) {
+        switch (status) {
+            case 'picking':
+                return 'Nhân viên đang lấy hàng';
+            case 'picked':
+                return 'Nhân viên đã lấy hàng';
+            case 'Hoàn thành':
+                return 'Hoàn thành';
+            case 'storing':
+                return 'Hàng đang nằm ở kho';
+            case 'transporting':
+                return 'Đang luân chuyển hàng';
+            case 'sorting':
+                return 'Đang phân loại hàng hóa';
+            case 'delivering':
+                return 'Nhân viên đang giao cho người nhận';
+            case 'delivered':
+                return 'Nhân viên đã giao hàng thành công';
+        }
+    }
+
+    async function setOrderStatusTwo(button) {
+        const orderId = button.getAttribute('data-orderid');  // Lấy orderId từ nút được nhấn
+
+        // Gọi hàm đổi trạng thái đơn hàng
+        const response = await fetch('/Order/ChangeOrder_OrderStatus', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                order_id: orderId,
+                order_status: 2  // Trạng thái mới
+            })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            // Điều hướng đến trang khác sau khi cập nhật trạng thái
+            const url = `@Url.Action("Index", "Profile")?order_status_id=${'@Model.OrderStatusID'}&MaTaiKhoan=${'@Model.CustomerId'}&view=OrderPartial`;
+            window.location.href = url;
+        } else {
+            alert(result.message);
+        }
+    }
+</script>

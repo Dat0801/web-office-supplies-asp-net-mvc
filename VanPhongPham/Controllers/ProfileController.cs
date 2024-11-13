@@ -153,11 +153,13 @@ namespace VanPhongPham.Controllers
                     EmployeeId = o.employee_id,
                     CustomerId = o.customer_id,
                     InfoAddress = o.info_address,
+                    OrderCode = o.ordercode,
                     MethodId = o.method_id,
                     MethodName = o.payment_method.method_name,
                     DeliveryDate = o.delivery_date,
                     ShippingFee = o.shipping_fee,
                     TotalAmount = o.total_amount,
+                    OrderStatusID = o.order_status_id,
                     OrderStatusName = o.order_status.order_status_name,
                     CreatedAt = o.created_at,
                     OrderDetails = o.order_details.Select(od => new OrderDetailViewModel

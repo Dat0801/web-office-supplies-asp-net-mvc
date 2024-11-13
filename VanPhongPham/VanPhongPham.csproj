@@ -322,10 +322,12 @@
     <Content Include="Public\img\icons\icons8-back-100.png" />
     <Content Include="Public\img\icons\icons8-backorder.png" />
     <Content Include="Public\img\icons\icons8-check-100.png" />
+    <Content Include="Public\img\icons\icons8-checkshipping.png" />
     <Content Include="Public\img\icons\icons8-email-100.png" />
     <Content Include="Public\img\icons\icons8-error-100.png" />
     <Content Include="Public\img\icons\icons8-location-100.png" />
     <Content Include="Public\img\icons\icons8-male-user-100.png" />
+    <Content Include="Public\img\icons\icons8-next-100.png" />
     <Content Include="Public\img\icons\vecteezy_chat-box-with-laptop.png" />
     <Content Include="Public\img\offer-1.png" />
     <Content Include="Public\img\offer-2.png" />

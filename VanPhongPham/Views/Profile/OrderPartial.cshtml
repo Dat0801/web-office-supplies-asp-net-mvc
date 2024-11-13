@@ -280,10 +280,6 @@
                     {
                         <button class="btn btn-danger setOrderStatusOne" data-orderid="@order.OrderId" data-ordercreatat="@order.CreatedAt">Hủy Đơn Hàng</button>
                     }
-                    else if (order.OrderStatusName == "Chờ giao hàng")
-                    {
-                        <button class="btn btn-danger setOrderStatusTwo" data-orderid="@order.OrderId">Đã Nhận Hàng</button>
-                    }
                     else if (order.OrderStatusName == "Hoàn thành" && !checkReview)
                     {
                         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reviewModal-@order.OrderId" data-orderid="@order.OrderId">Đánh Giá</button>
@@ -377,31 +373,6 @@
 </div>
 
 <script>
-    document.querySelectorAll('.setOrderStatusTwo').forEach(function (button) {
-        button.addEventListener('click', async function () {
-            const orderId = this.getAttribute('data-orderid');
-
-            // Gọi hàm đổi trạng thái đơn hàng
-            const response = await fetch('/Order/ChangeOrder_OrderStatus', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    order_id: orderId,
-                    order_status: 2
-                })
-            });
-
-            const result = await response.json();
-            if (result.success) {
-                location.reload();
-            } else {
-                alert(result.message);
-            }
-        });
-    });
-
     document.querySelectorAll('.setOrderStatusOne').forEach(function (button) {
         button.addEventListener('click', async function () {
             const orderId = this.getAttribute('data-orderid');
