@@ -1,6 +1,13 @@
 ﻿@model VanPhongPham.Models.OrderViewModel
 
 <style>
+    .xBNaac {
+        background-image: repeating-linear-gradient(45deg, #6fa6d6, #6fa6d6 33px, transparent 0, transparent 41px, #f18d9b 0, #f18d9b 74px, transparent 0, transparent 82px);
+        background-position-x: -30px;
+        background-size: 116px 3px;
+        height: 3px;
+        width: 100%;
+    }
     .order-status-tabs .nav-tabs {
         display: flex;
         flex-wrap: nowrap;
@@ -126,7 +133,18 @@
         <hr />
 
         <div>
-            <h3>Địa Chỉ Nhận Hàng</h3>
+            <p style="font-size: 14px; color: #555">
+                ĐƠN HÀNG ĐÃ ĐẶT: 
+                @if (Model.CreatedAt.HasValue)
+                {
+                    <span>@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
+                }
+            </p>
+        </div>
+
+        <div>
+            <div class="xBNaac"></div>
+            <h5 style="margin-top: 20px">Địa Chỉ Nhận Hàng</h5>
             @{
                 var addressParts = Model.InfoAddress.Split(new[] { ", " }, StringSplitOptions.None);
                 var name = addressParts.ElementAtOrDefault(0) ?? "";
@@ -196,12 +214,16 @@
         </div>
 
         <hr />
-        <div class="payment-info mt-3" style="background-color: #fff7e6; padding: 15px; border-radius: 8px; border: 1px solid #ffd28a; display: flex; align-items: center;">
-            <i class="fa fa-exclamation-circle" style="color: #ff4747; font-size: 13px; margin-right: 10px;"></i>
-            <p style="margin: 0; color: #555; font-size: 14px">Vui lòng thanh toán <span style="color: #ff4747;">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span> khi nhận hàng.</p>
-        </div>
+        @if (Model.MethodId == "PAY001")
+        {
+            <div class="payment-info mt-3" style="background-color: #fff7e6; padding: 15px; border-radius: 8px; border: 1px solid #ffd28a; display: flex; align-items: center;">
+                <i class="fa fa-exclamation-circle" style="color: #ff4747; font-size: 13px; margin-right: 10px;"></i>
+                <p style="margin: 0; color: #555; font-size: 14px">Vui lòng thanh toán <span style="color: #ff4747;">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span> khi nhận hàng.</p>
+            </div>
+            <hr />
+        }
 
-        <hr />
+
         <div class="order-cost-details mt-3">
             <div class="d-flex">
                 <div class="col-8 text-right p-0">
