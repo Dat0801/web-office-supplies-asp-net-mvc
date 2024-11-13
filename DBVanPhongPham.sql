@@ -146,6 +146,7 @@ create table orders
 	customer_id nvarchar(255) not null,
 	info_address nvarchar(255) not null,
 	ordernote nvarchar(255),
+	ordercode nvarchar(255),
 	method_id varchar(10) not null,
 	delivery_date datetime default DATEADD(DAY, 7, GETDATE()),
 	shipping_fee float,
