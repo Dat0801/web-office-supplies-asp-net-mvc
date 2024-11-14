@@ -527,7 +527,6 @@ async function checkEmailExists(email) {
         });
 
         const result = await response.json();
-        console.log(result);
 
         return result.exists;
     } catch (error) {

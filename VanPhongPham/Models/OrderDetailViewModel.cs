@@ -9,6 +9,7 @@ namespace VanPhongPham.Models
     {
         public string ProductID { get; set; }
         public string ProductName { get; set; }
+        public string ProductWeight { get; set; }
         public int Quantity { get; set; }
         public int QuantityProduct { get; set; }
         public double TotalAmount { get; set; }

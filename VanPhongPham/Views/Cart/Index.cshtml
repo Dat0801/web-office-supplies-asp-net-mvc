@@ -261,7 +261,6 @@ else
                 // Hiển thị modal
                 $("#stockModal").modal("show");
 
-                // Khôi phục thanh cuộn khi modal mở
                 document.body.style.overflowY = "scroll";
             }
             else
@@ -324,7 +323,8 @@ else
         }
 
         $("#stockModal").modal("hide");
-        document.body.style.overflowY = "auto";  // Đặt lại overflow khi modal đóng
+
+        document.body.style.overflowY = "scroll";  // Đặt lại overflow khi modal đóng
     });
 
     function toggleSelectAll(mainCheckbox) {
@@ -393,7 +393,6 @@ else
             // Hiển thị modal
             $("#stockModal").modal("show");
 
-            // Khôi phục thanh cuộn khi modal mở
             document.body.style.overflowY = "scroll";
         }
         else
@@ -475,7 +474,6 @@ else
             // Hiển thị modal
             $("#stockModal").modal("show");
 
-            // Khôi phục thanh cuộn khi modal mở
             document.body.style.overflowY = "scroll";
         }
         else {

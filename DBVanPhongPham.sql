@@ -86,6 +86,7 @@ create table images
 	image_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
 	product_id varchar(10) not null,
 	image_url varchar(500) not null unique,
+	description nvarchar(200) default null,
 	is_primary bit default 0,
 )
 
@@ -143,8 +144,10 @@ create table orders
 	customer_id nvarchar(255) not null,
 	info_address nvarchar(255) not null,
 	ordernote nvarchar(255),
+	ordercode nvarchar(255),
 	method_id varchar(10) not null,
 	delivery_date datetime default DATEADD(DAY, 7, GETDATE()),
+	shipping_fee float,
 	total_amount float default 0,
 	order_status_id int not null,
 	created_at datetime default getdate(),
@@ -171,6 +174,7 @@ create table order_details
 	order_id varchar(10) not null,
 	product_id varchar(10) not null,
 	quantity int default 1,
+	price float default 0,
 	discountPrice float default 0,
 	total_amount float default 0,
 	isReviewed bit default 0
@@ -557,13 +561,12 @@ AS
 BEGIN
     UPDATE orders
     SET total_amount = (
-        SELECT SUM(od.total_amount)
+        SELECT SUM(od.total_amount) + orders.shipping_fee
         FROM order_details od
         WHERE od.order_id = orders.order_id
+        GROUP BY od.order_id
     )
-    FROM orders
-    INNER JOIN (SELECT DISTINCT order_id FROM inserted) od 
-    ON orders.order_id = od.order_id;
+    WHERE orders.order_id IN (SELECT DISTINCT order_id FROM inserted);
 END;
 
 GO
@@ -651,11 +654,13 @@ BEGIN
 END;
 GO
 
-INSERT INTO categories (category_id, category_name)
+INSERT INTO categories (category_id, category_name, description)
 VALUES 
-('CAT001', N'Bút bi'),
-('CAT002', N'Bút chì'),
-('CAT003', N'Máy tính tay văn phòng');
+('CAT001', N'Bút bi', N'Bút bi thông dụng, dễ sử dụng cho việc viết, ...'),
+('CAT002', N'Bút chì', N'Bút chì dùng để viết và vẽ, có thể tẩy được, ...'),
+('CAT003', N'Giấy photo', N'Giấy dùng để photo tài liệu, có độ bền cao, ...'),
+('CAT004', N'Máy tính cầm tay', N'Máy tính nhỏ gọn, tiện lợi cho việc tính toán, ...'),
+('CAT005', N'Vở viết', N'Vở dùng để ghi chép, có nhiều loại và kích thước khác nhau, ...');
 
 INSERT INTO suppliers (supplier_id, supplier_name, email, phone_number, status)
 VALUES 
@@ -664,40 +669,28 @@ VALUES
 
 INSERT INTO products (product_id, category_id, product_name, description, purchase_price, price_coefficient, price, stock_quantity, status)
 VALUES 
-('PRO001', 'CAT001', N'Bút bi Thiên Long TL 023', N'<p>Bút có thiết kế đơn giản, thân tròn, dễ cầm nắm. Thân bút nhựa trong.</p><p><strong>Đặc điểm:</strong></p><p>- Đầu bi: 0.8 mm<br>- Thân bút thanh mảnh cơ chế bấm khế tiện dụng phù hợp cho mọi người.<br>- Thay ruột khi hết mực.</p><p><br>&nbsp;</p>', 0, 1.5, 0, 0, 1),
-('PRO002', 'CAT001', N'Bút bi Thiên Long TL 025', N'<p>Bút có thiết kế đơn giản, thân tròn.Thân bút nhựa trong, tảm có đệm mềm (grip) giúp cầm êm tay và giảm trơn trợt khi viết.</p><p><strong>Đặc điểm:</strong></p><p>- Đầu bi: 0.8 mm<br>- Grip cùng màu mực<br>- Thân bút thanh mảnh cơ chế bấm khế tiện dụng phù hợp cho mọi người.<br>- Thay ruột khi hết mực.</p>', 0, 1.5, 0, 0, 1),
-('PRO003', 'CAT002', N'Combo 20 Bút chì mỹ thuật Thiên Long 5B GP-024', N'<p>Bút chì mỹ thuật Thiên Long 5B GP-024 thích hợp cho các hoạt động như ghi chép, vẽ nháp, học tập.</p><p><strong>
-Đặc điểm:</strong></p><p>- Ruột chì mềm, nét đậm, ít bột chì<br>- Thân gỗ mềm dễ chuốt<br>- 
-Bền đẹp không gãy chì<br>- Bút dùng để viết, vẽ phác thảo trên giấy tập học sinh, sổ tay, giấy photocopy, gỗ hoặc giấy vẽ chuyên dụng<br>- Lướt rất nhẹ nhàng trên bề mặt viết<br>- Dùng để đánh bóng các bức vẽ, đạt đến nhiều mức độ sáng tối khác nhau. 
-Ngoài ra khá hữu dụng trong việc tô đậm vào ô trả lời trắc nghiệm nhanh nhất.<br>- Thân lục giác, 5B.<br>- Thân bút được thiết kế hiện đại với họa tiết xoắn quanh bút cho cây bút sinh động và thu hút</p><p><strong>Bảo quản:</strong></p><p>- Tránh va đập mạnh làm gãy chì.<br>- Tránh xa nguồn nhiệt .</p>', 0, 1.5, 0, 0, 1),
-('PRO004', 'CAT003', N'Máy tính văn phòng Thiên Long Flexio CAL-011', N'<p><strong>Đặc tính sản phẩm:</strong></p><p>- Máy tính văn phòng CAL-011 đa năng này phù hợp sử dụng tại nhà, trường học, văn phòng hoặc cửa hàng. Sự kết hợp chip xử lý và mạch điều khiển công nghệ hiện đại đưa ra những kết quả phép tính đáng tin cậy, nhanh chóng đáp ứng tốt cho mục đích cá nhân hoặc chuyên nghiệp.&nbsp;</p><p>- Thiết kế nhỏ gọn và di động, bạn có thể dễ dàng mang theo bất cứ mọi nơi.&nbsp;</p><p>- Bộ vỏ nguyên liệu ABS cao cấp, bền và sử dụng thiết kế thân thiện, máy tính văn phòng CAL-011 cung cấp sự tiện lợi và hiệu quả trong tất cả các nhu cầu tính toán.</p>', 0, 1.5, 0, 0, 1)
+('PRO001', 'CAT001', N'Bút bi Thiên Long TL 023', N'Bút bi Thiên Long TL 023 được sử dụng rộng rãi trong các trường học, văn phòng, công sở,... Đây là một sản phẩm chất lượng cao, giá cả phải chăng, phù hợp với nhiều mục đích sử dụng.', 0, 1.5, 0, 0, 1),
+('PRO002', 'CAT001', N'Bút bi Thiên Long TL 025', N'Bút bi Thiên Long TL 025 được thiết kế đơn giản và dễ sử dụng, phù hợp cho nhiều người. Đây là lựa chọn tuyệt vời cho công việc văn phòng và học tập.', 0, 1.5, NULL, 80, 1),
+('PRO003', 'CAT002', N'Bút chì Stabilo 2B 288', N'Bút chì Stabilo 2B 288 cho nét vẽ đậm dày, thích hợp dùng để tập viết chữ, vẽ phác thảo, vẽ bóng mờ, sáng tối hoặc tô trắc nghiệm. Chì có độ bền màu cao, lâu phai và dễ dàng xóa sạch bằng gôm tẩy khi sử dụng.', 0, 1.5, 0, 0, 1),
+('PRO004', 'CAT003', N'Giấy a4 Double A 80gsm', N'Giấy photo a4 Double A DL80 GSM phù hợp với các nhu cầu in ấn văn phòng cơ bản như in ấn tài liệu, văn bản, hợp đồng, báo cáo,... với độ sắc nét nổi bật trong tầm giá cả hợp lý.', 0, 1.5, 0, 0, 1),
+('PRO005', 'CAT004', N'Máy tính cầm tay Casio FX 580VN X new', N'Máy tính cầm tay Casio FX 580VN X new là một sản phẩm chất lượng cao, đáp ứng nhu cầu của nhiều đối tượng. Máy có màn hình lớn, rõ ràng, các nút bấm nhạy, dễ sử dụng.', 0, 1.5, 0, 0, 1),
+('PRO006', 'CAT005', N'Vở Hồng Hà 300 trang A4 4532', N'Vở A4 300 trang Hồng Hà là sản phẩm chất lượng, phù hợp với nhu cầu của nhiều đối tượng sử dụng. Vở có giá thành hợp lý, phù hợp với túi tiền của học sinh, sinh viên.', 0, 1.5, 0, 0, 1);
 
 INSERT INTO attributes (attribute_id, attribute_name)
 VALUES ('ATT001', N'Thương hiệu'),
 ('ATT002', N'Màu sắc'),
 ('ATT003', N'Đóng gói'),
 ('ATT004', N'Trọng lượng'),
-('ATT005', N'Đường kính viên bi'),
-('ATT006', N'Độ cứng ruột chì'),
-('ATT007', N'Màn hình'),
-('ATT008', N'Chất liệu'),
-('ATT009', N'Loại pin');
+('ATT005', N'Đường kính viên bi')
 
 INSERT INTO attribute_values (attribute_value_id, attribute_id, value)
 VALUES ('VAL001', 'ATT001', N'Thiên Long'),
 ('VAL002', 'ATT002', 'Xanh'),
 ('VAL003', 'ATT002', N'Đỏ'),
 ('VAL004', 'ATT002', N'Đen'),
-('VAL005', 'ATT003', N'20 cây/hộp'),
+('VAL005', 'ATT003', N'20 cây / hộp'),
 ('VAL006', 'ATT004', '9 gram'),
-('VAL007', 'ATT005', '0.8 mm'),
-('VAL008', 'ATT004', '8 gram'),
-('VAL009', 'ATT006', '5B'),
-('VAL010', 'ATT003', N'10 cây/hộp'),
-('VAL011', 'ATT001', N'Flexio'),
-('VAL012', 'ATT007', N'LCD'),
-('VAL013', 'ATT008', N'ABS'),
-('VAL014', 'ATT009', N'AAA (1.55V)');
+('VAL007', 'ATT005', '0.8 mm');
 
 INSERT INTO product_attribute_values (product_id, attribute_value_id)
 VALUES ('PRO001', 'VAL001'),
@@ -777,8 +770,10 @@ INSERT INTO purchase_order_detail
 VALUES
 ('POD001', 'PRO001', 100, 3500, 0),
 ('POD001', 'PRO002', 80, 4000, 0),
-('POD001', 'PRO003', 70, 100000, 0),
-('POD001', 'PRO004', 60, 120000, 0);
+('POD001', 'PRO003', 70, 14000, 0),
+('POD001', 'PRO004', 60, 55000, 0),
+('POD001', 'PRO005', 40, 480000, 0),
+('POD001', 'PRO006', 50, 18000, 0)
 
 INSERT INTO receipts (receipt_id, purchase_order_id, entry_count)
 VALUES 
@@ -789,4 +784,6 @@ VALUES
 ('REC001', 'POD001', 'PRO001', 100),
 ('REC001', 'POD001', 'PRO002', 80),
 ('REC001', 'POD001', 'PRO003', 70),
-('REC001', 'POD001', 'PRO004', 60);
+('REC001', 'POD001', 'PRO004', 60),
+('REC001', 'POD001', 'PRO005', 40),
+('REC001', 'POD001', 'PRO006', 50)

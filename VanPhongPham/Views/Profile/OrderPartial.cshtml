@@ -1,4 +1,6 @@
-﻿@model IEnumerable<VanPhongPham.Models.OrderViewModel>
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.OrderViewModel>
 @using VanPhongPham.Models
 
 @{
@@ -16,17 +18,17 @@
         border-bottom: 1px solid #ddd;
     }
 
-    .order-status-tabs .nav-tabs .nav-link {
-        color: #333;
-        font-weight: bold;
-        padding: 10px 0;
-        border: none;
-    }
+        .order-status-tabs .nav-tabs .nav-link {
+            color: #333;
+            font-weight: bold;
+            padding: 10px 0;
+            border: none;
+        }
 
-    .order-status-tabs .nav-tabs .nav-link.active {
-        color: #ff4747;
-        border-bottom: 3px solid #ff4747;
-    }
+            .order-status-tabs .nav-tabs .nav-link.active {
+                color: #ff4747;
+                border-bottom: 3px solid #ff4747;
+            }
 
     .order-container {
         background-color: #fff;
@@ -58,11 +60,11 @@
         gap: 15px;
     }
 
-    .product-info img {
-        width: 80px;
-        height: auto;
-        border: 1px solid #ddd;
-    }
+        .product-info img {
+            width: 80px;
+            height: auto;
+            border: 1px solid #ddd;
+        }
 
     .price-info {
         text-align: right;
@@ -98,13 +100,14 @@
         border-radius: 4px;
         margin-top: 8px;
     }
+
     .modal-dialog {
         max-width: 700px; /* Đặt chiều rộng mong muốn cho modal */
         width: 90%; /* Điều chỉnh theo ý thích */
     }
 
     .modal-body {
-        max-height: 600px;/* Giới hạn chiều cao modal body */
+        max-height: 600px; /* Giới hạn chiều cao modal body */
         overflow-y: auto; /* Bật thanh cuộn dọc */
     }
 
@@ -116,16 +119,16 @@
         margin-top: 10px;
     }
 
-    .rating-container p {
-        margin: 0;
-        font-weight: bold;
-        color: #333;
-    }
+        .rating-container p {
+            margin: 0;
+            font-weight: bold;
+            color: #333;
+        }
 
-    .rating-container .rating {
-        display: flex;
-        gap: 5px;
-    }
+        .rating-container .rating {
+            display: flex;
+            gap: 5px;
+        }
 
     .rating input[type="radio"] {
         display: none; /* Ẩn input */
@@ -136,8 +139,7 @@
         cursor: pointer;
     }
 
-    .messagesmodal 
-    {
+    .messagesmodal {
         display: none; /* Mặc định là ẩn */
         position: fixed;
         top: 20px; /* Đưa lên trên một chút */
@@ -151,6 +153,58 @@
         z-index: 9999;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .pagination li {
+        margin: 0 5px;
+    }
+
+    .pagination .page-link {
+        color: #777777; /* Màu chữ mặc định */
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        transition: background-color 0.3s, color 0.3s;
+        text-decoration: none;
+    }
+
+        .pagination .page-link:hover {
+            background-color: #f0f0f0; /* Màu nền khi hover */
+            color: #333; /* Màu chữ khi hover */
+        }
+
+    .pagination .active .page-link {
+        background-color: #ff5733; /* Màu nền cho trang hiện tại */
+        color: #fff; /* Màu chữ cho trang hiện tại */
+        cursor: default; /* Con trỏ chuột mặc định khi active */
+        pointer-events: none; /* Vô hiệu hóa hover */
+    }
+
+    .pagination-container nav ul.pagination li a,
+    .pagination-container nav ul.pagination li span {
+        padding: 8px 12px;
+        margin: 0 5px;
+        color: #B4B2B2;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .pagination-container nav ul.pagination li.active span,
+    .pagination-container nav ul.pagination li.active a {
+        background-color: #e91e63; /* Màu nền cho trang hiện tại */
+        color: #fff;
+        pointer-events: none; /* Vô hiệu hóa hover */
+    }
+
+    .pagination-container nav ul.pagination li a:hover {
+        color: #e91e63;
+    }
+
 </style>
 
 <div class="order-status-tabs">
@@ -219,13 +273,12 @@
                     <span style="color: #272727;">Thành tiền: <span class="price-info" style="font-size: 24px">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span></span>
                 </div>
                 <div class="order-actions d-flex justify-content-end mt-2">
-                    @if (order.OrderStatusName == "Chờ xác nhận")
-                    {
-                        <button class="btn btn-danger setOrderStatusOne" data-orderid="@order.OrderId">Hủy Đơn Hàng</button>
+                    @{ 
+                        var isOrderCancelable = (DateTime.Now - order.CreatedAt.GetValueOrDefault()).TotalMinutes <= 10;
                     }
-                    else if (order.OrderStatusName == "Chờ giao hàng")
+                    @if (order.OrderStatusName == "Chờ xác nhận" && isOrderCancelable)
                     {
-                        <button class="btn btn-danger setOrderStatusTwo" data-orderid="@order.OrderId">Đã Nhận Hàng</button>
+                        <button class="btn btn-danger setOrderStatusOne" data-orderid="@order.OrderId" data-ordercreatat="@order.CreatedAt">Hủy Đơn Hàng</button>
                     }
                     else if (order.OrderStatusName == "Hoàn thành" && !checkReview)
                     {
@@ -279,6 +332,26 @@
                 </div>
             </div>
         }
+        <div class="pagination-container d-flex justify-content-center mt-4">
+            <nav>
+                <ul class="pagination">
+                    @Html.PagedListPager(
+                        Model,
+                        page => Url.Action("Index", "Profile", new { order_status_id = currentStatusId, MaTaiKhoan, view = "OrderPartial", page }),
+                        new PagedListRenderOptions
+                        {
+                            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                            DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                            MaximumPageNumbersToDisplay = 5,
+                            Display = PagedListDisplayMode.Always,
+                            LinkToPreviousPageFormat = "<img src='/Public/img/icons/icons8-backorder.png' widht='20' height='20'  />",
+                            LinkToNextPageFormat = "<img src='/Public/img/icons/icons8-next-100.png' widht='20' height='20' />"
+                        }
+                    )
+                </ul>
+            </nav>
+        </div>
     }
     else
     {
@@ -300,52 +373,50 @@
 </div>
 
 <script>
-    document.querySelectorAll('.setOrderStatusTwo').forEach(function (button) {
-        button.addEventListener('click', async function () {
-            const orderId = this.getAttribute('data-orderid');
-
-            // Gọi hàm đổi trạng thái đơn hàng
-            const response = await fetch('/Order/ChangeOrder_OrderStatus', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    order_id: orderId,
-                    order_status: 2
-                })
-            });
-
-            const result = await response.json();
-            if (result.success) {
-                location.reload();
-            } else {
-                alert(result.message);
-            }
-        });
-    });
-    
     document.querySelectorAll('.setOrderStatusOne').forEach(function (button) {
         button.addEventListener('click', async function () {
             const orderId = this.getAttribute('data-orderid');
+            const createdAt = this.getAttribute('data-ordercreatat'); // Lấy thời gian tạo đơn hàng
+            const createdAtDate = new Date(createdAt); // Chuyển đổi sang đối tượng Date
+            const currentTime = new Date(); // Thời gian hiện tại
+            const timeDiffInMinutes = (currentTime - createdAtDate) / 60000; // Tính sự chênh lệch thời gian tính bằng phút
 
-            // Gọi hàm đổi trạng thái đơn hàng
-            const response = await fetch('/Order/ChangeOrder_OrderStatus', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    order_id: orderId,
-                    order_status: 1
-                })
-            });
+            if (timeDiffInMinutes > 10) {
+                const modalBody = document.querySelector("#MessagesModal .modal-body p");
+                modalBody.textContent = `Đã quá 10 phút không thể hủy.`;
 
-            const result = await response.json();
-            if (result.success) {
-                location.reload();
-            } else {
-                alert(result.message);
+                // Hiển thị modal với jQuery
+                $("#MessagesModal").modal("show");
+
+                // Tự động tắt modal sau 3 giây
+                setTimeout(function () {
+                    $("#MessagesModal").modal("hide");
+                }, 1500);
+
+                // Khôi phục thanh cuộn khi modal mở
+                document.body.style.overflowY = "scroll";
+            }
+            else
+            {
+                // Gọi hàm đổi trạng thái đơn hàng
+                const response = await fetch('/Order/ChangeOrder_OrderStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        order_status: 1
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                }
+                else {
+                    alert(result.message);
+                }
             }
         });
     });

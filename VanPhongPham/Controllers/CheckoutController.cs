@@ -13,9 +13,10 @@ namespace VanPhongPham.Controllers
         // GET: Checkout
         public ActionResult Index(string userid, int cartid)
         {
+            var address = db.addresses.FirstOrDefault(u => u.user_id == userid);
             ViewBag.UserID = userid;
             ViewBag.CartID = cartid;
-            return View();
+            return View(address);
         }
 
         public ActionResult AddressCheckoutPartial(string userid)
@@ -32,33 +33,65 @@ namespace VanPhongPham.Controllers
 
             return PartialView();
         }
+
         public ActionResult ProductsCheckoutPartial(int cart_id)
         {
-            // Lấy danh sách đơn hàng theo điều kiện
             var cartdetails = db.cart_details
-                .Where(o => o.cart_id == cart_id && o.isSelected == 1)// Kiểm tra cả trạng thái và tài khoản
-                .Select(o => new OrderDetailViewModel // Sử dụng OrderViewModel
+                .Where(o => o.cart_id == cart_id && o.isSelected == 1)
+                .Select(o => new OrderDetailViewModel
                 {
-                    ProductID = o.product.product_id, // Thêm thuộc tính ProductID nếu cần
+                    ProductID = o.product.product_id,
                     ProductName = o.product.product_name,
-                    Quantity = o.quantity.HasValue ? o.quantity.Value : 0, // Gán giá trị 0 nếu null
+                    ProductWeight = o.product.product_attribute_values
+                                    .Join(
+                                        db.attribute_values, // Bảng thứ hai để kết hợp
+                                        pav => pav.attribute_value_id, // Khóa từ bảng `product_attribute_values`
+                                        av => av.attribute_value_id,   // Khóa từ bảng `attribute_values`
+                                        (pav, av) => new { pav, av }   // Kết hợp cả hai bảng
+                                    )
+                                    .Where(x => x.av.attribute_id == "ATT004") // Lọc `attribute_id` là "ATT004"
+                                    .Select(x => x.av.value) // Lấy `value` từ `attribute_values`
+                                    .FirstOrDefault(), // Lấy giá trị đầu tiên hoặc `null` nếu không có
+                    Quantity = o.quantity.HasValue ? o.quantity.Value : 0,
                     QuantityProduct = o.product.stock_quantity.HasValue ? o.product.stock_quantity.Value : 0,
-                    TotalAmount = o.total_amount.HasValue ? o.total_amount.Value : 0, // Gán giá trị 0 nếu null
+                    TotalAmount = o.total_amount.HasValue ? o.total_amount.Value : 0,
                     ImageUrl = o.product.images
-                                .Where(img => img.is_primary == true) // Kiểm tra hình ảnh chính
+                                .Where(img => img.is_primary == true)
                                 .Select(img => img.image_url)
-                                .FirstOrDefault(), // Lấy hình ảnh đầu tiên
-                    Price = o.product.price.HasValue ? o.product.price.Value : 0, // Gán giá trị 0 nếu null
+                                .FirstOrDefault(),
+                    Price = o.product.price.HasValue ? o.product.price.Value : 0,
                     Promotion_Price = o.product.promotion_price.HasValue ? o.product.promotion_price.Value : 0,
-                    isReviewed = false, // Giả sử có thuộc tính này trong order_detail
+                    isReviewed = false,
                     Product_status = o.product.status.HasValue ? o.product.status.Value : false,
                     isSelected = o.isSelected.HasValue ? o.isSelected.Value : 0,
                 }).ToList();
+
+            // Tính tổng trọng lượng cho tất cả các sản phẩm đã chọn trong giỏ hàng
+            double totalWeight = 0;
+            foreach (var detail in cartdetails)
+            {
+                if (!string.IsNullOrEmpty(detail.ProductWeight))
+                {
+                    // Tìm vị trí khoảng trắng đầu tiên và cắt chuỗi
+                    int spaceIndex = detail.ProductWeight.IndexOf(' ');
+                    if (spaceIndex != -1)
+                    {
+                        string weightString = detail.ProductWeight.Substring(0, spaceIndex);
+                        if (double.TryParse(weightString, out double productWeight))
+                        {
+                            totalWeight += detail.Quantity * productWeight;
+                        }
+                    }
+                }
+            }
+
             return PartialView(cartdetails);
         }
-        public ActionResult PaymentCheckoutPartial()
+
+        public ActionResult PaymentCheckoutPartial(address adrs)
         {
             var paymentmethod = db.payment_methods.ToList();
+            ViewBag.adrs = adrs;
             ViewBag.TotalAmount = db.cart_details.Where(a => a.isSelected == 1).Sum(a => a.total_amount);
             return PartialView(paymentmethod);
         }
@@ -84,7 +117,7 @@ namespace VanPhongPham.Controllers
             return order_id;
         }
 
-        public ActionResult SaveOrder(string user_id, int cart_id, string info_adrs, string ordernote, string method_id)
+        public ActionResult SaveOrder(string user_id, int cart_id, string info_adrs, string ordernote, string method_id, float shipping_fee)
         {
             if (ordernote == "")
             {
@@ -104,6 +137,7 @@ namespace VanPhongPham.Controllers
                     info_address = info_adrs,
                     ordernote = ordernote,
                     method_id = method_id,
+                    shipping_fee = shipping_fee,
                     order_status_id = 1,
                     created_at = DateTime.Now
                 };
@@ -120,6 +154,7 @@ namespace VanPhongPham.Controllers
                     info_address = address_str,
                     ordernote = ordernote,
                     method_id = method_id,
+                    shipping_fee = shipping_fee,
                     order_status_id = 1,
                     created_at = DateTime.Now
                 };
@@ -139,6 +174,7 @@ namespace VanPhongPham.Controllers
                         order_id = current_orderid,
                         product_id = item.product_id,
                         quantity = item.quantity,
+                        price = item.product.price,
                         discountPrice = item.product.promotion_price,
                         total_amount = item.total_amount,
                     };
@@ -153,6 +189,7 @@ namespace VanPhongPham.Controllers
                         order_id = current_orderid,
                         product_id = item.product_id,
                         quantity = item.quantity,
+                        price = item.product.price,
                         discountPrice = 0,
                         total_amount = item.total_amount
                     };

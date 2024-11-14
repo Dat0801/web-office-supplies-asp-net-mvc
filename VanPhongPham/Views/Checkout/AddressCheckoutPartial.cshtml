@@ -121,7 +121,7 @@
                 {
                     <div class="address-option">
                         <div class="d-flex align-items-start">
-                            <input type="radio" name="address" @(address.isDefault ?? false ? "checked" : "") class="mt-1" data-addressid="@address.address_id" data-fullname="@address.full_name" data-phone="@address.phone_number" data-specificaddress="@address.address_line" data-isDefault="@address.isDefault">
+                            <input type="radio" name="address" @(address.isDefault ?? false ? "checked" : "") class="mt-1" data-addressid="@address.address_id" data-fullname="@address.full_name" data-phone="@address.phone_number" data-specificaddress="@address.address_line" data-city="@address.province" data-district="@address.district" data-ward="@address.ward" data-isDefault="@address.isDefault">
                             <div class="ml-3">
                                 <!-- Thông tin địa chỉ -->
                                 <div>
@@ -278,7 +278,7 @@
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="updefaultAddress">
-                        <label class="form-check-label" for="defaultAddress">Đặt làm địa chỉ mặc định</label>
+                        <label class="form-check-label" for="updefaultAddress">Đặt làm địa chỉ mặc định</label>
                     </div>
                 </form>
 
@@ -393,7 +393,7 @@
     });
 
     // Lắng nghe sự kiện click trên nút "Xác nhận"
-    document.getElementById("completeButton").addEventListener("click", function () {
+    document.getElementById("completeButton").addEventListener("click", async function () {
         var selectedRadio = document.querySelector('input[name="address"]:checked');
 
         if (selectedRadio) {
@@ -401,6 +401,9 @@
             var fullName = selectedRadio.getAttribute('data-fullname');
             var phone = selectedRadio.getAttribute('data-phone');
             var addressLine = selectedRadio.getAttribute('data-specificaddress');
+            var city = selectedRadio.getAttribute("data-city");
+            var district = selectedRadio.getAttribute("data-district");
+            var ward = selectedRadio.getAttribute("data-ward");
             var isDefault = selectedRadio.getAttribute('data-isDefault');
 
             if (isDefault === "False") {
@@ -410,6 +413,9 @@
                     fullName: fullName,
                     phone: phone,
                     addressLine: addressLine,
+                    ward: ward,
+                    district: district,
+                    city: city,
                     isDefault: isDefault
                 }));
 
@@ -435,6 +441,58 @@
 
             // Đóng modal
             $('#AddressModal').modal('hide');
+
+            var storedAddress1 = sessionStorage.getItem("selectedAddress");
+            const todistrict = storedAddress1 ? JSON.parse(storedAddress1).district : '@Model.FirstOrDefault(a => a.isDefault == true)';
+            const toward = storedAddress1 ? JSON.parse(storedAddress1).ward : '@Model.FirstOrDefault(a => a.isDefault == true)';
+            const responseService = await getService(todistrict);
+            const totalWeight = JSON.parse(sessionStorage.getItem('items')).totalWeight; // Lấy trọng lượng từ sessionStorage
+
+            // Kiểm tra nếu responseService và responseService.data hợp lệ
+            if (!responseService)
+            {
+                console.error("Không có dữ liệu dịch vụ vận chuyển.");
+                return; // Dừng lại nếu không có dữ liệu
+            }
+
+            // Kiểm tra xem totalWeight có lớn hơn hoặc nhỏ hơn 20000 hay không
+            let serviceTypeId;
+            if (totalWeight < 20000)
+            {
+                // Lấy service_type_id = 2 cho "Hàng nhẹ"
+                const lightItem = responseService.find(item => item.service_type_id === 2);
+                serviceTypeId = lightItem ? lightItem.service_type_id : null;
+            }
+            else
+            {
+                // Lấy service_type_id = 5 cho "Hàng nặng"
+                const heavyItem = responseService.find(item => item.service_type_id === 5);
+                serviceTypeId = heavyItem ? heavyItem.service_type_id : null;
+            }
+
+            // Gọi hàm getFee để lấy phí vận chuyển
+            if (serviceTypeId) {
+                const feeResponse = await getFee(serviceTypeId, todistrict, toward, totalWeight, JSON.parse(sessionStorage.getItem('items')).items);
+
+                // Kiểm tra nếu feeResponse hợp lệ
+                if (feeResponse) {
+                    // Lấy giá trị phí vận chuyển từ feeResponse
+                    const serviceFee = feeResponse.service_fee;
+
+                    // Cập nhật phí vận chuyển vào phần tử HTML
+                    document.querySelector('.fee-ship').innerText = `₫${serviceFee.toLocaleString('de-DE')}`;
+
+                    const totalamount = parseFloat(document.querySelector('.total-payment').getAttribute("data-order-totalamount")) || 0;
+
+                    // Cập nhật phần tổng thanh toán
+                    const totalAmountWithFee = totalamount + serviceFee;
+                    document.querySelector('.total-payment').innerText = `₫${totalAmountWithFee.toLocaleString('de-DE')}`;
+                }
+                else
+                {
+                    console.error("Lỗi khi lấy phí vận chuyển.");
+                }
+            }
         }
     });
 
@@ -760,7 +818,7 @@
                 province: city.value,
                 district: district.value,
                 ward: ward.value.trim(),
-                isDefault: document.getElementById('defaultAddress').checked
+                isDefault: document.getElementById('updefaultAddress').checked
             };
 
             // Ghi log dữ liệu để kiểm tra

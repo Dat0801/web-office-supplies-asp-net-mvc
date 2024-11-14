@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using VanPhongPham.Models;
 using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
+using PagedList;
 
 namespace VanPhongPham.Controllers
 {
@@ -15,12 +16,13 @@ namespace VanPhongPham.Controllers
     {
         private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
         // GET: Profile
-        public ActionResult Index(string view, string MaTaiKhoan, string ord_id, int order_status_id = -1)
+        public ActionResult Index(string view, string MaTaiKhoan, string ord_id, int? page, int order_status_id = -1)
         {
             ViewBag.PartialView = string.IsNullOrEmpty(view) ? "ProfilePartial" : view;
             ViewBag.MaTaiKhoan = MaTaiKhoan;
             ViewBag.CurrentStatus = order_status_id;
             ViewBag.OrderID = ord_id;
+            ViewBag.Page = page ?? 1;
 
             if (!string.IsNullOrEmpty(MaTaiKhoan))
             {
@@ -99,7 +101,7 @@ namespace VanPhongPham.Controllers
             return PartialView();
         }
 
-        public ActionResult OrderPartial(int order_status_id, string MaTaiKhoan) // Thêm tham số MaTaiKhoan
+        public ActionResult OrderPartial(int? page, int order_status_id, string MaTaiKhoan) // Thêm tham số MaTaiKhoan
         {
             // Lấy danh sách đơn hàng theo điều kiện
             var orders = db.orders
@@ -127,7 +129,7 @@ namespace VanPhongPham.Controllers
                                     .Where(img => img.is_primary == true) // Kiểm tra hình ảnh chính
                                     .Select(img => img.image_url)
                                     .FirstOrDefault(), // Lấy hình ảnh đầu tiên
-                        Price = od.product.price.HasValue ? od.product.price.Value : 0, // Gán giá trị 0 nếu null
+                        Price = od.price ?? 0, // Gán giá trị 0 nếu null
                         Promotion_Price = od.discountPrice.HasValue ? od.discountPrice.Value : 0,
                         isReviewed = od.isReviewed ?? false, // Giả sử có thuộc tính này trong order_detail
                     }).ToList()
@@ -136,7 +138,9 @@ namespace VanPhongPham.Controllers
             ViewBag.OrderStatus = db.order_status.ToList();
             ViewBag.CurrentStatus = order_status_id; // Thêm dòng này để lưu trạng thái hiện tại
 
-            return PartialView(orders);
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            return PartialView(orders.ToPagedList(pageNumber, pageSize));
         }
 
         public ActionResult OrderDetailsPartial(string ord_id)
@@ -149,10 +153,13 @@ namespace VanPhongPham.Controllers
                     EmployeeId = o.employee_id,
                     CustomerId = o.customer_id,
                     InfoAddress = o.info_address,
+                    OrderCode = o.ordercode,
                     MethodId = o.method_id,
                     MethodName = o.payment_method.method_name,
                     DeliveryDate = o.delivery_date,
+                    ShippingFee = o.shipping_fee,
                     TotalAmount = o.total_amount,
+                    OrderStatusID = o.order_status_id,
                     OrderStatusName = o.order_status.order_status_name,
                     CreatedAt = o.created_at,
                     OrderDetails = o.order_details.Select(od => new OrderDetailViewModel
@@ -165,7 +172,7 @@ namespace VanPhongPham.Controllers
                                     .Where(img => img.is_primary == true)
                                     .Select(img => img.image_url)
                                     .FirstOrDefault(),
-                        Price = od.product.price ?? 0,
+                        Price = od.price ?? 0,
                         Promotion_Price = od.discountPrice.HasValue ? od.discountPrice.Value : 0,
                         isReviewed = od.isReviewed ?? false,
                     }).ToList()

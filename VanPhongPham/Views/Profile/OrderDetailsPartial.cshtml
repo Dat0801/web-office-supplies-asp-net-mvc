@@ -1,23 +1,30 @@
 ﻿@model VanPhongPham.Models.OrderViewModel
 
 <style>
+    .xBNaac {
+        background-image: repeating-linear-gradient(45deg, #6fa6d6, #6fa6d6 33px, transparent 0, transparent 41px, #f18d9b 0, #f18d9b 74px, transparent 0, transparent 82px);
+        background-position-x: -30px;
+        background-size: 116px 3px;
+        height: 3px;
+        width: 100%;
+    }
     .order-status-tabs .nav-tabs {
         display: flex;
         flex-wrap: nowrap;
         border-bottom: 1px solid #ddd;
     }
 
-    .order-status-tabs .nav-tabs .nav-link {
-        color: #333;
-        font-weight: bold;
-        padding: 10px 0;
-        border: none;
-    }
+        .order-status-tabs .nav-tabs .nav-link {
+            color: #333;
+            font-weight: bold;
+            padding: 10px 0;
+            border: none;
+        }
 
-    .order-status-tabs .nav-tabs .nav-link.active {
-        color: #ff4747;
-        border-bottom: 3px solid #ff4747;
-    }
+            .order-status-tabs .nav-tabs .nav-link.active {
+                color: #ff4747;
+                border-bottom: 3px solid #ff4747;
+            }
 
     .order-container {
         background-color: #fff;
@@ -46,15 +53,15 @@
         gap: 15px;
     }
 
-    .product-info img {
-        width: 80px;
-        height: auto;
-        border: 1px solid #ddd;
-    }
+        .product-info img {
+            width: 80px;
+            height: auto;
+            border: 1px solid #ddd;
+        }
 
-    .product-info .product-name {
-        color: #333;
-    }
+        .product-info .product-name {
+            color: #333;
+        }
 
     .price-info {
         text-align: right;
@@ -79,9 +86,9 @@
         cursor: pointer;
     }
 
-    .order-actions button:hover {
-        background-color: #ff2e2e;
-    }
+        .order-actions button:hover {
+            background-color: #ff2e2e;
+        }
 
     .order-actions .btn-outline-secondary {
         background-color: #ffffff;
@@ -89,10 +96,10 @@
         border: 1px solid rgba(0, 0, 0, 0.09);
     }
 
-    .order-actions .btn-outline-secondary:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-        color: #555;
-    }
+        .order-actions .btn-outline-secondary:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #555;
+        }
 
     .order-cost-details {
         font-size: 14px;
@@ -102,106 +109,329 @@
     .payment-info p {
         margin: 0;
     }
+    .shipping-timeline {
+        position: relative;
+        margin-top: 15px;
+        padding-left: 20px;
+        border-left: 2px solid #ddd;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        padding-left: 40px;
+    }
+
+    .timeline-icon {
+        position: absolute;
+        left: -10px;
+        top: 0;
+        font-size: 20px;
+        color: #4caf50;
+    }
+
+    .timeline-item.completed .timeline-icon {
+        color: #e91e63; /* Xanh lá cây cho trạng thái đã hoàn tất */
+        font-size: 20px;
+    }
+
+    .status-text {
+        font-weight: bold;
+        color: #26AA99;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .timestamp {
+        font-size: 12px;
+    }
+
+    .timeline-content p {
+        margin-top: 5px;
+    }
+
+    .order-container .row > .col-4.d-flex {
+        display: flex;
+        justify-content: flex-end; /* Đặt nút sát phải */
+        align-items: center; /* Đặt nút vào giữa chiều cao */
+    }
+
 </style>
 
 @if (Model != null)
 {
-<div class="order-container">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <!-- Nút Trở lại có thể quay lại trang trước -->
-        <a href="javascript:history.back()" style="display: flex; align-items: center; font-size: 15px; color: inherit; text-decoration: none;">
-            <img src="~/Public/img/icons/icons8-backorder.png" width="15" height="15" style="margin-right: 5px;" /> TRỞ LẠI
-        </a>
+    <div class="order-container">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <!-- Nút Trở lại có thể quay lại trang trước -->
+            <a href="javascript:history.back()" style="display: flex; align-items: center; font-size: 15px; color: inherit; text-decoration: none;">
+                <img src="~/Public/img/icons/icons8-backorder.png" width="15" height="15" style="margin-right: 5px;" /> TRỞ LẠI
+            </a>
 
-        <!-- Hiển thị trạng thái đơn hàng -->
-        <div class="order-status" style="font-size: 14px;">
-            <span style="color: #555">
-                MÃ ĐƠN HÀNG. @Model.OrderId <span style="margin: 0px 12px">|</span>
-            </span>
-            <span style="color: #ff4747;">
-                @Model.OrderStatusName.ToUpper()
-            </span>
-        </div>
-    </div>
-    <hr />
-
-    <div>
-        <h3>Địa Chỉ Nhận Hàng</h3>
-        @{
-            var addressParts = Model.InfoAddress.Split(new[] { ", " }, StringSplitOptions.None);
-            var name = addressParts.ElementAtOrDefault(0) ?? "";
-            var phone = addressParts.ElementAtOrDefault(1) ?? "";
-            var address = string.Join(", ", addressParts.Skip(2));
-        }
-        <p style="font-size:16px">@name</p>
-        <p style="font-size:14px">@phone</p>
-        <p style="font-size:14px;">@address</p>
-    </div>
-    <hr />
-    @{
-        var totalItemCost = 0.0;
-    }
-
-    @foreach (var detail in Model.OrderDetails)
-    {
-        totalItemCost += detail.TotalAmount;
-        <a href="#" style="text-decoration: none; color: #555 ">
-            <div class="order-details">
-                <div class="product-info">
-                    <img src="@detail.ImageUrl" alt="Product Image" />
-                    <div>
-                        <div class="product-name" style="font-size: 17px">@detail.ProductName</div>
-                        <div><span>x</span>@detail.Quantity</div>
-                    </div>
-                </div>
-                @if (detail.Promotion_Price == 0)
-                {
-                    <span class="price-info" style="color: #272727;">₫@detail.Price.ToString("N0")</span>
-                }
-                else
-                {
-                    <span class="price-info"><del style="margin-right:10px; color: #777777">₫@detail.Price.ToString("N0")</del>₫@detail.Promotion_Price.ToString("N0")</span>
-                }
-            </div>
-        </a>
-    }
-    <hr />
-    <div class="order-cost-details">
-        <div class="d-flex justify-content-end">
-            <div class="col-8 text-right p-0">
-                <span style="font-size: 13px">Tổng tiền hàng</span>
-            </div>
-            <div class="col-4 text-right p-0">
-                <span>₫@totalItemCost.ToString("N0")</span>
+            <!-- Hiển thị trạng thái đơn hàng -->
+            <div class="order-status" style="font-size: 14px;">
+                <span style="color: #555">
+                    MÃ ĐƠN HÀNG. @Model.OrderId <span style="margin: 0px 12px">|</span>
+                </span>
+                <span style="color: #ff4747;">
+                    @Model.OrderStatusName.ToUpper()
+                </span>
             </div>
         </div>
         <hr />
-        <div class="d-flex justify-content-end">
-            <div class="col-8 text-right p-0">
-                <span style="font-size: 13px">Thành tiền</span>
+
+        <div class="row m-0 p-0">
+            <div class="col-8">
+                <p style="font-size: 14px; color: #555">
+                    ĐƠN HÀNG ĐÃ ĐẶT:
+                    @if (Model.CreatedAt.HasValue)
+                    {
+                        <span>@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
+                    }
+                </p>
+                <p id="leadtime" style="font-size: 14px; color: #555">
+                </p>
             </div>
-            <div class="col-4 text-right p-0">
-                <span>₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span>
+            <div class="col-4 p-0 d-flex justify-content-end align-items-center" id="buttonContainer">
+            </div>
+        </div>
+
+        @if (Model.OrderStatusName == "Hoàn thành")
+        {
+            <hr />
+            <div class="payment-info mt-3" style="background-color: #fff7e6; padding: 15px; border-radius: 8px; border: 1px solid #ffd28a; display: flex; align-items: center;">
+                <p style="margin: 0; color: #555; font-size: 14px">Cảm ơn bạn đã mua sắm tại QVD!</p>
+            </div>
+            <hr />
+        }
+
+        <div class="row">
+            <div class="xBNaac"></div>
+            <div style="margin-top: 20px" class="col-5">
+                <h5>Địa Chỉ Nhận Hàng</h5>
+                @{
+                    var addressParts = Model.InfoAddress.Split(new[] { ", " }, StringSplitOptions.None);
+                    var name = addressParts.ElementAtOrDefault(0) ?? "";
+                    var phone = addressParts.ElementAtOrDefault(1) ?? "";
+                    var address = string.Join(", ", addressParts.Skip(2));
+                }
+                <p style="font-size:16px">@name</p>
+                <p style="font-size:14px">@phone</p>
+                <p style="font-size:14px;">@address</p>
+            </div>
+            <div style="margin-top: 20px" class="col-7">
+                <div id="shipping_items" class="shipping-timeline">
+                </div>
+            </div>
+        </div>
+        <hr />
+        @{
+            var totalItemCost = 0.0;
+        }
+
+        @foreach (var detail in Model.OrderDetails)
+        {
+            totalItemCost += detail.TotalAmount;
+            <a href="#" style="text-decoration: none; color: #555 ">
+                <div class="order-details">
+                    <div class="product-info">
+                        <img src="@detail.ImageUrl" alt="Product Image" />
+                        <div>
+                            <div class="product-name" style="font-size: 17px">@detail.ProductName</div>
+                            <div><span>x</span>@detail.Quantity</div>
+                        </div>
+                    </div>
+                    @if (detail.Promotion_Price == 0)
+                    {
+                        <span class="price-info" style="color: #272727;">₫@detail.Price.ToString("N0")</span>
+                    }
+                    else
+                    {
+                        <span class="price-info"><del style="margin-right:10px; color: #777777">₫@detail.Price.ToString("N0")</del>₫@detail.Promotion_Price.ToString("N0")</span>
+                    }
+                </div>
+            </a>
+        }
+        <hr />
+        <div class="order-cost-details">
+            <div class="d-flex justify-content-end">
+                <div class="col-8 text-right p-0">
+                    <span style="font-size: 13px">Tổng tiền hàng</span>
+                </div>
+                <div class="col-4 text-right p-0">
+                    <span>₫@totalItemCost.ToString("N0")</span>
+                </div>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-end">
+                <div class="col-8 text-right p-0">
+                    <span style="font-size: 13px">Phí vận chuyển</span>
+                </div>
+                <div class="col-4 text-right p-0">
+                    <span>₫@(Model.ShippingFee.HasValue ? Model.ShippingFee.Value.ToString("N0") : "0")</span>
+                </div>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-end">
+                <div class="col-8 d-flex align-items-center justify-content-end p-0">
+                    <span style="font-size: 13px">Thành tiền</span>
+                </div>
+                <div class="col-4 d-flex align-items-center justify-content-end p-0" style="color: red; font-size: 24px;">
+                    <span>₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        @if (Model.MethodId == "PAY001")
+        {
+            <div class="payment-info mt-3" style="background-color: #fff7e6; padding: 15px; border-radius: 8px; border: 1px solid #ffd28a; display: flex; align-items: center;">
+                <i class="fa fa-exclamation-circle" style="color: #ff4747; font-size: 13px; margin-right: 10px;"></i>
+                <p style="margin: 0; color: #555; font-size: 14px">Vui lòng thanh toán <span style="color: #ff4747;">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span> khi nhận hàng.</p>
+            </div>
+            <hr />
+        }
+
+
+        <div class="order-cost-details mt-3">
+            <div class="d-flex">
+                <div class="col-8 text-right p-0">
+                    <span style="font-size: 13px;">Phương thức Thanh toán</span>
+                </div>
+                <div class="col-4 text-right p-0">
+                    <span>@Model.MethodName</span>
+                </div>
             </div>
         </div>
     </div>
-
-    <hr />
-    <div class="payment-info mt-3" style="background-color: #fff7e6; padding: 15px; border-radius: 8px; border: 1px solid #ffd28a; display: flex; align-items: center;">
-        <i class="fa fa-exclamation-circle" style="color: #ff4747; font-size: 13px; margin-right: 10px;"></i>
-        <p style="margin: 0; color: #555; font-size: 14px">Vui lòng thanh toán <span style="color: #ff4747;">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span> khi nhận hàng.</p>
-    </div>
-
-    <hr />
-    <div class="order-cost-details mt-3">
-        <div class="d-flex">
-            <div class="col-8 text-right p-0">
-                <span style="font-size: 13px;">Phương thức Thanh toán</span>
-            </div>
-            <div class="col-4 text-right p-0">
-                <span>@Model.MethodName</span>
-            </div>
-        </div>
-    </div>
-</div>
 }
+
+<script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        const orderCode = "@Model.OrderCode";
+        try {
+            const shippingDetail = await getShippingDetail(orderCode);
+
+            const timelineContainer = document.getElementById("shipping_items");
+            const leadtime = document.getElementById("leadtime");
+
+            const timelead = new Date(shippingDetail.leadtime);
+
+            // Lấy ngày, tháng và năm
+            const day = String(timelead.getDate()).padStart(2, '0'); // Thêm 0 nếu ngày có 1 chữ số
+            const month = String(timelead.getMonth() + 1).padStart(2, '0'); // Thêm 0 nếu tháng có 1 chữ số
+            const year = timelead.getFullYear();
+
+            if (shippingDetail.status === "delivered" && "@Model.OrderStatusName" === "Chờ giao hàng") {
+                const formattimelead = `${day}-${month}-${year}`;
+                leadtime.innerHTML = `NGÀY GIAO DỰ KIẾN: ${formattimelead}`;
+
+                var button = document.createElement("button");
+                button.classList.add("btn", "btn-danger", "setOrderStatusTwo");
+                button.setAttribute("data-orderid", "@Model.OrderId");
+                button.textContent = "Đã Nhận Hàng";
+                button.onclick = function () {
+                    setOrderStatusTwo(this); // Gọi hàm setOrderStatusTwo khi nút được nhấn
+                };
+
+                document.getElementById("buttonContainer").appendChild(button);
+            }
+
+
+            const statusItem = document.createElement("div");
+
+            statusItem.classList.add("timeline-item", "completed");
+
+            const createdDate = new Date(shippingDetail.created_date);
+            const formattedDate = formatDate(createdDate); // Hàm định dạng ngày giờ
+
+            statusItem.innerHTML = `
+                <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                <div class="timeline-content">
+                    <p class="status-text">Chờ lấy hàng</p>
+                    <span class="timestamp">${formattedDate}</span>
+                </div>
+            `;
+
+            timelineContainer.prepend(statusItem);
+
+            if (shippingDetail.log.length > 0 && Array.isArray(shippingDetail.log)) {
+                shippingDetail.log.forEach(logEntry => {
+                    const logDate = new Date(logEntry.updated_date);
+                    const formattedLogDate = formatDate(logDate); // Hàm định dạng ngày giờ
+
+                    const statusItem = document.createElement("div");
+                    statusItem.classList.add("timeline-item", "completed");
+                    statusItem.innerHTML = `
+                    <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                    <div class="timeline-content">
+                        <p class="status-text">${getStatusText(logEntry.status)}</p>
+                        <span class="timestamp">${formattedLogDate}</span>
+                    </div>
+                `;
+                    timelineContainer.prepend(statusItem);
+                });
+            }
+        }
+        catch (error) {
+            console.error("Lỗi trong quá trình xử lý:", error);
+        }
+    });
+
+    // Hàm định dạng ngày và giờ theo kiểu "HH:mm dd-MM-yyyy"
+    function formatDate(date) {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${hours}:${minutes} ${day}-${month}-${year}`;
+    }
+
+    // Hàm xử lý trạng thái logEntry.status
+    function getStatusText(status) {
+        switch (status) {
+            case 'picking':
+                return 'Nhân viên đang lấy hàng';
+            case 'picked':
+                return 'Nhân viên đã lấy hàng';
+            case 'Hoàn thành':
+                return 'Hoàn thành';
+            case 'storing':
+                return 'Hàng đang nằm ở kho';
+            case 'transporting':
+                return 'Đang luân chuyển hàng';
+            case 'sorting':
+                return 'Đang phân loại hàng hóa';
+            case 'delivering':
+                return 'Nhân viên đang giao cho người nhận';
+            case 'delivered':
+                return 'Nhân viên đã giao hàng thành công';
+        }
+    }
+
+    async function setOrderStatusTwo(button) {
+        const orderId = button.getAttribute('data-orderid');  // Lấy orderId từ nút được nhấn
+
+        // Gọi hàm đổi trạng thái đơn hàng
+        const response = await fetch('/Order/ChangeOrder_OrderStatus', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                order_id: orderId,
+                order_status: 2  // Trạng thái mới
+            })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            // Điều hướng đến trang khác sau khi cập nhật trạng thái
+            const url = `@Url.Action("Index", "Profile")?order_status_id=${'@Model.OrderStatusID'}&MaTaiKhoan=${'@Model.CustomerId'}&view=OrderPartial`;
+            window.location.href = url;
+        } else {
+            alert(result.message);
+        }
+    }
+</script>

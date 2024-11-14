@@ -216,7 +216,7 @@ namespace VanPhongPham.Models
                             product_id = productId
 
                         };
-                        AddImages(additionalImage);
+                        //AddImages(additionalImage);
                     }
                 }
                 return true;
