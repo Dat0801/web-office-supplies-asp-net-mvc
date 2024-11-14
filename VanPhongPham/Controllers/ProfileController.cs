@@ -129,7 +129,7 @@ namespace VanPhongPham.Controllers
                                     .Where(img => img.is_primary == true) // Kiểm tra hình ảnh chính
                                     .Select(img => img.image_url)
                                     .FirstOrDefault(), // Lấy hình ảnh đầu tiên
-                        Price = od.product.price.HasValue ? od.product.price.Value : 0, // Gán giá trị 0 nếu null
+                        Price = od.price ?? 0, // Gán giá trị 0 nếu null
                         Promotion_Price = od.discountPrice.HasValue ? od.discountPrice.Value : 0,
                         isReviewed = od.isReviewed ?? false, // Giả sử có thuộc tính này trong order_detail
                     }).ToList()
@@ -172,7 +172,7 @@ namespace VanPhongPham.Controllers
                                     .Where(img => img.is_primary == true)
                                     .Select(img => img.image_url)
                                     .FirstOrDefault(),
-                        Price = od.product.price ?? 0,
+                        Price = od.price ?? 0,
                         Promotion_Price = od.discountPrice.HasValue ? od.discountPrice.Value : 0,
                         isReviewed = od.isReviewed ?? false,
                     }).ToList()
