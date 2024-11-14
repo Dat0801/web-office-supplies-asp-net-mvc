@@ -43,6 +43,19 @@
     <script src="~/Public/js/User.js"></script>
     <script src="~/Public/js/Cloudinary.js"></script>
     <script src="~/Public/js/GHN.js"></script>
-    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                if (!sessionStorage.getItem('redirected')) {
+                    sessionStorage.setItem('redirected', 'true');
+                    logout();
+                }
+            } else {
+                sessionStorage.removeItem('redirected');
+                fetchUserData();
+            }
+        });
+    </script>    
 </body>
 </html>

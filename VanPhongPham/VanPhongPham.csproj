@@ -607,12 +607,12 @@
     <Content Include="Areas\Admin\Views\PurchaseOrder\CreateReceipt.cshtml" />
     <Content Include="Areas\Admin\Views\PurchaseOrder\Receipt.cshtml" />
     <Content Include="Areas\Admin\Views\PurchaseOrder\ReceiptDetail.cshtml" />
+    <Content Include="Areas\Admin\Views\UserOrder\Index.cshtml" />
     <Content Include="Models\DB_VanPhongPham.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>DB_VanPhongPham.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Areas\Admin\Views\UserOrder\Index.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>

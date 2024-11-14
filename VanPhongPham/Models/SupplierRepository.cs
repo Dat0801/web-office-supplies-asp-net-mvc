@@ -26,6 +26,7 @@ namespace VanPhongPham.Models
         {
             return _context.suppliers.FirstOrDefault(x => x.supplier_id == id);
         }
+
         public List<supplier> SearchSupplier(string search_str)
         {
             return _context.suppliers

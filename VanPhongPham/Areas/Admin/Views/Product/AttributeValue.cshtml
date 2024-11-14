@@ -3,6 +3,15 @@
 @model IPagedList<VanPhongPham.Models.attribute_value>
 @{
     ViewBag.Title = "Giá trị giá trị thuộc tính của sản phẩm - Quản Trị";
+    var message = ViewBag.Message;
+    var messageType = ViewBag.MessageType;
+}
+@if (message != null)
+{
+    <div class="alert alert-dark-@messageType alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        @message
+    </div>
 }
 <div class="card mb-4">
     <h6 class="card-header">Thêm mới giá trị thuộc tính</h6>
@@ -60,6 +69,10 @@
             </button>
         </form>
     </div>
+    <!-- Recycle -->
+    <a class="btn icon-btn btn-outline-secondary my-3 ml-2" href="@Url.Action("RecycleAttributeValueIndex","Product")" title="Phục hồi">
+        <i class="feather icon-rotate-cw navbar-icon align-middle"></i>
+    </a>
 </div>
 <div class="card">
     <table class="table card-table table-responsive-lg">

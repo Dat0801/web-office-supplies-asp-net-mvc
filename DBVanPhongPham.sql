@@ -8,8 +8,8 @@ create table products
 (
 	product_id varchar(10) not null,
 	category_id varchar(10) not null,
-	product_name nvarchar(200) not null unique,
-	description nvarchar(1000) default null,
+	product_name nvarchar(255) not null unique,
+	description nvarchar(max) default null,
 	purchase_price float default 0,
 	price_coefficient float default 0.5,
 	price float default 0,
@@ -44,8 +44,7 @@ create table categories
 (
 	category_id varchar(10) not null,
 	parent_category_id VARCHAR(10) default null,
-	category_name nvarchar(50) not null unique,
-	description nvarchar(200) default null,
+	category_name nvarchar(150) not null unique,
 	status bit default 1,
 	created_at datetime default getdate(),
 	updated_at datetime default getdate()
@@ -54,7 +53,7 @@ create table categories
 create table suppliers
 (
 	supplier_id varchar(10) not null,
-	supplier_name nvarchar(50) not null unique,
+	supplier_name nvarchar(200) not null unique,
 	email varchar(50) default null,
 	phone_number char(10) not null,
 	status bit default 1,
@@ -81,7 +80,6 @@ create table product_attribute_values
 (
 	product_id varchar(10) not null,
 	attribute_value_id varchar(10) not null,
-	status bit default 1,
 )
 
 create table images
@@ -89,7 +87,6 @@ create table images
 	image_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
 	product_id varchar(10) not null,
 	image_url varchar(500) not null unique,
-	description nvarchar(200) default null,
 	is_primary bit default 0,
 )
 
@@ -658,14 +655,13 @@ BEGIN
 END;
 GO
 
-INSERT INTO categories (category_id, category_name, description, parent_category_id)
+INSERT INTO categories (category_id, category_name, parent_category_id)
 VALUES 
-('CAT001', N'Bút viết', N'Bút viết', null),
-('CAT002', N'Bút bi', N'Bút bi thông dụng, dễ sử dụng cho việc viết, ...','CAT001'),
-('CAT003', N'Bút chì', N'Bút chì dùng để viết và vẽ, có thể tẩy được, ...','CAT001'),
-('CAT004', N'Giấy photo', N'Giấy dùng để photo tài liệu, có độ bền cao, ...',null),
-('CAT005', N'Máy tính cầm tay', N'Máy tính nhỏ gọn, tiện lợi cho việc tính toán, ...',null),
-('CAT006', N'Vở viết', N'Vở dùng để ghi chép, có nhiều loại và kích thước khác nhau, ...',null);
+('CAT001', N'Bút viết', null),
+('CAT002', N'Bút bi', 'CAT001'),
+('CAT003', N'Bút chì', 'CAT001'),
+('CAT004', N'Máy tính tay văn phòng', null);
+
 
 INSERT INTO suppliers (supplier_id, supplier_name, email, phone_number, status)
 VALUES 
@@ -674,28 +670,40 @@ VALUES
 
 INSERT INTO products (product_id, category_id, product_name, description, purchase_price, price_coefficient, price, stock_quantity, status)
 VALUES 
-('PRO001', 'CAT001', N'Bút bi Thiên Long TL 023', N'Bút bi Thiên Long TL 023 được sử dụng rộng rãi trong các trường học, văn phòng, công sở,... Đây là một sản phẩm chất lượng cao, giá cả phải chăng, phù hợp với nhiều mục đích sử dụng.', 0, 1.5, 0, 0, 1),
-('PRO002', 'CAT001', N'Bút bi Thiên Long TL 025', N'Bút bi Thiên Long TL 025 được thiết kế đơn giản và dễ sử dụng, phù hợp cho nhiều người. Đây là lựa chọn tuyệt vời cho công việc văn phòng và học tập.', 0, 1.5, NULL, 80, 1),
-('PRO003', 'CAT002', N'Bút chì Stabilo 2B 288', N'Bút chì Stabilo 2B 288 cho nét vẽ đậm dày, thích hợp dùng để tập viết chữ, vẽ phác thảo, vẽ bóng mờ, sáng tối hoặc tô trắc nghiệm. Chì có độ bền màu cao, lâu phai và dễ dàng xóa sạch bằng gôm tẩy khi sử dụng.', 0, 1.5, 0, 0, 1),
-('PRO004', 'CAT003', N'Giấy a4 Double A 80gsm', N'Giấy photo a4 Double A DL80 GSM phù hợp với các nhu cầu in ấn văn phòng cơ bản như in ấn tài liệu, văn bản, hợp đồng, báo cáo,... với độ sắc nét nổi bật trong tầm giá cả hợp lý.', 0, 1.5, 0, 0, 1),
-('PRO005', 'CAT004', N'Máy tính cầm tay Casio FX 580VN X new', N'Máy tính cầm tay Casio FX 580VN X new là một sản phẩm chất lượng cao, đáp ứng nhu cầu của nhiều đối tượng. Máy có màn hình lớn, rõ ràng, các nút bấm nhạy, dễ sử dụng.', 0, 1.5, 0, 0, 1),
-('PRO006', 'CAT005', N'Vở Hồng Hà 300 trang A4 4532', N'Vở A4 300 trang Hồng Hà là sản phẩm chất lượng, phù hợp với nhu cầu của nhiều đối tượng sử dụng. Vở có giá thành hợp lý, phù hợp với túi tiền của học sinh, sinh viên.', 0, 1.5, 0, 0, 1);
+('PRO001', 'CAT002', N'Bút bi Thiên Long TL 023', N'<p>Bút có thiết kế đơn giản, thân tròn, dễ cầm nắm. Thân bút nhựa trong.</p><p><strong>Đặc điểm:</strong></p><p>- Đầu bi: 0.8 mm<br>- Thân bút thanh mảnh cơ chế bấm khế tiện dụng phù hợp cho mọi người.<br>- Thay ruột khi hết mực.</p><p><br>&nbsp;</p>', 0, 1.5, 0, 0, 1),
+('PRO002', 'CAT002', N'Bút bi Thiên Long TL 025', N'<p>Bút có thiết kế đơn giản, thân tròn.Thân bút nhựa trong, tảm có đệm mềm (grip) giúp cầm êm tay và giảm trơn trợt khi viết.</p><p><strong>Đặc điểm:</strong></p><p>- Đầu bi: 0.8 mm<br>- Grip cùng màu mực<br>- Thân bút thanh mảnh cơ chế bấm khế tiện dụng phù hợp cho mọi người.<br>- Thay ruột khi hết mực.</p>', 0, 1.5, 0, 0, 1),
+('PRO003', 'CAT003', N'Combo 20 Bút chì mỹ thuật Thiên Long 5B GP-024', N'<p>Bút chì mỹ thuật Thiên Long 5B GP-024 thích hợp cho các hoạt động như ghi chép, vẽ nháp, học tập.</p><p><strong>
+Đặc điểm:</strong></p><p>- Ruột chì mềm, nét đậm, ít bột chì<br>- Thân gỗ mềm dễ chuốt<br>- 
+Bền đẹp không gãy chì<br>- Bút dùng để viết, vẽ phác thảo trên giấy tập học sinh, sổ tay, giấy photocopy, gỗ hoặc giấy vẽ chuyên dụng<br>- Lướt rất nhẹ nhàng trên bề mặt viết<br>- Dùng để đánh bóng các bức vẽ, đạt đến nhiều mức độ sáng tối khác nhau. 
+Ngoài ra khá hữu dụng trong việc tô đậm vào ô trả lời trắc nghiệm nhanh nhất.<br>- Thân lục giác, 5B.<br>- Thân bút được thiết kế hiện đại với họa tiết xoắn quanh bút cho cây bút sinh động và thu hút</p><p><strong>Bảo quản:</strong></p><p>- Tránh va đập mạnh làm gãy chì.<br>- Tránh xa nguồn nhiệt .</p>', 0, 1.5, 0, 0, 1),
+('PRO004', 'CAT004', N'Máy tính văn phòng Thiên Long Flexio CAL-011', N'<p><strong>Đặc tính sản phẩm:</strong></p><p>- Máy tính văn phòng CAL-011 đa năng này phù hợp sử dụng tại nhà, trường học, văn phòng hoặc cửa hàng. Sự kết hợp chip xử lý và mạch điều khiển công nghệ hiện đại đưa ra những kết quả phép tính đáng tin cậy, nhanh chóng đáp ứng tốt cho mục đích cá nhân hoặc chuyên nghiệp.&nbsp;</p><p>- Thiết kế nhỏ gọn và di động, bạn có thể dễ dàng mang theo bất cứ mọi nơi.&nbsp;</p><p>- Bộ vỏ nguyên liệu ABS cao cấp, bền và sử dụng thiết kế thân thiện, máy tính văn phòng CAL-011 cung cấp sự tiện lợi và hiệu quả trong tất cả các nhu cầu tính toán.</p>', 0, 1.5, 0, 0, 1)
 
 INSERT INTO attributes (attribute_id, attribute_name)
 VALUES ('ATT001', N'Thương hiệu'),
 ('ATT002', N'Màu sắc'),
 ('ATT003', N'Đóng gói'),
 ('ATT004', N'Trọng lượng'),
-('ATT005', N'Đường kính viên bi')
+('ATT005', N'Đường kính viên bi'),
+('ATT006', N'Độ cứng ruột chì'),
+('ATT007', N'Màn hình'),
+('ATT008', N'Chất liệu'),
+('ATT009', N'Loại pin');
 
 INSERT INTO attribute_values (attribute_value_id, attribute_id, value)
 VALUES ('VAL001', 'ATT001', N'Thiên Long'),
 ('VAL002', 'ATT002', 'Xanh'),
 ('VAL003', 'ATT002', N'Đỏ'),
 ('VAL004', 'ATT002', N'Đen'),
-('VAL005', 'ATT003', N'20 cây / hộp'),
+('VAL005', 'ATT003', N'20 cây/hộp'),
 ('VAL006', 'ATT004', '9 gram'),
-('VAL007', 'ATT005', '0.8 mm');
+('VAL007', 'ATT005', '0.8 mm'),
+('VAL008', 'ATT004', '8 gram'),
+('VAL009', 'ATT006', '5B'),
+('VAL010', 'ATT003', N'10 cây/hộp'),
+('VAL011', 'ATT001', N'Flexio'),
+('VAL012', 'ATT007', N'LCD'),
+('VAL013', 'ATT008', N'ABS'),
+('VAL014', 'ATT009', N'AAA (1.55V)');
 
 INSERT INTO product_attribute_values (product_id, attribute_value_id)
 VALUES ('PRO001', 'VAL001'),
@@ -704,17 +712,35 @@ VALUES ('PRO001', 'VAL001'),
 ('PRO001', 'VAL004'),
 ('PRO001', 'VAL005'),
 ('PRO001', 'VAL006'),
-('PRO001', 'VAL007');
+('PRO001', 'VAL007'),
+('PRO002', 'VAL001'),
+('PRO002', 'VAL002'),
+('PRO002', 'VAL003'),
+('PRO002', 'VAL004'),
+('PRO002', 'VAL005'),
+('PRO002', 'VAL006'),
+('PRO002', 'VAL007'),
+('PRO003', 'VAL008'),
+('PRO003', 'VAL009'),
+('PRO003', 'VAL011'),
+('PRO004', 'VAL012'),
+('PRO004', 'VAL013'),
+('PRO004', 'VAL014');
 
-INSERT INTO images (product_id, image_url, description, is_primary)
+INSERT INTO images (product_id, image_url, is_primary)
 VALUES
-('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/onumc2zaeyfnkrs3q92j.png', N'Test thôi', 1),
-('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/h6ntyymvhnx9nllpfz2q.jpg', N'Test thôi', 0),
-('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/bbdw0hhp9nkaegqfqmh6.jpg', N'Test thôi', 0),
-('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/cxyrbs1upydqmyxnoobj.png', N'Test thôi', 1),
-('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/fxkfvtzliwsp6th6xnuk.png', N'Test thôi', 0),
-('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/uzvymp9snxzaivs9kbyt.png', N'Test thôi', 1),
-('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/krpimoesikznpyo3czhh.png', N'Test thôi', 0)
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052395/xaxsqpih3wlkhn3svtzu.webp', 1),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052396/e7f3ibtwciwnirlyrfy5.webp', 0),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052397/acrcxyujqymmsmwjhptv.webp', 0),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052428/ilsoqolpotlhrrz4lvgp.webp', 0),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052512/ijhq94a3uxjmzsxxug1b.webp', 1),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052513/crckzpsnajdaal5wxxjs.webp', 0),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052513/jrh6zvjikf4e99cunqyr.webp', 0),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052514/lwcgnvtxuxihrgxl42ln.webp', 0),
+('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731053976/ookezmryr9dg2d6kwmsb.webp', 1),
+('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731054041/cskuxusg6kbrllcsl6x9.jpg', 0),
+('PRO004', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731055234/u4oje3oyhrzadlw9glms.webp', 1),
+('PRO004', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731055235/sn45tefezfkholxonrip.webp', 0);
 
 INSERT INTO roles (role_name, description)
 VALUES
@@ -737,11 +763,11 @@ VALUES
 
 INSERT INTO users (user_id, full_name, username)
 VALUES
-('ADMIN002', N'Thành Đạt', 'qwe')
+('ADMIN001', N'Thành Đạt', 'qwe')
 
 INSERT INTO user_roles
 VALUES
-('ADMIN002', 2)
+('ADMIN001', 2)
 GO
 
 UPDATE users
@@ -758,9 +784,7 @@ VALUES
 ('POD001', 'PRO001', 100, 3500, 0),
 ('POD001', 'PRO002', 80, 4000, 0),
 ('POD001', 'PRO003', 70, 14000, 0),
-('POD001', 'PRO004', 60, 55000, 0),
-('POD001', 'PRO005', 40, 480000, 0),
-('POD001', 'PRO006', 50, 18000, 0)
+('POD001', 'PRO004', 60, 55000, 0)
 
 INSERT INTO receipts (receipt_id, purchase_order_id, entry_count)
 VALUES 
@@ -771,6 +795,4 @@ VALUES
 ('REC001', 'POD001', 'PRO001', 100),
 ('REC001', 'POD001', 'PRO002', 80),
 ('REC001', 'POD001', 'PRO003', 70),
-('REC001', 'POD001', 'PRO004', 60),
-('REC001', 'POD001', 'PRO005', 40),
-('REC001', 'POD001', 'PRO006', 50)
+('REC001', 'POD001', 'PRO004', 60)

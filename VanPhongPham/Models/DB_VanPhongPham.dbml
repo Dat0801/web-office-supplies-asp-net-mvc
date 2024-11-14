@@ -13,6 +13,26 @@
       <Association Name="user_address" Member="user" ThisKey="user_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
     </Type>
   </Table>
+  <Table Name="dbo.users" Member="users">
+    <Type Name="user">
+      <Column Name="user_id" Type="System.String" DbType="NVarChar(255) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="full_name" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="username" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
+      <Column Name="email" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="gender" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="dob" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="avt_url" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="password" Type="System.String" DbType="VarChar(32)" CanBeNull="true" />
+      <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Association Name="user_address" Member="addresses" ThisKey="user_id" OtherKey="user_id" Type="address" />
+      <Association Name="user_cart_section" Member="cart_sections" ThisKey="user_id" OtherKey="user_id" Type="cart_section" />
+      <Association Name="user_order" Member="orders" ThisKey="user_id" OtherKey="customer_id" Type="order" />
+      <Association Name="user_order1" Member="orders1" ThisKey="user_id" OtherKey="employee_id" Type="order" />
+      <Association Name="user_product_review" Member="product_reviews" ThisKey="user_id" OtherKey="user_id" Type="product_review" />
+      <Association Name="user_purchase_order" Member="purchase_orders" ThisKey="user_id" OtherKey="employee_id" Type="purchase_order" />
+      <Association Name="user_user_role" Member="user_roles" ThisKey="user_id" OtherKey="user_id" Type="user_role" />
+    </Type>
+  </Table>
   <Table Name="dbo.attribute_values" Member="attribute_values">
     <Type Name="attribute_value">
       <Column Name="attribute_value_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
@@ -54,8 +74,7 @@
     <Type Name="category">
       <Column Name="category_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="parent_category_id" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
-      <Column Name="category_name" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="description" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
+      <Column Name="category_name" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
       <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="updated_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
@@ -67,7 +86,6 @@
       <Column Name="image_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="product_id" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
       <Column Name="image_url" Type="System.String" DbType="VarChar(500) NOT NULL" CanBeNull="false" />
-      <Column Name="description" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
       <Column Name="is_primary" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Association Name="product_image" Member="product" ThisKey="product_id" OtherKey="product_id" Type="product" IsForeignKey="true" />
     </Type>
@@ -107,10 +125,10 @@
       <Column Name="order_status_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Association Name="order_order_detail" Member="order_details" ThisKey="order_id" OtherKey="order_id" Type="order_detail" />
-      <Association Name="order_status_order" Member="order_status" ThisKey="order_status_id" OtherKey="order_status_id" Type="order_status" IsForeignKey="true" />
-      <Association Name="payment_method_order" Member="payment_method" ThisKey="method_id" OtherKey="method_id" Type="payment_method" IsForeignKey="true" />
       <Association Name="user_order" Member="user" ThisKey="customer_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
       <Association Name="user_order1" Member="user1" ThisKey="employee_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
+      <Association Name="order_status_order" Member="order_status" ThisKey="order_status_id" OtherKey="order_status_id" Type="order_status" IsForeignKey="true" />
+      <Association Name="payment_method_order" Member="payment_method" ThisKey="method_id" OtherKey="method_id" Type="payment_method" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.payment_methods" Member="payment_methods">
@@ -124,7 +142,6 @@
     <Type Name="product_attribute_value">
       <Column Name="product_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="attribute_value_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Association Name="attribute_value_product_attribute_value" Member="attribute_value" ThisKey="attribute_value_id" OtherKey="attribute_value_id" Type="attribute_value" IsForeignKey="true" />
       <Association Name="product_product_attribute_value" Member="product" ThisKey="product_id" OtherKey="product_id" Type="product" IsForeignKey="true" />
     </Type>
@@ -145,16 +162,16 @@
       <Column Name="rating" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="review_content" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Association Name="product_product_review" Member="product" ThisKey="product_id" OtherKey="product_id" Type="product" IsForeignKey="true" />
       <Association Name="user_product_review" Member="user" ThisKey="user_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
+      <Association Name="product_product_review" Member="product" ThisKey="product_id" OtherKey="product_id" Type="product" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.products" Member="products">
     <Type Name="product">
       <Column Name="product_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="category_id" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
-      <Column Name="product_name" Type="System.String" DbType="NVarChar(200) NOT NULL" CanBeNull="false" />
-      <Column Name="description" Type="System.String" DbType="NVarChar(1000)" CanBeNull="true" />
+      <Column Name="product_name" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="description" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="purchase_price" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="price_coefficient" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="price" Type="System.Double" DbType="Float" CanBeNull="true" />
@@ -198,8 +215,8 @@
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Association Name="purchase_order_purchase_order_detail" Member="purchase_order_details" ThisKey="purchase_order_id" OtherKey="purchase_order_id" Type="purchase_order_detail" />
       <Association Name="purchase_order_receipt" Member="receipts" ThisKey="purchase_order_id" OtherKey="purchase_order_id" Type="receipt" />
-      <Association Name="supplier_purchase_order" Member="supplier" ThisKey="supplier_id" OtherKey="supplier_id" Type="supplier" IsForeignKey="true" />
       <Association Name="user_purchase_order" Member="user" ThisKey="employee_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
+      <Association Name="supplier_purchase_order" Member="supplier" ThisKey="supplier_id" OtherKey="supplier_id" Type="supplier" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.purchase_order_detail" Member="purchase_order_details">
@@ -245,7 +262,7 @@
   <Table Name="dbo.suppliers" Member="suppliers">
     <Type Name="supplier">
       <Column Name="supplier_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="supplier_name" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="supplier_name" Type="System.String" DbType="NVarChar(200) NOT NULL" CanBeNull="false" />
       <Column Name="email" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
       <Column Name="phone_number" Type="System.String" DbType="Char(10) NOT NULL" CanBeNull="false" />
       <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
@@ -260,26 +277,6 @@
       <Column Name="role_id" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Association Name="role_user_role" Member="role" ThisKey="role_id" OtherKey="role_id" Type="role" IsForeignKey="true" />
       <Association Name="user_user_role" Member="user" ThisKey="user_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.users" Member="users">
-    <Type Name="user">
-      <Column Name="user_id" Type="System.String" DbType="NVarChar(255) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="full_name" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="username" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
-      <Column Name="email" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="gender" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="dob" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="avt_url" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="password" Type="System.String" DbType="VarChar(32)" CanBeNull="true" />
-      <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Association Name="user_address" Member="addresses" ThisKey="user_id" OtherKey="user_id" Type="address" />
-      <Association Name="user_cart_section" Member="cart_sections" ThisKey="user_id" OtherKey="user_id" Type="cart_section" />
-      <Association Name="user_order" Member="orders" ThisKey="user_id" OtherKey="customer_id" Type="order" />
-      <Association Name="user_order1" Member="orders1" ThisKey="user_id" OtherKey="employee_id" Type="order" />
-      <Association Name="user_product_review" Member="product_reviews" ThisKey="user_id" OtherKey="user_id" Type="product_review" />
-      <Association Name="user_purchase_order" Member="purchase_orders" ThisKey="user_id" OtherKey="employee_id" Type="purchase_order" />
-      <Association Name="user_user_role" Member="user_roles" ThisKey="user_id" OtherKey="user_id" Type="user_role" />
     </Type>
   </Table>
 </Database>

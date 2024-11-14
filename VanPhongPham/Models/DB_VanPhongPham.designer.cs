@@ -33,6 +33,9 @@ namespace VanPhongPham.Models
     partial void Insertaddress(address instance);
     partial void Updateaddress(address instance);
     partial void Deleteaddress(address instance);
+    partial void Insertuser(user instance);
+    partial void Updateuser(user instance);
+    partial void Deleteuser(user instance);
     partial void Insertattribute_value(attribute_value instance);
     partial void Updateattribute_value(attribute_value instance);
     partial void Deleteattribute_value(attribute_value instance);
@@ -99,11 +102,7 @@ namespace VanPhongPham.Models
     partial void Insertuser_role(user_role instance);
     partial void Updateuser_role(user_role instance);
     partial void Deleteuser_role(user_role instance);
-    partial void Insertuser(user instance);
-    partial void Updateuser(user instance);
-    partial void Deleteuser(user instance);
         #endregion
-
         public DB_VanPhongPhamDataContext() :
         base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString1"].ConnectionString, mappingSource)
         {
@@ -138,6 +137,14 @@ namespace VanPhongPham.Models
 			get
 			{
 				return this.GetTable<address>();
+			}
+		}
+		
+		public System.Data.Linq.Table<user> users
+		{
+			get
+			{
+				return this.GetTable<user>();
 			}
 		}
 		
@@ -314,14 +321,6 @@ namespace VanPhongPham.Models
 			get
 			{
 				return this.GetTable<user_role>();
-			}
-		}
-		
-		public System.Data.Linq.Table<user> users
-		{
-			get
-			{
-				return this.GetTable<user>();
 			}
 		}
 	}
@@ -618,6 +617,456 @@ namespace VanPhongPham.Models
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.users")]
+	public partial class user : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private string _user_id;
+		
+		private string _full_name;
+		
+		private string _username;
+		
+		private string _email;
+		
+		private string _gender;
+		
+		private System.Nullable<System.DateTime> _dob;
+		
+		private string _avt_url;
+		
+		private string _password;
+		
+		private System.Nullable<bool> _status;
+		
+		private EntitySet<address> _addresses;
+		
+		private EntitySet<cart_section> _cart_sections;
+		
+		private EntitySet<order> _orders;
+		
+		private EntitySet<order> _orders1;
+		
+		private EntitySet<product_review> _product_reviews;
+		
+		private EntitySet<purchase_order> _purchase_orders;
+		
+		private EntitySet<user_role> _user_roles;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onuser_idChanging(string value);
+    partial void Onuser_idChanged();
+    partial void Onfull_nameChanging(string value);
+    partial void Onfull_nameChanged();
+    partial void OnusernameChanging(string value);
+    partial void OnusernameChanged();
+    partial void OnemailChanging(string value);
+    partial void OnemailChanged();
+    partial void OngenderChanging(string value);
+    partial void OngenderChanged();
+    partial void OndobChanging(System.Nullable<System.DateTime> value);
+    partial void OndobChanged();
+    partial void Onavt_urlChanging(string value);
+    partial void Onavt_urlChanged();
+    partial void OnpasswordChanging(string value);
+    partial void OnpasswordChanged();
+    partial void OnstatusChanging(System.Nullable<bool> value);
+    partial void OnstatusChanged();
+    #endregion
+		
+		public user()
+		{
+			this._addresses = new EntitySet<address>(new Action<address>(this.attach_addresses), new Action<address>(this.detach_addresses));
+			this._cart_sections = new EntitySet<cart_section>(new Action<cart_section>(this.attach_cart_sections), new Action<cart_section>(this.detach_cart_sections));
+			this._orders = new EntitySet<order>(new Action<order>(this.attach_orders), new Action<order>(this.detach_orders));
+			this._orders1 = new EntitySet<order>(new Action<order>(this.attach_orders1), new Action<order>(this.detach_orders1));
+			this._product_reviews = new EntitySet<product_review>(new Action<product_review>(this.attach_product_reviews), new Action<product_review>(this.detach_product_reviews));
+			this._purchase_orders = new EntitySet<purchase_order>(new Action<purchase_order>(this.attach_purchase_orders), new Action<purchase_order>(this.detach_purchase_orders));
+			this._user_roles = new EntitySet<user_role>(new Action<user_role>(this.attach_user_roles), new Action<user_role>(this.detach_user_roles));
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string user_id
+		{
+			get
+			{
+				return this._user_id;
+			}
+			set
+			{
+				if ((this._user_id != value))
+				{
+					this.Onuser_idChanging(value);
+					this.SendPropertyChanging();
+					this._user_id = value;
+					this.SendPropertyChanged("user_id");
+					this.Onuser_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_full_name", DbType="NVarChar(MAX)")]
+		public string full_name
+		{
+			get
+			{
+				return this._full_name;
+			}
+			set
+			{
+				if ((this._full_name != value))
+				{
+					this.Onfull_nameChanging(value);
+					this.SendPropertyChanging();
+					this._full_name = value;
+					this.SendPropertyChanged("full_name");
+					this.Onfull_nameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_username", DbType="VarChar(MAX)")]
+		public string username
+		{
+			get
+			{
+				return this._username;
+			}
+			set
+			{
+				if ((this._username != value))
+				{
+					this.OnusernameChanging(value);
+					this.SendPropertyChanging();
+					this._username = value;
+					this.SendPropertyChanged("username");
+					this.OnusernameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_email", DbType="NVarChar(MAX)")]
+		public string email
+		{
+			get
+			{
+				return this._email;
+			}
+			set
+			{
+				if ((this._email != value))
+				{
+					this.OnemailChanging(value);
+					this.SendPropertyChanging();
+					this._email = value;
+					this.SendPropertyChanged("email");
+					this.OnemailChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_gender", DbType="NVarChar(50)")]
+		public string gender
+		{
+			get
+			{
+				return this._gender;
+			}
+			set
+			{
+				if ((this._gender != value))
+				{
+					this.OngenderChanging(value);
+					this.SendPropertyChanging();
+					this._gender = value;
+					this.SendPropertyChanged("gender");
+					this.OngenderChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_dob", DbType="Date")]
+		public System.Nullable<System.DateTime> dob
+		{
+			get
+			{
+				return this._dob;
+			}
+			set
+			{
+				if ((this._dob != value))
+				{
+					this.OndobChanging(value);
+					this.SendPropertyChanging();
+					this._dob = value;
+					this.SendPropertyChanged("dob");
+					this.OndobChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_avt_url", DbType="NVarChar(MAX)")]
+		public string avt_url
+		{
+			get
+			{
+				return this._avt_url;
+			}
+			set
+			{
+				if ((this._avt_url != value))
+				{
+					this.Onavt_urlChanging(value);
+					this.SendPropertyChanging();
+					this._avt_url = value;
+					this.SendPropertyChanged("avt_url");
+					this.Onavt_urlChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_password", DbType="VarChar(32)")]
+		public string password
+		{
+			get
+			{
+				return this._password;
+			}
+			set
+			{
+				if ((this._password != value))
+				{
+					this.OnpasswordChanging(value);
+					this.SendPropertyChanging();
+					this._password = value;
+					this.SendPropertyChanged("password");
+					this.OnpasswordChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_status", DbType="Bit")]
+		public System.Nullable<bool> status
+		{
+			get
+			{
+				return this._status;
+			}
+			set
+			{
+				if ((this._status != value))
+				{
+					this.OnstatusChanging(value);
+					this.SendPropertyChanging();
+					this._status = value;
+					this.SendPropertyChanged("status");
+					this.OnstatusChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_address", Storage="_addresses", ThisKey="user_id", OtherKey="user_id")]
+		public EntitySet<address> addresses
+		{
+			get
+			{
+				return this._addresses;
+			}
+			set
+			{
+				this._addresses.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_cart_section", Storage="_cart_sections", ThisKey="user_id", OtherKey="user_id")]
+		public EntitySet<cart_section> cart_sections
+		{
+			get
+			{
+				return this._cart_sections;
+			}
+			set
+			{
+				this._cart_sections.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_order", Storage="_orders", ThisKey="user_id", OtherKey="customer_id")]
+		public EntitySet<order> orders
+		{
+			get
+			{
+				return this._orders;
+			}
+			set
+			{
+				this._orders.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_order1", Storage="_orders1", ThisKey="user_id", OtherKey="employee_id")]
+		public EntitySet<order> orders1
+		{
+			get
+			{
+				return this._orders1;
+			}
+			set
+			{
+				this._orders1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_product_review", Storage="_product_reviews", ThisKey="user_id", OtherKey="user_id")]
+		public EntitySet<product_review> product_reviews
+		{
+			get
+			{
+				return this._product_reviews;
+			}
+			set
+			{
+				this._product_reviews.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_purchase_order", Storage="_purchase_orders", ThisKey="user_id", OtherKey="employee_id")]
+		public EntitySet<purchase_order> purchase_orders
+		{
+			get
+			{
+				return this._purchase_orders;
+			}
+			set
+			{
+				this._purchase_orders.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_user_role", Storage="_user_roles", ThisKey="user_id", OtherKey="user_id")]
+		public EntitySet<user_role> user_roles
+		{
+			get
+			{
+				return this._user_roles;
+			}
+			set
+			{
+				this._user_roles.Assign(value);
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_addresses(address entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = this;
+		}
+		
+		private void detach_addresses(address entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = null;
+		}
+		
+		private void attach_cart_sections(cart_section entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = this;
+		}
+		
+		private void detach_cart_sections(cart_section entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = null;
+		}
+		
+		private void attach_orders(order entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = this;
+		}
+		
+		private void detach_orders(order entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = null;
+		}
+		
+		private void attach_orders1(order entity)
+		{
+			this.SendPropertyChanging();
+			entity.user1 = this;
+		}
+		
+		private void detach_orders1(order entity)
+		{
+			this.SendPropertyChanging();
+			entity.user1 = null;
+		}
+		
+		private void attach_product_reviews(product_review entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = this;
+		}
+		
+		private void detach_product_reviews(product_review entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = null;
+		}
+		
+		private void attach_purchase_orders(purchase_order entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = this;
+		}
+		
+		private void detach_purchase_orders(purchase_order entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = null;
+		}
+		
+		private void attach_user_roles(user_role entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = this;
+		}
+		
+		private void detach_user_roles(user_role entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = null;
 		}
 	}
 	
@@ -1369,8 +1818,6 @@ namespace VanPhongPham.Models
 		
 		private string _category_name;
 		
-		private string _description;
-		
 		private System.Nullable<bool> _status;
 		
 		private System.Nullable<System.DateTime> _created_at;
@@ -1389,8 +1836,6 @@ namespace VanPhongPham.Models
     partial void Onparent_category_idChanged();
     partial void Oncategory_nameChanging(string value);
     partial void Oncategory_nameChanged();
-    partial void OndescriptionChanging(string value);
-    partial void OndescriptionChanged();
     partial void OnstatusChanging(System.Nullable<bool> value);
     partial void OnstatusChanged();
     partial void Oncreated_atChanging(System.Nullable<System.DateTime> value);
@@ -1445,7 +1890,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_category_name", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_category_name", DbType="NVarChar(150) NOT NULL", CanBeNull=false)]
 		public string category_name
 		{
 			get
@@ -1461,26 +1906,6 @@ namespace VanPhongPham.Models
 					this._category_name = value;
 					this.SendPropertyChanged("category_name");
 					this.Oncategory_nameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_description", DbType="NVarChar(200)")]
-		public string description
-		{
-			get
-			{
-				return this._description;
-			}
-			set
-			{
-				if ((this._description != value))
-				{
-					this.OndescriptionChanging(value);
-					this.SendPropertyChanging();
-					this._description = value;
-					this.SendPropertyChanged("description");
-					this.OndescriptionChanged();
 				}
 			}
 		}
@@ -1603,8 +2028,6 @@ namespace VanPhongPham.Models
 		
 		private string _image_url;
 		
-		private string _description;
-		
 		private System.Nullable<bool> _is_primary;
 		
 		private EntityRef<product> _product;
@@ -1619,8 +2042,6 @@ namespace VanPhongPham.Models
     partial void Onproduct_idChanged();
     partial void Onimage_urlChanging(string value);
     partial void Onimage_urlChanged();
-    partial void OndescriptionChanging(string value);
-    partial void OndescriptionChanged();
     partial void Onis_primaryChanging(System.Nullable<bool> value);
     partial void Onis_primaryChanged();
     #endregion
@@ -1691,26 +2112,6 @@ namespace VanPhongPham.Models
 					this._image_url = value;
 					this.SendPropertyChanged("image_url");
 					this.Onimage_urlChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_description", DbType="NVarChar(200)")]
-		public string description
-		{
-			get
-			{
-				return this._description;
-			}
-			set
-			{
-				if ((this._description != value))
-				{
-					this.OndescriptionChanging(value);
-					this.SendPropertyChanging();
-					this._description = value;
-					this.SendPropertyChanged("description");
-					this.OndescriptionChanged();
 				}
 			}
 		}
@@ -2224,13 +2625,13 @@ namespace VanPhongPham.Models
 		
 		private EntitySet<order_detail> _order_details;
 		
-		private EntityRef<order_status> _order_status;
-		
-		private EntityRef<payment_method> _payment_method;
-		
 		private EntityRef<user> _user;
 		
 		private EntityRef<user> _user1;
+		
+		private EntityRef<order_status> _order_status;
+		
+		private EntityRef<payment_method> _payment_method;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -2265,10 +2666,10 @@ namespace VanPhongPham.Models
 		public order()
 		{
 			this._order_details = new EntitySet<order_detail>(new Action<order_detail>(this.attach_order_details), new Action<order_detail>(this.detach_order_details));
-			this._order_status = default(EntityRef<order_status>);
-			this._payment_method = default(EntityRef<payment_method>);
 			this._user = default(EntityRef<user>);
 			this._user1 = default(EntityRef<user>);
+			this._order_status = default(EntityRef<order_status>);
+			this._payment_method = default(EntityRef<payment_method>);
 			OnCreated();
 		}
 		
@@ -2541,74 +2942,6 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="order_status_order", Storage="_order_status", ThisKey="order_status_id", OtherKey="order_status_id", IsForeignKey=true)]
-		public order_status order_status
-		{
-			get
-			{
-				return this._order_status.Entity;
-			}
-			set
-			{
-				order_status previousValue = this._order_status.Entity;
-				if (((previousValue != value) 
-							|| (this._order_status.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._order_status.Entity = null;
-						previousValue.orders.Remove(this);
-					}
-					this._order_status.Entity = value;
-					if ((value != null))
-					{
-						value.orders.Add(this);
-						this._order_status_id = value.order_status_id;
-					}
-					else
-					{
-						this._order_status_id = default(int);
-					}
-					this.SendPropertyChanged("order_status");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="payment_method_order", Storage="_payment_method", ThisKey="method_id", OtherKey="method_id", IsForeignKey=true)]
-		public payment_method payment_method
-		{
-			get
-			{
-				return this._payment_method.Entity;
-			}
-			set
-			{
-				payment_method previousValue = this._payment_method.Entity;
-				if (((previousValue != value) 
-							|| (this._payment_method.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._payment_method.Entity = null;
-						previousValue.orders.Remove(this);
-					}
-					this._payment_method.Entity = value;
-					if ((value != null))
-					{
-						value.orders.Add(this);
-						this._method_id = value.method_id;
-					}
-					else
-					{
-						this._method_id = default(string);
-					}
-					this.SendPropertyChanged("payment_method");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_order", Storage="_user", ThisKey="customer_id", OtherKey="user_id", IsForeignKey=true)]
 		public user user
 		{
@@ -2673,6 +3006,74 @@ namespace VanPhongPham.Models
 						this._employee_id = default(string);
 					}
 					this.SendPropertyChanged("user1");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="order_status_order", Storage="_order_status", ThisKey="order_status_id", OtherKey="order_status_id", IsForeignKey=true)]
+		public order_status order_status
+		{
+			get
+			{
+				return this._order_status.Entity;
+			}
+			set
+			{
+				order_status previousValue = this._order_status.Entity;
+				if (((previousValue != value) 
+							|| (this._order_status.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._order_status.Entity = null;
+						previousValue.orders.Remove(this);
+					}
+					this._order_status.Entity = value;
+					if ((value != null))
+					{
+						value.orders.Add(this);
+						this._order_status_id = value.order_status_id;
+					}
+					else
+					{
+						this._order_status_id = default(int);
+					}
+					this.SendPropertyChanged("order_status");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="payment_method_order", Storage="_payment_method", ThisKey="method_id", OtherKey="method_id", IsForeignKey=true)]
+		public payment_method payment_method
+		{
+			get
+			{
+				return this._payment_method.Entity;
+			}
+			set
+			{
+				payment_method previousValue = this._payment_method.Entity;
+				if (((previousValue != value) 
+							|| (this._payment_method.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._payment_method.Entity = null;
+						previousValue.orders.Remove(this);
+					}
+					this._payment_method.Entity = value;
+					if ((value != null))
+					{
+						value.orders.Add(this);
+						this._method_id = value.method_id;
+					}
+					else
+					{
+						this._method_id = default(string);
+					}
+					this.SendPropertyChanged("payment_method");
 				}
 			}
 		}
@@ -2834,8 +3235,6 @@ namespace VanPhongPham.Models
 		
 		private string _attribute_value_id;
 		
-		private System.Nullable<bool> _status;
-		
 		private EntityRef<attribute_value> _attribute_value;
 		
 		private EntityRef<product> _product;
@@ -2848,8 +3247,6 @@ namespace VanPhongPham.Models
     partial void Onproduct_idChanged();
     partial void Onattribute_value_idChanging(string value);
     partial void Onattribute_value_idChanged();
-    partial void OnstatusChanging(System.Nullable<bool> value);
-    partial void OnstatusChanged();
     #endregion
 		
 		public product_attribute_value()
@@ -2903,26 +3300,6 @@ namespace VanPhongPham.Models
 					this._attribute_value_id = value;
 					this.SendPropertyChanged("attribute_value_id");
 					this.Onattribute_value_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_status", DbType="Bit")]
-		public System.Nullable<bool> status
-		{
-			get
-			{
-				return this._status;
-			}
-			set
-			{
-				if ((this._status != value))
-				{
-					this.OnstatusChanging(value);
-					this.SendPropertyChanging();
-					this._status = value;
-					this.SendPropertyChanged("status");
-					this.OnstatusChanged();
 				}
 			}
 		}
@@ -3202,9 +3579,9 @@ namespace VanPhongPham.Models
 		
 		private System.Nullable<System.DateTime> _created_at;
 		
-		private EntityRef<product> _product;
-		
 		private EntityRef<user> _user;
+		
+		private EntityRef<product> _product;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -3226,8 +3603,8 @@ namespace VanPhongPham.Models
 		
 		public product_review()
 		{
-			this._product = default(EntityRef<product>);
 			this._user = default(EntityRef<user>);
+			this._product = default(EntityRef<product>);
 			OnCreated();
 		}
 		
@@ -3359,40 +3736,6 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="product_product_review", Storage="_product", ThisKey="product_id", OtherKey="product_id", IsForeignKey=true)]
-		public product product
-		{
-			get
-			{
-				return this._product.Entity;
-			}
-			set
-			{
-				product previousValue = this._product.Entity;
-				if (((previousValue != value) 
-							|| (this._product.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._product.Entity = null;
-						previousValue.product_reviews.Remove(this);
-					}
-					this._product.Entity = value;
-					if ((value != null))
-					{
-						value.product_reviews.Add(this);
-						this._product_id = value.product_id;
-					}
-					else
-					{
-						this._product_id = default(string);
-					}
-					this.SendPropertyChanged("product");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_product_review", Storage="_user", ThisKey="user_id", OtherKey="user_id", IsForeignKey=true)]
 		public user user
 		{
@@ -3423,6 +3766,40 @@ namespace VanPhongPham.Models
 						this._user_id = default(string);
 					}
 					this.SendPropertyChanged("user");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="product_product_review", Storage="_product", ThisKey="product_id", OtherKey="product_id", IsForeignKey=true)]
+		public product product
+		{
+			get
+			{
+				return this._product.Entity;
+			}
+			set
+			{
+				product previousValue = this._product.Entity;
+				if (((previousValue != value) 
+							|| (this._product.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._product.Entity = null;
+						previousValue.product_reviews.Remove(this);
+					}
+					this._product.Entity = value;
+					if ((value != null))
+					{
+						value.product_reviews.Add(this);
+						this._product_id = value.product_id;
+					}
+					else
+					{
+						this._product_id = default(string);
+					}
+					this.SendPropertyChanged("product");
 				}
 			}
 		}
@@ -3593,7 +3970,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_product_name", DbType="NVarChar(200) NOT NULL", CanBeNull=false)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_product_name", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
 		public string product_name
 		{
 			get
@@ -3613,7 +3990,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_description", DbType="NVarChar(1000)")]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_description", DbType="NVarChar(MAX)")]
 		public string description
 		{
 			get
@@ -4339,9 +4716,9 @@ namespace VanPhongPham.Models
 		
 		private EntitySet<receipt> _receipts;
 		
-		private EntityRef<supplier> _supplier;
-		
 		private EntityRef<user> _user;
+		
+		private EntityRef<supplier> _supplier;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -4365,8 +4742,8 @@ namespace VanPhongPham.Models
 		{
 			this._purchase_order_details = new EntitySet<purchase_order_detail>(new Action<purchase_order_detail>(this.attach_purchase_order_details), new Action<purchase_order_detail>(this.detach_purchase_order_details));
 			this._receipts = new EntitySet<receipt>(new Action<receipt>(this.attach_receipts), new Action<receipt>(this.detach_receipts));
-			this._supplier = default(EntityRef<supplier>);
 			this._user = default(EntityRef<user>);
+			this._supplier = default(EntityRef<supplier>);
 			OnCreated();
 		}
 		
@@ -4524,40 +4901,6 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="supplier_purchase_order", Storage="_supplier", ThisKey="supplier_id", OtherKey="supplier_id", IsForeignKey=true)]
-		public supplier supplier
-		{
-			get
-			{
-				return this._supplier.Entity;
-			}
-			set
-			{
-				supplier previousValue = this._supplier.Entity;
-				if (((previousValue != value) 
-							|| (this._supplier.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._supplier.Entity = null;
-						previousValue.purchase_orders.Remove(this);
-					}
-					this._supplier.Entity = value;
-					if ((value != null))
-					{
-						value.purchase_orders.Add(this);
-						this._supplier_id = value.supplier_id;
-					}
-					else
-					{
-						this._supplier_id = default(string);
-					}
-					this.SendPropertyChanged("supplier");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_purchase_order", Storage="_user", ThisKey="employee_id", OtherKey="user_id", IsForeignKey=true)]
 		public user user
 		{
@@ -4588,6 +4931,40 @@ namespace VanPhongPham.Models
 						this._employee_id = default(string);
 					}
 					this.SendPropertyChanged("user");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="supplier_purchase_order", Storage="_supplier", ThisKey="supplier_id", OtherKey="supplier_id", IsForeignKey=true)]
+		public supplier supplier
+		{
+			get
+			{
+				return this._supplier.Entity;
+			}
+			set
+			{
+				supplier previousValue = this._supplier.Entity;
+				if (((previousValue != value) 
+							|| (this._supplier.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._supplier.Entity = null;
+						previousValue.purchase_orders.Remove(this);
+					}
+					this._supplier.Entity = value;
+					if ((value != null))
+					{
+						value.purchase_orders.Add(this);
+						this._supplier_id = value.supplier_id;
+					}
+					else
+					{
+						this._supplier_id = default(string);
+					}
+					this.SendPropertyChanged("supplier");
 				}
 			}
 		}
@@ -5536,7 +5913,7 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_supplier_name", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_supplier_name", DbType="NVarChar(200) NOT NULL", CanBeNull=false)]
 		public string supplier_name
 		{
 			get
@@ -5867,456 +6244,6 @@ namespace VanPhongPham.Models
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.users")]
-	public partial class user : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private string _user_id;
-		
-		private string _full_name;
-		
-		private string _username;
-		
-		private string _email;
-		
-		private string _gender;
-		
-		private System.Nullable<System.DateTime> _dob;
-		
-		private string _avt_url;
-		
-		private string _password;
-		
-		private System.Nullable<bool> _status;
-		
-		private EntitySet<address> _addresses;
-		
-		private EntitySet<cart_section> _cart_sections;
-		
-		private EntitySet<order> _orders;
-		
-		private EntitySet<order> _orders1;
-		
-		private EntitySet<product_review> _product_reviews;
-		
-		private EntitySet<purchase_order> _purchase_orders;
-		
-		private EntitySet<user_role> _user_roles;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void Onuser_idChanging(string value);
-    partial void Onuser_idChanged();
-    partial void Onfull_nameChanging(string value);
-    partial void Onfull_nameChanged();
-    partial void OnusernameChanging(string value);
-    partial void OnusernameChanged();
-    partial void OnemailChanging(string value);
-    partial void OnemailChanged();
-    partial void OngenderChanging(string value);
-    partial void OngenderChanged();
-    partial void OndobChanging(System.Nullable<System.DateTime> value);
-    partial void OndobChanged();
-    partial void Onavt_urlChanging(string value);
-    partial void Onavt_urlChanged();
-    partial void OnpasswordChanging(string value);
-    partial void OnpasswordChanged();
-    partial void OnstatusChanging(System.Nullable<bool> value);
-    partial void OnstatusChanged();
-    #endregion
-		
-		public user()
-		{
-			this._addresses = new EntitySet<address>(new Action<address>(this.attach_addresses), new Action<address>(this.detach_addresses));
-			this._cart_sections = new EntitySet<cart_section>(new Action<cart_section>(this.attach_cart_sections), new Action<cart_section>(this.detach_cart_sections));
-			this._orders = new EntitySet<order>(new Action<order>(this.attach_orders), new Action<order>(this.detach_orders));
-			this._orders1 = new EntitySet<order>(new Action<order>(this.attach_orders1), new Action<order>(this.detach_orders1));
-			this._product_reviews = new EntitySet<product_review>(new Action<product_review>(this.attach_product_reviews), new Action<product_review>(this.detach_product_reviews));
-			this._purchase_orders = new EntitySet<purchase_order>(new Action<purchase_order>(this.attach_purchase_orders), new Action<purchase_order>(this.detach_purchase_orders));
-			this._user_roles = new EntitySet<user_role>(new Action<user_role>(this.attach_user_roles), new Action<user_role>(this.detach_user_roles));
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
-		public string user_id
-		{
-			get
-			{
-				return this._user_id;
-			}
-			set
-			{
-				if ((this._user_id != value))
-				{
-					this.Onuser_idChanging(value);
-					this.SendPropertyChanging();
-					this._user_id = value;
-					this.SendPropertyChanged("user_id");
-					this.Onuser_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_full_name", DbType="NVarChar(MAX)")]
-		public string full_name
-		{
-			get
-			{
-				return this._full_name;
-			}
-			set
-			{
-				if ((this._full_name != value))
-				{
-					this.Onfull_nameChanging(value);
-					this.SendPropertyChanging();
-					this._full_name = value;
-					this.SendPropertyChanged("full_name");
-					this.Onfull_nameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_username", DbType="VarChar(MAX)")]
-		public string username
-		{
-			get
-			{
-				return this._username;
-			}
-			set
-			{
-				if ((this._username != value))
-				{
-					this.OnusernameChanging(value);
-					this.SendPropertyChanging();
-					this._username = value;
-					this.SendPropertyChanged("username");
-					this.OnusernameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_email", DbType="NVarChar(MAX)")]
-		public string email
-		{
-			get
-			{
-				return this._email;
-			}
-			set
-			{
-				if ((this._email != value))
-				{
-					this.OnemailChanging(value);
-					this.SendPropertyChanging();
-					this._email = value;
-					this.SendPropertyChanged("email");
-					this.OnemailChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_gender", DbType="NVarChar(50)")]
-		public string gender
-		{
-			get
-			{
-				return this._gender;
-			}
-			set
-			{
-				if ((this._gender != value))
-				{
-					this.OngenderChanging(value);
-					this.SendPropertyChanging();
-					this._gender = value;
-					this.SendPropertyChanged("gender");
-					this.OngenderChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_dob", DbType="Date")]
-		public System.Nullable<System.DateTime> dob
-		{
-			get
-			{
-				return this._dob;
-			}
-			set
-			{
-				if ((this._dob != value))
-				{
-					this.OndobChanging(value);
-					this.SendPropertyChanging();
-					this._dob = value;
-					this.SendPropertyChanged("dob");
-					this.OndobChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_avt_url", DbType="NVarChar(MAX)")]
-		public string avt_url
-		{
-			get
-			{
-				return this._avt_url;
-			}
-			set
-			{
-				if ((this._avt_url != value))
-				{
-					this.Onavt_urlChanging(value);
-					this.SendPropertyChanging();
-					this._avt_url = value;
-					this.SendPropertyChanged("avt_url");
-					this.Onavt_urlChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_password", DbType="VarChar(32)")]
-		public string password
-		{
-			get
-			{
-				return this._password;
-			}
-			set
-			{
-				if ((this._password != value))
-				{
-					this.OnpasswordChanging(value);
-					this.SendPropertyChanging();
-					this._password = value;
-					this.SendPropertyChanged("password");
-					this.OnpasswordChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_status", DbType="Bit")]
-		public System.Nullable<bool> status
-		{
-			get
-			{
-				return this._status;
-			}
-			set
-			{
-				if ((this._status != value))
-				{
-					this.OnstatusChanging(value);
-					this.SendPropertyChanging();
-					this._status = value;
-					this.SendPropertyChanged("status");
-					this.OnstatusChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_address", Storage="_addresses", ThisKey="user_id", OtherKey="user_id")]
-		public EntitySet<address> addresses
-		{
-			get
-			{
-				return this._addresses;
-			}
-			set
-			{
-				this._addresses.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_cart_section", Storage="_cart_sections", ThisKey="user_id", OtherKey="user_id")]
-		public EntitySet<cart_section> cart_sections
-		{
-			get
-			{
-				return this._cart_sections;
-			}
-			set
-			{
-				this._cart_sections.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_order", Storage="_orders", ThisKey="user_id", OtherKey="customer_id")]
-		public EntitySet<order> orders
-		{
-			get
-			{
-				return this._orders;
-			}
-			set
-			{
-				this._orders.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_order1", Storage="_orders1", ThisKey="user_id", OtherKey="employee_id")]
-		public EntitySet<order> orders1
-		{
-			get
-			{
-				return this._orders1;
-			}
-			set
-			{
-				this._orders1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_product_review", Storage="_product_reviews", ThisKey="user_id", OtherKey="user_id")]
-		public EntitySet<product_review> product_reviews
-		{
-			get
-			{
-				return this._product_reviews;
-			}
-			set
-			{
-				this._product_reviews.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_purchase_order", Storage="_purchase_orders", ThisKey="user_id", OtherKey="employee_id")]
-		public EntitySet<purchase_order> purchase_orders
-		{
-			get
-			{
-				return this._purchase_orders;
-			}
-			set
-			{
-				this._purchase_orders.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_user_role", Storage="_user_roles", ThisKey="user_id", OtherKey="user_id")]
-		public EntitySet<user_role> user_roles
-		{
-			get
-			{
-				return this._user_roles;
-			}
-			set
-			{
-				this._user_roles.Assign(value);
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_addresses(address entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = this;
-		}
-		
-		private void detach_addresses(address entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = null;
-		}
-		
-		private void attach_cart_sections(cart_section entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = this;
-		}
-		
-		private void detach_cart_sections(cart_section entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = null;
-		}
-		
-		private void attach_orders(order entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = this;
-		}
-		
-		private void detach_orders(order entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = null;
-		}
-		
-		private void attach_orders1(order entity)
-		{
-			this.SendPropertyChanging();
-			entity.user1 = this;
-		}
-		
-		private void detach_orders1(order entity)
-		{
-			this.SendPropertyChanging();
-			entity.user1 = null;
-		}
-		
-		private void attach_product_reviews(product_review entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = this;
-		}
-		
-		private void detach_product_reviews(product_review entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = null;
-		}
-		
-		private void attach_purchase_orders(purchase_order entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = this;
-		}
-		
-		private void detach_purchase_orders(purchase_order entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = null;
-		}
-		
-		private void attach_user_roles(user_role entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = this;
-		}
-		
-		private void detach_user_roles(user_role entity)
-		{
-			this.SendPropertyChanging();
-			entity.user = null;
 		}
 	}
 }

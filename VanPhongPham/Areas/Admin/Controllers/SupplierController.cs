@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using VanPhongPham.Models;
+using PagedList;
 namespace VanPhongPham.Areas.Admin.Controllers
 {
     public class SupplierController : Controller
@@ -14,23 +15,35 @@ namespace VanPhongPham.Areas.Admin.Controllers
             supplierRepository = new SupplierRepository();
         }
         // GET: Admin/Supplier
-
-        public ActionResult Index(string search_str, string supplier_id)
+        public ActionResult Index(int? page, string supplier_id, string search_str)
         {
-            List<supplier> listSup;
+            var message = TempData["Message"];
+            var messageType = TempData["MessageType"];
+            if (message != null)
+            {
+                ViewBag.Message = message;
+                ViewBag.MessageType = messageType;
+            }
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            List<supplier> listSupplier;
+            if (supplier_id != null)
+            {
+                supplier supp = supplierRepository.GetSupplierById(supplier_id);
+                ViewBag.supplier = supp;
+            }
             if (search_str != null)
             {
-                listSup = supplierRepository.SearchSupplier(search_str);
-                ViewBag.searchStr = search_str;
+                listSupplier = supplierRepository.SearchSupplier(search_str);
+                ViewBag.search_str = search_str;
             }
             else
             {
-                listSup = supplierRepository.GetAllSuppliers();
-            }            
+                listSupplier = supplierRepository.GetAllSuppliers();
+            }
             ViewBag.supplier_id = supplierRepository.GenerateSupplierId();
-            supplier supp = supplierRepository.GetSupplierById(supplier_id);
-            ViewBag.supplier = supp;
-            return View(listSup);
+            
+            return View(listSupplier.ToPagedList(pageNumber, pageSize));
         }
         public ActionResult RecoverSupplier(string search_str)
         {

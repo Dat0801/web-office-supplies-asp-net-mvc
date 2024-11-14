@@ -1,6 +1,17 @@
-﻿@model List<VanPhongPham.Models.supplier>
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.supplier>
 @{
     ViewBag.Title = "Nhà cung cấp - Quản Trị";
+    var message = ViewBag.Message;
+    var messageType = ViewBag.MessageType;
+}
+@if (message != null)
+{
+    <div class="alert alert-dark-@messageType alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        @message
+    </div>
 }
 <div class="card mb-4">
     <h6 class="card-header">Thêm mới nhà cung cấp <span><a class="btn btn-primary float-right" href="@Url.Action("RecoverSupplier")">Nhà cung cấp đã xóa</a></span></h6>
@@ -49,7 +60,7 @@
                 <i class="feather icon-search navbar-icon align-middle"></i>
             </button>
         </form>
-    </div>
+    </div>    
 </div>
 <div class="card">
     <form method="post" action="/Supplier/DeleteSupplier">
@@ -89,6 +100,11 @@
         </table>
         <button type="submit" class="btn btn-danger mt-3">Xóa hàng loạt</button>
     </form>
+    <div class="d-flex justify-content-center">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+        </div>
+    </div>
 </div>
 
 <script>
