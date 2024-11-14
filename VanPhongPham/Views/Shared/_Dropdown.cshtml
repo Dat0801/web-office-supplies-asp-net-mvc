@@ -1,0 +1,22 @@
+﻿@model VanPhongPham.Models.ViewModels
+@foreach (var category in Model.CategoryViewModel)
+{
+    if (category.SubCategories.Any())
+    {
+        <div class="nav-item dropdown">
+            <a href="#" class="nav-link" data-toggle="dropdown">@category.CategoryName <i class="fa fa-angle-down float-right mt-1"></i></a>
+            <div class="dropdown-menu position-absolute bg-secondary border-0 rounded-0 w-100 m-0">
+                @foreach (var subCategory in category.SubCategories)
+                {
+                    <a href="@Url.Action("Index", "Product", new { categoryId = subCategory.CategoryId })" class="dropdown-item">@subCategory.CategoryName</a>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="nav-item">
+            <a href="@Url.Action("Index", "Product", new { categoryId = category.CategoryId })" class="nav-link">@category.CategoryName</a>
+        </div>
+    }
+}

@@ -1,0 +1,69 @@
+﻿
+@{
+    ViewBag.Title = "RecoverSupplier";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model List<VanPhongPham.Models.supplier>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<a href="@Url.Action("Index","Supplier")"><i class="bi bi-arrow-return-left"></i> Quay lại</a>
+<br />
+<br />
+<h4 class="font-weight-bold mb-0">Danh sách nhà cung cấp đã xóa</h4>
+<div class="row">
+    <div class="navbar-nav my-3 ml-2">
+        <!-- Search -->
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("RecoverSupplier", "Supplier")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")">
+            </span>
+            <button class="btn icon-btn btn-outline-primary" title="Tìm kiếm">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <form method="post" action="/Supplier/RecoverSupplier">
+        <table class="table card-table table-responsive-md">
+            <thead class="thead-light">
+                <tr>
+                    <th><input type="checkbox" id="select-all" />Chọn tất cả</th>
+                    <th>Mã nhà cung cấp</th>
+                    <th>Tên nhà cung cấp</th>
+                    <th>Email</th>
+                    <th>Số điện thoại</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var supplier in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="selectedSuppliers" value="@supplier.supplier_id" />
+                        </td>
+                        <td>@supplier.supplier_id</td>
+                        <td>@supplier.supplier_name</td>
+                        <td>@supplier.email</td>
+                        <td>@supplier.phone_number</td>
+                        <td>
+                            <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("RecoverSingleSupplier", "Supplier", new { supplier_id = supplier.supplier_id })">
+                                <i class="feather icon-user-check navbar-icon align-middle"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-danger mt-3">Khôi phục hàng loạt</button>
+    </form>
+</div>
+<script>
+    document.getElementById("select-all").addEventListener("click", function (e) {
+        var checkboxes = document.querySelectorAll("input[name='selectedSuppliers']");
+        checkboxes.forEach((checkbox) => {
+            checkbox.checked = e.target.checked;
+        });
+    });
+</script>
