@@ -3,7 +3,7 @@
     ViewBag.Title = "RecoverUser";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-@model List<VanPhongPham.Models.user>
+@model List<VanPhongPham.Models.UserViewModel>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <a href="@Url.Action("Index","User")"><i class="bi bi-arrow-return-left"></i> Quay lại</a>
@@ -36,7 +36,7 @@
                     <th>Ảnh đại diện</th>
                     <th>Giới tính</th>
                     <th>Tên người dùng</th>
-                    @*<th>Địa chỉ</th>*@
+                    <th>Địa chỉ</th>
                     <th>Thao tác</th>
                 </tr>
             </thead>
@@ -45,21 +45,25 @@
                 {
                     <tr>
                         <td>
-                            <input type="checkbox" name="selectedUsers" value="@user.user_id" />
+                            <input type="checkbox" name="selectedUsers" value="@user.UserId" />
                         </td>
-                        <td>@user.user_id</td>
-                        <td>@user.username</td>
-                        <td>@user.email</td>
-                        @*<td>
+                        <td>@user.UserId</td>
+                        <td>@user.Username</td>
+                        <td>@user.Email</td>
+                        <td>@user.Dob</td>
+                        <td><img src="@user.AvatarUrl" alt="Avatar" style="width: 50px; height: auto;" /></td>
+                        <td>@user.Gender</td>
+                        <td>@user.FullName</td>
+                        <td>
                             <ul>
-                                @if (user.addresses != null && user.addresses.Count > 0)
+                                @if (user.Addresses != null && user.Addresses.Count > 0)
                                 {
-                                    foreach (var address in user.addresses)
+                                    foreach (var address in user.Addresses)
                                     {
                                         <li>
-                                            @address.address_line, @address.ward, @address.district, @address.province <br />
-                                            SĐT: @address.phone_number <br />
-                                            @if (address.isDefault.HasValue && address.isDefault.Value)
+                                            @address.AddressLine, @address.Ward, @address.District, @address.Province <br />
+                                            SĐT: @address.PhoneNumber <br />
+                                            @if (address.isDefault == true)
                                             {
                                                 <span style="color: green;">(Mặc định)</span>
                                             }
@@ -71,13 +75,9 @@
                                     <li>Không có địa chỉ nào.</li>
                                 }
                             </ul>
-                        </td>*@
-                        <td>@user.dob</td>
-                        <td><img src="@user.avt_url" alt="Avatar" style="width: 50px; height: auto;" /></td>
-                        <td>@user.gender</td>
-                        <td>@user.full_name</td>
+                        </td>
                         <td>
-                            <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("RecoverSingleUser", "User", new { user_id = user.user_id })">
+                            <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("RecoverSingleUser", "User", new { user_id = user.UserId })">
                                 <i class="feather icon-user-check navbar-icon align-middle"></i>
                             </a>
                         </td>

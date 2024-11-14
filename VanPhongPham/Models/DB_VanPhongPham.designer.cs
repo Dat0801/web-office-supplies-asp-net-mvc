@@ -98,7 +98,7 @@ namespace VanPhongPham.Models
     partial void Deleteuser_role(user_role instance);
         #endregion
         public DB_VanPhongPhamDataContext() :
-                base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString"].ConnectionString, mappingSource)
+                base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString2"].ConnectionString, mappingSource)
         {
             OnCreated();
         }

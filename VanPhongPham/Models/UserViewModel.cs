@@ -13,10 +13,11 @@ namespace VanPhongPham.Models
         public string Password { get; set; }
         public string Email { get; set; }
         public string Gender { get; set; }
-        public DateTime Dob { get; set; }
+        public DateTime? Dob { get; set; }
         public bool Status { get; set; }
         public string AvatarUrl { get; set; } 
         public HttpPostedFileBase AvatarFile { get; set; } 
+        public List<AddressViewModel> Addresses { get; set; } = new List<AddressViewModel>();
     }
 
 }

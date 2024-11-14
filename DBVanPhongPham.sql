@@ -90,7 +90,7 @@ create table images
 	product_id varchar(10) not null,
 	image_url varchar(500) not null unique,
 	description nvarchar(200) default null,
-	is_primary bit default 0,
+	is_primary bit default 0 not null,
 )
 
 create table users
@@ -594,14 +594,14 @@ VALUES
 
 INSERT INTO users (user_id, full_name, username)
 VALUES
-('ADMIN001', N'Thành Đạt', 'thanhdat')
+('ADMIN002', N'Thành Đạt', 'qwe')
 
 INSERT INTO user_roles
 VALUES
-('ADMIN001', 2)
+('ADMIN002', 2)
 
 GO
 
 UPDATE users
-SET password = HASHBYTES('MD5', '123456')
-WHERE username = 'thanhdat';
+SET password = CONVERT(VARCHAR(32), HASHBYTES('MD5', '123'), 2)
+WHERE username = 'qwe';

@@ -10,15 +10,22 @@ namespace VanPhongPham.Controllers
     public class HomeController : Controller
     {
         private readonly ProductRepository _productRepository;
+        private readonly CategoryRepository _categoryRepository;
         public HomeController()
         {
             _productRepository = new ProductRepository();
+            _categoryRepository = new CategoryRepository();
         }
         // GET: Home
-        public ActionResult Index(string productID)
+        public ActionResult Index()
         {
-            var products = _productRepository.GetMainImageByProductId(productID);
-            return View(products);
+            var product = _productRepository.GetProductWithPromotion();            
+            return View(product);
+        }
+        public ActionResult GetCategories()
+        {
+            var categories = _categoryRepository.GetCategories();
+            return PartialView("_Dropdown", categories);
         }
 
     }

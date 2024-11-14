@@ -1,4 +1,4 @@
-﻿@model List<VanPhongPham.Models.user>
+﻿@model List<VanPhongPham.Models.UserViewModel>
 @{
     ViewBag.Title = "Người dùng - Quản Trị";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
@@ -17,54 +17,54 @@
                 <div class="form-group col-md-3">
                     <label for="UserId">Mã người dùng</label>
                     <input type="text" class="form-control" id="UserId" name="UserId" readonly
-                           value="@(ViewBag.user != null ? ViewBag.user.user_id : ViewBag.user_id ?? "")" />
+                           value="@(ViewBag.user != null ? ViewBag.user.UserId : ViewBag.UserId ?? "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="FullName">Họ tên người dùng</label>
                     <input type="text" class="form-control" id="FullName" name="FullName" required
-                           value="@(ViewBag.user != null ? ViewBag.user.full_name : "")" />
+                           value="@(ViewBag.user != null ? ViewBag.user.FullName : "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Username">Tên tài khoản</label>
                     <input type="text" class="form-control" id="Username" name="Username" required
-                           value="@(ViewBag.user != null ? ViewBag.user.username : "")" />
+                           value="@(ViewBag.user != null ? ViewBag.user.Username : "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Password">Mật khẩu</label>
                     <input type="password" class="form-control" id="Password" name="Password" required
-                           value="@(ViewBag.user != null ? ViewBag.user.password : "")" />
+                           value="@(ViewBag.user != null ? ViewBag.user.Password : "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Email">Email</label>
                     <input type="email" class="form-control" id="Email" name="Email" required
-                           value="@(ViewBag.user != null ? ViewBag.user.email : "")" />
+                           value="@(ViewBag.user != null ? ViewBag.user.Email : "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Gender">Giới tính</label>
                     <input type="text" class="form-control" id="Gender" name="Gender" required
-                           value="@(ViewBag.user != null ? ViewBag.user.gender : "")" />
+                           value="@(ViewBag.user != null ? ViewBag.user.Gender : "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="dob">Ngày sinh</label>
                     <input type="date" class="form-control" id="dob" name="Dob" required
-                           value="@(ViewBag.user != null ? ((DateTime)ViewBag.user.dob).ToString("yyyy-MM-dd") : "")" />
+                           value="@(ViewBag.user != null ? ((DateTime)ViewBag.user.Dob).ToString("yyyy-MM-dd") : "")" />
                     <div class="clearfix"></div>
                 </div>
 
                 <div class="form-group col-md-3">
                     <label for="AvatarFile">Tải ảnh lên</label>
-                    <input type="file" class="form-control" id="AvatarFile" name="AvatarFile" value="@(ViewBag.user != null ? ViewBag.user.avt_url : "")" />
-                    @if (!string.IsNullOrEmpty(ViewBag.user?.avt_url))
+                    <input type="file" class="form-control" id="AvatarFile" name="AvatarFile" value="@(ViewBag.user != null ? ViewBag.user.AvatarUrl : "")" />
+                    @if (!string.IsNullOrEmpty(ViewBag.user?.AvatarUrl))
                     {
                         <div class="mt-2">
                             <p>Ảnh hiện tại:</p>
-                            <img src="@ViewBag.user.avt_url" alt="Current Avatar" style="width: 100px; height: auto;" />
+                            <img src="@ViewBag.user.AvatarUrl" alt="Current Avatar" style="width: 100px; height: auto;" />
                         </div>
                     }
                 </div>
@@ -103,7 +103,7 @@
                     <th>Ảnh đại diện</th>
                     <th>Giới tính</th>
                     <th>Tên người dùng</th>
-                    @*<th>Địa chỉ</th>*@
+                    <th>Địa chỉ</th>
                     <th>Thao tác</th>
                 </tr>
             </thead>
@@ -112,42 +112,42 @@
                 {
                     <tr>
                         <td>
-                            <input type="checkbox" name="selectedUsers" value="@user.user_id" />
+                            <input type="checkbox" name="selectedUsers" value="@user.UserId" />
                         </td>
-                        <td>@user.user_id</td>
-                        <td>@user.username</td>
-                        <td>@user.email</td>
-                        @*<td>
-                                <ul>
-                                    @if (user.addresses != null && user.addresses.Count > 0)
-                                    {
-                                        foreach (var address in user.addresses)
-                                        {
-                                            <li>
-                                                @address.address_line, @address.ward, @address.district, @address.province <br />
-                                                SĐT: @address.phone_number <br />
-                                                @if (address.isDefault.HasValue && address.isDefault.Value)
-                                                {
-                                                    <span style="color: green;">(Mặc định)</span>
-                                                }
-                                            </li>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <li>Không có địa chỉ nào.</li>
-                                    }
-                                </ul>
-                            </td>*@
-                        <td>@user.dob</td>
-                        <td><img src="@user.avt_url" alt="Avatar" style="width: 50px; height: auto;" /></td>
-                        <td>@user.gender</td>
-                        <td>@user.full_name</td>
+                        <td>@user.UserId</td>
+                        <td>@user.Username</td>
+                        <td>@user.Email</td>
+                        <td>@user.Dob</td>
+                        <td><img src="@user.AvatarUrl" alt="Avatar" style="width: 50px; height: auto;" /></td>
+                        <td>@user.Gender</td>
+                        <td>@user.FullName</td>
                         <td>
-                            <a class="btn icon-btn btn-outline-danger" href="@Url.Action("DeleteUser", "User", new { user_id = user.user_id })">
+                            <ul>
+                                @if (user.Addresses != null && user.Addresses.Count > 0)
+                                {
+                                    foreach (var address in user.Addresses)
+                                    {
+                                        <li>
+                                            @address.AddressLine, @address.Ward, @address.District, @address.Province <br />
+                                            SĐT: @address.PhoneNumber <br />
+                                            @if (address.isDefault == true)
+                                            {
+                                                <span style="color: green;">(Mặc định)</span>
+                                            }
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li>Không có địa chỉ nào.</li>
+                                }
+                            </ul>
+                        </td>
+                        <td>
+                            <a class="btn icon-btn btn-outline-danger" href="@Url.Action("DeleteUser", "User", new { user_id = user.UserId })">
                                 <i class="feather icon-user-minus navbar-icon align-middle"></i>
                             </a>
-                            <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("Index", "User", new { user_id = user.user_id })">
+                            <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("Index", "User", new { user_id = user.UserId })">
                                 <i class="feather icon-user-check navbar-icon align-middle"></i>
                             </a>
                         </td>

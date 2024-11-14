@@ -23,7 +23,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
         }
         public ActionResult Index(string search_str, string user_id)
         {
-            List<user> listSup;
+            List<UserViewModel> listSup;
             if (search_str != null)
             {
                 listSup = userRepository.SearchUser(search_str);
@@ -31,25 +31,25 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
             else
             {
-                listSup = userRepository.GetAllUsers();
+                listSup = userRepository.GetAllUsersWithAddresses();
             }
             ViewBag.user_id = userRepository.GenerateUserId();
-            user supp = userRepository.GetUserById(user_id);
-            ViewBag.user = supp;
+            UserViewModel userr = userRepository.GetUserById(user_id);
+            ViewBag.user = userr;
             return View(listSup);
         }
         
         public ActionResult RecoverUser(string search_str)
         {
-            List<user> sup;
+            List<UserViewModel> userr;
             if (search_str != null)
             {
-                sup = userRepository.SearchDeletedUser(search_str);
+                userr = userRepository.SearchDeletedUser(search_str);
                 ViewBag.searchStr = search_str;
             }
             else
-                sup = userRepository.GetDeletedUsers();
-            return View(sup);
+                userr = userRepository.GetDeletedUsers();
+            return View(userr);
         }
         [HttpGet]
         public ActionResult RecoverSingleUser(string user_id)
@@ -88,10 +88,10 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
             else
             {
-                user user = userRepository.GetUserById(model.UserId);
+                UserViewModel user = userRepository.GetUserById(model.UserId);
                 if (user != null)
                 {
-                    model.AvatarUrl = user.avt_url;
+                    model.AvatarUrl = user.AvatarUrl;
                 }
                 else
                 {
@@ -99,16 +99,16 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 }
             }
 
-            user newUser = new user
+            UserViewModel newUser = new UserViewModel
             {
-                user_id = model.UserId,
-                full_name = model.FullName,
-                username = model.Username,
-                password = model.Password,
-                email = model.Email,
-                gender = model.Gender,
-                dob = model.Dob,
-                avt_url = model.AvatarUrl,
+                UserId = model.UserId,
+                FullName = model.FullName,
+                Username = model.Username,
+                Password = model.Password,
+                Email = model.Email,
+                Gender = model.Gender,
+                Dob = model.Dob,
+                AvatarUrl = model.AvatarUrl,
             };
             if (action == "add")
             {

@@ -18,94 +18,197 @@ namespace VanPhongPham.Models
         {
             _context = new DB_VanPhongPhamDataContext();
         }
-        public List<user> GetAllUsers()
+        public List<UserViewModel> GetAllUsersWithAddresses()
         {
-            //DataLoadOptions options = new DataLoadOptions();
-            //options.LoadWith<user>(u => u.addresses);
-            //_context.LoadOptions = options;
-            return _context.users.Where(s => s.status == true).ToList();
+            var usersWithAddresses = (from u in _context.users
+                                      where u.status == true
+                                      select new UserViewModel
+                                      {
+                                          UserId = u.user_id,
+                                          FullName = u.full_name,
+                                          Username = u.username,
+                                          Email = u.email,
+                                          Gender = u.gender,
+                                          Dob = u.dob,
+                                          Status = (bool)u.status,
+                                          AvatarUrl = u.avt_url,
+                                          Addresses = (from a in _context.addresses
+                                                       where a.user_id == u.user_id
+                                                       select new AddressViewModel
+                                                       {
+                                                           AddressId = a.address_id,
+                                                           UserId = a.user_id,
+                                                           FullName = a.full_name,
+                                                           PhoneNumber = a.phone_number,
+                                                           AddressLine = a.address_line,
+                                                           Ward = a.ward,
+                                                           District = a.district,
+                                                           Province = a.province,
+                                                           isDefault = (bool)a.isDefault
+                                                       }).ToList()
+                                      }).ToList();
+
+            return usersWithAddresses;
         }
-        public List<user> GetDeletedUsers()
+        public List<UserViewModel> GetDeletedUsers()
         {
-            //DataLoadOptions options = new DataLoadOptions();
-            //options.LoadWith<user>(u => u.addresses);
-            //_context.LoadOptions = options;
-            return _context.users.Where(s => s.status == false).ToList();
-        }
-        public user GetUserById(string id)
-        {
-            //DataLoadOptions options = new DataLoadOptions();
-            //options.LoadWith<user>(u => u.addresses);
-            //_context.LoadOptions = options;
-            return _context.users.FirstOrDefault(x => x.user_id == id);
-        }
-        public List<user> SearchUser(string search_str)
-        {
-            //DataLoadOptions options = new DataLoadOptions();
-            //options.LoadWith<user>(u => u.addresses);
-            //_context.LoadOptions = options;
-            return _context.users
-                .Where(p => p.status == true &&
-                           (p.username.Contains(search_str) ||
-                            p.user_id.Contains(search_str) ||
-                            p.full_name.Contains(search_str) ||                            
-                            p.email.Contains(search_str)))
-                .ToList();
-        }
-        public List<user> SearchDeletedUser(string search_str)
-        {
-            return _context.users
-                .Where(p => p.status == false &&
-                           (p.username.Contains(search_str) ||
-                            p.user_id.Contains(search_str) ||
-                            p.full_name.Contains(search_str) ||
-                            p.email.Contains(search_str)))
-                .ToList();
+            return (from u in _context.users
+                    where u.status == false
+                    select new UserViewModel
+                    {
+                        UserId = u.user_id,
+                        FullName = u.full_name,
+                        Username = u.username,
+                        Email = u.email,
+                        Gender = u.gender,
+                        Dob = u.dob,
+                        Status = (bool)u.status,
+                        AvatarUrl = u.avt_url,
+                    }).ToList();
         }
 
-        public bool AddUser(user sup)
+        public UserViewModel GetUserById(string id)
+        {
+            return (from u in _context.users
+                    where u.user_id == id
+                    select new UserViewModel
+                    {
+                        UserId = u.user_id,
+                        FullName = u.full_name,
+                        Username = u.username,
+                        Password = HashPasswordMD5(u.password),
+                        Email = u.email,
+                        Gender = u.gender,
+                        Dob = u.dob,
+                        Status = (bool)u.status,
+                        AvatarUrl = u.avt_url,
+                        Addresses = (from a in _context.addresses
+                                     where a.user_id == u.user_id
+                                     select new AddressViewModel
+                                     {
+                                         AddressId = a.address_id,
+                                         UserId = a.user_id,
+                                         FullName = a.full_name,
+                                         PhoneNumber = a.phone_number,
+                                         AddressLine = a.address_line,
+                                         Ward = a.ward,
+                                         District = a.district,
+                                         Province = a.province,
+                                         isDefault = (bool)a.isDefault
+                                     }).ToList()
+                    }).FirstOrDefault();
+        }
+
+        // Tìm kiếm người dùng theo chuỗi tìm kiếm
+        public List<UserViewModel> SearchUser(string search_str)
+        {
+            return (from u in _context.users
+                    where u.status == true &&
+                          (u.username.Contains(search_str) ||
+                           u.user_id.Contains(search_str) ||
+                           u.full_name.Contains(search_str) ||
+                           u.email.Contains(search_str))
+                    select new UserViewModel
+                    {
+                        UserId = u.user_id,
+                        FullName = u.full_name,
+                        Username = u.username,
+                        Email = u.email,
+                        Gender = u.gender,
+                        Dob = u.dob,
+                        Status = (bool)u.status,
+                        AvatarUrl = u.avt_url,
+                    }).ToList();
+        }
+        public List<UserViewModel> SearchDeletedUser(string search_str)
+        {
+            return (from u in _context.users
+                    where u.status == false &&
+                          (u.username.Contains(search_str) ||
+                           u.user_id.Contains(search_str) ||
+                           u.full_name.Contains(search_str) ||
+                           u.email.Contains(search_str))
+                    select new UserViewModel
+                    {
+                        UserId = u.user_id,
+                        FullName = u.full_name,
+                        Username = u.username,
+                        Email = u.email,
+                        Gender = u.gender,
+                        Dob = u.dob,
+                        Status = (bool)u.status,
+                        AvatarUrl = u.avt_url,
+                        Addresses = (from a in _context.addresses
+                                     where a.user_id == u.user_id
+                                     select new AddressViewModel
+                                     {
+                                         AddressId = a.address_id,
+                                         UserId = a.user_id,
+                                         FullName = a.full_name,
+                                         PhoneNumber = a.phone_number,
+                                         AddressLine = a.address_line,
+                                         Ward = a.ward,
+                                         District = a.district,
+                                         Province = a.province,
+                                         isDefault = (bool)a.isDefault
+                                     }).ToList()
+                    }).ToList();
+        }
+
+        // Thêm người dùng mới
+        public bool AddUser(UserViewModel userViewModel)
         {
             try
             {
-                user existUser = _context.users.FirstOrDefault(u => u.username == sup.username || u.user_id == sup.user_id);
-                if(sup.user_id == null)
-                {
-                    sup.user_id = GenerateUserId();
-                }
-                if(existUser != null)
+                var existingUser = _context.users.FirstOrDefault(u => u.username == userViewModel.Username || u.user_id == userViewModel.UserId);
+                if (existingUser != null)
                 {
                     return false;
                 }
-                sup.status = true;                
-                sup.password = HashPasswordMD5(sup.password);
-                _context.users.InsertOnSubmit(sup);
+
+                var newUser = new user
+                {
+                    user_id = userViewModel.UserId ?? GenerateUserId(),
+                    username = userViewModel.Username,
+                    password = HashPasswordMD5(userViewModel.Password),
+                    full_name = userViewModel.FullName,
+                    email = userViewModel.Email,
+                    gender = userViewModel.Gender,
+                    dob = userViewModel.Dob,
+                    status = true,
+                    avt_url = userViewModel.AvatarUrl
+                };
+
+                _context.users.InsertOnSubmit(newUser);
                 _context.SubmitChanges();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        // Cập nhật người dùng
+        public bool UpdateUser(UserViewModel userViewModel)
+        {
+            var userToUpdate = _context.users.FirstOrDefault(u => u.user_id == userViewModel.UserId);
+            if (userToUpdate == null)
+            {
                 return false;
             }
 
-        }
-        public bool UpdateUser(user sup)
-        {
-            user userToUpdate = GetUserById(sup.user_id);
-            if(userToUpdate == null)
-            {
-                return false;
-            }
             try
             {
-                userToUpdate.username = sup.username;
-                userToUpdate.password = sup.password;
-                userToUpdate.full_name = sup.full_name;
-                userToUpdate.addresses = sup.addresses;
-                userToUpdate.email = sup.email;
-                userToUpdate.dob = sup.dob;
-                userToUpdate.gender = sup.gender;                
-                userToUpdate.avt_url = sup.avt_url;
+                userToUpdate.username = userViewModel.Username;
+                userToUpdate.password = HashPasswordMD5(userViewModel.Password);
+                userToUpdate.full_name = userViewModel.FullName;
+                userToUpdate.email = userViewModel.Email;
+                userToUpdate.dob = userViewModel.Dob;
+                userToUpdate.gender = userViewModel.Gender;
+                userToUpdate.avt_url = userViewModel.AvatarUrl;
+
                 _context.SubmitChanges();
                 return true;
             }
@@ -115,6 +218,8 @@ namespace VanPhongPham.Models
                 return false;
             }
         }
+
+
         public bool DeleteUsers(List<string> ids)
         {
             try
@@ -152,12 +257,12 @@ namespace VanPhongPham.Models
         public string GenerateUserId()
         {
             user us = _context.users.Where(u => u.status == true).ToList().LastOrDefault();
-            if(us == null)
+            if (us == null)
             {
                 return "USER001";
             }
             else
-            { 
+            {
                 int num = int.Parse(us.user_id.Substring(4)) + 1;
                 string user_id = "USER";
                 if (num < 10)
@@ -170,9 +275,9 @@ namespace VanPhongPham.Models
         }
         public user CheckLoginAdmin(string username, string password)
         {
-            user_role adminRole = _context.user_roles.FirstOrDefault(r => r.role_id == 2);
+            //user_role adminRole = _context.user_roles.FirstOrDefault(r => r.role_id == 2);
             string hashedPassword = HashPasswordMD5(password);
-            return _context.users.FirstOrDefault(u => u.username == username && u.password == hashedPassword && u.user_id == adminRole.user_id);
+            return _context.users.FirstOrDefault(u => u.username == username && u.password == hashedPassword /*&& u.user_id == adminRole.user_id*/);
         }
 
         private string HashPasswordMD5(string password)
