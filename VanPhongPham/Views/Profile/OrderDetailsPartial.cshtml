@@ -242,7 +242,7 @@
                     </div>
                     @if (detail.Promotion_Price == 0)
                     {
-                        <span class="price-info" style="color: #272727;">₫@detail.Price.ToString("N0")</span>
+                        <span class="price-info">₫@detail.Price.ToString("N0")</span>
                     }
                     else
                     {
@@ -321,7 +321,7 @@
             const month = String(timelead.getMonth() + 1).padStart(2, '0'); // Thêm 0 nếu tháng có 1 chữ số
             const year = timelead.getFullYear();
 
-            if (shippingDetail.status === "delivered" && "@Model.OrderStatusName" === "Chờ giao hàng") {
+            if (shippingDetail.status === "delivered" && "@Html.Raw(Model.OrderStatusName)" === "Chờ giao hàng") {
                 const formattimelead = `${day}-${month}-${year}`;
                 leadtime.innerHTML = `NGÀY GIAO DỰ KIẾN: ${formattimelead}`;
 
@@ -335,7 +335,11 @@
 
                 document.getElementById("buttonContainer").appendChild(button);
             }
-
+            else if (shippingDetail.status !== "delivered" && "@Html.Raw(Model.OrderStatusName)" === "Chờ giao hàng")
+            {
+                const formattimelead = `${day}-${month}-${year}`;
+                leadtime.innerHTML = `NGÀY GIAO DỰ KIẾN: ${formattimelead}`;
+            }
 
             const statusItem = document.createElement("div");
 
