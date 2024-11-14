@@ -156,6 +156,11 @@ namespace VanPhongPham.Models
         {
             try
             {
+                product.price = string.IsNullOrEmpty(product.price.ToString()) ? 0 : product.price;
+                product.purchase_price = string.IsNullOrEmpty(product.purchase_price.ToString()) ? 0 : product.purchase_price;
+                product.stock_quantity = string.IsNullOrEmpty(product.stock_quantity.ToString()) ? 0 : product.stock_quantity;
+                product.created_at = string.IsNullOrEmpty(product.created_at.ToString()) ? DateTime.Now : product.created_at;
+
                 _context.products.InsertOnSubmit(product);
                 _context.SubmitChanges();
                 return true;
@@ -203,22 +208,22 @@ namespace VanPhongPham.Models
             }
         }
 
-        /*public string GenerateImageId()
-        {
-            image image = _context.images.ToList().LastOrDefault();
-            int num = 1;
-            if(image != null)
-            {
-                num = int.Parse(image.image_id.Substring(3)) + 1;
-            }
-            string image_id = "IMG";
-            if (num < 10)
-                image_id = "IMG00";
-            else if (num < 100)
-                image_id = "IMG0";
-            image_id += num;
-            return image_id;
-        }*/
+        //public string GenerateImageId()
+        //{
+        //    image image = _context.images.ToList().LastOrDefault();
+        //    int num = 1;
+        //    if(image != null)
+        //    {
+        //        num = int.Parse(image.image_id.Substring(3)) + 1;
+        //    }
+        //    string image_id = "IMG";
+        //    if (num < 10)
+        //        image_id = "IMG00";
+        //    else if (num < 100)
+        //        image_id = "IMG0";
+        //    image_id += num;
+        //    return image_id;
+        //}
 
         public image GetMainImageByProductId(string product_id)
         {
@@ -235,19 +240,23 @@ namespace VanPhongPham.Models
             return _context.images.FirstOrDefault(img => img.image_url == url);
         }
 
-        public bool AddImages(image image)
-        {
-            try
-            {
-                _context.images.InsertOnSubmit(image);
-                _context.SubmitChanges();
-                return true;
-            } catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-        }
+        //public bool AddImages(image image)
+        //{
+        //    try
+        //    {
+        //        if(image.image_id == null)
+        //        {
+        //            image.image_id = GenerateImageId();
+        //        }
+        //        _context.images.InsertOnSubmit(image);
+        //        _context.SubmitChanges();
+        //        return true;
+        //    } catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //        return false;
+        //    }
+        //}
 
         public bool UpdateImage(image pimage)
         {
@@ -311,7 +320,7 @@ namespace VanPhongPham.Models
                             product_id = productId
 
                         };
-                        AddImages(additionalImage);
+                        //AddImages(additionalImage);
                     }
                 }
                 return true;

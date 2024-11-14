@@ -1,4 +1,6 @@
-﻿@model IEnumerable<VanPhongPham.Models.OrderViewModel>
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.OrderViewModel>
 @using VanPhongPham.Models
 
 @{
@@ -42,6 +44,7 @@
         top: 10px;
         right: 20px;
         color: #ff4747;
+        font-size: 14px;
     }
 
     .order-details, .order-actions {
@@ -57,11 +60,11 @@
         gap: 15px;
     }
 
-    .product-info img {
-        width: 80px;
-        height: auto;
-        border: 1px solid #ddd;
-    }
+        .product-info img {
+            width: 80px;
+            height: auto;
+            border: 1px solid #ddd;
+        }
 
     .price-info {
         text-align: right;
@@ -97,13 +100,14 @@
         border-radius: 4px;
         margin-top: 8px;
     }
+
     .modal-dialog {
         max-width: 700px; /* Đặt chiều rộng mong muốn cho modal */
         width: 90%; /* Điều chỉnh theo ý thích */
     }
 
     .modal-body {
-        max-height: 600px;/* Giới hạn chiều cao modal body */
+        max-height: 600px; /* Giới hạn chiều cao modal body */
         overflow-y: auto; /* Bật thanh cuộn dọc */
     }
 
@@ -115,16 +119,16 @@
         margin-top: 10px;
     }
 
-    .rating-container p {
-        margin: 0;
-        font-weight: bold;
-        color: #333;
-    }
+        .rating-container p {
+            margin: 0;
+            font-weight: bold;
+            color: #333;
+        }
 
-    .rating-container .rating {
-        display: flex;
-        gap: 5px;
-    }
+        .rating-container .rating {
+            display: flex;
+            gap: 5px;
+        }
 
     .rating input[type="radio"] {
         display: none; /* Ẩn input */
@@ -135,8 +139,7 @@
         cursor: pointer;
     }
 
-    .messagesmodal 
-    {
+    .messagesmodal {
         display: none; /* Mặc định là ẩn */
         position: fixed;
         top: 20px; /* Đưa lên trên một chút */
@@ -150,6 +153,58 @@
         z-index: 9999;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .pagination li {
+        margin: 0 5px;
+    }
+
+    .pagination .page-link {
+        color: #777777; /* Màu chữ mặc định */
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        transition: background-color 0.3s, color 0.3s;
+        text-decoration: none;
+    }
+
+        .pagination .page-link:hover {
+            background-color: #f0f0f0; /* Màu nền khi hover */
+            color: #333; /* Màu chữ khi hover */
+        }
+
+    .pagination .active .page-link {
+        background-color: #ff5733; /* Màu nền cho trang hiện tại */
+        color: #fff; /* Màu chữ cho trang hiện tại */
+        cursor: default; /* Con trỏ chuột mặc định khi active */
+        pointer-events: none; /* Vô hiệu hóa hover */
+    }
+
+    .pagination-container nav ul.pagination li a,
+    .pagination-container nav ul.pagination li span {
+        padding: 8px 12px;
+        margin: 0 5px;
+        color: #B4B2B2;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .pagination-container nav ul.pagination li.active span,
+    .pagination-container nav ul.pagination li.active a {
+        background-color: #e91e63; /* Màu nền cho trang hiện tại */
+        color: #fff;
+        pointer-events: none; /* Vô hiệu hóa hover */
+    }
+
+    .pagination-container nav ul.pagination li a:hover {
+        color: #e91e63;
+    }
+
 </style>
 
 <div class="order-status-tabs">
@@ -194,11 +249,18 @@
                             <div class="product-info">
                                 <img src="@detail.ImageUrl" alt="Product Image" />
                                 <div>
-                                    <div class="product-name">@detail.ProductName</div>
-                                    <div><span>x</span>@detail.Quantity</div>
+                                    <div class="product-name" style="color: #272727;">@detail.ProductName</div>
+                                    <div style="color: #272727;"><span>x</span>@detail.Quantity</div>
                                 </div>
                             </div>
-                            <span class="price-info">₫@detail.Price.ToString("N0")</span>
+                            @if (detail.Promotion_Price == 0)
+                            {
+                                <span class="price-info" style="color: #272727;">₫@detail.Price.ToString("N0")</span>
+                            }
+                            else
+                            {
+                                <span class="price-info"><del style="margin-right:10px; color: #777777">₫@detail.Price.ToString("N0")</del>₫@detail.Promotion_Price.ToString("N0")</span>
+                            }
                         </div>
                     </a>
                     if (detail.isReviewed)
@@ -208,12 +270,15 @@
                 }
                 <hr />
                 <div class="d-flex justify-content-end">
-                    <span>Thành tiền: <span class="price-info">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span>
+                    <span style="color: #272727;">Thành tiền: <span class="price-info" style="font-size: 24px">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span></span>
                 </div>
                 <div class="order-actions d-flex justify-content-end mt-2">
-                    @if (order.OrderStatusName == "Chờ giao hàng")
+                    @{ 
+                        var isOrderCancelable = (DateTime.Now - order.CreatedAt.GetValueOrDefault()).TotalMinutes <= 10;
+                    }
+                    @if (order.OrderStatusName == "Chờ xác nhận" && isOrderCancelable)
                     {
-                        <button class="btn btn-danger setOrderStatusFive" data-orderid="@order.OrderId">Đã Nhận Hàng</button>
+                        <button class="btn btn-danger setOrderStatusOne" data-orderid="@order.OrderId" data-ordercreatat="@order.CreatedAt">Hủy Đơn Hàng</button>
                     }
                     else if (order.OrderStatusName == "Hoàn thành" && !checkReview)
                     {
@@ -267,19 +332,32 @@
                 </div>
             </div>
         }
+        <div class="pagination-container d-flex justify-content-center mt-4">
+            <nav>
+                <ul class="pagination">
+                    @Html.PagedListPager(
+                        Model,
+                        page => Url.Action("Index", "Profile", new { order_status_id = currentStatusId, MaTaiKhoan, view = "OrderPartial", page }),
+                        new PagedListRenderOptions
+                        {
+                            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                            DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                            MaximumPageNumbersToDisplay = 5,
+                            Display = PagedListDisplayMode.Always,
+                            LinkToPreviousPageFormat = "<img src='/Public/img/icons/icons8-backorder.png' widht='20' height='20'  />",
+                            LinkToNextPageFormat = "<img src='/Public/img/icons/icons8-next-100.png' widht='20' height='20' />"
+                        }
+                    )
+                </ul>
+            </nav>
+        </div>
     }
     else
     {
         <div class="d-flex flex-column align-items-center justify-content-center" style="text-align: center; margin-top: 20px; height: 50vh;">
             <img src="~/Public/img/icons/clipboard.png" style="width: 100px; height: 100px; margin-bottom: 10px" />
-            @if (currentStatusId == "7")
-            {
-                <p>Bạn hiện không có yêu cầu Trả hàng/Hoàn tiền nào.</p>
-            }
-            else
-            {
-                <p>Chưa có đơn hàng.</p>
-            }
+            <p>Chưa có đơn hàng.</p>
         </div>
     }
 </div>
@@ -295,27 +373,50 @@
 </div>
 
 <script>
-    document.querySelectorAll('.setOrderStatusFive').forEach(function (button) {
+    document.querySelectorAll('.setOrderStatusOne').forEach(function (button) {
         button.addEventListener('click', async function () {
             const orderId = this.getAttribute('data-orderid');
+            const createdAt = this.getAttribute('data-ordercreatat'); // Lấy thời gian tạo đơn hàng
+            const createdAtDate = new Date(createdAt); // Chuyển đổi sang đối tượng Date
+            const currentTime = new Date(); // Thời gian hiện tại
+            const timeDiffInMinutes = (currentTime - createdAtDate) / 60000; // Tính sự chênh lệch thời gian tính bằng phút
 
-            // Gọi hàm đổi trạng thái đơn hàng
-            const response = await fetch('/Order/ChangeOrder_OrderStatus', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    order_id: orderId,
-                    order_status: 4
-                })
-            });
+            if (timeDiffInMinutes > 10) {
+                const modalBody = document.querySelector("#MessagesModal .modal-body p");
+                modalBody.textContent = `Đã quá 10 phút không thể hủy.`;
 
-            const result = await response.json();
-            if (result.success) {
-                location.reload();
-            } else {
-                alert(result.message);
+                // Hiển thị modal với jQuery
+                $("#MessagesModal").modal("show");
+
+                // Tự động tắt modal sau 3 giây
+                setTimeout(function () {
+                    $("#MessagesModal").modal("hide");
+                }, 1500);
+
+                // Khôi phục thanh cuộn khi modal mở
+                document.body.style.overflowY = "scroll";
+            }
+            else
+            {
+                // Gọi hàm đổi trạng thái đơn hàng
+                const response = await fetch('/Order/ChangeOrder_OrderStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        order_status: 1
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                }
+                else {
+                    alert(result.message);
+                }
             }
         });
     });

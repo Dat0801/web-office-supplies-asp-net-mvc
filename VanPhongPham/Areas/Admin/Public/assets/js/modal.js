@@ -32,6 +32,7 @@ function openCategoryModal(id = null, name = '') {
     $('#categoryModal').modal('show');             // Hiển thị modal
 }
 
+
 // Hàm lưu danh mục (thêm mới)
 function saveCategory() {
     var categoryName = $('#categoryName').val(); // tên danh mục
@@ -72,6 +73,68 @@ function openAttributeModal(id = null, name = '') {
     $('#attributeModal').modal('show');             // Hiển thị modal
 }
 
+var selectedAttributeValues = []; // Mảng lưu trữ các giá trị đã chọn
+
+function updateAttributeValues() {
+    // Lấy các ID thuộc tính đã chọn từ các checkbox
+    var attributeIds = [];
+    $('#attributeCheckboxes input[type="checkbox"]:checked').each(function () {
+        attributeIds.push($(this).val());
+    });
+
+    // Lưu trữ các giá trị thuộc tính đã chọn trước đó
+    var currentSelectedValues = [];
+    $('#attributeValueCheckboxes input[type="checkbox"]:checked').each(function () {
+        currentSelectedValues.push($(this).val());
+    });
+
+    // Cập nhật lại mảng selectedAttributeValues để giữ các giá trị đã chọn
+    selectedAttributeValues = currentSelectedValues;
+
+    // Xóa hết các checkbox giá trị thuộc tính hiện tại
+    $('#attributeValueCheckboxes').empty();
+
+    // Duyệt qua danh sách giá trị thuộc tính và thêm checkbox dựa trên thuộc tính đã chọn
+    $.each(attributeValues, function (index, value) {
+        // Nếu ID thuộc tính hiện tại có trong danh sách thuộc tính đã chọn
+        if (attributeIds.includes(value.Attribute_id.toString())) {
+            var checkboxHtml = '<div class="form-check">';
+            checkboxHtml += '<input class="form-check-input" type="checkbox" name="attribute_value_id" value="' + value.Attribute_value_id + '" id="attributeValue_' + value.Attribute_value_id + '" data-attribute-id="' + value.Attribute_id + '">';
+            checkboxHtml += '<label class="form-check-label" for="attributeValue_' + value.Attribute_value_id + '">' + value.Value + '</label>';
+            checkboxHtml += '</div>';
+            $('#attributeValueCheckboxes').append(checkboxHtml);
+        }
+    });
+
+    // Đánh dấu lại các giá trị đã chọn trước đó
+    selectedAttributeValues.forEach(function (selectedValue) {
+        $('#attributeValueCheckboxes input[type="checkbox"][value="' + selectedValue + '"]').prop('checked', true);
+    });
+}
+
+// Hàm mở modal thêm giá trị thuộc tính
+function openAttributeValueModal(attributeId = null) {
+    $('#attributeValue').val(''); // Xóa giá trị cũ
+    if (attributeId) {
+        $('#attribute_id').val(attributeId); // Cập nhật ID thuộc tính
+    }
+    $('#attributeValueModalLabel').text("Thêm Giá Trị Thuộc Tính"); // Tiêu đề thêm mới
+    $('#attributeValueModal').modal('show'); // Hiển thị modal
+}
+
+// Hàm được gọi khi người dùng click vào "Thêm"
+function openAttributeValueModalFromCheckbox() {
+    // Lấy attribute_id từ các checkbox đã chọn
+    var selectedCheckbox = $('#attributeCheckboxes input[type="checkbox"]:checked');
+
+    if (selectedCheckbox.length > 0) {
+        var attributeId = selectedCheckbox.first().val(); // Lấy attribute_id của checkbox đầu tiên
+        openAttributeValueModal(attributeId); // Gọi modal với attribute_id
+    } else {
+        alert("Vui lòng chọn một thuộc tính trước khi thêm giá trị thuộc tính.");
+    }
+}
+
 // Hàm lưu thuộc tính (thêm mới)
 function saveAttribute() {
     var attributeName = $('#attributeName').val(); // tên thuộc tính
@@ -88,10 +151,15 @@ function saveAttribute() {
                 alert("Thuộc tính đã được thêm mới!");
                 $('#attributeModal').modal('hide');
 
-                // Cập nhật UI để thêm thuộc tính mới vào danh sách nếu cần
-                var newOption = `<option value="${response.newAttributeId}" selected>${attributeName}</option>`;
-                $('select[name="attribute_id"]').append(newOption);
-                
+                // Cập nhật UI để thêm thuộc tính mới vào danh sách checkbox
+                var newCheckbox = `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="attribute_id" value="${response.newAttributeId}" id="attribute_${response.newAttributeId}" onchange="updateAttributeValues()" checked>
+                        <label class="form-check-label" for="attribute_${response.newAttributeId}">
+                            ${attributeName}
+                        </label>
+                    </div>`;
+                $('#attributeCheckboxes').append(newCheckbox);
             } else {
                 alert("Thêm thất bại");
             }
@@ -100,41 +168,6 @@ function saveAttribute() {
             alert("Có lỗi xảy ra khi lưu thuộc tính!");
         }
     });
-}
-
-function updateAttributeValues() {
-    var attributeIds = $('#attributeSelect').val() || []; // Lấy giá trị được chọn hoặc mảng rỗng
-
-    // Xóa tất cả tùy chọn hiện tại
-    $('#attributeValueSelect').empty();
-
-    // Lọc và thêm các giá trị thuộc tính tương ứng
-    $.each(attributeValues, function (index, value) {
-        // Kiểm tra xem attributeId hiện tại có trong danh sách đã chọn không
-        if (attributeIds.includes(value.Attribute_id.toString())) {
-            $('#attributeValueSelect').append('<option value="' + value.Attribute_value_id + '">' + value.Value + '</option>');
-        }
-    });
-
-    // Giữ lại các giá trị thuộc tính đã chọn từ sản phẩm
-    if (attributeValuesForProduct) {
-        attributeValuesForProduct.forEach(function (selectedValue) {
-            // Kiểm tra xem giá trị đã được thêm vào dropdown chưa
-            if ($('#attributeValueSelect option[value="' + selectedValue.Attribute_value_id + '"]').length > 0) {
-                $('#attributeValueSelect option[value="' + selectedValue.Attribute_value_id + '"]').prop('selected', true);
-            }
-        });
-    }
-}
-
-updateAttributeValues();
-
-// Mở modal với chức năng thêm giá trị thuộc tính
-function openAttributeValueModal(attributeId = null) {
-    $('#attributeValue').val(''); // Xóa giá trị cũ
-    $('#attribute_id').val(attributeId);
-    $('#attributeValueModalLabel').text("Thêm Giá Trị Thuộc Tính"); // Tiêu đề thêm mới
-    $('#attributeValueModal').modal('show'); // Hiển thị modal
 }
 
 // Hàm lưu giá trị thuộc tính (thêm mới)
@@ -162,9 +195,15 @@ function saveAttributeValue() {
                     Value: attributeValue
                 });
 
-                // Cập nhật UI để thêm giá trị mới vào danh sách nếu cần
-                var newOption = `<option value="${response.newAttributeValueId}" selected>${attributeValue}</option>`;
-                $('select[name="attribute_value_id"]').append(newOption);
+                // Cập nhật UI để thêm giá trị mới vào danh sách checkbox và đánh dấu là checked
+                var newCheckbox = `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="attribute_value_id" value="${response.newAttributeValueId}" id="attributeValue_${response.newAttributeValueId}" checked>
+                        <label class="form-check-label" for="attributeValue_${response.newAttributeValueId}">
+                            ${attributeValue}
+                        </label>
+                    </div>`;
+                $('#attributeValueCheckboxes').append(newCheckbox);
             } else {
                 alert("Thêm thất bại");
             }
@@ -174,6 +213,4 @@ function saveAttributeValue() {
         }
     });
 }
-
-
 

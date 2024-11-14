@@ -1,5 +1,9 @@
 ﻿@model VanPhongPham.Models.user
 
+@{ 
+    var profileUrl = Url.Action("Index", "Profile"); 
+}
+
 <p style="font-size: 20px; font-weight: bold;">Thay Đổi Địa Chỉ Email</p>
 <hr />
 
@@ -29,9 +33,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="passwordModalLabel">Nhập Mật Khẩu</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -42,7 +43,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" id="confirmPasswordBtn" class="btn btn-primary">Xác Nhận</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" id="cancelAddressBtn" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
             </div>
         </div>
     </div>
@@ -63,6 +64,18 @@
 
     // Khởi tạo Firebase
     firebase.initializeApp(firebaseConfig);
+
+    document.getElementById("cancelAddressBtn").addEventListener("click", function () {
+        $('#passwordModal').modal('hide');
+    });
+
+    const userData = JSON.parse(sessionStorage.getItem('user'));
+    const url = `${"@profileUrl"}?MaTaiKhoan=${userData.MaTaiKhoan}&view=EmailStepTwoPartial`;
+
+    const actionCodeSettings = {
+        url,
+        handleCodeInApp: true
+    };
 
     document.getElementById('submitBtn').addEventListener('click', async function () {
         let isValid = true;
@@ -106,32 +119,15 @@
                             return null; // Trả về null nếu đăng nhập không thành công
                         });
 
-                    if (userCredential) {
-                        // Cập nhật email mới
-                        const user = userCredential.user;
-                        user.updateEmail(changeemail.value.trim())
-                            .then(async function () {
-                                // Xử lý thành công, ví dụ thông báo cho người dùng hoặc đăng xuất
-                                alert("Email đã được thay đổi thành công!");
-
-                                // Gửi yêu cầu tới server nếu bạn cần xử lý thêm
-                                const response = await fetch('/Profile/UpdateEmail', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ user_id: '@Model.user_id', email: changeemail.value.trim() })
-                                });
-
-                                const result = await response.json();
-                                if (result.success) {
-                                    logout(); // Đăng xuất nếu cần
-                                }
-                            })
-                            .catch(function (error) {
-                                console.error("Có lỗi xảy ra khi cập nhật email:", error);
-                                alert("Có lỗi xảy ra khi cập nhật email.");
-                            });
-                        $('#passwordModal').modal('hide'); // Đóng modal
-                    } else {
+                    if (userCredential)
+                    {
+                        const result = await updateNewEmail(changeemail.value.trim(), password);
+                        if (result) {
+                            alert("Vui lòng kiểm tra email mới của bạn để hoàn tất quá trình xác thực.");
+                            $('#passwordModal').modal('hide');
+                        }
+                    }
+                    else {
                         wrongPasswordAttempts++;
                         if (wrongPasswordAttempts >= 3) {
                             alert("Bạn đã nhập sai mật khẩu quá 3 lần. Bạn sẽ bị đăng xuất.");
@@ -142,5 +138,24 @@
             }
         }
     });
+
+    async function updateNewEmail(newEmail, currentPassword) {
+        try {
+            const user = firebase.auth().currentUser;
+
+            // Xác thực người dùng bằng mật khẩu hiện tại
+            const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+            await user.reauthenticateWithCredential(credential);
+
+            // Gửi email xác thực để cập nhật email
+            await user.verifyBeforeUpdateEmail(newEmail, actionCodeSettings);
+            alert("Vui lòng kiểm tra email mới để hoàn tất quá trình xác thực.");
+            return true;
+        } catch (error) {
+            console.error("Lỗi khi cập nhật email:", error.message);
+            // Xử lý lỗi tương tự như trước
+            return false;
+        }
+    }
 </script>
 

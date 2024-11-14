@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Linq;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -14,6 +15,26 @@ namespace VanPhongPham.Controllers
         public ActionResult Index(int cart_id)
         {
             ViewBag.CartID = cart_id;
+
+            var cart_items = db.cart_details.Where(d => d.cart_id == cart_id).ToList();
+
+            if (cart_items != null)
+            {
+                foreach (var item in cart_items)
+                {
+                    if (item.product.promotion_price != 0)
+                    {
+                        item.total_amount = item.product.promotion_price * item.quantity;
+                    }
+                    else
+                    {
+                        item.total_amount = item.product.price * item.quantity;
+                    }
+                }
+            }
+            db.Refresh(RefreshMode.KeepChanges, cart_items);
+            db.SubmitChanges();
+
             // Lấy danh sách đơn hàng theo điều kiện
             var cartdetails = db.cart_details
                 .Where(o => o.cart_id == cart_id)// Kiểm tra cả trạng thái và tài khoản
@@ -22,16 +43,19 @@ namespace VanPhongPham.Controllers
                     ProductID = o.product.product_id, // Thêm thuộc tính ProductID nếu cần
                     ProductName = o.product.product_name,
                     Quantity = o.quantity.HasValue ? o.quantity.Value : 0, // Gán giá trị 0 nếu null
-                    QuantityProduct = o.product.stock_quantity,
+                    QuantityProduct = o.product.stock_quantity.HasValue ? o.product.stock_quantity.Value : 0,
                     TotalAmount = o.total_amount.HasValue ? o.total_amount.Value : 0, // Gán giá trị 0 nếu null
                     ImageUrl = o.product.images
                                 .Where(img => img.is_primary == true) // Kiểm tra hình ảnh chính
                                 .Select(img => img.image_url)
                                 .FirstOrDefault(), // Lấy hình ảnh đầu tiên
                     Price = o.product.price.HasValue ? o.product.price.Value : 0, // Gán giá trị 0 nếu null
+                    Promotion_Price = o.product.promotion_price.HasValue ? o.product.promotion_price.Value : 0,
                     isReviewed = false, // Giả sử có thuộc tính này trong order_detail
+                    Product_status = o.product.status.HasValue ? o.product.status.Value : false,
                     isSelected = o.isSelected.HasValue ? o.isSelected.Value : 0,
                 }).ToList();
+   
             return View(cartdetails);
         }
         public ActionResult GetCartQuantity(int cart_id)
@@ -71,12 +95,43 @@ namespace VanPhongPham.Controllers
             var cart_items = db.cart_details.FirstOrDefault(d => d.cart_id == cart_id && d.product_id == productId);
             if (cart_items != null)
             {
-                cart_items.quantity = quantity;
-                cart_items.total_amount = cart_items.product.price * quantity;
+                if (cart_items.product.promotion_price != 0)
+                {
+                    cart_items.quantity = quantity;
+                    cart_items.total_amount = cart_items.product.promotion_price * quantity;
+                }
+                else
+                {
+                    cart_items.quantity = quantity;
+                    cart_items.total_amount = cart_items.product.price * quantity;
+                }    
             }
 
             db.SubmitChanges();
             return Json(new { success = true, message = "Dữ liệu đã được lưu thành công." });
+        }
+
+        public ActionResult UpdateCartDetailsPromotionPrice(int cart_id)
+        {
+            var cart_items = db.cart_details.Where(d => d.cart_id == cart_id).ToList();
+
+            if (cart_items != null)
+            {
+                foreach (var item in cart_items)
+                {
+                    if (item.product.promotion_price != 0)
+                    {
+                        item.total_amount = item.product.promotion_price * item.quantity;
+                    }
+                    else
+                    {
+                        item.total_amount = item.product.price * item.quantity;
+                    }    
+                }
+            }    
+
+            db.SubmitChanges();
+            return Json(new { success = true, message = "Dữ liệu đã được cập nhật thành công." });
         }
         public ActionResult RemoveFromCart(int cart_id, string productId)
         {
@@ -94,6 +149,15 @@ namespace VanPhongPham.Controllers
             var cart_items = db.cart_details.FirstOrDefault(d => d.cart_id == cart_id && d.product_id == productId);
             if (cart_items != null)
             {
+                if (cart_items.product.promotion_price != 0)
+                {
+                    cart_items.total_amount = cart_items.product.promotion_price * cart_items.quantity;
+                }
+                else
+                {
+                    cart_items.total_amount = cart_items.product.price * cart_items.quantity;
+                }
+
                 if (isSelected)
                 {
                     cart_items.isSelected = 1;

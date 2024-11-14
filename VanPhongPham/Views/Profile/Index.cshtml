@@ -32,7 +32,7 @@
                 </div>
 
                 <!-- Sidebar Menu Items -->
-                <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "ProfilePartial" })" style="text-decoration: none;" class="list-group-item account-item @(ViewBag.PartialView == "ProfilePartial" || ViewBag.PartialView == "AddressPartial" || ViewBag.PartialView == "ChangePasswordPartial" || ViewBag.PartialView == "ChangeEmailPartial" ? "active" : "")">
+                <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "ProfilePartial" })" style="text-decoration: none;" class="list-group-item account-item @(ViewBag.PartialView == "ProfilePartial" || ViewBag.PartialView == "AddressPartial" || ViewBag.PartialView == "ChangePasswordPartial" ? "active" : "")">
                     <i class="fas fa-user"></i> Tài Khoản Của Tôi
                 </a>
 
@@ -78,7 +78,7 @@
             }
             else if (ViewBag.PartialView == "OrderPartial")
             {
-                @Html.Action("OrderPartial", "Profile", new { order_status_id = ViewBag.CurrentStatus, MaTaiKhoan = ViewBag.MaTaiKhoan })
+                @Html.Action("OrderPartial", "Profile", new { page = ViewBag.Page, order_status_id = ViewBag.CurrentStatus, MaTaiKhoan = ViewBag.MaTaiKhoan })
             }
             else if (ViewBag.PartialView == "ChangeEmailPartial")
             {

@@ -370,10 +370,12 @@
     <Content Include="Public\img\icons\icons8-back-100.png" />
     <Content Include="Public\img\icons\icons8-backorder.png" />
     <Content Include="Public\img\icons\icons8-check-100.png" />
+    <Content Include="Public\img\icons\icons8-checkshipping.png" />
     <Content Include="Public\img\icons\icons8-email-100.png" />
     <Content Include="Public\img\icons\icons8-error-100.png" />
     <Content Include="Public\img\icons\icons8-location-100.png" />
     <Content Include="Public\img\icons\icons8-male-user-100.png" />
+    <Content Include="Public\img\icons\icons8-next-100.png" />
     <Content Include="Public\img\icons\vecteezy_chat-box-with-laptop.png" />
     <Content Include="Public\img\offer-1.png" />
     <Content Include="Public\img\offer-2.png" />
@@ -599,11 +601,18 @@
     <Content Include="Areas\Admin\Views\Product\AttributeValue.cshtml" />
     <Content Include="Areas\Admin\Views\Product\RecycleProductIndex.cshtml" />
     <Content Include="Areas\Admin\Views\Product\UpdateProduct.cshtml" />
+    <Content Include="Areas\Admin\Views\PurchaseOrder\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\PurchaseOrder\Detail.cshtml" />
+    <Content Include="Areas\Admin\Views\PurchaseOrder\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\PurchaseOrder\CreateReceipt.cshtml" />
+    <Content Include="Areas\Admin\Views\PurchaseOrder\Receipt.cshtml" />
+    <Content Include="Areas\Admin\Views\PurchaseOrder\ReceiptDetail.cshtml" />
     <Content Include="Models\DB_VanPhongPham.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>DB_VanPhongPham.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Areas\Admin\Views\UserOrder\Index.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>
@@ -704,11 +713,14 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
+    <Compile Include="Areas\Admin\Controllers\PurchaseOrderController.cs" />
     <Compile Include="Areas\Admin\Controllers\SupplierController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
+    <Compile Include="Areas\Admin\Controllers\UserOrderController.cs" />
     <Compile Include="Controllers\AddressController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\CartController.cs" />
+    <Compile Include="Controllers\CheckoutController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductClientController.cs" />
@@ -733,6 +745,7 @@
     <Compile Include="Models\ProductRepository.cs" />
     <Compile Include="Models\ProductViewModel.cs" />
     <Compile Include="Models\PromotionViewModel.cs" />
+    <Compile Include="Models\PurchaseOrderRepository.cs" />
     <Compile Include="Models\SupplierRepository.cs" />
     <Compile Include="Models\UserRepository.cs" />
     <Compile Include="Models\UserViewModel.cs" />
@@ -757,6 +770,10 @@
     <Content Include="Views\Profile\OrderPartial.cshtml" />
     <Content Include="Views\Profile\ChangeEmailPartial.cshtml" />
     <Content Include="Views\Profile\OrderDetailsPartial.cshtml" />
+    <Content Include="Views\Checkout\AddressCheckoutPartial.cshtml" />
+    <Content Include="Views\Checkout\Index.cshtml" />
+    <Content Include="Views\Checkout\PaymentCheckoutPartial.cshtml" />
+    <Content Include="Views\Checkout\ProductsCheckoutPartial.cshtml" />
     <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\ProductClient\Details.cshtml" />
     <Content Include="Views\Shared\_Dropdown.cshtml" />

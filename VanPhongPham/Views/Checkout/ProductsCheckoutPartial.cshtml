@@ -1,0 +1,71 @@
+﻿@model IEnumerable<VanPhongPham.Models.OrderDetailViewModel>
+
+<!-- Cart Start -->
+<div class="p-4" style=" background-color: #fff; border: 1px solid #ddd; font-family: Arial, sans-serif; margin-top: 20px">
+    <div class="row">
+        <div class="col-12 table-responsive">
+            <table class="table text-center mb-0">
+                <thead class="text-dark">
+                    <tr>
+                        <td style="text-align:left; color: #272727">
+                            Sản Phẩm
+                        </td>
+                        <td class="text-right" style="color: #777777">Đơn Giá</td>
+                        <td class="text-right" style="color: #777777">Số Lượng</td>
+                        <td class="text-right" style="color: #777777">Thành Tiền</td>
+                    </tr>
+                </thead>
+                <tbody class="align-middle">
+                    @foreach (var item in Model)
+                    {
+                        var weight = int.Parse(item.ProductWeight.Split(' ')[0]) * item.Quantity;
+                        <tr class="product-item" style="@(item.QuantityProduct == 0 ? "background-color: #FAFAFA;" : "")" data-name="@item.ProductName" data-quantity="@item.Quantity" data-weight="@weight">
+                            <td style="text-align: left; color: #272727">
+                                <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px">
+                                @item.ProductName
+                            </td>
+                            @if(item.Promotion_Price == 0)
+                            {
+                                <td class="align-middle text-right" style="color: #272727;">₫@item.Price.ToString("N0")</td>
+                            }
+                            else
+                            { 
+                                <td class="align-middle text-right" style="color: #272727;">₫@item.Promotion_Price.ToString("N0")</td>
+                            }
+                            <td class="align-middle text-right" style="color: #272727;">@item.Quantity</td>
+                            <td class="align-middle text-right" style="color: #272727;">₫@item.TotalAmount.ToString("N0")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Lấy tất cả các phần tử với class 'product-item   '
+    var items = [];
+    var totalWeight = 0;
+
+    document.querySelectorAll('.product-item').forEach(function(row) {
+        // Lấy dữ liệu từ các thuộc tính data- của từng dòng
+        var name = row.getAttribute('data-name');
+        var quantity = parseInt(row.getAttribute('data-quantity'));
+        var weight = parseInt(row.getAttribute('data-weight'));
+
+        // Tính trọng lượng của từng sản phẩm và cộng dồn vào totalWeight
+        totalWeight += weight;
+
+        // Thêm dữ liệu vào mảng items
+        items.push({ name: name, quantity: quantity, weight: weight });
+    });
+
+    // Lưu vào sessionStorage, bao gồm cả totalWeight
+    sessionStorage.setItem("items", JSON.stringify({ items: items, totalWeight: totalWeight }));
+
+    // Kiểm tra nếu có dữ liệu trong sessionStorage và xóa khi chuyển hướng
+    window.addEventListener('beforeunload', function () {
+        // Xóa items trong sessionStorage khi người dùng rời khỏi trang
+        sessionStorage.removeItem('items');
+    });
+</script>

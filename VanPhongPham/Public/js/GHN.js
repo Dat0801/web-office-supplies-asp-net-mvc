@@ -54,6 +54,75 @@ async function getWards(districtId) {
     }
 }
 
+async function getService(to_district) {
+    try {
+
+        const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Token': TokenAPI
+            },
+            body: JSON.stringify({
+                shop_id: 195136,
+                from_district: 1456,
+                to_district: parseInt(to_district)  // Truyền to_district như một số nguyên
+            })
+        });
+
+        if (!response.ok) {
+            const errorDetails = await response.json();
+            console.error("Lỗi khi tính toán dịch vụ vận chuyển:", errorDetails);
+        } else {
+            const result = await response.json();
+            return result.data;
+        }
+    } catch (error) {
+        console.error("Lỗi trong quá trình gửi yêu cầu:", error);
+    }
+}
+
+
+
+async function getFee(serviceid, todistrict, toward, weight, items) {
+    const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'Token': TokenAPI,
+            'ShopId': 195136
+        },
+        body: JSON.stringify({ service_type_id: serviceid, to_district_id: parseInt(todistrict), to_ward_code: toward, weight: parseInt(weight), items: items })
+    });
+
+    if (response.ok) {
+        const result = await response.json();
+        return result.data;
+    }
+    else {
+        console.error("Lỗi khi tính")
+    }
+}
+
+async function getShippingDetail(ordercode) {
+    const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'Token': TokenAPI
+        },
+        body: JSON.stringify({ order_code: ordercode })
+    });
+
+    if (response.ok) {
+        const result = await response.json();
+        return result.data;
+    }
+    else {
+        console.error("Lỗi khi lấy lịch sử giao hàng")
+    }
+}
+
 async function initAddressDropdowns() {
     const provinces = await getProvinces();
     const citySelect = document.getElementById('city');
@@ -97,34 +166,85 @@ async function initAddressDropdowns() {
 }
 
 async function initUpdateAddressDropdowns() {
-    await initAddressDropdowns();
+    const provinces = await getProvinces();
+    const citySelect = document.getElementById('upcity');
+    const districtSelect = document.getElementById('updistrict');
+    const wardSelect = document.getElementById('upward');
 
-    // Lấy địa chỉ hiện tại
-    const currentCity = document.getElementById('city').value; // ID thành phố hiện tại
-    if (currentCity) {
-        const districts = await getDistricts(currentCity); // Sử dụng getDistricts
-        const districtDropdown = document.getElementById('district');
+    // Thêm tỉnh vào select
+    provinces.forEach(province => {
+        const option = document.createElement('option');
+        option.value = province.ProvinceID; // ProvinceID là ID tỉnh
+        option.textContent = province.ProvinceName; // ProvinceName là tên tỉnh
+        citySelect.appendChild(option);
+    });
 
-        // Thêm các quận vào dropdown
+    citySelect.addEventListener('change', async function () {
+        const selectedProvinceId = this.value;
+        districtSelect.innerHTML = '<option selected disabled>Chọn Quận/Huyện</option>'; // Reset quận
+        wardSelect.innerHTML = '<option selected disabled>Chọn Phường/Xã</option>'; // Reset phường
+
+        const districts = await getDistricts(selectedProvinceId);
         districts.forEach(district => {
             const option = document.createElement('option');
-            option.value = district.DistrictID; // Sửa lại tên biến cho đúng
-            option.textContent = district.DistrictName;
-            districtDropdown.appendChild(option);
+            option.value = district.DistrictID; // DistrictID là ID quận
+            option.textContent = district.DistrictName; // DistrictName là tên quận
+            districtSelect.appendChild(option);
         });
+    });
 
-        const currentDistrict = document.getElementById('district').value; // ID quận hiện tại
-        if (currentDistrict) {
-            const wards = await getWards(currentDistrict); // Sử dụng getWards
-            const wardDropdown = document.getElementById('ward');
+    districtSelect.addEventListener('change', async function () {
+        const selectedDistrictId = this.value;
+        wardSelect.innerHTML = '<option selected disabled>Phường/Xã</option>'; // Reset phường
 
-            // Thêm các phường vào dropdown
-            wards.forEach(ward => {
-                const option = document.createElement('option');
-                option.value = ward.WardCode; // Sử dụng WardCode cho đúng
-                option.textContent = ward.WardName;
-                wardDropdown.appendChild(option);
-            });
-        }
-    }
+        const wards = await getWards(selectedDistrictId);
+        wards.forEach(ward => {
+            const option = document.createElement('option');
+            option.value = ward.WardCode; // WardID là ID phường
+            option.textContent = ward.WardName; // WardName là tên phường
+            wardSelect.appendChild(option);
+        });
+    });
+}
+
+async function initInitAddressDropdowns() {
+    const provinces = await getProvinces();
+    const citySelect = document.getElementById('initcity');
+    const districtSelect = document.getElementById('initdistrict');
+    const wardSelect = document.getElementById('initward');
+
+    // Thêm tỉnh vào select
+    provinces.forEach(province => {
+        const option = document.createElement('option');
+        option.value = province.ProvinceID; // ProvinceID là ID tỉnh
+        option.textContent = province.ProvinceName; // ProvinceName là tên tỉnh
+        citySelect.appendChild(option);
+    });
+
+    citySelect.addEventListener('change', async function () {
+        const selectedProvinceId = this.value;
+        districtSelect.innerHTML = '<option selected disabled>Chọn Quận/Huyện</option>'; // Reset quận
+        wardSelect.innerHTML = '<option selected disabled>Chọn Phường/Xã</option>'; // Reset phường
+
+        const districts = await getDistricts(selectedProvinceId);
+        districts.forEach(district => {
+            const option = document.createElement('option');
+            option.value = district.DistrictID; // DistrictID là ID quận
+            option.textContent = district.DistrictName; // DistrictName là tên quận
+            districtSelect.appendChild(option);
+        });
+    });
+
+    districtSelect.addEventListener('change', async function () {
+        const selectedDistrictId = this.value;
+        wardSelect.innerHTML = '<option selected disabled>Phường/Xã</option>'; // Reset phường
+
+        const wards = await getWards(selectedDistrictId);
+        wards.forEach(ward => {
+            const option = document.createElement('option');
+            option.value = ward.WardCode; // WardID là ID phường
+            option.textContent = ward.WardName; // WardName là tên phường
+            wardSelect.appendChild(option);
+        });
+    });
 }

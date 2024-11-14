@@ -65,7 +65,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     is_primary = true,
                     product_id = product.product_id
                 };
-                productRepository.AddImages(mainImage);
+                //productRepository.AddImages(mainImage);
                 foreach (var imageUrl in additionalImageUrls)
                 {
                     image additionalImage = new image
@@ -75,7 +75,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                         product_id = product.product_id
 
                     };
-                    productRepository.AddImages(additionalImage);
+                    //productRepository.AddImages(additionalImage);
                 }
                 foreach (var value_id in attribute_value_id)
                 {
@@ -136,7 +136,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
                 List<string> additionalImageUrls = JsonConvert.DeserializeObject<List<string>>(additionalImageUrlsJson);
 
-                List<string> attributeValueIdsList = attribute_value_id.ToList();
+                List<string> attributeValueIdsList = attribute_value_id?.ToList() ?? new List<string>();
 
                 image mainImage = new image
                 {
@@ -173,7 +173,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
         public ActionResult RecycleProduct(string product_id)
         {
-            bool result = productRepository.RecycleProduct(product_id);
+            productRepository.RecycleProduct(product_id);
             return RedirectToAction("Index");
         }
 
