@@ -9,8 +9,11 @@ namespace VanPhongPham.Models
     {
         public string OrderId { get; set; }
         public string EmployeeId { get; set; }
+        public string FullNameEmployee { get; set; }
         public string CustomerId { get; set; }
+        public string FullNameCustomer { get; set; }
         public string InfoAddress { get; set; }
+        public string OrderNote { get; set; }
         public string OrderCode { get; set; }
         public string MethodId { get; set; }
         public string MethodName { get; set; }
