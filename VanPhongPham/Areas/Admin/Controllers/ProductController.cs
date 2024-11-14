@@ -94,7 +94,6 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     {
                         product_id = product.product_id,
                         attribute_value_id = value_id,
-                        status = true
                     };
                     productRepository.AddProductAttributeValue(product_Attribute_Value);
                 }
