@@ -176,6 +176,7 @@ create table order_details
 	order_id varchar(10) not null,
 	product_id varchar(10) not null,
 	quantity int default 1,
+	price float default 0,
 	discountPrice float default 0,
 	total_amount float default 0,
 	isReviewed bit default 0

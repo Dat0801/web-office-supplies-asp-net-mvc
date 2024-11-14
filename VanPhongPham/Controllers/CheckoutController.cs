@@ -174,6 +174,7 @@ namespace VanPhongPham.Controllers
                         order_id = current_orderid,
                         product_id = item.product_id,
                         quantity = item.quantity,
+                        price = item.product.price,
                         discountPrice = item.product.promotion_price,
                         total_amount = item.total_amount,
                     };
@@ -188,6 +189,7 @@ namespace VanPhongPham.Controllers
                         order_id = current_orderid,
                         product_id = item.product_id,
                         quantity = item.quantity,
+                        price = item.product.price,
                         discountPrice = 0,
                         total_amount = item.total_amount
                     };
