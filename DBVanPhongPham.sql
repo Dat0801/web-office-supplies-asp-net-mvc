@@ -1,4 +1,4 @@
-﻿﻿CREATE DATABASE DB_VanPhongPham
+﻿create database DB_VanPhongPham
 go
 
 use DB_VanPhongPham
@@ -737,16 +737,16 @@ VALUES
 
 INSERT INTO users (user_id, full_name, username)
 VALUES
-('ADMIN001', N'Thành Đạt', 'thanhdat')
+('ADMIN002', N'Thành Đạt', 'qwe')
 
 INSERT INTO user_roles
 VALUES
-('ADMIN001', 2)
+('ADMIN002', 2)
 GO
 
 UPDATE users
-SET password = CONVERT(VARCHAR(32), HASHBYTES('MD5', '123456'), 2)
-WHERE username = 'thanhdat';
+SET password = CONVERT(VARCHAR(32), HASHBYTES('MD5', '123'), 2)
+WHERE username = 'qwe';
 
 
 INSERT INTO purchase_order (purchase_order_id, supplier_id, employee_id)
