@@ -3,6 +3,16 @@
 @model IPagedList<VanPhongPham.Models.attribute>
 @{
     ViewBag.Title = "Thuộc tính của sản phẩm - Quản Trị";
+    var message = ViewBag.Message;
+    var messageType = ViewBag.MessageType;
+    var attribute = ViewBag.attribute;
+}
+@if (message != null)
+{
+    <div class="alert alert-dark-@messageType alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        @message
+    </div>
 }
 <div class="card mb-4">
     <h6 class="card-header">Thêm mới thuộc tính</h6>
@@ -12,13 +22,13 @@
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Mã thuộc tính</label>
                     <input type="text" class="form-control" id="supplier_id" name="attribute_id" readonly
-                           value="@(ViewBag.attribute != null ? ViewBag.attribute.attribute_id : ViewBag.attribute_id ?? "")" />
+                           value="@(attribute != null ? attribute.attribute_id : ViewBag.attribute_id ?? "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Tên thuộc tính</label>
                     <input type="text" class="form-control" id="supplier_name" name="attribute_name" required
-                           value="@(ViewBag.attribute != null ? ViewBag.attribute.attribute_name : "")" />
+                           value="@(attribute != null ? attribute.attribute_name : "")" />
                     <div class="clearfix"></div>
                 </div>
             </div>
@@ -40,6 +50,10 @@
             </button>
         </form>
     </div>
+    <!-- Recycle -->
+    <a class="btn icon-btn btn-outline-secondary my-3 ml-2" href="@Url.Action("RecycleAttributeIndex","Product")" title="Phục hồi">
+        <i class="feather icon-rotate-cw navbar-icon align-middle"></i>
+    </a>
 </div>
 <div class="card">
     <table class="table card-table table-responsive-lg">
@@ -51,21 +65,21 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var attribute in Model)
+            @foreach (var attr in Model)
             {
                 <tr>
-                    <td>@attribute.attribute_id</td>
-                    <td>@attribute.attribute_name</td>
+                    <td>@attr.attribute_id</td>
+                    <td>@attr.attribute_name</td>
                     <td>
                         <a class="btn icon-btn btn-outline-danger"
                            href="#"
                            title="Xóa"
-                           onclick="confirmDelete('@Url.Action("DeleteAttribute", "Product", new { attribute_id = attribute.attribute_id })'); return false;">
+                           onclick="confirmDelete('@Url.Action("DeleteAttribute", "Product", new { attribute_id = attr.attribute_id })'); return false;">
                             <i class="feather icon-minus navbar-icon align-middle"></i>
                         </a>
                         <a class="btn icon-btn btn-outline-info ml-2"
                            title="Sửa"
-                           href="@Url.Action("Attribute", "Product", new { attribute_id = attribute.attribute_id })">
+                           href="@Url.Action("Attribute", "Product", new { attribute_id = attr.attribute_id })">
                             <i class="feather icon-edit navbar-icon align-middle"></i>
                         </a>
                     </td>

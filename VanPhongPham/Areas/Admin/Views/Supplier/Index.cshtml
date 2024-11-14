@@ -1,11 +1,22 @@
-﻿@model List<VanPhongPham.Models.supplier>
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.supplier>
 @{
     ViewBag.Title = "Nhà cung cấp - Quản Trị";
+    var message = ViewBag.Message;
+    var messageType = ViewBag.MessageType;
+}
+@if (message != null)
+{
+    <div class="alert alert-dark-@messageType alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        @message
+    </div>
 }
 <div class="card mb-4">
-    <h6 class="card-header">Thêm mới nhà cung cấp</h6>
+    <h6 class="card-header">Thêm mới nhà cung cấp <span><a class="btn btn-primary float-right" href="@Url.Action("RecoverSupplier")">Nhà cung cấp đã xóa</a></span></h6>
     <div class="card-body">
-        <form method="post" action="/Supplier/AddSupplier">
+        <form method="post" action="/Supplier/ManageSupplier">
             <div class="form-row">
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Mã nhà cung cấp</label>
@@ -33,7 +44,7 @@
                 </div>
             </div>
             <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
-            <button type="submit" name="action" value="edit" class="btn btn-primary">Sửa</button>
+            <button type="submit" name="action" value="edit" class="btn btn-primary">Sửa</button>            
         </form>
     </div>
 </div>
@@ -41,35 +52,66 @@
 <div class="row">
     <div class="navbar-nav my-3 ml-2">
         <!-- Search -->
-        <label class="nav-item navbar-text navbar-search-box p-0 active">
-            <a href="#"><i class="feather icon-search navbar-icon align-middle"></i></a>
-            <span class="navbar-search-input pl-2">
-                <input type="text" class="form-control navbar-text mx-2" placeholder="Tìm kiếm...">
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Index", "Supplier")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")">
             </span>
-        </label>
-    </div>
+            <button class="btn icon-btn btn-outline-primary" title="Tìm kiếm">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
+    </div>    
 </div>
 <div class="card">
-    <table class="table card-table table-responsive-md">
-        <thead class="thead-light">
-        <tbody>
-            @foreach (var supplier in Model)
-            {
+    <form method="post" action="/Supplier/DeleteSupplier">
+        <table class="table card-table table-responsive-md">
+            <thead class="thead-light">
                 <tr>
-                    <td>@supplier.supplier_id</td>
-                    <td>@supplier.supplier_name</td>
-                    <td>@supplier.email</td>
-                    <td>@supplier.phone_number</td>
-                    <td>
-                        <a class="btn icon-btn btn-outline-danger" href="@Url.Action("DeleteSupplier", "Supplier", new { supplier_id = supplier.supplier_id })">
-                            <i class="feather icon-user-minus navbar-icon align-middle"></i>
-                        </a>
-                        <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("Index", "Supplier", new { supplier_id = supplier.supplier_id })">
-                            <i class="feather icon-user-check navbar-icon align-middle"></i>
-                        </a>
-                    </td>
+                    <th><input type="checkbox" id="select-all" />Chọn tất cả</th>
+                    <th>Mã nhà cung cấp</th>
+                    <th>Tên nhà cung cấp</th>
+                    <th>Email</th>
+                    <th>Số điện thoại</th>
+                    <th>Thao tác</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var supplier in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="selectedSuppliers" value="@supplier.supplier_id" />
+                        </td>
+                        <td>@supplier.supplier_id</td>
+                        <td>@supplier.supplier_name</td>
+                        <td>@supplier.email</td>
+                        <td>@supplier.phone_number</td>
+                        <td>
+                            <a class="btn icon-btn btn-outline-danger" href="@Url.Action("DeleteSupplier", "Supplier", new { supplier_id = supplier.supplier_id })">
+                                <i class="feather icon-user-minus navbar-icon align-middle"></i>
+                            </a>
+                            <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("Index", "Supplier", new { supplier_id = supplier.supplier_id })">
+                                <i class="feather icon-user-check navbar-icon align-middle"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-danger mt-3">Xóa hàng loạt</button>
+    </form>
+    <div class="d-flex justify-content-center">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+        </div>
+    </div>
 </div>
+
+<script>
+    document.getElementById("select-all").addEventListener("click", function (e) {
+        var checkboxes = document.querySelectorAll("input[name='selectedSuppliers']");
+        checkboxes.forEach((checkbox) => {
+            checkbox.checked = e.target.checked;
+        });
+    });
+</script>

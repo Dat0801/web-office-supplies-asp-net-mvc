@@ -24,6 +24,13 @@ namespace VanPhongPham.Areas.Admin.Controllers
         // GET: Admin/PurchaseOrder
         public ActionResult Index(int? page, string search_str)
         {
+            var message = TempData["Message"];
+            var messageType = TempData["MessageType"];
+            if (message != null)
+            {
+                ViewBag.Message = message;
+                ViewBag.MessageType = messageType;
+            }
             int pageSize = 5;
             int pageNumber = (page ?? 1);
             List<purchase_order> purchase_Orders;
@@ -60,12 +67,22 @@ namespace VanPhongPham.Areas.Admin.Controllers
         [HttpPost]
         public ActionResult Create(purchase_order order, List<purchase_order_detail> orderDetails)
         {
-            purchaseOrderRepository.AddPurchaseOrder(order);
-            foreach(var orderDetail in orderDetails)
+            var result = purchaseOrderRepository.AddPurchaseOrder(order);
+            if(result)
             {
-                orderDetail.purchase_order_id = order.purchase_order_id;
-                purchaseOrderRepository.AddPurchaseOrderDetail(orderDetail);
+                foreach (var orderDetail in orderDetails)
+                {
+                    orderDetail.purchase_order_id = order.purchase_order_id;
+                    purchaseOrderRepository.AddPurchaseOrderDetail(orderDetail);
+                }
+                TempData["Message"] = "Tạo phiếu đặt thành công!";
+                TempData["MessageType"] = "success";
+            } else
+            {
+                TempData["Message"] = "Tạo phiếu đặt thất bại!";
+                TempData["MessageType"] = "danger";
             }
+            
             return RedirectToAction("Index");
         }
 
@@ -106,13 +123,23 @@ namespace VanPhongPham.Areas.Admin.Controllers
         [HttpPost]
         public ActionResult CreateReceipt(receipt receipt, List<receipt_detail> receiptDetails)
         {
-            purchaseOrderRepository.AddReceipt(receipt);
-            foreach (var receiptDetail in receiptDetails)
+            var result = purchaseOrderRepository.AddReceipt(receipt);
+            if(result)
             {
-                receiptDetail.receipt_id = receipt.receipt_id;
-                receiptDetail.purchase_order_id = receipt.purchase_order_id;
-                purchaseOrderRepository.AddReceiptDetail(receiptDetail);
+                foreach (var receiptDetail in receiptDetails)
+                {
+                    receiptDetail.receipt_id = receipt.receipt_id;
+                    receiptDetail.purchase_order_id = receipt.purchase_order_id;
+                    purchaseOrderRepository.AddReceiptDetail(receiptDetail);
+                }
+                TempData["Message"] = "Tạo phiếu nhập hàng thành công!";
+                TempData["MessageType"] = "success";
+            } else
+            {
+                TempData["Message"] = "Tạo phiếu nhập hàng thất bại!";
+                TempData["MessageType"] = "danger";
             }
+            
             return RedirectToAction("Index");
         }
 

@@ -101,6 +101,39 @@ namespace VanPhongPham.Controllers
             return PartialView();
         }
 
+
+        //public ActionResult OrderPartial(int order_status_id, string MaTaiKhoan) // Thêm tham số MaTaiKhoan
+        //{
+        //    // Lấy danh sách đơn hàng theo điều kiện
+        //    var orders = db.orders
+        //        .Where(o => (order_status_id == -1 || o.order_status_id == order_status_id)
+        //                     && o.customer_id == MaTaiKhoan) // Kiểm tra cả trạng thái và tài khoản
+        //        .Select(o => new OrderViewModel // Sử dụng OrderViewModel
+        //        {
+        //            OrderId = o.order_id,
+        //            EmployeeId = o.employee_id,
+        //            CustomerId = o.customer_id,
+        //            AddressId = o.address_id,
+        //            MethodId = o.method_id,
+        //            DeliveryDate = o.delivery_date,
+        //            TotalAmount = o.total_amount,
+        //            OrderStatusName = o.order_status.order_status_name,
+        //            CreatedAt = o.created_at,
+        //            OrderDetails = o.order_details.Select(od => new OrderDetailViewModel // Sử dụng OrderDetailViewModel
+        //            {
+        //                ProductID = od.product.product_id, // Thêm thuộc tính ProductID nếu cần
+        //                ProductName = od.product.product_name,
+        //                Quantity = od.quantity.HasValue ? od.quantity.Value : 0, // Gán giá trị 0 nếu null
+        //                TotalAmount = od.total_amount.HasValue ? od.total_amount.Value : 0, // Gán giá trị 0 nếu null
+        //                ImageUrl = od.product.images
+        //                            .Where(img => img.is_primary == true) // Kiểm tra hình ảnh chính
+        //                            .Select(img => img.image_url)
+        //                            .FirstOrDefault(), // Lấy hình ảnh đầu tiên
+        //                Price = od.product.price.HasValue ? od.product.price.Value : 0, // Gán giá trị 0 nếu null
+        //                isReviewed = od.isReviewed ?? false, // Giả sử có thuộc tính này trong order_detail
+        //            }).ToList()
+        //        }).ToList();
+
         public ActionResult OrderPartial(int? page, int order_status_id, string MaTaiKhoan) // Thêm tham số MaTaiKhoan
         {
             // Lấy danh sách đơn hàng theo điều kiện
@@ -134,6 +167,7 @@ namespace VanPhongPham.Controllers
                         isReviewed = od.isReviewed ?? false, // Giả sử có thuộc tính này trong order_detail
                     }).ToList()
                 }).ToList();
+
 
             ViewBag.OrderStatus = db.order_status.ToList();
             ViewBag.CurrentStatus = order_status_id; // Thêm dòng này để lưu trạng thái hiện tại

@@ -17,7 +17,7 @@ function showModal(title, body, url, actionText) {
 
 // Hàm để xác nhận xóa
 function confirmDelete(url) {
-    showModal('Xác Nhận Xóa', 'Bạn có chắc chắn muốn xóa không? Hành động này không thể hoàn tác!', url, 'Xóa');
+    showModal('Xác Nhận Xóa', 'Bạn có chắc chắn muốn xóa không?', url, 'Xóa');
 }
 
 // Hàm để thông báo thành công
@@ -57,11 +57,46 @@ function saveCategory() {
                 $('select[name="category_id"]').val(response.newCategoryId);
                
             } else {
-                alert("Thêm thất bại");
+                if (response.message) {
+                    var userConfirmed = confirm(response.message);
+                    if (userConfirmed) {
+                        restoreCategory(response.existCategoryId);
+                    }
+                } else {
+                    alert("Thêm thất bại!");
+                }
             }
         },
         error: function () {
             alert("Có lỗi xảy ra khi lưu danh mục!");
+        }
+    });
+}
+
+// Hàm phục hồi danh mục
+function restoreCategory(categoryId) {
+    $.ajax({
+        url: '/Product/RecycleCategoryAJAX',
+        type: 'POST',
+        data: {
+            category_id: categoryId
+        },
+        success: function (response) {
+            if (response.success) {
+                alert('Danh mục đã được khôi phục thành công!');
+                $('#categoryModal').modal('hide');
+
+                var newOption = `<option value="${response.e_category_id}" selected>${response.e_category_name}</option>`;
+                $('select[name="category_id"]').append(newOption);
+
+                $('select[name="category_id"]').val(response.e_category_id);
+
+            } else {
+                alert('Không thể khôi phục danh mục.');
+            }
+        },
+        error: function () {
+            alert("Có lỗi xảy ra khi khôi phục danh mục!");
         }
     });
 }
@@ -151,6 +186,10 @@ function saveAttribute() {
                 alert("Thuộc tính đã được thêm mới!");
                 $('#attributeModal').modal('hide');
 
+                // Cập nhật UI để thêm thuộc tính mới vào danh sách select
+                var newOption = `<option value="${response.newAttributeId}" selected>${attributeName}</option>`;
+                $('select[name="attribute_id"]').append(newOption);
+
                 // Cập nhật UI để thêm thuộc tính mới vào danh sách checkbox
                 var newCheckbox = `
                     <div class="form-check">
@@ -161,11 +200,41 @@ function saveAttribute() {
                     </div>`;
                 $('#attributeCheckboxes').append(newCheckbox);
             } else {
-                alert("Thêm thất bại");
+                if (response.message) {
+                    var userConfirmed = confirm(response.message);
+                    if (userConfirmed) {
+                        restoreAttribute(response.existAttributeId);
+                    }
+                } else {
+                    alert("Thêm thất bại!");
+                }
             }
         },
         error: function () {
             alert("Có lỗi xảy ra khi lưu thuộc tính!");
+        }
+    });
+}
+
+// Hàm phục hồi thuộc tính
+function restoreAttribute(attributeId) {
+    $.ajax({
+        url: '/Product/RecycleAttributeAJAX',
+        type: 'POST',
+        data: {
+            attribute_id: attributeId
+        },
+        success: function (response) {
+            if (response.success) {
+                alert('Thuộc tính đã được khôi phục thành công!');
+                $('#attributeModal').modal('hide');
+                window.location.reload();
+            } else {
+                alert('Không thể khôi phục thuộc tính.');
+            }
+        },
+        error: function () {
+            alert("Có lỗi xảy ra khi khôi phục thuộc tính!");
         }
     });
 }
@@ -205,11 +274,57 @@ function saveAttributeValue() {
                     </div>`;
                 $('#attributeValueCheckboxes').append(newCheckbox);
             } else {
-                alert("Thêm thất bại");
+                if (response.message) {
+                    var userConfirmed = confirm(response.message);
+                    if (userConfirmed) {
+                        restoreAttributeValue(response.existAttributeValueId);
+                    }
+                } else {
+                    alert("Thêm thất bại!");
+                }
             }
         },
         error: function () {
             alert("Có lỗi xảy ra khi lưu giá trị thuộc tính!");
+        }
+    });
+}
+
+// Hàm phục hồi giá trị thuộc tính
+function restoreAttributeValue(attributeValueId) {
+    $.ajax({
+        url: '/Product/RecycleAttributeValueAJAX',
+        type: 'POST',
+        data: {
+            attribute_value_id: attributeValueId
+        },
+        success: function (response) {
+            if (response.success) {
+                alert('Giá trị đã được khôi phục thành công!');
+                $('#attributeValueModal').modal('hide');
+
+                // Thêm giá trị mới vào danh sách attributeValues
+                attributeValues.push({
+                    Attribute_id: response.e_attribute_id,
+                    Attribute_value_id: response.e_attribute_value_id,
+                    Value: response.e_value
+                });
+
+                // Cập nhật UI để thêm giá trị mới vào danh sách checkbox và đánh dấu là checked
+                var newCheckbox = `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="attribute_value_id" value="${response.e_attribute_value_id}" id="attributeValue_${response.e_attribute_value_id}" checked>
+                        <label class="form-check-label" for="attributeValue_${response.e_attribute_value_id}">
+                            ${response.e_value}
+                        </label>
+                    </div>`;
+                $('#attributeValueCheckboxes').append(newCheckbox);
+            } else {
+                alert('Không thể khôi phục thuộc tính.');
+            }
+        },
+        error: function () {
+            alert("Có lỗi xảy ra khi khôi phục thuộc tính!");
         }
     });
 }

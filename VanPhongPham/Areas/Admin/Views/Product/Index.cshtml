@@ -3,6 +3,15 @@
 @model IPagedList<VanPhongPham.Models.product>
 @{
     ViewBag.Title = "Sản phẩm - Quản Trị";
+    var message = ViewBag.Message;
+    var messageType = ViewBag.MessageType;
+}
+@if (message != null)
+{
+    <div class="alert alert-dark-@messageType alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        @message
+    </div>
 }
 <h4 class="font-weight-bold py-3 mb-0">Danh sách sản phẩm</h4>
 <div class="row">
@@ -59,7 +68,7 @@
                     </td>
                     <td>@product.stock_quantity</td>
                     <td>
-                        <a href="">@product.category.category_name</a>
+                        <a href="@Url.Action("Index", "Product", new { category_name = product.category.category_name })">@product.category.category_name</a>
                     </td>
                     <td>
                         <a class="btn icon-btn btn-outline-danger"
