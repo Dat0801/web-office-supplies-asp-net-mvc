@@ -17,8 +17,15 @@ namespace VanPhongPham.Areas.Admin.Controllers
         {
             productRepository = new ProductRepository();
         }
-        public ActionResult Index(int? page, string search_str)
+        public ActionResult Index(int? page, string category_name, string search_str)
         {
+            var message = TempData["Message"];
+            var messageType = TempData["MessageType"];
+            if (message != null)
+            {
+                ViewBag.Message = message;
+                ViewBag.MessageType = messageType;
+            }
             int pageSize = 7;
             int pageNumber = (page ?? 1);
             List<product> listProduct;
@@ -26,6 +33,10 @@ namespace VanPhongPham.Areas.Admin.Controllers
             {
                 listProduct = productRepository.SearchProduct(search_str);
                 ViewBag.search_str = search_str;
+            }
+            else if (category_name != null)
+            {
+                listProduct = productRepository.GetProductByCategoryName(category_name);
             }
             else
             {
@@ -161,7 +172,17 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
         public ActionResult DeleteProduct(string product_id)
         {
-            productRepository.DeleteProduct(product_id);
+            var result = productRepository.DeleteProduct(product_id);
+            if (result)
+            {
+                TempData["Message"] = "Xóa sản phẩm thành công!";
+                TempData["MessageType"] = "success";
+            }
+            else
+            {
+                TempData["Message"] = "Xóa sản phẩm thất bại!";
+                TempData["MessageType"] = "danger";
+            }
             return RedirectToAction("Index");
         }
 
@@ -173,12 +194,29 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
         public ActionResult RecycleProduct(string product_id)
         {
-            productRepository.RecycleProduct(product_id);
+            var result = productRepository.RecycleProduct(product_id);
+            if (result)
+            {
+                TempData["Message"] = "Khôi phục sản phẩm thành công!";
+                TempData["MessageType"] = "success";
+            }
+            else
+            {
+                TempData["Message"] = "Khôi phục sản phẩm thất bại!";
+                TempData["MessageType"] = "danger";
+            }
             return RedirectToAction("Index");
         }
 
         public ActionResult Category(int? page, string category_id, string search_str)
         {
+            var message = TempData["Message"];
+            var messageType = TempData["MessageType"];
+            if (message != null)
+            {
+                ViewBag.Message = message;
+                ViewBag.MessageType = messageType;
+            }
             int pageSize = 5;
             int pageNumber = (page ?? 1);
             List<category> listCategory;
@@ -200,17 +238,45 @@ namespace VanPhongPham.Areas.Admin.Controllers
             return View(listCategory.ToPagedList(pageNumber, pageSize));
         }
 
-
         [HttpPost]
         public ActionResult AddCategory(string action, category category)
         {
             if (action == "add")
             {
-                productRepository.AddCategory(category);
+                var existCategory = productRepository.GetCategoryByName(category.category_name);
+                if (existCategory != null)
+                {
+                    TempData["Message"] = "Tên danh mục đã tồn tại! Vui lòng thêm tên mới hoặc kiểm tra phần khôi phục!";
+                    TempData["MessageType"] = "danger";
+                }
+                else
+                {
+                    var result = productRepository.AddCategory(category);
+                    if (result)
+                    {
+                        TempData["Message"] = "Thêm danh mục thành công!";
+                        TempData["MessageType"] = "success";
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Thêm danh mục thất bại!";
+                        TempData["MessageType"] = "danger";
+                    }
+                }
             }
             else
             {
-                productRepository.UpdateCategory(category);
+                var result = productRepository.UpdateCategory(category);
+                if (result)
+                {
+                    TempData["Message"] = "Cập nhật danh mục thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Cập nhật danh mục thất bại!";
+                    TempData["MessageType"] = "success";
+                }
             }
             return RedirectToAction("Category", "/Product");
         }
@@ -222,12 +288,76 @@ namespace VanPhongPham.Areas.Admin.Controllers
             category category = new category
             {
                 category_id = productRepository.GenerateCategoryId(),
-                category_name = categoryName
+                category_name = categoryName,
             };
-            bool result = productRepository.AddCategory(category);
+
+            var existCategory = productRepository.GetRecycleCategory(categoryName);
+
+            if (existCategory != null)
+            {
+                return Json(new { success = false, message = $"Danh mục {categoryName} đã tồn tại và đã bị xóa. Bạn có muốn khôi phục lại danh mục này?", existCategoryId = existCategory.category_id });
+            }
+            else
+            {
+                bool result = productRepository.AddCategory(category);
+                if (result)
+                {
+                    return Json(new { success = true, newCategoryId = category.category_id });
+                }
+                else
+                {
+                    return Json(new { success = false });
+                }
+            }
+        }
+
+        public ActionResult DeleteCategory(string category_id)
+        {
+            var result = productRepository.DeleteCategory(category_id);
             if (result)
             {
-                return Json(new { success = true, newCategoryId = category.category_id });
+                TempData["Message"] = "Xóa danh mục thành công!";
+                TempData["MessageType"] = "success";
+            }
+            else
+            {
+                TempData["Message"] = "Xóa danh mục thất bại!";
+                TempData["MessageType"] = "danger";
+            }
+
+            return RedirectToAction("Category");
+        }
+
+        public ActionResult RecycleCategoryIndex()
+        {
+            List<category> listCategory = productRepository.GetRecycleCategories();
+            return View(listCategory);
+        }
+
+        public ActionResult RecycleCategory(string category_id)
+        {
+            var result = productRepository.RecycleCategory(category_id);
+            if (result)
+            {
+                TempData["Message"] = "Khôi phục danh mục thành công!";
+                TempData["MessageType"] = "success";
+            }
+            else
+            {
+                TempData["Message"] = "Khôi phục danh mục thất bại!";
+                TempData["MessageType"] = "danger";
+            }
+            return RedirectToAction("Category");
+        }
+
+        [HttpPost]
+        public JsonResult RecycleCategoryAJAX(string category_id)
+        {
+            bool result = productRepository.RecycleCategory(category_id);
+            var category = productRepository.GetCategory(category_id);
+            if (result)
+            {
+                return Json(new { success = true, e_category_id = category.category_id, e_category_name = category.category_name });
             }
             else
             {
@@ -235,14 +365,15 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
         }
 
-        public ActionResult DeleteCategory(string category_id)
-        {
-            productRepository.DeleteCategory(category_id);
-            return RedirectToAction("Category");
-        }
-
         public ActionResult Attribute(int? page, string attribute_id, string search_str)
         {
+            var message = TempData["Message"];
+            var messageType = TempData["MessageType"];
+            if (message != null)
+            {
+                ViewBag.Message = message;
+                ViewBag.MessageType = messageType;
+            }
             int pageSize = 5;
             int pageNumber = (page ?? 1);
             List<attribute> listAttribute;
@@ -269,11 +400,40 @@ namespace VanPhongPham.Areas.Admin.Controllers
         {
             if (action == "add")
             {
-                productRepository.AddAttribute(attribute);
+                var existAttribute = productRepository.GetAttributeByName(attribute.attribute_name);
+                if (existAttribute != null)
+                {
+                    TempData["Message"] = "Tên thuộc tính đã tồn tại! Vui lòng thêm tên mới hoặc kiểm tra phần khôi phục!";
+                    TempData["MessageType"] = "danger";
+                }
+                else
+                {
+                    var result = productRepository.AddAttribute(attribute);
+                    if (result)
+                    {
+                        TempData["Message"] = "Thêm thuộc tính thành công!";
+                        TempData["MessageType"] = "success";
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Thêm thuộc tính thất bại!";
+                        TempData["MessageType"] = "danger";
+                    }
+                }
             }
             else
             {
-                productRepository.UpdateAttribute(attribute);
+                var result = productRepository.UpdateAttribute(attribute);
+                if (result)
+                {
+                    TempData["Message"] = "Cập nhật thuộc tính thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Cập nhật thuộc tính thất bại!";
+                    TempData["MessageType"] = "danger";
+                }
             }
             return RedirectToAction("Attribute", "/Product");
         }
@@ -286,10 +446,72 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 attribute_id = productRepository.GenerateAttributeId(),
                 attribute_name = attributeName
             };
-            bool result = productRepository.AddAttribute(attribute);
+            var existAttribute = productRepository.GetRecycleAttribute(attributeName);
+
+            if (existAttribute != null)
+            {
+                return Json(new { success = false, message = $"Thuộc tính {attributeName} đã tồn tại và đã bị xóa. Bạn có muốn khôi phục lại thuộc tính này?", existAttributeId = existAttribute.attribute_id });
+            }
+            else
+            {
+                bool result = productRepository.AddAttribute(attribute);
+                if (result)
+                {
+                    return Json(new { success = true, newAttributeId = attribute.attribute_id });
+                }
+                else
+                {
+                    return Json(new { success = false });
+                }
+            }
+        }
+
+        public ActionResult DeleteAttribute(string attribute_id)
+        {
+            var result = productRepository.DeleteAttribute(attribute_id);
             if (result)
             {
-                return Json(new { success = true, newAttributeId = attribute.attribute_id });
+                TempData["Message"] = "Xóa thuộc tính thành công!";
+                TempData["MessageType"] = "success";
+            }
+            else
+            {
+                TempData["Message"] = "Xóa thuộc tính thất bại!";
+                TempData["MessageType"] = "danger";
+            }
+            return RedirectToAction("Attribute");
+        }
+
+        public ActionResult RecycleAttributeIndex()
+        {
+            List<attribute> listAttribute = productRepository.GetRecycleAttributes();
+            return View(listAttribute);
+        }
+
+        public ActionResult RecycleAttribute(string attribute_id)
+        {
+            var result = productRepository.RecycleAttribute(attribute_id);
+            if (result)
+            {
+                TempData["Message"] = "Khôi phục thuộc tính thành công!";
+                TempData["MessageType"] = "success";
+            }
+            else
+            {
+                TempData["Message"] = "Khôi phục thuộc tính thất bại!";
+                TempData["MessageType"] = "danger";
+            }
+            return RedirectToAction("Attribute");
+        }
+
+        [HttpPost]
+        public JsonResult RecycleAttributeAJAX(string attribute_id)
+        {
+            bool result = productRepository.RecycleAttribute(attribute_id);
+            var attribute = productRepository.GetAttribute(attribute_id);
+            if (result)
+            {
+                return Json(new { success = true, e_attribute_id = attribute.attribute_id, e_attribute_name = attribute.attribute_name });
             }
             else
             {
@@ -297,14 +519,15 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
         }
 
-        public ActionResult DeleteAttribute(string attribute_id)
-        {
-            productRepository.DeleteAttribute(attribute_id);
-            return RedirectToAction("Attribute");
-        }
-
         public ActionResult AttributeValue(int? page, string attribute_value_id, string search_str)
         {
+            var message = TempData["Message"];
+            var messageType = TempData["MessageType"];
+            if (message != null)
+            {
+                ViewBag.Message = message;
+                ViewBag.MessageType = messageType;
+            }
             int pageSize = 5;
             int pageNumber = (page ?? 1);
             List<attribute_value> listAttributeValue;
@@ -336,14 +559,23 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 attribute_id = attribute_id,
                 value = value
             };
-            bool result = productRepository.AddAttributeValue(attribute_Value);
-            if (result)
+            var existAttributeValue = productRepository.GetRecycleAttributeValue(value);
+
+            if (existAttributeValue != null)
             {
-                return Json(new { success = true, newAttributeValueId = attribute_Value.attribute_value_id });
+                return Json(new { success = false, message = $"Giá trị {value} đã tồn tại và đã bị xóa. Bạn có muốn khôi phục lại giá trị này?", existAttributeValueId = existAttributeValue.attribute_value_id });
             }
             else
             {
-                return Json(new { success = false });
+                bool result = productRepository.AddAttributeValue(attribute_Value);
+                if (result)
+                {
+                    return Json(new { success = true, newAttributeValueId = attribute_Value.attribute_value_id });
+                }
+                else
+                {
+                    return Json(new { success = false });
+                }
             }
         }
 
@@ -352,19 +584,95 @@ namespace VanPhongPham.Areas.Admin.Controllers
         {
             if (action == "add")
             {
-                productRepository.AddAttributeValue(attribute_Value);
+                var existValue = productRepository.GetAttributeValueByValue(attribute_Value.value);
+                if (existValue != null)
+                {
+                    TempData["Message"] = "Giá trị đã tồn tại! Vui lòng thêm giá trị mới hoặc kiểm tra phần khôi phục!";
+                    TempData["MessageType"] = "danger";
+                }
+                else
+                {
+                    var result = productRepository.AddAttributeValue(attribute_Value);
+                    if (result)
+                    {
+                        TempData["Message"] = "Thêm giá trị thành công!";
+                        TempData["MessageType"] = "success";
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Thêm giá trị thất bại!";
+                        TempData["MessageType"] = "danger";
+                    }
+                }
             }
             else
             {
-                productRepository.UpdateAttributeValue(attribute_Value);
+                var result = productRepository.UpdateAttributeValue(attribute_Value);
+                if (result)
+                {
+                    TempData["Message"] = "Cập nhật giá trị thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Cập nhật giá trị thất bại!";
+                    TempData["MessageType"] = "danger";
+                }
             }
             return RedirectToAction("AttributeValue", "/Product");
         }
 
         public ActionResult DeleteAttributeValue(string attribute_value_id)
         {
-            productRepository.DeleteAttributeValue(attribute_value_id);
+            var result = productRepository.DeleteAttributeValue(attribute_value_id);
+            if (result)
+            {
+                TempData["Message"] = "Xóa giá trị thành công!";
+                TempData["MessageType"] = "success";
+            }
+            else
+            {
+                TempData["Message"] = "Xóa giá trị thất bại!";
+                TempData["MessageType"] = "danger";
+            }
             return RedirectToAction("AttributeValue");
+        }
+
+        public ActionResult RecycleAttributeValueIndex()
+        {
+            List<attribute_value> listAttributeValue = productRepository.GetRecycleAttributeValues();
+            return View(listAttributeValue);
+        }
+
+        public ActionResult RecycleAttributeValue(string attribute_value_id)
+        {
+            var result = productRepository.RecycleAttributeValue(attribute_value_id);
+            if (result)
+            {
+                TempData["Message"] = "Khôi phục giá trị thành công!";
+                TempData["MessageType"] = "success";
+            }
+            else
+            {
+                TempData["Message"] = "Khôi phục giá trị thất bại!";
+                TempData["MessageType"] = "danger";
+            }
+            return RedirectToAction("Attribute");
+        }
+
+        [HttpPost]
+        public JsonResult RecycleAttributeValueAJAX(string attribute_value_id)
+        {
+            bool result = productRepository.RecycleAttributeValue(attribute_value_id);
+            var attribute_value = productRepository.GetAttributeValue(attribute_value_id);
+            if (result)
+            {
+                return Json(new { success = true, e_attribute_value_id = attribute_value.attribute_value_id, e_value = attribute_value.value, e_attribute_id = attribute_value.attribute.attribute_id });
+            }
+            else
+            {
+                return Json(new { success = false });
+            }
         }
     }
 }

@@ -1,11 +1,22 @@
-﻿@model List<VanPhongPham.Models.supplier>
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.supplier>
 @{
     ViewBag.Title = "Nhà cung cấp - Quản Trị";
+    var message = ViewBag.Message;
+    var messageType = ViewBag.MessageType;
+}
+@if (message != null)
+{
+    <div class="alert alert-dark-@messageType alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        @message
+    </div>
 }
 <div class="card mb-4">
     <h6 class="card-header">Thêm mới nhà cung cấp</h6>
     <div class="card-body">
-        <form method="post" action="/Supplier/AddSupplier">
+        <form method="post" action="@Url.Action("AddSupplier", "Supplier")">
             <div class="form-row">
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Mã nhà cung cấp</label>
@@ -41,13 +52,19 @@
 <div class="row">
     <div class="navbar-nav my-3 ml-2">
         <!-- Search -->
-        <label class="nav-item navbar-text navbar-search-box p-0 active">
-            <a href="#"><i class="feather icon-search navbar-icon align-middle"></i></a>
-            <span class="navbar-search-input pl-2">
-                <input type="text" class="form-control navbar-text mx-2" placeholder="Tìm kiếm...">
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Index", "Product")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.search_str ?? "")">
             </span>
-        </label>
+            <button class="btn icon-btn btn-outline-primary">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
     </div>
+    <!-- Recycle -->
+    <a class="btn icon-btn btn-outline-secondary my-3 ml-2" href="@Url.Action("RecycleCategoryIndex","Product")" title="Phục hồi">
+        <i class="feather icon-rotate-cw navbar-icon align-middle"></i>
+    </a>
 </div>
 <div class="card">
     <table class="table card-table table-responsive-md">
@@ -61,10 +78,15 @@
                     <td>@supplier.email</td>
                     <td>@supplier.phone_number</td>
                     <td>
-                        <a class="btn icon-btn btn-outline-danger" href="@Url.Action("DeleteSupplier", "Supplier", new { supplier_id = supplier.supplier_id })">
+                        <a class="btn icon-btn btn-outline-danger" 
+                           href=""
+                           title="Xóa"
+                           onclick="confirmDelete('@Url.Action("DeleteSupplier", "Supplier", new { supplier_id = supplier.supplier_id })'); return false;">
                             <i class="feather icon-user-minus navbar-icon align-middle"></i>
                         </a>
-                        <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("Index", "Supplier", new { supplier_id = supplier.supplier_id })">
+                        <a class="btn icon-btn btn-outline-info ml-2"
+                           title="Sửa"
+                           href="@Url.Action("Index", "Supplier", new { supplier_id = supplier.supplier_id })">
                             <i class="feather icon-user-check navbar-icon align-middle"></i>
                         </a>
                     </td>
@@ -72,4 +94,9 @@
             }
         </tbody>
     </table>
+    <div class="d-flex justify-content-center">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+        </div>
+    </div>
 </div>

@@ -8,8 +8,8 @@ create table products
 (
 	product_id varchar(10) not null,
 	category_id varchar(10) not null,
-	product_name nvarchar(200) not null unique,
-	description nvarchar(1000) default null,
+	product_name nvarchar(255) not null unique,
+	description nvarchar(max) default null,
 	purchase_price float default 0,
 	price_coefficient float default 0.5,
 	price float default 0,
@@ -43,7 +43,7 @@ create table product_promotions
 create table categories 
 (
 	category_id varchar(10) not null,
-	category_name nvarchar(50) not null unique,
+	category_name nvarchar(150) not null unique,
 	status bit default 1,
 	created_at datetime default getdate(),
 	updated_at datetime default getdate()
@@ -52,7 +52,7 @@ create table categories
 create table suppliers
 (
 	supplier_id varchar(10) not null,
-	supplier_name nvarchar(50) not null unique,
+	supplier_name nvarchar(200) not null unique,
 	email varchar(50) default null,
 	phone_number char(10) not null,
 	status bit default 1,
@@ -79,7 +79,6 @@ create table product_attribute_values
 (
 	product_id varchar(10) not null,
 	attribute_value_id varchar(10) not null,
-	status bit default 1,
 )
 
 create table images
@@ -722,7 +721,7 @@ VALUES ('PRO001', 'VAL001'),
 ('PRO004', 'VAL013'),
 ('PRO004', 'VAL014');
 
-INSERT INTO images (image_id, product_id, image_url, is_primary)
+INSERT INTO images (product_id, image_url, is_primary)
 VALUES
 ('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052395/xaxsqpih3wlkhn3svtzu.webp', 1),
 ('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052396/e7f3ibtwciwnirlyrfy5.webp', 0),

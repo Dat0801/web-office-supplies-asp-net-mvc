@@ -13,7 +13,7 @@ namespace VanPhongPham.Models
         {
             _context = new DB_VanPhongPhamDataContext();
         }
-       
+
         public string GenerateProductId()
         {
             product product = _context.products.ToList().LastOrDefault();
@@ -29,12 +29,17 @@ namespace VanPhongPham.Models
 
         public List<product> GetProducts()
         {
-            return _context.products.Where(p => p.status == true).ToList();
+            return _context.products.Where(p => p.status == true && p.category.status == true).ToList();
         }
 
         public product GetProduct(string product_id)
         {
             return _context.products.FirstOrDefault(p => p.status == true && p.product_id == product_id);
+        }
+
+        public List<product> GetProductByCategoryName(string category_name)
+        {
+            return _context.products.Where(p => p.category.category_name == category_name && p.status == true).ToList();
         }
 
         public List<product> GetRecycleProducts()
@@ -123,23 +128,6 @@ namespace VanPhongPham.Models
             }
         }
 
-        public string GenerateImageId()
-        {
-            image image = _context.images.ToList().LastOrDefault();
-            int num = 1;
-            if(image != null)
-            {
-                num = int.Parse(image.image_id.Substring(3)) + 1;
-            }
-            string image_id = "IMG";
-            if (num < 10)
-                image_id = "IMG00";
-            else if (num < 100)
-                image_id = "IMG0";
-            image_id += num;
-            return image_id;
-        }
-
         public image GetMainImageByProductId(string product_id)
         {
             return _context.images.FirstOrDefault(img => img.product_id == product_id && img.is_primary == true);
@@ -159,14 +147,11 @@ namespace VanPhongPham.Models
         {
             try
             {
-                if(image.image_id == null)
-                {
-                    image.image_id = GenerateImageId();
-                }
                 _context.images.InsertOnSubmit(image);
                 _context.SubmitChanges();
                 return true;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
@@ -210,10 +195,8 @@ namespace VanPhongPham.Models
         {
             try
             {
-                // Lấy danh sách các hình ảnh phụ hiện tại của sản phẩm
                 var existingImages = GetAdditionalImageByProductId(productId);
 
-                // Xóa hình ảnh phụ không còn trong danh sách mới
                 foreach (var image in existingImages.ToList())
                 {
                     if (!newImageUrls.Contains(image.image_url))
@@ -222,12 +205,10 @@ namespace VanPhongPham.Models
                     }
                 }
 
-                // Thêm hình ảnh mới vào danh sách
                 foreach (var newImageUrl in newImageUrls)
                 {
                     if (!existingImages.Any(img => img.image_url == newImageUrl))
                     {
-                        // Nếu hình ảnh mới chưa tồn tại trong danh sách, thêm vào
                         image additionalImage = new image
                         {
                             image_url = newImageUrl,
@@ -262,14 +243,19 @@ namespace VanPhongPham.Models
 
         public List<category> GetCategories()
         {
-            return _context.categories.ToList();
+            return _context.categories.Where(c => c.status == true).ToList();
         }
 
         public category GetCategory(string category_id)
         {
             return _context.categories.FirstOrDefault(cat => cat.category_id == category_id);
         }
-       
+
+        public category GetCategoryByName(string category_name)
+        {
+            return _context.categories.FirstOrDefault(cat => cat.category_name == category_name);
+        }
+
         public List<category> SearchCategory(string search_str)
         {
             return _context.categories
@@ -278,11 +264,38 @@ namespace VanPhongPham.Models
                 .ToList();
         }
 
-      
+        public List<category> GetRecycleCategories()
+        {
+            return _context.categories.Where(c => c.status == false).ToList();
+        }
+
+        public bool RecycleCategory(string category_id)
+        {
+            category category = _context.categories.FirstOrDefault(c => c.category_id == category_id);
+            try
+            {
+                category.status = true;
+                _context.SubmitChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        public category GetRecycleCategory(string category_name)
+        {
+            return _context.categories.FirstOrDefault(c => c.category_name == category_name && c.status == false);
+        }
+
         public bool AddCategory(category category)
         {
             try
             {
+                category.status = (category.status == null) ? true : category.status;
+                category.created_at = (category.created_at == null) ? DateTime.Now : category.created_at;
                 _context.categories.InsertOnSubmit(category);
                 _context.SubmitChanges();
                 return true;
@@ -314,7 +327,7 @@ namespace VanPhongPham.Models
             category category = _context.categories.FirstOrDefault(cat => cat.category_id == pcategory_id);
             try
             {
-                _context.categories.DeleteOnSubmit(category);
+                category.status = false;
                 _context.SubmitChanges();
                 return true;
             }
@@ -324,7 +337,6 @@ namespace VanPhongPham.Models
                 return false;
             }
         }
-
         public string GenerateAttributeId()
         {
             attribute attribute = _context.attributes.ToList().LastOrDefault();
@@ -340,12 +352,17 @@ namespace VanPhongPham.Models
 
         public List<attribute> GetAttributes()
         {
-            return _context.attributes.ToList();
+            return _context.attributes.Where(att => att.status == true).ToList();
         }
 
         public attribute GetAttribute(string attribute_id)
         {
             return _context.attributes.FirstOrDefault(att => att.attribute_id == attribute_id);
+        }
+
+        public attribute GetAttributeByName(string attribute_name)
+        {
+            return _context.attributes.FirstOrDefault(att => att.attribute_name == attribute_name);
         }
 
         public List<attribute> SearchAttribute(string search_str)
@@ -360,6 +377,7 @@ namespace VanPhongPham.Models
         {
             try
             {
+                attribute.status = (attribute.status == null) ? true : attribute.status;
                 _context.attributes.InsertOnSubmit(attribute);
                 _context.SubmitChanges();
                 return true;
@@ -393,7 +411,7 @@ namespace VanPhongPham.Models
             attribute attribute = _context.attributes.FirstOrDefault(att => att.attribute_id == pattribute_id);
             try
             {
-                _context.attributes.DeleteOnSubmit(attribute);
+                attribute.status = false;
                 _context.SubmitChanges();
                 return true;
             }
@@ -404,14 +422,45 @@ namespace VanPhongPham.Models
             }
         }
 
+        public List<attribute> GetRecycleAttributes()
+        {
+            return _context.attributes.Where(c => c.status == false).ToList();
+        }
+
+        public bool RecycleAttribute(string attribute_id)
+        {
+            attribute attribute = _context.attributes.FirstOrDefault(att => att.attribute_id == attribute_id);
+            try
+            {
+                attribute.status = true;
+                _context.SubmitChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        public attribute GetRecycleAttribute(string attribute_name)
+        {
+            return _context.attributes.FirstOrDefault(att => att.attribute_name == attribute_name && att.status == false);
+        }
+
         public List<attribute_value> GetAttributeValues()
         {
-            return _context.attribute_values.ToList();
+            return _context.attribute_values.Where(att => att.status == true && att.attribute.status == true).ToList();
         }
 
         public attribute_value GetAttributeValue(string attribute_value_id)
         {
             return _context.attribute_values.FirstOrDefault(att_val => att_val.attribute_value_id == attribute_value_id);
+        }
+
+        public attribute_value GetAttributeValueByValue(string value)
+        {
+            return _context.attribute_values.FirstOrDefault(att => att.value == value);
         }
 
         public List<attribute_value> GetAttributeValueByProduct(string product_id)
@@ -438,6 +487,7 @@ namespace VanPhongPham.Models
         {
             try
             {
+                attribute_Value.status = (attribute_Value.status == null) ? true : attribute_Value.status;
                 _context.attribute_values.InsertOnSubmit(attribute_Value);
                 _context.SubmitChanges();
                 return true;
@@ -455,6 +505,7 @@ namespace VanPhongPham.Models
             try
             {
                 attribute_Value.attribute_value_id = p_attribute_Value.attribute_value_id;
+                attribute_Value.attribute_id = p_attribute_Value.attribute_id;
                 attribute_Value.value = p_attribute_Value.value;
                 _context.SubmitChanges();
                 return true;
@@ -472,7 +523,7 @@ namespace VanPhongPham.Models
 
             try
             {
-                _context.attribute_values.DeleteOnSubmit(attribute_Value);
+                attribute_Value.status = false;
                 _context.SubmitChanges();
                 return true;
             }
@@ -481,6 +532,32 @@ namespace VanPhongPham.Models
                 Console.WriteLine(ex.Message);
                 return false;
             }
+        }
+
+        public List<attribute_value> GetRecycleAttributeValues()
+        {
+            return _context.attribute_values.Where(att => att.status == false).ToList();
+        }
+
+        public bool RecycleAttributeValue(string attribute_value_id)
+        {
+            attribute_value attribute_Value = _context.attribute_values.FirstOrDefault(att => att.attribute_value_id == attribute_value_id);
+            try
+            {
+                attribute_Value.status = true;
+                _context.SubmitChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        public attribute_value GetRecycleAttributeValue(string value)
+        {
+            return _context.attribute_values.FirstOrDefault(att => att.value == value && att.status == false);
         }
 
         public string GenerateAttributeValueId()
@@ -513,17 +590,15 @@ namespace VanPhongPham.Models
 
         public List<product_attribute_value> GetProductAttributeValueByProductId(string productId)
         {
-            return _context.product_attribute_values.Where(att => att.product_id == productId).ToList();
+            return _context.product_attribute_values.Where(att => att.product_id == productId && att.attribute_value.status == true).ToList();
         }
 
         public bool UpdateProductAttributeValue(string productId, List<string> newAttributeValueIds)
         {
             try
             {
-                // Lấy danh sách các `attribute_value_id` hiện tại của sản phẩm
                 var existingAttributeValues = GetProductAttributeValueByProductId(productId);
 
-                // Xóa các `attribute_value_id` không còn trong danh sách mới
                 foreach (var attributeValue in existingAttributeValues)
                 {
                     if (!newAttributeValueIds.Contains(attributeValue.attribute_value_id))
@@ -532,7 +607,6 @@ namespace VanPhongPham.Models
                     }
                 }
 
-                // Thêm `attribute_value_id` mới vào nếu chưa có trong danh sách
                 foreach (var newAttributeValueId in newAttributeValueIds)
                 {
                     if (!existingAttributeValues.Any(att => att.attribute_value_id == newAttributeValueId))
@@ -545,7 +619,6 @@ namespace VanPhongPham.Models
                             });
                     }
                 }
-                // Lưu các thay đổi
                 _context.SubmitChanges();
                 return true;
             }
