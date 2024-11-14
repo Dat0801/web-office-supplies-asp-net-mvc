@@ -1,0 +1,277 @@
+﻿@model VanPhongPham.Models.OrderViewModel
+@using VanPhongPham.Models;
+
+@{
+    ViewBag.Title = "UserOrderDetails";
+    var totalWeight = ViewBag.TotalWeight;
+    var totalAmountOrder = ViewBag.TotalAmountOrder;
+    var addressParts = Model.InfoAddress.Split(new[] { ", " }, StringSplitOptions.None);
+    var name = addressParts.ElementAtOrDefault(0) ?? "";
+    var phone = addressParts.ElementAtOrDefault(1) ?? "";
+    var address = string.Join(", ", addressParts.Skip(2));
+    var to_ward_name = addressParts.ElementAtOrDefault(3) ?? "";
+    var to_district_name = addressParts.ElementAtOrDefault(4) ?? "";
+    var to_province_name = addressParts.ElementAtOrDefault(5) ?? "";
+
+    var admin = Session["Admin"] as user;
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid p-0 m-0">
+    <!-- Thông tin hóa đơn và Thông tin giao hàng -->
+    <div class="row mb-5">
+        <div class="col" style="border: 1px solid black; border-radius: 10px; padding: 10px; margin-right: 20px; width: 100%">
+            <h3 class="text-center text-primary">Thông tin hóa đơn</h3>
+            <div class="border p-3">
+                <div class="row">
+                    <div class="col-6">
+                        <p><strong>Mã hóa đơn:</strong> @Model.OrderId</p>
+                        <p><strong>Ngày đặt:</strong> @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</p>
+                        @if (Model.OrderStatusName != "Đã hủy")
+                        {
+                            <p><strong>Tình trạng đơn hàng:</strong> <span class="text-success" style="font-weight: bold">@Model.OrderStatusName</span></p>
+                        }
+                        else
+                        {
+                            <p class="text-danger"><strong>Tình trạng đơn hàng:</strong> <span class="text-success" style="font-weight: bold">@Model.OrderStatusName</span></p>
+                        }
+
+                        @if (Model.EmployeeId != "")
+                        {
+                            if (Model.FullNameEmployee != null && Model.FullNameEmployee.Any())
+                            {
+                                <p><strong>Người xử lý:</strong> @Model.EmployeeId - @Model.FullNameEmployee</p>
+                            }
+                            else
+                            {
+                                <p><strong>Người xử lý:</strong> @Model.EmployeeId</p>
+                            }
+                        }
+                        else
+                        {
+                            <p><strong>Người xử lý:</strong></p>
+                        }
+                    </div>
+                    <div class="col-6">
+                        <p><strong>Tổng tiền hàng:</strong> <span>₫@totalAmountOrder.ToString("N0")</span></p>
+
+                        <p><strong>Phí vận chuyển:</strong> <span>₫@(Model.ShippingFee.HasValue ? Model.ShippingFee.Value.ToString("N0") : "0")</span></p>
+
+                        <p><strong>Thành tiền:</strong> <span class="text-danger" style="font-weight: bold">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span></p>
+
+                        @if (Model.FullNameCustomer != "")
+                        {
+                            <p><strong>Khách hàng:</strong> @Model.CustomerId - @Model.FullNameCustomer</p>
+                        }
+                        else
+                        {
+                            <p><strong>Khách hàng:</strong> @Model.CustomerId</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5" style="border: 1px solid black; border-radius: 10px; padding: 10px;">
+            <h3 class="text-center text-primary">Thông tin giao hàng</h3>
+            <div class="border p-3">
+                <p><strong>Họ tên người nhận:</strong> @name</p>
+                <p><strong>Địa chỉ giao hàng:</strong> @address</p>
+                <p><strong>Số điện thoại:</strong> @phone</p>
+                <p><strong>Lời nhắn từ khách hàng:</strong> @Model.OrderNote</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chi tiết hóa đơn -->
+    <h3 class="text-center text-primary">Chi tiết hóa đơn</h3>
+    <div class="card">
+        <table class="table card-table table-responsive-lg">
+            <thead class="thead-light">
+                <tr class="text-center">
+                    <th>STT</th>
+                    <th>Sản phẩm</th>
+                    <th>Tên</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.OrderDetails.Count; i++)
+                {
+                    var productprice = 0.0;
+
+                    if (Model.OrderDetails[i].Promotion_Price == 0)
+                    {
+                        productprice = Model.OrderDetails[i].Price;
+                    }
+                    else
+                    {
+                        productprice = Model.OrderDetails[i].Promotion_Price;
+                    }
+
+                    var weight = int.Parse(Model.OrderDetails[i].ProductWeight.Split(' ')[0]) * Model.OrderDetails[i].Quantity;
+
+                    <tr class="text-center product-item" data-name="@Model.OrderDetails[i].ProductName" data-quantity="@Model.OrderDetails[i].Quantity" data-price="@productprice" data-weight="@weight">
+                        <td class="align-middle">@(i + 1)</td>
+                        <td class="align-middle">
+                            <img src="@Model.OrderDetails[i].ImageUrl" alt="Ảnh sản phẩm" style="width: 80px; height: auto;">
+                        </td>
+                        <td class="align-middle">@Model.OrderDetails[i].ProductName</td>
+                        <td class="align-middle">@Model.OrderDetails[i].Quantity</td>
+
+                        @if (Model.OrderDetails[i].Promotion_Price == 0)
+                        {
+                            <td class="align-middle" style="color: #272727;">₫@Model.OrderDetails[i].Price.ToString("N0")</td>
+                        }
+                        else
+                        {
+                            <td class="align-middle" style="color: #272727;"><del style="margin-right:10px; color: #777777">₫@Model.OrderDetails[i].Price.ToString("N0")</del>₫@Model.OrderDetails[i].Promotion_Price.ToString("N0")</td>
+                        }
+
+                        <td class="align-middle" style="color: #272727;">₫@Model.OrderDetails[i].TotalAmount.ToString("N0")</td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tùy chọn trạng thái -->
+    <!--<div class="d-flex justify-content-center my-4">
+        <label class="mr-3"><input type="radio" name="status" value="processing" /> Đang xử lý</label>
+        <label class="mr-3"><input type="radio" name="status" value="delivering" /> Đang giao</label>
+        <label class="mr-3"><input type="radio" name="status" value="received" /> Đã nhận</label>
+        <label><input type="radio" name="status" value="canceled" /> Đã hủy</label>
+    </div>-->
+    <!-- Nút xác nhận -->
+    @if (Model.OrderStatusID == 1)
+    {
+        <div class="text-center mt-5">
+            <button type="button" id="confirmBtn" class="btn btn-primary">Xác nhận</button>
+        </div>
+    }
+</div>
+<a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("Index","UserOrder")" title="Quay lại">
+    <i class="feather icon-corner-up-left"></i>
+</a>
+
+<script>
+    if (@Model.OrderStatusID === 1)
+    {
+        var payment_type_id;
+        var cod_amount;
+        var to_name = "@Html.Raw(name)";
+        var to_phone = "@Html.Raw(phone)";
+        var to_address = "@Html.Raw(address)";
+        var to_ward_name = "@Html.Raw(to_ward_name)";
+        var to_district_name = "@Html.Raw(to_district_name)";
+        var to_province_name = "@Html.Raw(to_province_name)";
+        var weight = "@Html.Raw(totalWeight)";
+        var service_type_id;
+
+        // Đặt các giá trị cho payment_type_id và cod_amount dựa trên methodId
+        var methodId = "@Model.MethodId";
+        if (methodId === "PAY001")
+        {
+            payment_type_id = 2;
+            cod_amount = "@Model.TotalAmount";
+        }
+        else
+        {
+            payment_type_id = 1;
+            cod_amount = 0;
+        }
+
+        // Đặt giá trị cho service_type_id dựa trên weight
+        if (weight < 20000)
+        {
+            service_type_id = 2;
+        }
+        else
+        {
+            service_type_id = 5;
+        }
+
+        var items = [];
+
+        // Lấy tất cả các phần tử với class 'product-item'
+        document.querySelectorAll('.product-item').forEach(function (row) {
+            // Lấy dữ liệu từ các thuộc tính data- của từng dòng
+            var productname = row.getAttribute('data-name');
+            var productquantity = parseInt(row.getAttribute('data-quantity'));
+            var productprice = parseFloat(row.getAttribute('data-price'));
+            var productweight = parseInt(row.getAttribute('data-weight'));
+
+            // Thêm dữ liệu vào mảng items
+            items.push({ name: productname, quantity: productquantity, price: productprice, weight: productweight });
+        });
+
+        sessionStorage.setItem("itemsAdmin", JSON.stringify({
+            payment_type_id: payment_type_id,
+            to_name: to_name,
+            to_phone: to_phone,
+            to_address: to_address,
+            to_ward_name: to_ward_name,
+            to_district_name: to_district_name,
+            to_province_name: to_province_name,
+            cod_amount: cod_amount,
+            weight: weight,
+            service_type_id: service_type_id,
+            items: items,
+        }));
+
+        // Kiểm tra nếu có dữ liệu trong sessionStorage và xóa khi chuyển hướng
+        window.addEventListener('beforeunload', function () {
+            // Xóa items trong sessionStorage khi người dùng rời khỏi trang
+            sessionStorage.removeItem('itemsAdmin');
+        });
+    }
+
+    document.getElementById("confirmBtn").addEventListener('click', async function () {
+
+        const itemsAdmin = JSON.parse(sessionStorage.getItem('itemsAdmin'));
+
+        const createOrderResponse = await createOrder(
+            itemsAdmin.payment_type_id,
+            itemsAdmin.to_name,
+            itemsAdmin.to_phone,
+            itemsAdmin.to_address,
+            itemsAdmin.to_ward_name,
+            itemsAdmin.to_district_name,
+            itemsAdmin.to_province_name,
+            itemsAdmin.cod_amount,
+            itemsAdmin.weight,
+            itemsAdmin.service_type_id,
+            itemsAdmin.items
+        );
+
+        if (createOrderResponse) {
+
+            const response = await fetch('/UserOrder/UpdateOrderAfterConfirm', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ord_id: "@Model.OrderId",
+                    employeeid: "@admin.user_id",
+                    ordercode: createOrderResponse.order_code
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                const url = `@Url.Action("Index", "UserOrder")`;
+                window.location.href = url;
+            }
+            else {
+                console.log("Lỗi: ", result.message);
+            }
+        }
+        else
+        {
+            console.error("Không tạo được đơn hàng.");
+        }
+
+    });
+</script>

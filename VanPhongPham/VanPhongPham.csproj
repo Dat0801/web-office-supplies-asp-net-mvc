@@ -564,6 +564,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Areas\Admin\Views\UserOrder\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\UserOrder\UserOrderDetails.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>

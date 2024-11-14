@@ -21,12 +21,106 @@ namespace VanPhongPham.Areas.Admin.Controllers
             
             if (search_str != null)
             {
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
                 ViewBag.search_str = search_str;
             }
-            else
-            {
-            }
             return View(orders.ToPagedList(pageNumber, pageSize));
+        }
+        public ActionResult UserOrderDetails(string ord_id)
+        {
+            var cartdetails = db.orders
+                .Where(o => o.order_id == ord_id)
+                .Select(o => new OrderViewModel
+                {
+                    OrderId = o.order_id,
+                    EmployeeId = o.employee_id,
+                    FullNameEmployee = db.users.FirstOrDefault(u => u.user_id == o.employee_id).full_name,
+                    CustomerId = o.customer_id,
+                    FullNameCustomer = db.users.FirstOrDefault(u => u.user_id == o.customer_id).full_name,
+                    InfoAddress = o.info_address,
+                    OrderNote = o.ordernote,
+                    OrderCode = o.ordercode,
+                    MethodId = o.method_id,
+                    MethodName = o.payment_method.method_name,
+                    DeliveryDate = o.delivery_date,
+                    ShippingFee = o.shipping_fee,
+                    TotalAmount = o.total_amount,
+                    OrderStatusID = o.order_status_id,
+                    OrderStatusName = o.order_status.order_status_name,
+                    CreatedAt = o.created_at,
+                    OrderDetails = o.order_details.Select(od => new OrderDetailViewModel
+                                    {
+                                        ProductID = od.product.product_id,
+                                        ProductName = od.product.product_name,
+                                        ProductWeight = od.product.product_attribute_values
+                                                        .Join(
+                                                            db.attribute_values, // Bảng thứ hai để kết hợp
+                                                            pav => pav.attribute_value_id, // Khóa từ bảng `product_attribute_values`
+                                                            av => av.attribute_value_id,   // Khóa từ bảng `attribute_values`
+                                                            (pav, av) => new { pav, av }   // Kết hợp cả hai bảng
+                                                        )
+                                                        .Where(x => x.av.attribute_id == "ATT004") // Lọc `attribute_id` là "ATT004"
+                                                        .Select(x => x.av.value) // Lấy `value` từ `attribute_values`
+                                                        .FirstOrDefault(), // Lấy giá trị đầu tiên hoặc `null` nếu không có
+                                        Quantity = od.quantity.HasValue ? od.quantity.Value : 0,
+                                        QuantityProduct = od.product.stock_quantity.HasValue ? od.product.stock_quantity.Value : 0,
+                                        TotalAmount = od.total_amount ?? 0,
+                                        ImageUrl = od.product.images
+                                                    .Where(img => img.is_primary == true)
+                                                    .Select(img => img.image_url)
+                                                    .FirstOrDefault(),
+                                        Price = od.price ?? 0,
+                                        Promotion_Price = od.discountPrice.HasValue ? od.discountPrice.Value : 0
+                                    }).ToList()
+                })
+                .FirstOrDefault();
+
+            // Tính tổng trọng lượng cho tất cả các sản phẩm đã chọn trong giỏ hàng
+            int totalWeight = 0;
+            var totalAmountOrder = 0.0;
+            foreach (var detail in cartdetails.OrderDetails)
+            {
+                totalAmountOrder += detail.TotalAmount;
+                if (!string.IsNullOrEmpty(detail.ProductWeight))
+                {
+                    // Tìm vị trí khoảng trắng đầu tiên và cắt chuỗi
+                    int spaceIndex = detail.ProductWeight.IndexOf(' ');
+                    if (spaceIndex != -1)
+                    {
+                        string weightString = detail.ProductWeight.Substring(0, spaceIndex);
+                        if (int.TryParse(weightString, out int productWeight))
+                        {
+                            totalWeight += detail.Quantity * productWeight;
+                        }
+                    }
+                }
+            }
+
+            ViewBag.TotalWeight = totalWeight;
+            ViewBag.TotalAmountOrder = totalAmountOrder;
+            return View(cartdetails);
+        }
+        public ActionResult UpdateOrderAfterConfirm(string ord_id, string employeeid, string ordercode)
+        {
+            try
+            {
+                var dborder = db.orders.FirstOrDefault(o => o.order_id == ord_id);
+
+                if (dborder != null)
+                {
+                    dborder.employee_id = employeeid;
+                    dborder.ordercode = ordercode;
+                    dborder.order_status_id = 2;
+                }
+
+                db.SubmitChanges();
+
+                return Json(new { success = true, message = "Dữ liệu đã được lưu thành công." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
     }
 }
