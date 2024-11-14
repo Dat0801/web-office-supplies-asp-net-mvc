@@ -8,8 +8,8 @@ create table products
 (
 	product_id varchar(10) not null,
 	category_id varchar(10) not null,
-	product_name nvarchar(200) not null unique,
-	description nvarchar(1000) default null,
+	product_name nvarchar(255) not null unique,
+	description nvarchar(max) default null,
 	purchase_price float default 0,
 	price_coefficient float default 0.5,
 	price float default 0,
@@ -43,8 +43,7 @@ create table product_promotions
 create table categories 
 (
 	category_id varchar(10) not null,
-	category_name nvarchar(50) not null unique,
-	description nvarchar(200) default null,
+	category_name nvarchar(150) not null unique,
 	status bit default 1,
 	created_at datetime default getdate(),
 	updated_at datetime default getdate()
@@ -53,7 +52,7 @@ create table categories
 create table suppliers
 (
 	supplier_id varchar(10) not null,
-	supplier_name nvarchar(50) not null unique,
+	supplier_name nvarchar(200) not null unique,
 	email varchar(50) default null,
 	phone_number char(10) not null,
 	status bit default 1,
@@ -80,7 +79,6 @@ create table product_attribute_values
 (
 	product_id varchar(10) not null,
 	attribute_value_id varchar(10) not null,
-	status bit default 1,
 )
 
 create table images
@@ -701,17 +699,35 @@ VALUES ('PRO001', 'VAL001'),
 ('PRO001', 'VAL004'),
 ('PRO001', 'VAL005'),
 ('PRO001', 'VAL006'),
-('PRO001', 'VAL007');
+('PRO001', 'VAL007'),
+('PRO002', 'VAL001'),
+('PRO002', 'VAL002'),
+('PRO002', 'VAL003'),
+('PRO002', 'VAL004'),
+('PRO002', 'VAL005'),
+('PRO002', 'VAL006'),
+('PRO002', 'VAL007'),
+('PRO003', 'VAL008'),
+('PRO003', 'VAL009'),
+('PRO003', 'VAL011'),
+('PRO004', 'VAL012'),
+('PRO004', 'VAL013'),
+('PRO004', 'VAL014');
 
-INSERT INTO images (product_id, image_url, description, is_primary)
+INSERT INTO images (product_id, image_url, is_primary)
 VALUES
-('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/onumc2zaeyfnkrs3q92j.png', N'Test thôi', 1),
-('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/h6ntyymvhnx9nllpfz2q.jpg', N'Test thôi', 0),
-('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/bbdw0hhp9nkaegqfqmh6.jpg', N'Test thôi', 0),
-('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/cxyrbs1upydqmyxnoobj.png', N'Test thôi', 1),
-('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185372/product_imgs/fxkfvtzliwsp6th6xnuk.png', N'Test thôi', 0),
-('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/uzvymp9snxzaivs9kbyt.png', N'Test thôi', 1),
-('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1730185371/product_imgs/krpimoesikznpyo3czhh.png', N'Test thôi', 0)
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052395/xaxsqpih3wlkhn3svtzu.webp', 1),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052396/e7f3ibtwciwnirlyrfy5.webp', 0),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052397/acrcxyujqymmsmwjhptv.webp', 0),
+('PRO001', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052428/ilsoqolpotlhrrz4lvgp.webp', 0),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052512/ijhq94a3uxjmzsxxug1b.webp', 1),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052513/crckzpsnajdaal5wxxjs.webp', 0),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052513/jrh6zvjikf4e99cunqyr.webp', 0),
+('PRO002', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731052514/lwcgnvtxuxihrgxl42ln.webp', 0),
+('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731053976/ookezmryr9dg2d6kwmsb.webp', 1),
+('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731054041/cskuxusg6kbrllcsl6x9.jpg', 0),
+('PRO004', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731055234/u4oje3oyhrzadlw9glms.webp', 1),
+('PRO004', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731055235/sn45tefezfkholxonrip.webp', 0);
 
 INSERT INTO roles (role_name, description)
 VALUES

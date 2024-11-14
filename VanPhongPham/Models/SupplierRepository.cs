@@ -23,6 +23,17 @@ namespace VanPhongPham.Models
         {
             return _context.suppliers.FirstOrDefault(x => x.supplier_id == id);
         }
+
+        public List<supplier> SearchSupplier(string search_str)
+        {
+            return _context.suppliers
+                .Where(p => p.supplier_id.Contains(search_str) ||
+                            p.supplier_name.Contains(search_str) ||
+                            p.email.Contains(search_str) ||
+                            p.phone_number.Contains(search_str))
+                .ToList();
+        }
+
         public bool AddSupplier(supplier supplier)
         {
             try

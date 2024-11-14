@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using VanPhongPham.Models;
+using PagedList;
 namespace VanPhongPham.Areas.Admin.Controllers
 {
     public class SupplierController : Controller
@@ -15,16 +16,34 @@ namespace VanPhongPham.Areas.Admin.Controllers
         }
         // GET: Admin/Supplier
 
-        public ActionResult Index(string supplier_id)
+        public ActionResult Index(int? page, string supplier_id, string search_str)
         {
+            var message = TempData["Message"];
+            var messageType = TempData["MessageType"];
+            if (message != null)
+            {
+                ViewBag.Message = message;
+                ViewBag.MessageType = messageType;
+            }
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+            List<supplier> listSupplier;
             if (supplier_id != null)
             {
                 supplier supplier = supplierRepository.GetSupplierById(supplier_id);
                 ViewBag.supplier = supplier;
             }
-            List<supplier> listSupplier = supplierRepository.GetAllSuppliers();
+            if (search_str != null)
+            {
+                listSupplier = supplierRepository.SearchSupplier(search_str);
+                ViewBag.search_str = search_str;
+            }
+            else
+            {
+                listSupplier = supplierRepository.GetAllSuppliers();
+            }
             ViewBag.supplier_id = supplierRepository.GenerateSupplierId();
-            return View(listSupplier);
+            return View(listSupplier.ToPagedList(pageNumber, pageSize));
         }
 
         [HttpPost]

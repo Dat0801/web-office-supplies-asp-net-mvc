@@ -1,0 +1,35 @@
+﻿@model List<VanPhongPham.Models.category>
+@{
+    ViewBag.Title = "Khôi phục danh mục - Quản Trị";
+}
+<h4 class="font-weight-bold py-3 mb-0">Danh sách danh mục</h4>
+<div class="card">
+    <table class="table card-table table-responsive-lg">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã danh mục</th>
+                <th>Tên danh mục</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Model)
+            {
+                <tr>
+                    <td>@category.category_id</td>
+                    <td>@category.category_name</td>
+                    <td>
+                        <a class="btn icon-btn btn-outline-secondary ml-3" href="@Url.Action("RecycleCategory","Product",new { category_id = category.category_id })" title="Phục hồi">
+                            <i class="feather icon-rotate-cw navbar-icon align-middle"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("Category","Product")" title="Quay lại">
+    <i class="feather icon-corner-up-left"></i>
+</a>
+
+

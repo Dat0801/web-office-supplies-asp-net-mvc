@@ -3,6 +3,15 @@
 @model IPagedList<VanPhongPham.Models.purchase_order>
 @{
     ViewBag.Title = "Đặt hàng từ nhà cung cấp - Quản Trị";
+    var message = ViewBag.Message;
+    var messageType = ViewBag.MessageType;
+}
+@if (message != null)
+{
+    <div class="alert alert-dark-@messageType alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        @message
+    </div>
 }
 <h4 class="font-weight-bold mb-0">Danh sách phiếu đặt</h4>
 <div class="row">

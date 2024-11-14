@@ -1,0 +1,34 @@
+﻿@model List<VanPhongPham.Models.attribute_value>
+@{
+    ViewBag.Title = "Khôi phục giá trị thuộc tính - Quản Trị";
+}
+<h4 class="font-weight-bold py-3 mb-0">Danh sách giá trị thuộc tính</h4>
+<div class="card">
+    <table class="table card-table table-responsive-lg">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã giá trị thuộc tính</th>
+                <th>Tên giá trị thuộc tính</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var attribute_value in Model)
+            {
+                <tr>
+                    <td>@attribute_value.attribute_value_id</td>
+                    <td>@attribute_value.value</td>
+                    <td>
+                        <a class="btn icon-btn btn-outline-secondary ml-3" href="@Url.Action("RecycleAttributeValue","Product",new { attribute_value_id = attribute_value.attribute_value_id })" title="Phục hồi">
+                            <i class="feather icon-rotate-cw navbar-icon align-middle"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("AttributeValue","Product")" title="Quay lại">
+    <i class="feather icon-corner-up-left"></i>
+</a>
+
