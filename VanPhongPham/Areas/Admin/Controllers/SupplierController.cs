@@ -62,18 +62,38 @@ namespace VanPhongPham.Areas.Admin.Controllers
         {
             if (!string.IsNullOrEmpty(supplier_id))
             {
-                supplierRepository.RecoverSuppliers(new List<string> { supplier_id });
+                var result = supplierRepository.RecoverSuppliers(new List<string> { supplier_id });
+                if (result)
+                {
+                    TempData["Message"] = "Khôi phục nhà cung cấp thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Khôi phục nhà cung cấp thất bại!";
+                    TempData["MessageType"] = "danger";
+                }
             }
-            return RedirectToAction("RecoverSupplier", "Supplier", new { area = "Admin" });
+            return RedirectToAction("Index", "Supplier", new { area = "Admin" });
         }
         [HttpPost]
         public ActionResult RecoverSupplier(List<string> selectedSuppliers)
         {
             if(selectedSuppliers != null && selectedSuppliers.Any())
             {
-                supplierRepository.RecoverSuppliers(selectedSuppliers);
+                var result = supplierRepository.RecoverSuppliers(selectedSuppliers);
+                if (result)
+                {
+                    TempData["Message"] = "Khôi phục nhà cung cấp thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Khôi phục nhà cung cấp thất bại!";
+                    TempData["MessageType"] = "danger";
+                }
             }
-            return RedirectToAction("RecoverSupplier", "Supplier", new {area = "Admin"});
+            return RedirectToAction("Index", "Supplier", new {area = "Admin"});
         }
         [HttpPost]
         public ActionResult ManageSupplier(string action, supplier supplier)
@@ -116,23 +136,44 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     TempData["MessageType"] = "success";
                 }
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Supplier", new { area = "Admin" });
         }
         [HttpGet]
         public ActionResult DeleteSupplier(string supplier_id)
         {
             if (!string.IsNullOrEmpty(supplier_id))
             {
-                supplierRepository.DeleteSuppliers(new List<string> { supplier_id });
+                var result = supplierRepository.DeleteSuppliers(new List<string> { supplier_id });
+                if (result)
+                {
+                    TempData["Message"] = "Xóa nhà cung cấp thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Xóa nhà cung cấp thất bại!";
+                    TempData["MessageType"] = "success";
+                }
             }
             return RedirectToAction("Index", "Supplier", new { area = "Admin" });
         }
+
         [HttpPost]
         public ActionResult DeleteSupplier(List<string> selectedSuppliers)
         {
             if(selectedSuppliers != null && selectedSuppliers.Any())
             {
-                supplierRepository.DeleteSuppliers(selectedSuppliers);
+               var result = supplierRepository.DeleteSuppliers(selectedSuppliers);
+                if (result)
+                {
+                    TempData["Message"] = "Xóa nhà cung cấp thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Xóa nhà cung cấp thất bại!";
+                    TempData["MessageType"] = "success";
+                }
             }
             return RedirectToAction("Index", "Supplier", new {area = "Admin"});
         }
