@@ -272,19 +272,34 @@
                 <div class="d-flex justify-content-end">
                     <span style="color: #272727;">Thành tiền: <span class="price-info" style="font-size: 24px">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span></span>
                 </div>
-                <div class="order-actions d-flex justify-content-end mt-2">
-                    @{ 
-                        var isOrderCancelable = (DateTime.Now - order.CreatedAt.GetValueOrDefault()).TotalMinutes <= 10;
-                    }
-                    @if (order.OrderStatusName == "Chờ xác nhận" && isOrderCancelable)
-                    {
-                        <button class="btn btn-danger setOrderStatusOne" data-orderid="@order.OrderId" data-ordercreatat="@order.CreatedAt">Hủy Đơn Hàng</button>
-                    }
-                    else if (order.OrderStatusName == "Hoàn thành" && !checkReview)
-                    {
-                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reviewModal-@order.OrderId" data-orderid="@order.OrderId">Đánh Giá</button>
-                    }
-                </div>
+                @if (order.OrderStatusName == "Đã hủy")
+                {
+                    <div class="order-actions d-flex justify-content-start mt-2" style="font-size: 12px">
+                        <p>Đã hủy bởi bạn</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="order-actions d-flex justify-content-end align-items-center justify-content-between mt-2">
+                        @{ 
+                            var isOrderCancelable = (DateTime.Now - order.CreatedAt.GetValueOrDefault()).TotalMinutes <= 10;
+                        }
+                        @if (order.OrderStatusName == "Chờ xác nhận")
+                        {
+                            <p class="mb-0" style="font-size: 12px">
+                                Bạn có thể hủy đơn hàng trong vòng 10 phút kể từ lúc @order.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")
+                            </p>
+
+                            <button class="btn btn-danger setOrderStatusOne" data-orderid="@order.OrderId" data-ordercreatat="@order.CreatedAt" @(isOrderCancelable ? "" : "disabled")>
+                                Hủy Đơn Hàng
+                            </button>
+                        }         
+                        else if (order.OrderStatusName == "Hoàn thành" && !checkReview)
+                        {
+                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reviewModal-@order.OrderId" data-orderid="@order.OrderId">Đánh Giá</button>
+                        }
+                    </div>
+                }
             </div>
 
             <!-- Modal đánh giá cho từng đơn hàng -->
