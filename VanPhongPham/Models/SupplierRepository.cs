@@ -16,9 +16,12 @@ namespace VanPhongPham.Models
 
         public List<supplier> GetAllSuppliers()
         {
-            return _context.suppliers.ToList();
+            return _context.suppliers.Where(s => s.status == true).ToList();
         }
-
+        public List<supplier> GetDeletedSuppliers()
+        {
+            return _context.suppliers.Where(s => s.status == false).ToList();
+        }
         public supplier GetSupplierById(string id)
         {
             return _context.suppliers.FirstOrDefault(x => x.supplier_id == id);
@@ -32,18 +35,28 @@ namespace VanPhongPham.Models
         public List<supplier> SearchSupplier(string search_str)
         {
             return _context.suppliers
-                .Where(p => p.supplier_id.Contains(search_str) ||
-                            p.supplier_name.Contains(search_str) ||
-                            p.email.Contains(search_str) ||
-                            p.phone_number.Contains(search_str))
+                .Where(p => p.status == true &&
+                           (p.supplier_name.Contains(search_str) ||
+                            p.supplier_id.Contains(search_str) ||
+                            p.email.Contains(search_str)))
+                .ToList();
+        }
+        public List<supplier> SearchDeletedSupplier(string search_str)
+        {
+            return _context.suppliers
+                .Where(p => p.status == false &&
+                           (p.supplier_name.Contains(search_str) ||
+                            p.supplier_id.Contains(search_str) ||
+                            p.email.Contains(search_str)))
                 .ToList();
         }
 
-        public bool AddSupplier(supplier supplier)
+        public bool AddSupplier(supplier sup)
         {
             try
             {
-                _context.suppliers.InsertOnSubmit(supplier);
+                sup.status = true;
+                _context.suppliers.InsertOnSubmit(sup);
                 _context.SubmitChanges();
                 return true;
             }
@@ -54,14 +67,14 @@ namespace VanPhongPham.Models
             }
 
         }
-        public bool UpdateSupplier(supplier supplier)
+        public bool UpdateSupplier(supplier sup)
         {
-            supplier supplierToUpdate = GetSupplierById(supplier.supplier_id);
+            supplier supplierToUpdate = GetSupplierById(sup.supplier_id);
             try
             {
-                supplierToUpdate.supplier_name = supplier.supplier_name;
-                supplierToUpdate.phone_number = supplier.phone_number;
-                supplierToUpdate.email = supplier.email;
+                supplierToUpdate.supplier_name = sup.supplier_name;
+                supplierToUpdate.phone_number = sup.phone_number;
+                supplierToUpdate.email = sup.email;
                 _context.SubmitChanges();
                 return true;
             }
@@ -71,12 +84,13 @@ namespace VanPhongPham.Models
                 return false;
             }
         }
-        public bool DeleteSupplier(string id)
+        public bool DeleteSuppliers(List<string> ids)
         {
-            supplier supplierToDelete = GetSupplierById(id);
             try
             {
-                _context.suppliers.DeleteOnSubmit(supplierToDelete);
+                var suppliersToDelete = _context.suppliers.Where(s => ids.Contains(s.supplier_id)).ToList();
+                suppliersToDelete.ForEach(s => s.status = false);
+
                 _context.SubmitChanges();
                 return true;
             }
@@ -86,10 +100,28 @@ namespace VanPhongPham.Models
                 return false;
             }
         }
+
+        public bool RecoverSuppliers(List<string> ids)
+        {
+            try
+            {
+                var suppliersToRecover = _context.suppliers.Where(s => ids.Contains(s.supplier_id)).ToList();
+                suppliersToRecover.ForEach(s => s.status = true);
+
+                _context.SubmitChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
         public string GenerateSupplierId()
         {
-            supplier supplier = _context.suppliers.ToList().LastOrDefault();
-            int num = int.Parse(supplier.supplier_id.Substring(3)) + 1;
+            supplier sup = _context.suppliers.ToList().LastOrDefault();
+            int num = int.Parse(sup.supplier_id.Substring(3)) + 1;
             string supplier_id = "SUP";
             if (num < 10)
                 supplier_id = "SUP00";

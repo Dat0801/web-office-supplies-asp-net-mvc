@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Web;
 
 namespace VanPhongPham.Models
@@ -12,6 +14,86 @@ namespace VanPhongPham.Models
         public ProductRepository()
         {
             _context = new DB_VanPhongPhamDataContext();
+        }        
+        public ViewModels GetProductWithPromotion()
+        {
+            var product = _context.products.Where(p => p.status == true).Select(p => new ProductViewModel
+            {
+                ProductId = p.product_id,
+                ProductName = p.product_name,
+                Description = p.description,
+                PurchasePrice = p.purchase_price,
+                Price = p.price,
+                PromotionPrice = p.promotion_price,
+                StockQuantity = p.stock_quantity,
+                SoldQuantity = p.sold,
+                AvgRating = p.avgRating,
+                VisitCount = p.visited,                
+                Images = p.images.Select(i => new ImageViewModel
+                {
+                    ImageId = i.image_id,
+                    ImageUrl = i.image_url,                    
+                    IsPrimary = (bool)i.is_primary
+                }).ToList(),
+                Categories = p.category
+            }).ToList();
+            var promotions = _context.promotions.Where(p => p.status == true).Select(p => new PromotionViewModel
+            {
+                PromotionId = p.promotion_id,
+                PromotionName = p.promotion_name,
+                Description = p.description,
+                DiscountPercent = p.discount_percent,
+                StartDate = p.start_date,
+                EndDate = p.end_date,                
+            }).ToList();
+            var viewModels = new ViewModels
+            {
+                ProductViewModel = product,
+                PromotionViewModel = promotions
+            };
+            return viewModels;
+        }
+        public ViewModels GetProductsModelViewById(string pro_id)
+        {
+            var product = _context.products.Where(p => p.status == true && p.product_id == pro_id).Select(p => new ProductViewModel
+            {
+                ProductId = p.product_id,
+                ProductName = p.product_name,
+                Description = p.description,
+                PurchasePrice = p.purchase_price,
+                Price = p.price,
+                PromotionPrice = p.promotion_price,
+                StockQuantity = p.stock_quantity,
+                SoldQuantity = p.sold,
+                AvgRating = p.avgRating,
+                VisitCount = p.visited,
+                Images = p.images.Where(i => i.product_id == pro_id).Select(i => new ImageViewModel
+                {
+                    ImageId = i.image_id,
+                    ImageUrl = i.image_url,                    
+                    IsPrimary = (bool)i.is_primary
+                }).ToList(),
+                Categories = p.category
+            }).ToList();
+            var promotions = _context.promotions.Where(p => p.status == true).Select(p => new PromotionViewModel
+            {
+                PromotionId = p.promotion_id,
+                PromotionName = p.promotion_name,
+                Description = p.description,
+                DiscountPercent = p.discount_percent,
+                StartDate = p.start_date,
+                EndDate = p.end_date,
+            }).ToList();
+            var viewModels = new ViewModels
+            {
+                ProductViewModel = product,
+                PromotionViewModel = promotions
+            };
+            return viewModels;
+        }
+        public List<category> GetAllCategory()
+        {
+            return _context.categories.Where(c => c.status == true).ToList();
         }
 
         public string GenerateProductId()
@@ -66,9 +148,10 @@ namespace VanPhongPham.Models
         public List<product> SearchProduct(string search_str)
         {
             return _context.products
-                .Where(p => p.product_name.Contains(search_str) ||
+                .Where(p => p.status == true &&
+                            (p.product_name.Contains(search_str) ||
                             p.product_id.Contains(search_str) ||
-                            p.category.category_name.Contains(search_str))
+                            p.category.category_name.Contains(search_str)))   
                 .ToList();
         }
 

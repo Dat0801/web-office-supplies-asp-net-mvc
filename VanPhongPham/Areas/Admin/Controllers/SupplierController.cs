@@ -15,7 +15,6 @@ namespace VanPhongPham.Areas.Admin.Controllers
             supplierRepository = new SupplierRepository();
         }
         // GET: Admin/Supplier
-
         public ActionResult Index(int? page, string supplier_id, string search_str)
         {
             var message = TempData["Message"];
@@ -30,8 +29,8 @@ namespace VanPhongPham.Areas.Admin.Controllers
             List<supplier> listSupplier;
             if (supplier_id != null)
             {
-                supplier supplier = supplierRepository.GetSupplierById(supplier_id);
-                ViewBag.supplier = supplier;
+                supplier supp = supplierRepository.GetSupplierById(supplier_id);
+                ViewBag.supplier = supp;
             }
             if (search_str != null)
             {
@@ -43,11 +42,41 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 listSupplier = supplierRepository.GetAllSuppliers();
             }
             ViewBag.supplier_id = supplierRepository.GenerateSupplierId();
+            
             return View(listSupplier.ToPagedList(pageNumber, pageSize));
         }
-
+        public ActionResult RecoverSupplier(string search_str)
+        {
+            List<supplier> sup;
+            if(search_str != null)
+            {
+                sup = supplierRepository.SearchDeletedSupplier(search_str);
+                ViewBag.searchStr = search_str;
+            }
+            else
+                sup = supplierRepository.GetDeletedSuppliers();
+            return View(sup);
+        }
+        [HttpGet]
+        public ActionResult RecoverSingleSupplier(string supplier_id)
+        {
+            if (!string.IsNullOrEmpty(supplier_id))
+            {
+                supplierRepository.RecoverSuppliers(new List<string> { supplier_id });
+            }
+            return RedirectToAction("RecoverSupplier", "Supplier", new { area = "Admin" });
+        }
         [HttpPost]
-        public ActionResult AddSupplier(string action, supplier supplier)
+        public ActionResult RecoverSupplier(List<string> selectedSuppliers)
+        {
+            if(selectedSuppliers != null && selectedSuppliers.Any())
+            {
+                supplierRepository.RecoverSuppliers(selectedSuppliers);
+            }
+            return RedirectToAction("RecoverSupplier", "Supplier", new {area = "Admin"});
+        }
+        [HttpPost]
+        public ActionResult ManageSupplier(string action, supplier supplier)
         {
 
             if (action == "add")
@@ -73,7 +102,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     }
                 }
             }
-            else
+            if(action == "edit")
             {
                 var result = supplierRepository.UpdateSupplier(supplier);
                 if (result)
@@ -89,11 +118,23 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
             return RedirectToAction("Index");
         }
-
+        [HttpGet]
         public ActionResult DeleteSupplier(string supplier_id)
         {
-            supplierRepository.DeleteSupplier(supplier_id);
-            return RedirectToAction("Index", "Supplier");
+            if (!string.IsNullOrEmpty(supplier_id))
+            {
+                supplierRepository.DeleteSuppliers(new List<string> { supplier_id });
+            }
+            return RedirectToAction("Index", "Supplier", new { area = "Admin" });
+        }
+        [HttpPost]
+        public ActionResult DeleteSupplier(List<string> selectedSuppliers)
+        {
+            if(selectedSuppliers != null && selectedSuppliers.Any())
+            {
+                supplierRepository.DeleteSuppliers(selectedSuppliers);
+            }
+            return RedirectToAction("Index", "Supplier", new {area = "Admin"});
         }
     }
 }

@@ -43,13 +43,16 @@
     <script src="~/Public/js/User.js"></script>
     <script src="~/Public/js/Cloudinary.js"></script>
     <script src="~/Public/js/GHN.js"></script>
-
+    
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const token = localStorage.getItem('token');
             if (!token)
             {
-                logout();
+                if (!sessionStorage.getItem('redirected')) {
+                    sessionStorage.setItem('redirected', 'true');
+                    logout();
+                }
             } else
             {
                 // Xóa cờ nếu người dùng có token, tránh chuyển hướng không cần thiết
@@ -57,6 +60,6 @@
                 fetchUserData();
             }
         });
-    </script>
+    </script>   
 </body>
 </html>
