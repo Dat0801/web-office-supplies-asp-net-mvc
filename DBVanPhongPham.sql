@@ -660,7 +660,6 @@ VALUES
 ('CAT002', N'Bút chì'),
 ('CAT003', N'Máy tính tay văn phòng');
 
-
 INSERT INTO suppliers (supplier_id, supplier_name, email, phone_number, status)
 VALUES 
 ('SUP001', N'Tổng Công ty Văn phòng phẩm Hòa Bình', 'info@vpphoabinh.com', '0245678910', 1),
@@ -721,6 +720,7 @@ VALUES ('PRO001', 'VAL001'),
 ('PRO003', 'VAL008'),
 ('PRO003', 'VAL009'),
 ('PRO003', 'VAL011'),
+('PRO004', 'VAL008'),
 ('PRO004', 'VAL012'),
 ('PRO004', 'VAL013'),
 ('PRO004', 'VAL014');
