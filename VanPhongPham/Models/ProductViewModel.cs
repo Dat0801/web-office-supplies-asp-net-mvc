@@ -19,6 +19,6 @@ namespace VanPhongPham.Models
         public int? VisitCount { get; set; }        
         public List<ImageViewModel> Images { get; set; }
         public category Categories { get; set; }
-        public product_attribute_value ProductAttributeValue { get; set; }
+        public List<AttributeViewModel> Attributes { get; set; }
     }
 }
