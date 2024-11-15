@@ -407,8 +407,6 @@ Products End -->
                 // Xây dựng URL cho link thêm vào giỏ hàng
                 addToCartLink.href = "/Cart/AddToCart?cart_id=" + cartId + "&productId=" + productId + "&quantity=" + quantity;
             } else {
-                // Nếu không có cartId trong sessionStorage, có thể điều hướng đến trang đăng nhập hoặc xử lý lỗi
-                console.log("Cart ID is not available in session storage.");
                 addToCartLink.href = "/Auth/Login";  // Chuyển hướng đến trang đăng nhập
             }
         }
