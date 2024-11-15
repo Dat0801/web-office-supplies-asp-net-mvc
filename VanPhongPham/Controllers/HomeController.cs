@@ -17,16 +17,17 @@ namespace VanPhongPham.Controllers
             _categoryRepository = new CategoryRepository();
         }
         // GET: Home
-        public ActionResult Index()
+        public ActionResult Index(string cart_id)
         {
-            var product = _productRepository.GetProductWithPromotion();            
+            var product = _productRepository.GetTopSellingProducts();
+            ViewBag.CartID = cart_id;
             return View(product);
         }
         public ActionResult GetCategories()
         {
             var categories = _categoryRepository.GetCategories();
             return PartialView("_Dropdown", categories);
-        }
-
+        }        
+        
     }
 }

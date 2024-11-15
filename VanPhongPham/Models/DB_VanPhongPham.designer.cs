@@ -103,8 +103,9 @@ namespace VanPhongPham.Models
     partial void Updateuser_role(user_role instance);
     partial void Deleteuser_role(user_role instance);
         #endregion
+
         public DB_VanPhongPhamDataContext() :
-        base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString1"].ConnectionString, mappingSource)
+                base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString1"].ConnectionString, mappingSource)
         {
             OnCreated();
         }
@@ -1814,8 +1815,6 @@ namespace VanPhongPham.Models
 		
 		private string _category_id;
 		
-		private string _parent_category_id;
-		
 		private string _category_name;
 		
 		private System.Nullable<bool> _status;
@@ -1832,8 +1831,6 @@ namespace VanPhongPham.Models
     partial void OnCreated();
     partial void Oncategory_idChanging(string value);
     partial void Oncategory_idChanged();
-    partial void Onparent_category_idChanging(string value);
-    partial void Onparent_category_idChanged();
     partial void Oncategory_nameChanging(string value);
     partial void Oncategory_nameChanged();
     partial void OnstatusChanging(System.Nullable<bool> value);
@@ -1866,26 +1863,6 @@ namespace VanPhongPham.Models
 					this._category_id = value;
 					this.SendPropertyChanged("category_id");
 					this.Oncategory_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_parent_category_id", DbType="VarChar(10)")]
-		public string parent_category_id
-		{
-			get
-			{
-				return this._parent_category_id;
-			}
-			set
-			{
-				if ((this._parent_category_id != value))
-				{
-					this.Onparent_category_idChanging(value);
-					this.SendPropertyChanging();
-					this._parent_category_id = value;
-					this.SendPropertyChanged("parent_category_id");
-					this.Onparent_category_idChanged();
 				}
 			}
 		}

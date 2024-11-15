@@ -1,7 +1,7 @@
 ﻿@model VanPhongPham.Models.ViewModels
 @foreach (var category in Model.CategoryViewModel)
 {
-    if (category.SubCategories.Any())
+    @*if (category.SubCategories.Any())
     {
         <div class="nav-item dropdown">
             <a href="#" class="nav-link" data-toggle="dropdown">@category.CategoryName <i class="fa fa-angle-down float-right mt-1"></i></a>
@@ -14,9 +14,9 @@
         </div>
     }
     else
-    {
+    {*@
         <div class="nav-item">
-            <a href="@Url.Action("Index", "Product", new { categoryId = category.CategoryId })" class="nav-link">@category.CategoryName</a>
+            <a href="@Url.Action("GetAllProducts", "ProductClient", new { categoryId = category.CategoryId })" class="nav-link">@category.CategoryName</a>
         </div>
-    }
+    
 }

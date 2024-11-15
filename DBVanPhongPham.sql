@@ -42,8 +42,7 @@ create table product_promotions
 
 create table categories 
 (
-	category_id varchar(10) not null,
-	parent_category_id VARCHAR(10) default null,
+	category_id varchar(10) not null,	
 	category_name nvarchar(150) not null unique,
 	status bit default 1,
 	created_at datetime default getdate(),
@@ -655,12 +654,11 @@ BEGIN
 END;
 GO
 
-INSERT INTO categories (category_id, category_name, parent_category_id)
+INSERT INTO categories (category_id, category_name)
 VALUES 
-('CAT001', N'Bút viết', null),
-('CAT002', N'Bút bi', 'CAT001'),
-('CAT003', N'Bút chì', 'CAT001'),
-('CAT004', N'Máy tính tay văn phòng', null);
+('CAT001', N'Bút bi'),
+('CAT002', N'Bút chì'),
+('CAT003', N'Máy tính tay văn phòng');
 
 
 INSERT INTO suppliers (supplier_id, supplier_name, email, phone_number, status)
@@ -670,13 +668,13 @@ VALUES
 
 INSERT INTO products (product_id, category_id, product_name, description, purchase_price, price_coefficient, price, stock_quantity, status)
 VALUES 
-('PRO001', 'CAT002', N'Bút bi Thiên Long TL 023', N'<p>Bút có thiết kế đơn giản, thân tròn, dễ cầm nắm. Thân bút nhựa trong.</p><p><strong>Đặc điểm:</strong></p><p>- Đầu bi: 0.8 mm<br>- Thân bút thanh mảnh cơ chế bấm khế tiện dụng phù hợp cho mọi người.<br>- Thay ruột khi hết mực.</p><p><br>&nbsp;</p>', 0, 1.5, 0, 0, 1),
-('PRO002', 'CAT002', N'Bút bi Thiên Long TL 025', N'<p>Bút có thiết kế đơn giản, thân tròn.Thân bút nhựa trong, tảm có đệm mềm (grip) giúp cầm êm tay và giảm trơn trợt khi viết.</p><p><strong>Đặc điểm:</strong></p><p>- Đầu bi: 0.8 mm<br>- Grip cùng màu mực<br>- Thân bút thanh mảnh cơ chế bấm khế tiện dụng phù hợp cho mọi người.<br>- Thay ruột khi hết mực.</p>', 0, 1.5, 0, 0, 1),
-('PRO003', 'CAT003', N'Combo 20 Bút chì mỹ thuật Thiên Long 5B GP-024', N'<p>Bút chì mỹ thuật Thiên Long 5B GP-024 thích hợp cho các hoạt động như ghi chép, vẽ nháp, học tập.</p><p><strong>
+('PRO001', 'CAT001', N'Bút bi Thiên Long TL 023', N'<p>Bút có thiết kế đơn giản, thân tròn, dễ cầm nắm. Thân bút nhựa trong.</p><p><strong>Đặc điểm:</strong></p><p>- Đầu bi: 0.8 mm<br>- Thân bút thanh mảnh cơ chế bấm khế tiện dụng phù hợp cho mọi người.<br>- Thay ruột khi hết mực.</p><p><br>&nbsp;</p>', 0, 1.5, 0, 0, 1),
+('PRO002', 'CAT001', N'Bút bi Thiên Long TL 025', N'<p>Bút có thiết kế đơn giản, thân tròn.Thân bút nhựa trong, tảm có đệm mềm (grip) giúp cầm êm tay và giảm trơn trợt khi viết.</p><p><strong>Đặc điểm:</strong></p><p>- Đầu bi: 0.8 mm<br>- Grip cùng màu mực<br>- Thân bút thanh mảnh cơ chế bấm khế tiện dụng phù hợp cho mọi người.<br>- Thay ruột khi hết mực.</p>', 0, 1.5, 0, 0, 1),
+('PRO003', 'CAT002', N'Combo 20 Bút chì mỹ thuật Thiên Long 5B GP-024', N'<p>Bút chì mỹ thuật Thiên Long 5B GP-024 thích hợp cho các hoạt động như ghi chép, vẽ nháp, học tập.</p><p><strong>
 Đặc điểm:</strong></p><p>- Ruột chì mềm, nét đậm, ít bột chì<br>- Thân gỗ mềm dễ chuốt<br>- 
 Bền đẹp không gãy chì<br>- Bút dùng để viết, vẽ phác thảo trên giấy tập học sinh, sổ tay, giấy photocopy, gỗ hoặc giấy vẽ chuyên dụng<br>- Lướt rất nhẹ nhàng trên bề mặt viết<br>- Dùng để đánh bóng các bức vẽ, đạt đến nhiều mức độ sáng tối khác nhau. 
 Ngoài ra khá hữu dụng trong việc tô đậm vào ô trả lời trắc nghiệm nhanh nhất.<br>- Thân lục giác, 5B.<br>- Thân bút được thiết kế hiện đại với họa tiết xoắn quanh bút cho cây bút sinh động và thu hút</p><p><strong>Bảo quản:</strong></p><p>- Tránh va đập mạnh làm gãy chì.<br>- Tránh xa nguồn nhiệt .</p>', 0, 1.5, 0, 0, 1),
-('PRO004', 'CAT004', N'Máy tính văn phòng Thiên Long Flexio CAL-011', N'<p><strong>Đặc tính sản phẩm:</strong></p><p>- Máy tính văn phòng CAL-011 đa năng này phù hợp sử dụng tại nhà, trường học, văn phòng hoặc cửa hàng. Sự kết hợp chip xử lý và mạch điều khiển công nghệ hiện đại đưa ra những kết quả phép tính đáng tin cậy, nhanh chóng đáp ứng tốt cho mục đích cá nhân hoặc chuyên nghiệp.&nbsp;</p><p>- Thiết kế nhỏ gọn và di động, bạn có thể dễ dàng mang theo bất cứ mọi nơi.&nbsp;</p><p>- Bộ vỏ nguyên liệu ABS cao cấp, bền và sử dụng thiết kế thân thiện, máy tính văn phòng CAL-011 cung cấp sự tiện lợi và hiệu quả trong tất cả các nhu cầu tính toán.</p>', 0, 1.5, 0, 0, 1)
+('PRO004', 'CAT003', N'Máy tính văn phòng Thiên Long Flexio CAL-011', N'<p><strong>Đặc tính sản phẩm:</strong></p><p>- Máy tính văn phòng CAL-011 đa năng này phù hợp sử dụng tại nhà, trường học, văn phòng hoặc cửa hàng. Sự kết hợp chip xử lý và mạch điều khiển công nghệ hiện đại đưa ra những kết quả phép tính đáng tin cậy, nhanh chóng đáp ứng tốt cho mục đích cá nhân hoặc chuyên nghiệp.&nbsp;</p><p>- Thiết kế nhỏ gọn và di động, bạn có thể dễ dàng mang theo bất cứ mọi nơi.&nbsp;</p><p>- Bộ vỏ nguyên liệu ABS cao cấp, bền và sử dụng thiết kế thân thiện, máy tính văn phòng CAL-011 cung cấp sự tiện lợi và hiệu quả trong tất cả các nhu cầu tính toán.</p>', 0, 1.5, 0, 0, 1)
 
 INSERT INTO attributes (attribute_id, attribute_name)
 VALUES ('ATT001', N'Thương hiệu'),

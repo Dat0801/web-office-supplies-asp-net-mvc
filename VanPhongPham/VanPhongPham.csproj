@@ -731,6 +731,7 @@
     </Compile>
     <Compile Include="Models\AddressViewModel.cs" />
     <Compile Include="Models\AttributeValueDTO.cs" />
+    <Compile Include="Models\AttributeViewModel.cs" />
     <Compile Include="Models\CategoryRepository.cs" />
     <Compile Include="Models\CategoryViewModel.cs" />
     <Compile Include="Models\DB_VanPhongPham.designer.cs">
@@ -777,6 +778,8 @@
     <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\ProductClient\Details.cshtml" />
     <Content Include="Views\Shared\_Dropdown.cshtml" />
+    <Content Include="Views\ProductClient\_ProductList.cshtml" />
+    <Content Include="Views\ProductClient\GetAllProducts.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

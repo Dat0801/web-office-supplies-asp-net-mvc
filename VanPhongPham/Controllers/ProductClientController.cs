@@ -19,9 +19,19 @@ namespace VanPhongPham.Controllers
         {
             return View();
         }
+        public ActionResult GetAllProducts(string categoryID)
+        {
+            var product = _productRepository.GetAllProducts();
+            if (!string.IsNullOrWhiteSpace(categoryID))
+            {
+                product = _productRepository.GetProductsModelViewByCategory(categoryID);
+            }
+            return View(product);
+        }
         public ActionResult Details(string id)
         {
             var product = _productRepository.GetProductsModelViewById(id);
+            
             return View(product);
         }
     }
