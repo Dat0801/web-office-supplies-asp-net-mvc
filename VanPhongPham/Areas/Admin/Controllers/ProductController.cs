@@ -76,7 +76,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     is_primary = true,
                     product_id = product.product_id
                 };
-                //productRepository.AddImages(mainImage);
+                productRepository.AddImages(mainImage);
                 foreach (var imageUrl in additionalImageUrls)
                 {
                     image additionalImage = new image
@@ -86,7 +86,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                         product_id = product.product_id
 
                     };
-                    //productRepository.AddImages(additionalImage);
+                    productRepository.AddImages(additionalImage);
                 }
                 foreach (var value_id in attribute_value_id)
                 {
@@ -94,7 +94,6 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     {
                         product_id = product.product_id,
                         attribute_value_id = value_id,
-                        //status = true
                     };
                     productRepository.AddProductAttributeValue(product_Attribute_Value);
                 }
