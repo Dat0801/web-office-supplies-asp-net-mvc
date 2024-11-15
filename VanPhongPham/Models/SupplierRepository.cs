@@ -24,6 +24,11 @@ namespace VanPhongPham.Models
             return _context.suppliers.FirstOrDefault(x => x.supplier_id == id);
         }
 
+        public supplier GetSupplierByName(string supplier_name)
+        {
+            return _context.suppliers.FirstOrDefault(x => x.supplier_name == supplier_name);
+        }
+
         public List<supplier> SearchSupplier(string search_str)
         {
             return _context.suppliers

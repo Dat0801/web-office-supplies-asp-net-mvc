@@ -49,15 +49,45 @@ namespace VanPhongPham.Areas.Admin.Controllers
         [HttpPost]
         public ActionResult AddSupplier(string action, supplier supplier)
         {
+
             if (action == "add")
             {
-                supplierRepository.AddSupplier(supplier);
+                var existSupplier = supplierRepository.GetSupplierByName(supplier.supplier_name);
+                if (existSupplier != null)
+                {
+                    TempData["Message"] = "Tên nhà cung cấp đã tồn tại! Vui lòng thêm tên mới hoặc kiểm tra phần khôi phục!";
+                    TempData["MessageType"] = "danger";
+                }
+                else
+                {
+                    var result = supplierRepository.AddSupplier(supplier);
+                    if (result)
+                    {
+                        TempData["Message"] = "Thêm nhà cung cấp thành công!";
+                        TempData["MessageType"] = "success";
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Thêm nhà cung cấp thất bại!";
+                        TempData["MessageType"] = "danger";
+                    }
+                }
             }
             else
             {
-                supplierRepository.UpdateSupplier(supplier);
+                var result = supplierRepository.UpdateSupplier(supplier);
+                if (result)
+                {
+                    TempData["Message"] = "Cập nhật nhà cung cấp thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Cập nhật nhà cung cấp thất bại!";
+                    TempData["MessageType"] = "success";
+                }
             }
-            return RedirectToAction("Index", "Admin/Supplier");
+            return RedirectToAction("Index");
         }
 
         public ActionResult DeleteSupplier(string supplier_id)
