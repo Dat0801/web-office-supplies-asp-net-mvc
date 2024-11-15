@@ -63,6 +63,50 @@ namespace VanPhongPham.Controllers
             int quantity = db.cart_details.Where(c => c.cart_id == cart_id).Count();
             return Json(new { quantity = quantity }, JsonRequestBehavior.AllowGet);
         }
+        [HttpGet] // Hoặc [HttpPost] nếu bạn dùng form
+        public ActionResult AddToCart(int cart_id, string productId, int quantity)
+        {
+            var cart = db.cart_details.FirstOrDefault(c => c.cart_id == cart_id && c.product_id == productId);
+
+            if (cart != null)
+            {
+                // Nếu sản phẩm đã có trong giỏ, cập nhật số lượng
+                cart.quantity += quantity;
+
+                if (cart.product.promotion_price != 0)
+                {
+                    cart.total_amount = cart.product.promotion_price * cart.quantity;
+                }
+                else
+                {
+                    cart.total_amount = cart.product.price * cart.quantity;
+                }
+            }
+            else
+            {
+                // Nếu sản phẩm chưa có trong giỏ, thêm mới
+                var product = db.products.FirstOrDefault(p => p.product_id == productId);
+                if (product != null)
+                {
+                    cart_detail cd = new cart_detail
+                    {
+                        cart_id = (int)cart_id,
+                        product_id = productId,
+                        quantity = quantity,
+                        total_amount = product.promotion_price != 0
+                                        ? product.promotion_price * quantity
+                                        : product.price * quantity
+                    };
+                    db.cart_details.InsertOnSubmit(cd);
+                }
+            }
+
+            db.SubmitChanges();
+
+            return RedirectToAction("Index", new { cart_id = cart_id });
+        }
+
+
         public ActionResult AddCartSection(string user_id)
         {
             try

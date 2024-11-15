@@ -10,5 +10,6 @@ namespace VanPhongPham.Models
         public List<CategoryViewModel> CategoryViewModel { get; set; }
         public List<PromotionViewModel> PromotionViewModel { get; set; }       
         public List<ProductViewModel> ProductViewModel { get; set; }
+        public List<ProductViewModel> RelatedProducts { get; set; }
     }
 }
