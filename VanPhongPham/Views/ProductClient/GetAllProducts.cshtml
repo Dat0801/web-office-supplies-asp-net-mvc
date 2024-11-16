@@ -139,7 +139,16 @@
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                 <h6 class="text-truncate mb-3">@product.ProductName</h6>
                                 <div class="d-flex justify-content-center">
-                                    @{
+                                    @if (product.StockQuantity == 0)
+                                    {
+                                        <div class="text-danger">
+                                            <span>Hết hàng</span>
+                                            <br />
+                                            <span>Liên hệ để biết thêm chi tiết</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
                                         var activesPromotions = Model.PromotionViewModel
                                         .Where(p => p.StartDate.Date == DateTime.Now.Date)
                                         .ToList();
@@ -147,24 +156,27 @@
                                         if (activesPromotions.Any())
                                         {
                                             <div>
-                                                <span>@product.PromotionPrice VND</span>
-                                                <del>@product.Price VND</del>
+                                                <span style="color: forestgreen">@string.Format("{0:N0}", product.PromotionPrice) VND</span>
+                                                <del>@string.Format("{0:N0}", product.Price) VND</del>
                                             </div>
                                         }
                                         else
                                         {
-                                            <div>@product.Price VND</div>
+                                            <div style="color: forestgreen">@string.Format("{0:N0}", product.Price) VND</div>
                                         }
                                     }
                                 </div>
                             </div>
                             <div class="card-footer d-flex justify-content-between bg-light border">
                                 <a href="@Url.Action("Details", "ProductClient", new { id = product.ProductId })" class="btn btn-sm text-dark p-0">
-                                    <i class="fas fa-eye text-primary mr-1"></i>View Detail
+                                    <i class="fas fa-eye text-primary mr-1"></i>Xem chi tiết
                                 </a>
-                                <a href="#" class="btn btn-sm text-dark p-0">
-                                    <i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart
-                                </a>
+                                @if (product.StockQuantity > 0)
+                                {
+                                    <a href="#" class="btn btn-sm text-dark p-0 addToCartLink" data-product-id="@product.ProductId">
+                                        <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ Hàng
+                                    </a>
+                                }
                             </div>
                         </div>
                     </div>
@@ -197,3 +209,72 @@
 </div>
 
 <!-- Shop End -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var addToCartLinks = document.getElementsByClassName("addToCartLink");
+
+
+        for (var i = 0; i < addToCartLinks.length; i++) {
+            var addToCartLink = addToCartLinks[i];
+
+            // Thêm sự kiện click cho từng link
+            addToCartLink.addEventListener('click', function (event) {
+                event.preventDefault(); // Ngăn hành động mặc định
+
+                // Lấy thông tin sản phẩm
+                var productId = this.getAttribute("data-product-id");
+                var user = sessionStorage.getItem("user");
+                var cartId = user ? JSON.parse(user).CartID : null;
+                var quantity = 1; // Số lượng mặc định
+
+                if (cartId === null) {
+                    window.location.href = "/Auth/Login";
+                    return;
+                }
+
+                // Gửi AJAX đến Controller
+                fetch('/Cart/AddToCart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value // CSRF Token
+                    },
+                    body: JSON.stringify({ cart_id: cartId, productId: productId, quantity: quantity })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification(data.message, "success"); // Hiển thị thông báo thành công
+                        } else {
+                            showNotification(data.message, "danger"); // Hiển thị thông báo lỗi
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        showNotification("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.", "danger");
+                    });
+            });
+        }
+
+        // Hàm hiển thị thông báo
+        function showNotification(message, messageType) {
+            // Tạo phần tử HTML cho thông báo
+            var notificationContainer = document.getElementById("notification-container");
+            var notification = document.createElement("div");
+            notification.className = `alert alert-dark-${messageType} alert-dismissible fade show`;
+            notification.innerHTML = `
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            ${message}
+        `;
+
+            // Thêm thông báo vào container
+            notificationContainer.appendChild(notification);
+
+            // Tự động xóa thông báo sau 2 giây
+            setTimeout(function () {
+                notification.remove();
+            }, 3000);
+        }
+    });
+
+</script>

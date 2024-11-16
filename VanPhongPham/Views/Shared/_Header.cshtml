@@ -1,7 +1,7 @@
-﻿
-﻿@{ 
-    var currentController = ViewContext.RouteData.Values["controller"]?.ToString(); 
+﻿﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
+<div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 1050; background-color:coral; color:white"></div>
 
 <!-- Topbar Start -->
 <div class="container-fluid">
@@ -34,7 +34,7 @@
                 </a>
             </div>
         </div>
-    </div>     
+    </div>
     <div class="row align-items-center py-3 px-xl-5">
         @if (currentController == "Cart")
         {
