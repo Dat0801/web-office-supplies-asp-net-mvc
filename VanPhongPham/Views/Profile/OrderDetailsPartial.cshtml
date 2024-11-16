@@ -182,11 +182,15 @@
         <div class="row m-0 p-0">
             <div class="col-8">
                 <p style="font-size: 14px; color: #555">
-                    ĐƠN HÀNG ĐÃ ĐẶT:
-                    @if (Model.CreatedAt.HasValue)
+                    @if (Model.OrderStatusName == "Đã hủy")
                     {
-                        <span>@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
+                        <span>ĐƠN HÀNG ĐÃ HỦY VÀO: @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
                     }
+                    else
+                    {
+                        <span>ĐƠN HÀNG ĐÃ ĐẶT VÀO: @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
+                    }
+
                 </p>
                 <p id="leadtime" style="font-size: 14px; color: #555">
                 </p>
@@ -204,26 +208,31 @@
             <hr />
         }
 
-        <div class="row m-0">
-            <div class="xBNaac"></div>
-            <div style="margin-top: 20px" class="col-5">
-                <h5>Địa Chỉ Nhận Hàng</h5>
-                @{
-                    var addressParts = Model.InfoAddress.Split(new[] { ", " }, StringSplitOptions.None);
-                    var name = addressParts.ElementAtOrDefault(0) ?? "";
-                    var phone = addressParts.ElementAtOrDefault(1) ?? "";
-                    var address = string.Join(", ", addressParts.Skip(2));
-                }
-                <p style="font-size:16px">@name</p>
-                <p style="font-size:14px">@phone</p>
-                <p style="font-size:14px;">@address</p>
-            </div>
-            <div style="margin-top: 20px" class="col-7">
-                <div id="shipping_items" class="shipping-timeline">
+        @if (Model.OrderStatusName != "Đã hủy")
+        {
+            <div class="row m-0">
+                <div class="xBNaac"></div>
+                <div style="margin-top: 20px" class="col-5">
+                    <h5>Địa Chỉ Nhận Hàng</h5>
+                    @{
+                        var addressParts = Model.InfoAddress.Split(new[] { ", " }, StringSplitOptions.None);
+                        var name = addressParts.ElementAtOrDefault(0) ?? "";
+                        var phone = addressParts.ElementAtOrDefault(1) ?? "";
+                        var address = string.Join(", ", addressParts.Skip(2));
+                    }
+                    <p style="font-size:16px">@name</p>
+                    <p style="font-size:14px">@phone</p>
+                    <p style="font-size:14px;">@address</p>
+                </div>
+                <div style="margin-top: 20px" class="col-7">
+                    <div id="shipping_items" class="shipping-timeline">
+                    </div>
                 </div>
             </div>
-        </div>
+        }
+
         <hr />
+
         @{
             var totalItemCost = 0.0;
         }
@@ -251,57 +260,84 @@
                 </div>
             </a>
         }
-        <hr />
-        <div class="order-cost-details">
-            <div class="d-flex justify-content-end">
-                <div class="col-8 text-right p-0">
-                    <span style="font-size: 13px">Tổng tiền hàng</span>
-                </div>
-                <div class="col-4 text-right p-0">
-                    <span>₫@totalItemCost.ToString("N0")</span>
-                </div>
-            </div>
-            <hr />
-            <div class="d-flex justify-content-end">
-                <div class="col-8 text-right p-0">
-                    <span style="font-size: 13px">Phí vận chuyển</span>
-                </div>
-                <div class="col-4 text-right p-0">
-                    <span>₫@(Model.ShippingFee.HasValue ? Model.ShippingFee.Value.ToString("N0") : "0")</span>
-                </div>
-            </div>
-            <hr />
-            <div class="d-flex justify-content-end">
-                <div class="col-8 d-flex align-items-center justify-content-end p-0">
-                    <span style="font-size: 13px">Thành tiền</span>
-                </div>
-                <div class="col-4 d-flex align-items-center justify-content-end p-0" style="color: red; font-size: 24px;">
-                    <span>₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span>
-                </div>
-            </div>
-        </div>
 
         <hr />
-        @if (Model.MethodId == "PAY001")
+        @if (Model.OrderStatusName == "Đã hủy")
         {
-            <div class="payment-info mt-3" style="background-color: #fff7e6; padding: 15px; border-radius: 8px; border: 1px solid #ffd28a; display: flex; align-items: center;">
-                <i class="fa fa-exclamation-circle" style="color: #ff4747; font-size: 13px; margin-right: 10px;"></i>
-                <p style="margin: 0; color: #555; font-size: 14px">Vui lòng thanh toán <span style="color: #ff4747;">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span> khi nhận hàng.</p>
+            <div class="order-cost-details">
+                <div class="d-flex justify-content-end">
+                    <div class="col-8 text-right p-0">
+                        <span style="font-size: 13px">Đã hủy bởi</span>
+                    </div>
+                    <div class="col-4 text-right p-0">
+                        <span>Người mua</span>
+                    </div>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-end">
+                    <div class="col-8 text-right p-0">
+                        <span style="font-size: 13px">Phương thức thanh toán</span>
+                    </div>
+                    <div class="col-4 text-right p-0">
+                        <span>@Model.MethodName</span>
+                    </div>
+                </div>
             </div>
+        }
+        else
+        {
+            <div class="order-cost-details">
+                <div class="d-flex justify-content-end">
+                    <div class="col-8 text-right p-0">
+                        <span style="font-size: 13px">Tổng tiền hàng</span>
+                    </div>
+                    <div class="col-4 text-right p-0">
+                        <span>₫@totalItemCost.ToString("N0")</span>
+                    </div>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-end">
+                    <div class="col-8 text-right p-0">
+                        <span style="font-size: 13px">Phí vận chuyển</span>
+                    </div>
+                    <div class="col-4 text-right p-0">
+                        <span>₫@(Model.ShippingFee.HasValue ? Model.ShippingFee.Value.ToString("N0") : "0")</span>
+                    </div>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-end">
+                    <div class="col-8 d-flex align-items-center justify-content-end p-0">
+                        <span style="font-size: 13px">Thành tiền</span>
+                    </div>
+                    <div class="col-4 d-flex align-items-center justify-content-end p-0" style="color: red; font-size: 24px;">
+                        <span>₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span>
+                    </div>
+                </div>
+            </div>
+
             <hr />
+            if (Model.MethodId == "PAY001")
+            {
+                <div class="payment-info mt-3" style="background-color: #fff7e6; padding: 15px; border-radius: 8px; border: 1px solid #ffd28a; display: flex; align-items: center;">
+                    <i class="fa fa-exclamation-circle" style="color: #ff4747; font-size: 13px; margin-right: 10px;"></i>
+                    <p style="margin: 0; color: #555; font-size: 14px">Vui lòng thanh toán <span style="color: #ff4747;">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span> khi nhận hàng.</p>
+                </div>
+                <hr />
+            }
+
+
+            <div class="order-cost-details mt-3">
+                <div class="d-flex">
+                    <div class="col-8 text-right p-0">
+                        <span style="font-size: 13px;">Phương thức Thanh toán</span>
+                    </div>
+                    <div class="col-4 text-right p-0">
+                        <span>@Model.MethodName</span>
+                    </div>
+                </div>
+            </div>
         }
 
-
-        <div class="order-cost-details mt-3">
-            <div class="d-flex">
-                <div class="col-8 text-right p-0">
-                    <span style="font-size: 13px;">Phương thức Thanh toán</span>
-                </div>
-                <div class="col-4 text-right p-0">
-                    <span>@Model.MethodName</span>
-                </div>
-            </div>
-        </div>
     </div>
 }
 
