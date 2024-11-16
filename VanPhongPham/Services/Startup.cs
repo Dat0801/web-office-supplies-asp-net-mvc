@@ -27,8 +27,14 @@ namespace VanPhongPham.Services
             // Cấu hình Hangfire Dashboard
             app.UseHangfireDashboard();
 
-            // Cấu hình Hangfire Server
-            app.UseHangfireServer();
+            //// Cấu hình Hangfire Server
+            //app.UseHangfireServer();
+
+            // Sử dụng chỉ một server cho Hangfire
+            app.UseHangfireServer(new BackgroundJobServerOptions
+            {
+                WorkerCount = 1 // Chỉ 1 worker
+            });
         }
     }
 }

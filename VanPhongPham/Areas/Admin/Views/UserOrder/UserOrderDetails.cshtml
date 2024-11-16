@@ -38,6 +38,11 @@
 
                         <p><strong>Ngày đặt:</strong> @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</p>
 
+                        @if (Model.OrderStatusName == "Hoàn thành")
+                        {
+                            <p><strong>Ngày nhận:</strong> @Model.DeliveryDate.Value.ToString("HH:mm dd-MM-yyyy")</p>
+                        }
+
                         @if (Model.OrderStatusName != "Đã hủy")
                         {
                             <p><strong>Tình trạng đơn hàng:</strong> <span class="text-success" style="font-weight: bold">@Model.OrderStatusName</span></p>
