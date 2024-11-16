@@ -62,47 +62,118 @@ namespace VanPhongPham.Areas.Admin.Controllers
         {
             if (!string.IsNullOrEmpty(supplier_id))
             {
-                supplierRepository.RecoverSuppliers(new List<string> { supplier_id });
+                var result = supplierRepository.RecoverSuppliers(new List<string> { supplier_id });
+                if (result)
+                {
+                    TempData["Message"] = "Khôi phục nhà cung cấp thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Khôi phục nhà cung cấp thất bại!";
+                    TempData["MessageType"] = "danger";
+                }
             }
-            return RedirectToAction("RecoverSupplier", "Supplier", new { area = "Admin" });
+            return RedirectToAction("Index", "Supplier", new { area = "Admin" });
         }
         [HttpPost]
         public ActionResult RecoverSupplier(List<string> selectedSuppliers)
         {
             if(selectedSuppliers != null && selectedSuppliers.Any())
             {
-                supplierRepository.RecoverSuppliers(selectedSuppliers);
+                var result = supplierRepository.RecoverSuppliers(selectedSuppliers);
+                if (result)
+                {
+                    TempData["Message"] = "Khôi phục nhà cung cấp thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Khôi phục nhà cung cấp thất bại!";
+                    TempData["MessageType"] = "danger";
+                }
             }
-            return RedirectToAction("RecoverSupplier", "Supplier", new {area = "Admin"});
+            return RedirectToAction("Index", "Supplier", new {area = "Admin"});
         }
         [HttpPost]
         public ActionResult ManageSupplier(string action, supplier supplier)
         {
+
             if (action == "add")
             {
-                supplierRepository.AddSupplier(supplier);
+                var existSupplier = supplierRepository.GetSupplierByName(supplier.supplier_name);
+                if (existSupplier != null)
+                {
+                    TempData["Message"] = "Tên nhà cung cấp đã tồn tại! Vui lòng thêm tên mới hoặc kiểm tra phần khôi phục!";
+                    TempData["MessageType"] = "danger";
+                }
+                else
+                {
+                    var result = supplierRepository.AddSupplier(supplier);
+                    if (result)
+                    {
+                        TempData["Message"] = "Thêm nhà cung cấp thành công!";
+                        TempData["MessageType"] = "success";
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Thêm nhà cung cấp thất bại!";
+                        TempData["MessageType"] = "danger";
+                    }
+                }
             }
             if(action == "edit")
             {
-                supplierRepository.UpdateSupplier(supplier);
-            }           
-            return RedirectToAction("Index","Supplier", new {area = "Admin"});
+                var result = supplierRepository.UpdateSupplier(supplier);
+                if (result)
+                {
+                    TempData["Message"] = "Cập nhật nhà cung cấp thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Cập nhật nhà cung cấp thất bại!";
+                    TempData["MessageType"] = "success";
+                }
+            }
+            return RedirectToAction("Index", "Supplier", new { area = "Admin" });
         }
         [HttpGet]
         public ActionResult DeleteSupplier(string supplier_id)
         {
             if (!string.IsNullOrEmpty(supplier_id))
             {
-                supplierRepository.DeleteSuppliers(new List<string> { supplier_id });
+                var result = supplierRepository.DeleteSuppliers(new List<string> { supplier_id });
+                if (result)
+                {
+                    TempData["Message"] = "Xóa nhà cung cấp thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Xóa nhà cung cấp thất bại!";
+                    TempData["MessageType"] = "success";
+                }
             }
             return RedirectToAction("Index", "Supplier", new { area = "Admin" });
         }
+
         [HttpPost]
         public ActionResult DeleteSupplier(List<string> selectedSuppliers)
         {
             if(selectedSuppliers != null && selectedSuppliers.Any())
             {
-                supplierRepository.DeleteSuppliers(selectedSuppliers);
+               var result = supplierRepository.DeleteSuppliers(selectedSuppliers);
+                if (result)
+                {
+                    TempData["Message"] = "Xóa nhà cung cấp thành công!";
+                    TempData["MessageType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = "Xóa nhà cung cấp thất bại!";
+                    TempData["MessageType"] = "success";
+                }
             }
             return RedirectToAction("Index", "Supplier", new {area = "Admin"});
         }
