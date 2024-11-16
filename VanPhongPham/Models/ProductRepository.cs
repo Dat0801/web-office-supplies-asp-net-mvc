@@ -15,7 +15,7 @@ namespace VanPhongPham.Models
         {
             _context = new DB_VanPhongPhamDataContext();
         }        
-        public ViewModels GetProductWithPromotion()
+        public ViewModels GetAllProducts()
         {
             var product = _context.products.Where(p => p.status == true).Select(p => new ProductViewModel
             {
@@ -53,6 +53,65 @@ namespace VanPhongPham.Models
             };
             return viewModels;
         }
+        public ViewModels GetTopSellingProducts(int topCount = 10)
+        {
+            var topSellingProducts = _context.products
+                .Where(p => p.status == true)
+                .OrderByDescending(p => p.sold)
+                .Take(topCount) 
+                .Select(p => new ProductViewModel
+                {
+                    ProductId = p.product_id,
+                    ProductName = p.product_name,
+                    Description = p.description,
+                    PurchasePrice = p.purchase_price,
+                    Price = p.price,
+                    PromotionPrice = p.promotion_price,
+                    StockQuantity = p.stock_quantity,
+                    SoldQuantity = p.sold,
+                    AvgRating = p.avgRating,
+                    VisitCount = p.visited,
+                    Images = p.images.Select(i => new ImageViewModel
+                    {
+                        ImageId = i.image_id,
+                        ImageUrl = i.image_url,
+                        IsPrimary = (bool)i.is_primary
+                    }).ToList(),
+                    Categories = p.category
+                }).ToList();
+
+            var promotions = _context.promotions
+                .Where(p => p.status == true)
+                .Select(p => new PromotionViewModel
+                {
+                    PromotionId = p.promotion_id,
+                    PromotionName = p.promotion_name,
+                    Description = p.description,
+                    DiscountPercent = p.discount_percent,
+                    StartDate = p.start_date,
+                    EndDate = p.end_date,
+                }).ToList();
+            var categories = _context.categories
+                .Where(c => c.status == true)
+                .Select(c => new CategoryViewModel
+                {
+                    CategoryId = c.category_id,
+                    CategoryName = c.category_name,                    
+                    Status = c.status,
+                    CreatedAt = c.created_at,
+                    UpdateAt = c.updated_at,
+                    ProductCount = c.products.Count()
+                }).ToList();
+            var viewModels = new ViewModels
+            {
+                ProductViewModel = topSellingProducts,
+                PromotionViewModel = promotions,
+                CategoryViewModel = categories
+            };
+
+            return viewModels;
+        }
+
         public ViewModels GetProductsModelViewById(string pro_id)
         {
             var product = _context.products.Where(p => p.status == true && p.product_id == pro_id).Select(p => new ProductViewModel
@@ -73,8 +132,42 @@ namespace VanPhongPham.Models
                     ImageUrl = i.image_url,                    
                     IsPrimary = (bool)i.is_primary
                 }).ToList(),
-                Categories = p.category
+                Categories = p.category,
+                Attributes = (from pav in _context.product_attribute_values
+                              join av in _context.attribute_values on pav.attribute_value_id equals av.attribute_value_id
+                              join a in _context.attributes on av.attribute_id equals a.attribute_id
+                              where pav.product_id == pro_id && av.status == true && a.status == true
+                              select new AttributeViewModel
+                              {
+                                  AttributeName = a.attribute_name,
+                                  Value = av.value
+                              }).ToList()
             }).ToList();
+            if (product == null)
+            {
+                return null;
+            }
+            var relatedProducts = _context.products
+                .Where(p => p.status == true && p.category == product.FirstOrDefault().Categories && p.product_id != pro_id)
+                .Select(p => new ProductViewModel
+                {
+                    ProductId = p.product_id,
+                    ProductName = p.product_name,
+                    Description = p.description,
+                    PurchasePrice = p.purchase_price,
+                    Price = p.price,
+                    PromotionPrice = p.promotion_price,
+                    StockQuantity = p.stock_quantity,
+                    SoldQuantity = p.sold,
+                    AvgRating = p.avgRating,
+                    VisitCount = p.visited,
+                    Images = p.images.Select(i => new ImageViewModel
+                    {
+                        ImageId = i.image_id,
+                        ImageUrl = i.image_url,
+                        IsPrimary = (bool)i.is_primary
+                    }).ToList()
+                }).ToList();
             var promotions = _context.promotions.Where(p => p.status == true).Select(p => new PromotionViewModel
             {
                 PromotionId = p.promotion_id,
@@ -87,7 +180,51 @@ namespace VanPhongPham.Models
             var viewModels = new ViewModels
             {
                 ProductViewModel = product,
-                PromotionViewModel = promotions
+                PromotionViewModel = promotions,
+                RelatedProducts = relatedProducts
+            };
+            return viewModels;
+        }
+        public ViewModels GetProductsModelViewByCategory(string cate_id)
+        {
+            var product = _context.products.Where(p => p.status == true && p.category_id == cate_id).Select(p => new ProductViewModel
+            {
+                ProductId = p.product_id,
+                ProductName = p.product_name,
+                Description = p.description,
+                PurchasePrice = p.purchase_price,
+                Price = p.price,
+                PromotionPrice = p.promotion_price,
+                StockQuantity = p.stock_quantity,
+                SoldQuantity = p.sold,
+                AvgRating = p.avgRating,
+                VisitCount = p.visited,
+                Images = p.images.Where(i => i.product_id == p.product_id).Select(i => new ImageViewModel
+                {
+                    ImageId = i.image_id,
+                    ImageUrl = i.image_url,
+                    IsPrimary = (bool)i.is_primary
+                }).ToList(),
+                Categories = p.category,
+                
+            }).ToList();
+            if (product == null)
+            {
+                return null;
+            }            
+            var promotions = _context.promotions.Where(p => p.status == true).Select(p => new PromotionViewModel
+            {
+                PromotionId = p.promotion_id,
+                PromotionName = p.promotion_name,
+                Description = p.description,
+                DiscountPercent = p.discount_percent,
+                StartDate = p.start_date,
+                EndDate = p.end_date,
+            }).ToList();
+            var viewModels = new ViewModels
+            {
+                ProductViewModel = product,
+                PromotionViewModel = promotions                
             };
             return viewModels;
         }

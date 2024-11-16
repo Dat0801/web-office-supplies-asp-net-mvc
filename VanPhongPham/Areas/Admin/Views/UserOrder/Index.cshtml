@@ -50,11 +50,11 @@
 
                     @if (order.order_status.order_status_name != "Đã hủy")
                     {
-                        <td class="text-success">@order.order_status.order_status_name</td>
+                        <td class="text-success" style="font-weight: bold">@order.order_status.order_status_name</td>
                     }
                     else
                     {
-                        <td class="text-danger">@order.order_status.order_status_name</td>
+                        <td class="text-danger" style="font-weight: bold">@order.order_status.order_status_name</td>
                     }
                     <td>
                         <a class="btn icon-btn btn-outline-info"
@@ -73,60 +73,3 @@
         </div>
     </div>
 </div>
-
-@*<script>
-    async function createOrderForGHN(items, totalWeight, name, phone, address, to_ward, to_district, to_province, totalamount) {
-        // Các giá trị cần thiết cho GHN API
-        const payment_type_id = 1; // Ví dụ: 1 cho người nhận trả, 2 cho người gửi trả
-        const to_name = "Tên người nhận";
-        const to_phone = "Số điện thoại người nhận";
-        const to_address = "Địa chỉ chi tiết";
-        const to_ward_name = "Tên phường/xã";
-        const to_disctrict_name = "Tên quận/huyện";
-        const to_province_name = "Tên tỉnh/thành phố";
-        const cod_amount = 50000; // Số tiền thu hộ, nếu có
-        const service_type_id = 2; // Loại dịch vụ GHN, ví dụ: 2 cho dịch vụ nhanh
-
-        // Gọi hàm `createOrder` từ GHN.js
-        try {
-            const result = await createOrder(
-                payment_type_id,
-                to_name,
-                to_phone,
-                to_address,
-                to_ward_name,
-                to_disctrict_name,
-                to_province_name,
-                cod_amount,
-                totalWeight,
-                service_type_id,
-                items
-            );
-
-            if (result) {
-                alert("Tạo đơn hàng thành công! Mã đơn hàng: " + result.order_code);
-            } else {
-                alert("Lỗi khi tạo đơn hàng");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Lỗi khi gọi API tạo đơn hàng.");
-        }
-    }
-
-    // Gọi hàm `createOrderForGHN` khi nhấn nút
-    function initiateOrder(items, totalWeight, name, phone, address, to_ward, to_district, to_province, totalamount) {
-        console.log("Items:", items);
-        console.log("Total Weight:", totalWeight);
-        console.log("Name:", name);
-        console.log("Phone:", phone);
-        console.log("Address:", address);
-        console.log("Ward:", to_ward);
-        console.log("District:", to_district);
-        console.log("Province:", to_province);
-        console.log("Total Amount:", totalamount);
-        // Xử lý thêm logic hoặc gọi API tại đây
-    }
-</script>*@
-
-

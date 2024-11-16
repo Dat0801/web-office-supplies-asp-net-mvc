@@ -25,8 +25,19 @@
             <div class="border p-3">
                 <div class="row">
                     <div class="col-6">
+                        @if (Model.OrderCode != "")
+                        {
+                            <p style="font-size: 18px"><strong>Mã vận đơn:</strong> @Model.OrderCode</p>
+                        }
+                        else
+                        {
+                            <p style="font-size: 18px"><strong>Mã vận đơn:</strong></p>
+                        }
+
                         <p><strong>Mã hóa đơn:</strong> @Model.OrderId</p>
+
                         <p><strong>Ngày đặt:</strong> @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</p>
+
                         @if (Model.OrderStatusName != "Đã hủy")
                         {
                             <p><strong>Tình trạng đơn hàng:</strong> <span class="text-success" style="font-weight: bold">@Model.OrderStatusName</span></p>
@@ -53,6 +64,8 @@
                         }
                     </div>
                     <div class="col-6">
+                        <p><strong>Phương thức thanh toán:</strong> <span>@Model.MethodName</span></p>
+
                         <p><strong>Tổng tiền hàng:</strong> <span>₫@totalAmountOrder.ToString("N0")</span></p>
 
                         <p><strong>Phí vận chuyển:</strong> <span>₫@(Model.ShippingFee.HasValue ? Model.ShippingFee.Value.ToString("N0") : "0")</span></p>
@@ -175,7 +188,7 @@
         if (methodId === "PAY001")
         {
             payment_type_id = 2;
-            cod_amount = "@Model.TotalAmount";
+            cod_amount = "@totalAmountOrder";
         }
         else
         {

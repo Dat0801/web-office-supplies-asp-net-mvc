@@ -44,7 +44,7 @@
 </div>
 <!-- Navbar End -->
 <!-- Categories Start -->
-<div class="container-fluid pt-5">
+<@*div class="container-fluid pt-5">
     <div class="row px-xl-5 pb-3">
         <div class="col-lg-2 col-md-4 col-sm-12 pb-1">
             <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
@@ -101,7 +101,7 @@
             </div>
         </div>
     </div>
-</div>
+</div>*@
 <!-- Categories End -->
 <!-- Offer Start -->
 <div class="container-fluid offer pt-5">
@@ -133,37 +133,55 @@
         <h2 class="section-title px-5"><span class="px-2">Sản Phẩm Bán Chạy</span></h2>
     </div>
     <div class="row px-xl-5 pb-3">
-            @foreach (var product in Model.ProductViewModel)
-            {
-                <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-                    <div class="card product-item border-0 mb-4">
-                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                            @{var primaryImage = product.Images.FirstOrDefault(image => image.IsPrimary);
-                                if (primaryImage != null)
+        @foreach (var product in Model.ProductViewModel)
+        {
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="card product-item border-0 mb-4">
+                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                        @{var primaryImage = product.Images.FirstOrDefault(image => image.IsPrimary);
+                            if (primaryImage != null)
+                            {
+                                <img class="img-fluid w-100" src="@primaryImage.ImageUrl" alt="@primaryImage.Description">
+                            }
+                        }
+                    </div>
+                    <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                        <h6 class="text-truncate mb-3">@product.ProductName</h6>
+                        <div class="d-flex justify-content-center">
+                            @{
+                                var activesPromotions = Model.PromotionViewModel
+                                .Where(p => p.StartDate.Date == DateTime.Now.Date)
+                                .ToList();
+
+                                if (activesPromotions.Any())
                                 {
-                                    <img class="img-fluid w-100" src="@primaryImage.ImageUrl" alt="@primaryImage.Description">
+                                    <div>
+                                        <span>@product.PromotionPrice VND</span>
+                                        <del>@product.Price VND</del>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div>@product.Price VND</div>
                                 }
                             }
                         </div>
-                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                            <h6 class="text-truncate mb-3">@product.ProductName</h6>
-                            <div class="d-flex justify-content-center">
-                                <h6>@product.PromotionPrice</h6>
-                                <h6 class="text-muted ml-2"><del>@product.Price</del></h6>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between bg-light border">
-                            <a href="@Url.Action("Details", "ProductClient", new { id = product.ProductId })" class="btn btn-sm text-dark p-0">
-                                <i class="fas fa-eye text-primary mr-1"></i>Xem Chi Tiết
-                            </a>
-                            <a href="@Url.Action("AddToCart", "Cart", new { id = product.ProductId })" class="btn btn-sm text-dark p-0">
-                                <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ Hàng
-                            </a>
-                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between bg-light border">
+                        <a href="@Url.Action("Details", "ProductClient", new { id = product.ProductId })" class="btn btn-sm text-dark p-0">
+                            <i class="fas fa-eye text-primary mr-1"></i>Xem Chi Tiết
+                        </a>
+                        <!-- Thêm thuộc tính data-product-id vào liên kết thêm vào giỏ hàng -->
+                        <a href="#" class="btn btn-sm text-dark p-0 addToCartLink" data-product-id="@product.ProductId">
+                            <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ Hàng
+                        </a>
                     </div>
                 </div>
-            }
+            </div>
+        }
+
     </div>
+    <center><a href="@Url.Action("GetAllProducts","ProductClient")" class="btn btn-danger">Xem tất cả</a></center>
 </div>
 <!-- Products End -->
 <!-- Subscribe Start -->
@@ -365,3 +383,32 @@ Products End -->
     </div>
 </div>
 <!-- Vendor End -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Lấy cart_id từ sessionStorage
+        var user = sessionStorage.getItem("user");
+        var cartId = user ? JSON.parse(user).CartID : null;
+
+        // Lấy tất cả các phần tử có class 'addToCartLink'
+        var addToCartLinks = document.getElementsByClassName("addToCartLink");
+
+        // Duyệt qua tất cả các phần tử
+        for (var i = 0; i < addToCartLinks.length; i++) {
+            var addToCartLink = addToCartLinks[i];  // Lấy từng phần tử trong danh sách
+
+            // Lấy productId từ data-product-id
+            var productId = addToCartLink.getAttribute("data-product-id");
+
+            // Số lượng sản phẩm (có thể thay đổi theo nhu cầu)
+            var quantity = 1;
+
+            // Kiểm tra nếu cartId có giá trị
+            if (cartId) {
+                // Xây dựng URL cho link thêm vào giỏ hàng
+                addToCartLink.href = "/Cart/AddToCart?cart_id=" + cartId + "&productId=" + productId + "&quantity=" + quantity;
+            } else {
+                addToCartLink.href = "/Auth/Login";  // Chuyển hướng đến trang đăng nhập
+            }
+        }
+    });
+</script>

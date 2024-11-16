@@ -46,19 +46,7 @@
     
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const token = localStorage.getItem('token');
-            if (!token)
-            {
-                if (!sessionStorage.getItem('redirected')) {
-                    sessionStorage.setItem('redirected', 'true');
-                    logout();
-                }
-            } else
-            {
-                // Xóa cờ nếu người dùng có token, tránh chuyển hướng không cần thiết
-                sessionStorage.removeItem('redirected');
-                fetchUserData();
-            }
+            fetchUserData();
         });
     </script>   
 </body>
