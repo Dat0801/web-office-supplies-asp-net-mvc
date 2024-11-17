@@ -8,6 +8,7 @@
         <thead class="thead-light">
             <tr>
                 <th>Mã sản phẩm</th>
+                <th>Hình ảnh</th>
                 <th>Tên sản phẩm</th>
                 <th>Giá bán</th>
                 <th>Số lượng tồn</th>
@@ -19,7 +20,16 @@
             @foreach (var product in Model)
             {
                 <tr>
-                    <td>@product.product_id</td>    
+                    <td>@product.product_id</td>
+                    @foreach (var image in ViewBag.mainImages)
+                    {
+                        if (image.product.product_id == product.product_id)
+                        {
+                            <td>
+                                <img src="@image.image_url" alt="Ảnh sản phẩm" style="width: 50px; height: auto;">
+                            </td>
+                        }
+                    }
                     <td>@product.product_name</td>
                     <td>
                         @if (product.promotion_price != null && product.promotion_price != 0)

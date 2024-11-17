@@ -26,7 +26,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 ViewBag.Message = message;
                 ViewBag.MessageType = messageType;
             }
-            int pageSize = 7;
+            int pageSize = 5;
             int pageNumber = (page ?? 1);
             List<product> listProduct;
             if (search_str != null)
@@ -42,6 +42,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             {
                 listProduct = productRepository.GetProducts();
             }
+            ViewBag.mainImages = productRepository.GetMainImages();
             return View(listProduct.ToPagedList(pageNumber, pageSize));
         }
 
@@ -188,6 +189,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
         public ActionResult RecycleProductIndex()
         {
             List<product> listProduct = productRepository.GetRecycleProducts();
+            ViewBag.mainImages = productRepository.GetMainImages();
             return View(listProduct);
         }
 

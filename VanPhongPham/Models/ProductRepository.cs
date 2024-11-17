@@ -348,6 +348,11 @@ namespace VanPhongPham.Models
             }
         }
 
+        public List<image> GetMainImages()
+        {
+            return _context.images.Where(img => img.is_primary == true).ToList();
+        }
+
         public image GetMainImageByProductId(string product_id)
         {
             return _context.images.FirstOrDefault(img => img.product_id == product_id && img.is_primary == true);
