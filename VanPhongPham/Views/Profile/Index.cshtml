@@ -78,11 +78,11 @@
             }
             else if (ViewBag.PartialView == "OrderPartial")
             {
-                @Html.Action("OrderPartial", "Profile", new { page = ViewBag.Page, order_status_id = ViewBag.CurrentStatus, MaTaiKhoan = ViewBag.MaTaiKhoan })
+                @Html.Action("OrderPartial", "Profile", new { page = ViewBag.Page, order_status_id = ViewBag.CurrentStatus, MaTaiKhoan = ViewBag.MaTaiKhoan, search_str = ViewBag.SearchStr })
             }
             else if (ViewBag.PartialView == "ChangeEmailPartial")
             {
-                @Html.Action("ChangeEmailPartial", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan })
+                @Html.Action("ChangeEmailPartial", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, order_status_id = ViewBag.CurrentStatus })
             }
             else if (ViewBag.PartialView == "OrderDetailsPartial")
             {
