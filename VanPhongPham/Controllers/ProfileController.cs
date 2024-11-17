@@ -16,12 +16,13 @@ namespace VanPhongPham.Controllers
     {
         private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
         // GET: Profile
-        public ActionResult Index(string view, string MaTaiKhoan, string ord_id, int? page, int order_status_id = -1)
+        public ActionResult Index(string view, string MaTaiKhoan, string ord_id, string search_str, int? page, int order_status_id = -1)
         {
             ViewBag.PartialView = string.IsNullOrEmpty(view) ? "ProfilePartial" : view;
             ViewBag.MaTaiKhoan = MaTaiKhoan;
             ViewBag.CurrentStatus = order_status_id;
             ViewBag.OrderID = ord_id;
+            ViewBag.SearchStr = search_str;
             ViewBag.Page = page ?? 1;
 
             if (!string.IsNullOrEmpty(MaTaiKhoan))
@@ -101,7 +102,7 @@ namespace VanPhongPham.Controllers
             return PartialView();
         }
 
-        public ActionResult OrderPartial(int? page, int order_status_id, string MaTaiKhoan) // Thêm tham số MaTaiKhoan
+        public ActionResult OrderPartial(int? page, int order_status_id, string MaTaiKhoan, string search_str) // Thêm tham số MaTaiKhoan
         {
             // Lấy danh sách đơn hàng theo điều kiện
             var orders = db.orders
@@ -114,6 +115,7 @@ namespace VanPhongPham.Controllers
                     EmployeeId = o.employee_id,
                     CustomerId = o.customer_id,
                     InfoAddress = o.info_address,
+                    OrderCode = o.ordercode,
                     MethodId = o.method_id,
                     MethodName = o.payment_method.method_name,
                     DeliveryDate = o.delivery_date,
@@ -136,16 +138,22 @@ namespace VanPhongPham.Controllers
                     }).ToList()
                 }).ToList();
 
+            if (search_str != null)
+            {
+                orders = orders.Where(o => o.OrderId.Contains(search_str.ToUpper()) || o.OrderDetails.Any(d => d.ProductName.ToUpper().Contains(search_str.ToUpper()))).ToList();
+                ViewBag.SearchStr = search_str;
+            }
 
             ViewBag.OrderStatus = db.order_status.ToList();
             ViewBag.CurrentStatus = order_status_id; // Thêm dòng này để lưu trạng thái hiện tại
+            ViewBag.MaTaiKhoan = MaTaiKhoan;
 
             int pageSize = 5;
             int pageNumber = (page ?? 1);
             return PartialView(orders.ToPagedList(pageNumber, pageSize));
         }
 
-        public ActionResult OrderDetailsPartial(string ord_id)
+        public ActionResult OrderDetailsPartial(string ord_id, int order_status_id)
         {
             var order = db.orders
                 .Where(o => o.order_id == ord_id)
@@ -181,6 +189,7 @@ namespace VanPhongPham.Controllers
                 })
                 .FirstOrDefault(); // Chỉ lấy một đối tượng OrderViewModel
 
+            ViewBag.OrderStatusID = order_status_id;
             return PartialView(order);
         }
         [HttpPost]

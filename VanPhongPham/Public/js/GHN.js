@@ -121,6 +121,26 @@ async function getShippingDetail(ordercode) {
     }
 }
 
+async function CancelOrder(ordercode) {
+    const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/switch-status/cancel`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'Token': TokenAPI,
+            'ShopId': 195136
+        },
+        body: JSON.stringify({ order_codes: Array.isArray(ordercode) ? ordercode : [ordercode] })
+    });
+
+    if (response.ok) {
+        const result = await response.json();
+        return result.data;
+    }
+    else {
+        console.error("Lỗi khi hủy đơn hàng")
+    }
+}
+
 async function createOrder(payment_type_id, to_name, to_phone, to_address, to_ward_name, to_district_name, to_province_name, cod_amount, weight, service_type_id, items) {
     const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create`, {
         method: "POST",

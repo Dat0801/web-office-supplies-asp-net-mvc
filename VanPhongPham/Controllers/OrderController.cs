@@ -26,7 +26,15 @@ namespace VanPhongPham.Controllers
                         if (order_status == 1)
                         {
                             ord.order_status_id = 4;
-                            ord.created_at = DateTime.Now;
+                            
+                            if (!string.IsNullOrEmpty(finishdate) && DateTime.TryParse(finishdate, out DateTime parsedDate))
+                            {
+                                ord.created_at = parsedDate.ToLocalTime();
+                            }
+                            else
+                            {
+                                ord.created_at = DateTime.Now;
+                            }
                         }
                         if (order_status == 2)
                         {

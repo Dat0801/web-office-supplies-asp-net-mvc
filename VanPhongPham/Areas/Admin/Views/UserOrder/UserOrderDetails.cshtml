@@ -36,7 +36,14 @@
 
                         <p><strong>Mã hóa đơn:</strong> @Model.OrderId</p>
 
-                        <p><strong>Ngày đặt:</strong> @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</p>
+                        @if (Model.OrderStatusName == "Đã hủy")
+                        {
+                            <p><strong>Ngày hủy:</strong> @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</p>
+                        }
+                        else
+                        {
+                            <p><strong>Ngày đặt:</strong> @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</p>
+                        }
 
                         @if (Model.OrderStatusName == "Hoàn thành")
                         {
@@ -49,23 +56,29 @@
                         }
                         else
                         {
-                            <p class="text-danger"><strong>Tình trạng đơn hàng:</strong> <span class="text-success" style="font-weight: bold">@Model.OrderStatusName</span></p>
+                            <p><strong>Tình trạng đơn hàng:</strong> <span class="text-danger" style="font-weight: bold">@Model.OrderStatusName</span></p>
                         }
 
-                        @if (Model.EmployeeId != "")
+                        @if (Model.EmployeeId != null)
                         {
-                            if (Model.FullNameEmployee != null && Model.FullNameEmployee.Any())
+                            if (Model.OrderStatusName != "Đã hủy")
                             {
-                                <p><strong>Người xử lý:</strong> @Model.EmployeeId - @Model.FullNameEmployee</p>
-                            }
-                            else
-                            {
-                                <p><strong>Người xử lý:</strong> @Model.EmployeeId</p>
+                                if (Model.FullNameEmployee != null && Model.FullNameEmployee.Any())
+                                {
+                                    <p><strong>Người xử lý:</strong> @Model.EmployeeId - @Model.FullNameEmployee</p>
+                                }
+                                else
+                                {
+                                    <p><strong>Người xử lý:</strong> @Model.EmployeeId</p>
+                                }
                             }
                         }
                         else
                         {
-                            <p><strong>Người xử lý:</strong></p>
+                            if (Model.OrderStatusName != "Đã hủy")
+                            {
+                                <p><strong>Người xử lý:</strong></p>
+                            }
                         }
                     </div>
                     <div class="col-6">
@@ -77,7 +90,7 @@
 
                         <p><strong>Thành tiền:</strong> <span class="text-danger" style="font-weight: bold">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span></p>
 
-                        @if (Model.FullNameCustomer != "")
+                        @if (Model.FullNameCustomer != null)
                         {
                             <p><strong>Khách hàng:</strong> @Model.CustomerId - @Model.FullNameCustomer</p>
                         }

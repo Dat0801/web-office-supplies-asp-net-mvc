@@ -163,7 +163,7 @@
     <div class="order-container">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <!-- Nút Trở lại có thể quay lại trang trước -->
-            <a href="@Url.Action("Index", "Profile", new { order_status_id = Model.OrderStatusID, MaTaiKhoan = Model.CustomerId, view = "OrderPartial" })"  style="display: flex; align-items: center; font-size: 15px; color: inherit; text-decoration: none;">
+            <a href="@Url.Action("Index", "Profile", new { order_status_id = ViewBag.OrderStatusID, MaTaiKhoan = Model.CustomerId, view = "OrderPartial" })"  style="display: flex; align-items: center; font-size: 15px; color: inherit; text-decoration: none;">
                 <img src="~/Public/img/icons/icons8-backorder.png" width="15" height="15" style="margin-right: 5px;" /> TRỞ LẠI
             </a>
 
@@ -197,9 +197,6 @@
                 {
                     <p style="font-size: 14px; color: #555">ĐÃ NHẬN HÀNG VÀO: @Model.DeliveryDate.Value.ToString("HH:mm dd-MM-yyyy")</p>
                 }
-            </div>
-
-            <div class="col-4 p-0 d-flex justify-content-end align-items-center" id="buttonContainer">
             </div>
         </div>
 
@@ -364,16 +361,6 @@
             if (shippingDetail.status === "delivered" && "@Html.Raw(Model.OrderStatusName)" === "Chờ giao hàng") {
                 const formattimelead = `${day}-${month}-${year}`;
                 leadtime.innerHTML = `NGÀY GIAO DỰ KIẾN: ${formattimelead}`;
-
-                var button = document.createElement("button");
-                button.classList.add("btn", "btn-danger", "setOrderStatusTwo");
-                button.setAttribute("data-orderid", "@Model.OrderId");
-                button.textContent = "Đã Nhận Hàng";
-                button.onclick = function () {
-                    setOrderStatusTwo(this); // Gọi hàm setOrderStatusTwo khi nút được nhấn
-                };
-
-                document.getElementById("buttonContainer").appendChild(button);
             }
             else if (shippingDetail.status !== "delivered" && "@Html.Raw(Model.OrderStatusName)" === "Chờ giao hàng")
             {
@@ -391,7 +378,7 @@
             statusItem.innerHTML = `
                 <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
                 <div class="timeline-content">
-                    <p class="status-text">Chờ lấy hàng</p>
+                    <p class="status-text">Người bán đang chuẩn bị hàng</p>
                     <span class="timestamp">${formattedDate}</span>
                 </div>
             `;
@@ -436,11 +423,13 @@
     function getStatusText(status) {
         switch (status) {
             case 'picking':
-                return 'Nhân viên đang lấy hàng';
+                return 'Đang lấy hàng';
+            case 'cancel':
+                return 'Hủy đơn hàng';
+            case 'picking':
+                return 'Đang lấy hàng';
             case 'picked':
                 return 'Nhân viên đã lấy hàng';
-            case 'Hoàn thành':
-                return 'Hoàn thành';
             case 'storing':
                 return 'Hàng đang nằm ở kho';
             case 'transporting':
@@ -450,37 +439,7 @@
             case 'delivering':
                 return 'Nhân viên đang giao cho người nhận';
             case 'delivered':
-                return 'Nhân viên đã giao hàng thành công';
-        }
-    }
-
-    async function setOrderStatusTwo(button) {
-        const orderId = button.getAttribute('data-orderid');  // Lấy orderId từ nút được nhấn
-        const shippingDetail1 = await getShippingDetail("@Model.OrderCode");
-
-        // Gọi hàm đổi trạng thái đơn hàng
-        const response = await fetch('/Order/ChangeOrder_OrderStatus', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                order_id: orderId,
-                order_status: 2, // Trạng thái mới
-                finishdate: new Date(shippingDetail1.finish_date).toISOString()
-            })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            // Điều hướng đến trang khác sau khi cập nhật trạng thái
-            const url = `@Url.Action("Index", "Profile")?order_status_id=${'@Model.OrderStatusID'}&MaTaiKhoan=${'@Model.CustomerId'}&view=OrderPartial`;
-            window.location.href = url;
-        }
-        else
-        {
-            alert(result.message);
+                return 'Giao hàng thành công';
         }
     }
 </script>
