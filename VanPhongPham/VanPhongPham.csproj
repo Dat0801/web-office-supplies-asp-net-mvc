@@ -629,6 +629,8 @@
     </Content>
     <Content Include="Areas\Admin\Views\UserOrder\UserOrderDetails.cshtml" />
     <Content Include="Areas\Admin\Views\UserOrder\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Promotion\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Promotion\RecoverPromotion.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>
@@ -729,6 +731,7 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
+    <Compile Include="Areas\Admin\Controllers\PromotionController.cs" />
     <Compile Include="Areas\Admin\Controllers\PurchaseOrderController.cs" />
     <Compile Include="Areas\Admin\Controllers\SupplierController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
@@ -761,6 +764,7 @@
     <Compile Include="Models\ProductAttributeViewModel.cs" />
     <Compile Include="Models\ProductRepository.cs" />
     <Compile Include="Models\ProductViewModel.cs" />
+    <Compile Include="Models\PromotionRepository.cs" />
     <Compile Include="Models\PromotionViewModel.cs" />
     <Compile Include="Models\PurchaseOrderRepository.cs" />
     <Compile Include="Models\SupplierRepository.cs" />

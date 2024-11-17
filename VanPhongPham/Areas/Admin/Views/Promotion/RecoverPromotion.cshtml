@@ -1,0 +1,74 @@
+﻿@{
+    ViewBag.Title = "RecoverPromotion";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model List<VanPhongPham.Models.PromotionViewModel>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<a href="@Url.Action("Index","Promotion")"><i class="bi bi-arrow-return-left"></i> Quay lại</a>
+<br />
+<br />
+<h4 class="font-weight-bold mb-0">Danh sách khuyến mãi đã xóa</h4>
+<div class="row">
+    <div class="navbar-nav my-3 ml-2">
+        <!-- Search -->
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("RecoverPromotion", "Promotion")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")">
+            </span>
+            <button class="btn icon-btn btn-outline-primary" title="Tìm kiếm">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <form method="post" action="/Promotion/RecoverPromotion">
+        <table class="table card-table table-responsive-md">
+            <thead class="thead-light">
+                <tr>
+                    <th><input type="checkbox" id="select-all" />Chọn tất cả</th>
+                    <th>Mã KM</th>
+                    <th>Tên khuyến mãi</th>
+                    <th>Giảm giá (%)</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>                    
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var promotion in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="selectedPromotions" value="@promotion.PromotionId" />
+                        </td>
+                        <td>@promotion.PromotionId</td>
+                        <td>@promotion.PromotionName</td>
+                        <td>@promotion.DiscountPercent%</td>
+                        <td>@promotion.StartDate.ToString("dd/MM/yyyy")</td>
+                        <td>@promotion.EndDate.ToString("dd/MM/yyyy")</td>                        
+                        <td>
+                            <a class="btn icon-btn btn-outline-info ml-2"
+                               href="@Url.Action("RecoverSinglePromotion", "Promotion", new { promotion_id = promotion.PromotionId })"
+                               title="Khôi phục">
+                                <i class="feather icon-refresh-cw navbar-icon align-middle"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary mt-3">Khôi phục hàng loạt</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById("select-all").addEventListener("click", function (e) {
+        var checkboxes = document.querySelectorAll("input[name='selectedPromotions']");
+        checkboxes.forEach((checkbox) => {
+            checkbox.checked = e.target.checked;
+        });
+    });
+</script>
