@@ -4,14 +4,16 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using VanPhongPham.Models;
+using VanPhongPham.Services;
 
 namespace VanPhongPham.Controllers
 {
     public class OrderController : Controller
     {
         DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
+
         // GET: Order
-        public ActionResult ChangeOrder_OrderStatus(string order_id, int order_status)
+        public ActionResult ChangeOrder_OrderStatus(string order_id, int order_status, string finishdate)
         {
             try
             {
@@ -29,9 +31,26 @@ namespace VanPhongPham.Controllers
                         if (order_status == 2)
                         {
                             ord.order_status_id = 3;
+                            // Kiểm tra và chuyển đổi finishDate sang kiểu DateTime
+                            if (!string.IsNullOrEmpty(finishdate) && DateTime.TryParse(finishdate, out DateTime parsedDate))
+                            {
+                                ord.delivery_date = parsedDate.ToLocalTime(); // Chuyển đổi về giờ địa phương nếu cần
+                            }
+                            else
+                            {
+                                return Json(new { success = false, message = "Finish date is invalid or empty." });
+                            }
                         }
 
-                        db.SubmitChanges();
+                        try
+                        {
+                            db.SubmitChanges();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error during SubmitChanges: " + ex.Message);
+                            return Json(new { success = false, message = ex.Message });
+                        }
                     }
                 }
 
@@ -42,6 +61,9 @@ namespace VanPhongPham.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+
+
         [HttpPost]
         public ActionResult SubmitReview(string user_id, string orderId, string currentStatusId, Dictionary<string, int> ratings, Dictionary<string, string> reviewContents)
         {

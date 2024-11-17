@@ -24,7 +24,7 @@ namespace VanPhongPham.Services
         public async Task UpdateDeliveredOrdersAsync()
         {
             // Lấy danh sách đơn hàng có ordercode != null
-            var ordersToCheck = db.orders.Where(o => o.ordercode != null).ToList();
+            var ordersToCheck = db.orders.Where(o => o.ordercode != null && o.order_status_id == 2).ToList();
 
             foreach (var order in ordersToCheck)
             {

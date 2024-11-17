@@ -28,10 +28,10 @@ namespace VanPhongPham.Controllers
             }
             return View(product);
         }
-        public ActionResult Details(string id)
+        public ActionResult Details(string id, string cart_id)
         {
             var product = _productRepository.GetProductsModelViewById(id);
-            
+            ViewBag.CartID = cart_id;
             return View(product);
         }
     }

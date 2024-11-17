@@ -21,11 +21,16 @@ namespace VanPhongPham
 
             GlobalConfiguration.Configuration.UseSqlServerStorage(ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString3"].ConnectionString);
 
-            // Đăng ký công việc lặp lại với Hangfire
+            // Cập nhật công việc lặp lại mỗi 2 phút một lần sử dụng RecurringJobOptions
             RecurringJob.AddOrUpdate<OrderUpdater>(
                 "UpdateDeliveredOrders",  // Tên công việc
                 updater => updater.UpdateDeliveredOrdersAsync(),  // Phương thức cần thực thi
-                Cron.Daily);  // Lập lại mỗi ngày
+                "*/2 * * * *",  // Mỗi 2 phút một lần
+                new RecurringJobOptions
+                {
+                    TimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")  // Múi giờ Việt Nam cho hệ điều hành Windows
+                }
+            );
         }
     }
 }
