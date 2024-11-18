@@ -17,6 +17,18 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
+<style>
+    .review-textarea {
+        width: 100%;
+        padding: 8px;
+        resize: none;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-top: 8px;
+    }
+</style>
+
 <div class="container-fluid p-0 m-0">
     <!-- Thông tin hóa đơn và Thông tin giao hàng -->
     <div class="row mb-5">
@@ -61,24 +73,18 @@
 
                         @if (Model.EmployeeId != null)
                         {
-                            if (Model.OrderStatusName != "Đã hủy")
+                            if (Model.FullNameEmployee != null && Model.FullNameEmployee.Any())
                             {
-                                if (Model.FullNameEmployee != null && Model.FullNameEmployee.Any())
-                                {
-                                    <p><strong>Người xử lý:</strong> @Model.EmployeeId - @Model.FullNameEmployee</p>
-                                }
-                                else
-                                {
-                                    <p><strong>Người xử lý:</strong> @Model.EmployeeId</p>
-                                }
+                                <p><strong>Người xử lý:</strong> @Model.EmployeeId - @Model.FullNameEmployee</p>
+                            }
+                            else
+                            {
+                                <p><strong>Người xử lý:</strong> @Model.EmployeeId</p>
                             }
                         }
                         else
                         {
-                            if (Model.OrderStatusName != "Đã hủy")
-                            {
-                                <p><strong>Người xử lý:</strong></p>
-                            }
+                            <p><strong>Người xử lý:</strong></p>
                         }
                     </div>
                     <div class="col-6">
@@ -168,13 +174,6 @@
         </table>
     </div>
 
-    <!-- Tùy chọn trạng thái -->
-    <!--<div class="d-flex justify-content-center my-4">
-        <label class="mr-3"><input type="radio" name="status" value="processing" /> Đang xử lý</label>
-        <label class="mr-3"><input type="radio" name="status" value="delivering" /> Đang giao</label>
-        <label class="mr-3"><input type="radio" name="status" value="received" /> Đã nhận</label>
-        <label><input type="radio" name="status" value="canceled" /> Đã hủy</label>
-    </div>-->
     <!-- Nút xác nhận -->
     @if (Model.OrderStatusID == 1)
     {
@@ -182,10 +181,60 @@
             <button type="button" id="confirmBtn" class="btn btn-primary">Xác nhận</button>
         </div>
     }
+    else if (Model.CancellationRequested == 1)
+    {
+        <div class="text-center mt-5">
+            <h3 class="text-center text-primary">Lý do hủy</h3>
+            <textarea class="review-textarea" style="height: 150px;" disabled>@Model.CancellationReason</textarea>
+            <button type="button" id="RefuseBtn" class="btn btn-primary" data-orderid="@Model.OrderId" data-ordercode="@Model.OrderCode">Từ chối</button>
+            <button type="button" id="AcceptBtn" class="btn btn-primary" data-orderid="@Model.OrderId" data-ordercode="@Model.OrderCode">Chấp nhận</button>
+        </div>
+    }
+    else if (Model.OrderStatusID == 4 && Model.CancellationRequested == 3)
+    {
+        <div class="text-center mt-5">
+            <h3 class="text-center text-primary">Lý do hủy</h3>
+            <textarea class="review-textarea" style="height: 150px;" disabled>@Model.CancellationReason</textarea>
+        </div>
+    }
 </div>
-<a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("Index","UserOrder")" title="Quay lại">
-    <i class="feather icon-corner-up-left"></i>
-</a>
+
+@if (ViewBag.View == "CanceledOrders")
+{
+    <a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("CanceledOrders","UserOrder")" title="Quay lại">
+        <i class="feather icon-corner-up-left"></i>
+    </a>
+}
+else if (ViewBag.View == "CancelRequest")
+{
+    <a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("CancelRequest","UserOrder")" title="Quay lại">
+        <i class="feather icon-corner-up-left"></i>
+    </a>
+}
+else if (ViewBag.View == "ConfirmRequest")
+{
+    <a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("ConfirmRequest","UserOrder")" title="Quay lại">
+        <i class="feather icon-corner-up-left"></i>
+    </a>
+}
+else if (ViewBag.View == "DeliveredOrders")
+{
+    <a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("DeliveredOrders","UserOrder")" title="Quay lại">
+        <i class="feather icon-corner-up-left"></i>
+    </a>
+}
+else if (ViewBag.View == "DeliveringOrders")
+{
+    <a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("DeliveringOrders","UserOrder")" title="Quay lại">
+        <i class="feather icon-corner-up-left"></i>
+    </a>
+}
+else if (ViewBag.View == "Index")
+{
+    <a class="btn icon-btn btn-outline-secondary my-3" href="@Url.Action("Index","UserOrder")" title="Quay lại">
+        <i class="feather icon-corner-up-left"></i>
+    </a>
+}
 
 <script>
     if (@Model.OrderStatusID === 1)
@@ -239,18 +288,18 @@
         });
 
         sessionStorage.setItem("itemsAdmin", JSON.stringify({
-            payment_type_id: payment_type_id,
-            to_name: to_name,
-            to_phone: to_phone,
-            to_address: to_address,
-            to_ward_name: to_ward_name,
-            to_district_name: to_district_name,
-            to_province_name: to_province_name,
-            cod_amount: cod_amount,
-            weight: weight,
-            service_type_id: service_type_id,
-            items: items,
-        }));
+        payment_type_id: payment_type_id,
+                    to_name: to_name,
+                    to_phone: to_phone,
+                    to_address: to_address,
+                    to_ward_name: to_ward_name,
+                    to_district_name: to_district_name,
+                    to_province_name: to_province_name,
+                    cod_amount: cod_amount,
+                    weight: weight,
+                    service_type_id: service_type_id,
+                    items: items,
+                }));
 
         // Kiểm tra nếu có dữ liệu trong sessionStorage và xóa khi chuyển hướng
         window.addEventListener('beforeunload', function () {
@@ -259,50 +308,144 @@
         });
     }
 
-    document.getElementById("confirmBtn").addEventListener('click', async function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        const confirmBtn = document.getElementById("confirmBtn");
+        if (confirmBtn)
+        {
+            document.getElementById("confirmBtn").addEventListener('click', async function () {
 
-        const itemsAdmin = JSON.parse(sessionStorage.getItem('itemsAdmin'));
+                const itemsAdmin = JSON.parse(sessionStorage.getItem('itemsAdmin'));
 
-        const createOrderResponse = await createOrder(
-            itemsAdmin.payment_type_id,
-            itemsAdmin.to_name,
-            itemsAdmin.to_phone,
-            itemsAdmin.to_address,
-            itemsAdmin.to_ward_name,
-            itemsAdmin.to_district_name,
-            itemsAdmin.to_province_name,
-            itemsAdmin.cod_amount,
-            itemsAdmin.weight,
-            itemsAdmin.service_type_id,
-            itemsAdmin.items
-        );
+                const createOrderResponse = await createOrder(
+                    itemsAdmin.payment_type_id,
+                    itemsAdmin.to_name,
+                    itemsAdmin.to_phone,
+                    itemsAdmin.to_address,
+                    itemsAdmin.to_ward_name,
+                    itemsAdmin.to_district_name,
+                    itemsAdmin.to_province_name,
+                    itemsAdmin.cod_amount,
+                    itemsAdmin.weight,
+                    itemsAdmin.service_type_id,
+                    itemsAdmin.items
+                );
 
-        if (createOrderResponse) {
+                if (createOrderResponse) {
 
-            const response = await fetch('/UserOrder/UpdateOrderAfterConfirm', {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
+                    const response = await fetch('/UserOrder/UpdateOrderAfterConfirm', {
+                    method: "POST",
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                ord_id: "@Model.OrderId",
+                                employeeid: "@admin.user_id",
+                                ordercode: createOrderResponse.order_code
+                            })
+                        });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
+                        const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
+                        window.location.href = url; // Điều hướng
+                    }
+                    else {
+                        console.log("Lỗi: ", result.message);
+                    }
+                }
+                else
+                {
+                    console.error("Không tạo được đơn hàng.");
+                }
+            });
+        }
+    });
+
+
+
+
+    document.getElementById("AcceptBtn").onclick = async function () {
+        const orderId = this.getAttribute("data-orderid");
+        const ordercode = this.getAttribute("data-ordercode");
+
+        const result = await CancelOrder(ordercode);
+
+        if (result) {
+            console.log("Hủy thành công");
+        }
+        else {
+            console.log("Hủy thất bại");
+        }
+
+        const shippingDetail1 = await getShippingDetail(ordercode);
+
+        console.log(orderId);
+        console.log(shippingDetail1.updated_date);
+
+        try {
+            // Gửi yêu cầu cập nhật trạng thái hủy đơn hàng lên server
+            const response = await fetch('/UserOrder/UpdateRequestCancelOrder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
-                    ord_id: "@Model.OrderId",
-                    employeeid: "@admin.user_id",
-                    ordercode: createOrderResponse.order_code
+                    order_id: orderId,
+                    finishdate: new Date(shippingDetail1.updated_date).toISOString(),
+                    check: parseInt(1)
+                })
+            });
+
+            const result = await response.json();
+
+            console.log(result);
+
+            if (result.success) {
+                var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
+                const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
+                window.location.href = url; // Điều hướng
+            }
+            else {
+                alert(result.message);
+            }
+        }
+        catch (error) {
+            console.error("Lỗi trong quá trình gửi yêu cầu:", error);
+            alert("Không thể gửi yêu cầu hủy đơn hàng. Vui lòng thử lại.");
+        }
+    };
+
+    document.getElementById("RefuseBtn").onclick = async function () {
+        const orderId = this.getAttribute("data-orderid");
+
+        try {
+            // Gửi yêu cầu cập nhật trạng thái hủy đơn hàng lên server
+            const response = await fetch('/UserOrder/UpdateRequestCancelOrder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    order_id: orderId,
+                    finishdate: null,
+                    check: 0
                 })
             });
 
             const result = await response.json();
 
             if (result.success) {
-                const url = `@Url.Action("Index", "UserOrder")`;
-                window.location.href = url;
+                var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
+                const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
+                window.location.href = url; // Điều hướng
             }
             else {
-                console.log("Lỗi: ", result.message);
+                alert(result.message);
             }
         }
-        else
-        {
-            console.error("Không tạo được đơn hàng.");
+        catch (error) {
+            console.error("Lỗi trong quá trình gửi yêu cầu:", error);
+            alert("Không thể gửi yêu cầu hủy đơn hàng. Vui lòng thử lại.");
         }
-
-    });
+    };
 </script>

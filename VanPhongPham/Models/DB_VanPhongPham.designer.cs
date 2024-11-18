@@ -2599,6 +2599,10 @@ namespace VanPhongPham.Models
 		
 		private int _order_status_id;
 		
+		private System.Nullable<int> _cancellation_requested;
+		
+		private string _cancellation_reason;
+		
 		private System.Nullable<System.DateTime> _created_at;
 		
 		private EntitySet<order_detail> _order_details;
@@ -2637,6 +2641,10 @@ namespace VanPhongPham.Models
     partial void Ontotal_amountChanged();
     partial void Onorder_status_idChanging(int value);
     partial void Onorder_status_idChanged();
+    partial void Oncancellation_requestedChanging(System.Nullable<int> value);
+    partial void Oncancellation_requestedChanged();
+    partial void Oncancellation_reasonChanging(string value);
+    partial void Oncancellation_reasonChanged();
     partial void Oncreated_atChanging(System.Nullable<System.DateTime> value);
     partial void Oncreated_atChanged();
     #endregion
@@ -2883,6 +2891,46 @@ namespace VanPhongPham.Models
 					this._order_status_id = value;
 					this.SendPropertyChanged("order_status_id");
 					this.Onorder_status_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cancellation_requested", DbType="Int")]
+		public System.Nullable<int> cancellation_requested
+		{
+			get
+			{
+				return this._cancellation_requested;
+			}
+			set
+			{
+				if ((this._cancellation_requested != value))
+				{
+					this.Oncancellation_requestedChanging(value);
+					this.SendPropertyChanging();
+					this._cancellation_requested = value;
+					this.SendPropertyChanged("cancellation_requested");
+					this.Oncancellation_requestedChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cancellation_reason", DbType="NVarChar(255)")]
+		public string cancellation_reason
+		{
+			get
+			{
+				return this._cancellation_reason;
+			}
+			set
+			{
+				if ((this._cancellation_reason != value))
+				{
+					this.Oncancellation_reasonChanging(value);
+					this.SendPropertyChanging();
+					this._cancellation_reason = value;
+					this.SendPropertyChanged("cancellation_reason");
+					this.Oncancellation_reasonChanged();
 				}
 			}
 		}

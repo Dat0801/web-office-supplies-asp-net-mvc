@@ -150,6 +150,8 @@ create table orders
 	shipping_fee float,
 	total_amount float default 0,
 	order_status_id int not null,
+	cancellation_requested int default 0,
+	cancellation_reason nvarchar(255),
 	created_at datetime default getdate(),
 )
 

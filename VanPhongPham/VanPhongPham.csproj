@@ -629,6 +629,11 @@
     </Content>
     <Content Include="Areas\Admin\Views\UserOrder\UserOrderDetails.cshtml" />
     <Content Include="Areas\Admin\Views\UserOrder\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\UserOrder\ConfirmRequest.cshtml" />
+    <Content Include="Areas\Admin\Views\UserOrder\CancelRequest.cshtml" />
+    <Content Include="Areas\Admin\Views\UserOrder\DeliveringOrders.cshtml" />
+    <Content Include="Areas\Admin\Views\UserOrder\DeliveredOrders.cshtml" />
+    <Content Include="Areas\Admin\Views\UserOrder\CanceledOrders.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>

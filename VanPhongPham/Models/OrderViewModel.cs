@@ -22,6 +22,8 @@ namespace VanPhongPham.Models
         public double? TotalAmount { get; set; }
         public int OrderStatusID { get; set; }
         public string OrderStatusName { get; set; }
+        public int CancellationRequested { get; set; }
+        public string CancellationReason { get; set; }
         public DateTime? CreatedAt { get; set; }
         public List<OrderDetailViewModel> OrderDetails { get; set; }
     }

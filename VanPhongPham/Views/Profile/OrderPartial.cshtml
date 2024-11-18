@@ -18,17 +18,17 @@
         border-bottom: 1px solid #ddd;
     }
 
-    .order-status-tabs .nav-tabs .nav-link {
-        color: #333;
-        font-weight: bold;
-        padding: 10px 0;
-        border: none;
-    }
+        .order-status-tabs .nav-tabs .nav-link {
+            color: #333;
+            font-weight: bold;
+            padding: 10px 0;
+            border: none;
+        }
 
-    .order-status-tabs .nav-tabs .nav-link.active {
-        color: #ff4747;
-        border-bottom: 3px solid #ff4747;
-    }
+            .order-status-tabs .nav-tabs .nav-link.active {
+                color: #ff4747;
+                border-bottom: 3px solid #ff4747;
+            }
 
     .order-container {
         background-color: #fff;
@@ -143,16 +143,16 @@
         margin-top: 10px;
     }
 
-    .rating-container p {
-        margin: 0;
-        font-weight: bold;
-        color: #333;
-    }
+        .rating-container p {
+            margin: 0;
+            font-weight: bold;
+            color: #333;
+        }
 
-    .rating-container .rating {
-        display: flex;
-        gap: 5px;
-    }
+        .rating-container .rating {
+            display: flex;
+            gap: 5px;
+        }
 
     .rating input[type="radio"] {
         display: none; /* Ẩn input */
@@ -207,9 +207,9 @@
         height: 30px;
     }
 
-    .search-input::placeholder {
-        color: #aaa; /* Màu placeholder */
-    }
+        .search-input::placeholder {
+            color: #aaa; /* Màu placeholder */
+        }
 
     .search-button {
         background: none; /* Nền trong suốt */
@@ -221,15 +221,15 @@
         margin-left: 10px; /* Khoảng cách giữa input và nút */
     }
 
-    .search-button:hover {
-        color: #333; /* Màu khi hover */
-    }
+        .search-button:hover {
+            color: #333; /* Màu khi hover */
+        }
 
-    .search-button i {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+        .search-button i {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
     .pagination-container {
         display: flex;
@@ -250,10 +250,10 @@
         text-decoration: none;
     }
 
-    .pagination .page-link:hover {
-        background-color: #f0f0f0; /* Màu nền khi hover */
-        color: #333; /* Màu chữ khi hover */
-    }
+        .pagination .page-link:hover {
+            background-color: #f0f0f0; /* Màu nền khi hover */
+            color: #333; /* Màu chữ khi hover */
+        }
 
     .pagination .active .page-link {
         background-color: #ff5733; /* Màu nền cho trang hiện tại */
@@ -324,9 +324,9 @@
         foreach (var order in Model)
         {
             <div class="order-container">
-                @if (order.OrderStatusName != "Đã hủy" && order.OrderStatusName != "Chờ xác nhận")
+                @if (order.OrderStatusName != "Đã hủy")
                 {
-                    <div class="order-status2" id="order_statusGHN" data-ordercode="@(string.IsNullOrEmpty(order.OrderCode) ? "" : order.OrderCode)" data-orderid="@order.OrderId" data-orderstatusname="@order.OrderStatusName">
+                    <div class="order-status2" id="order_statusGHN" data-ordercode="@(string.IsNullOrEmpty(order.OrderCode) ? "" : order.OrderCode)" data-orderid="@order.OrderId" data-orderstatusname="@order.OrderStatusName" data-cancelrequested="@order.CancellationRequested">
                         <i class="fa fa-exclamation-circle" style="color: #26AA99; font-size: 13px; margin-right: 6px;"></i>
                     </div>
 
@@ -489,6 +489,23 @@
     </div>
 </div>
 
+<!-- Modal nhập lý do hủy -->
+<div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true" data-backdrop="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalLabel">Nhập lý do hủy</h5>
+            </div>
+            <div class="modal-body">
+                <textarea id="cancelReason" class="review-textarea" style="height: 200px" maxlength="100" placeholder="Nhập nội dung hủy đơn hàng, tối đa 100 ký tự"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="confirmCancelBtn" class="btn btn-primary">Xác Nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', async function () {
         const orderContainers = document.querySelectorAll('.order-container');  // Lấy tất cả các đơn hàng
@@ -499,12 +516,13 @@
             const ordercode = orderstatusGHN.getAttribute('data-ordercode');
             const orderid = orderstatusGHN.getAttribute('data-orderid');
             const orderstatusname = orderstatusGHN.getAttribute('data-orderstatusname');
+            const cancelrequested = orderstatusGHN.getAttribute('data-cancelrequested');
+
+            // Lưu lại phần HTML của icon
+            const iconHTML = orderstatusGHN.querySelector('i').outerHTML;
 
             try {
                 const shippingDetail = await getShippingDetail(ordercode); // Lấy thông tin trạng thái từ GHN
-
-                // Lưu lại phần HTML của icon
-                const iconHTML = orderstatusGHN.querySelector('i').outerHTML;
 
                 // Cập nhật trạng thái giao hàng từ GHN vào UI
                 if (shippingDetail.log && shippingDetail.log.length > 0) {
@@ -515,38 +533,14 @@
                     orderstatusGHN.innerHTML = iconHTML + "Người bán đang chuẩn bị hàng"; // Hiển thị trạng thái thực tế
                 }
 
-                updateBtnCustom(shippingDetail, orderstatusname, orderid, ordercode, orderContainer); // Cập nhật button cho mỗi đơn hàng
-            } catch (error) {
-                console.error("Lỗi trong quá trình xử lý:", error);
+                updateBtnCustom(shippingDetail, orderstatusname, orderid, ordercode, orderContainer, cancelrequested); // Cập nhật button cho mỗi đơn hàng
+            }
+            catch (error)
+            {
+                orderstatusGHN.innerHTML = iconHTML + "Đơn hàng đã được đặt";
             }
         });
     });
-
-    function updateBtnCustom(shippingDetail, orderstatusname, orderid, ordercode, orderContainer) {
-        const btnCustom = orderContainer.querySelector("#btnCustom");
-
-        if ((shippingDetail.status === "ready_to_pick" || shippingDetail.status === "picking") && orderstatusname === "Chờ giao hàng") {
-            btnCustom.setAttribute("data-orderid", orderid);
-            btnCustom.setAttribute("data-ordercode", ordercode);
-            btnCustom.textContent = "Hủy đơn hàng";
-            btnCustom.onclick = async function () {
-                await setOrderStatusOne(this); // Gọi hàm hủy đơn hàng
-            };
-        }
-        else if (shippingDetail.status === "delivered" && orderstatusname === "Chờ giao hàng") {
-            btnCustom.setAttribute("data-orderid", orderid);
-            btnCustom.setAttribute("data-ordercode", ordercode);
-            btnCustom.textContent = "Đã nhận hàng";
-            btnCustom.onclick = function () {
-                setOrderStatusTwo(this); // Gọi hàm xác nhận đã nhận hàng
-            };
-        }
-        else if (shippingDetail.status !== "ready_to_pick" && shippingDetail.status !== "picking" && shippingDetail.status !== "delivered" && orderstatusname === "Chờ giao hàng") {
-            btnCustom.classList.add("disabled");
-            btnCustom.textContent = "Hủy đơn hàng";
-            btnCustom.onclick = null;
-        }
-    }
 
     // Hàm xử lý trạng thái logEntry.status
     function getStatusText(status) {
@@ -572,47 +566,115 @@
         }
     }
 
-    async function setOrderStatusOne(button) {
-        const orderId = button.getAttribute('data-orderid');  // Lấy orderId từ nút được nhấn
-        const ordercode1 = button.getAttribute('data-ordercode');
+    function updateBtnCustom(shippingDetail, orderstatusname, orderid, ordercode, orderContainer, cancelrequested) {
+        const btnCustom = orderContainer.querySelector("#btnCustom");
 
-        if (ordercode1 !== "") {
-            const result = await CancelOrder(ordercode1);
+        if ((shippingDetail.status === "ready_to_pick" || shippingDetail.status === "picking") && orderstatusname === "Chờ giao hàng") {
 
-            if (result) {
-                console.log("Hủy thành công");
+
+            if (cancelrequested == 0) {
+                btnCustom.setAttribute("data-orderid", orderid);
+                btnCustom.setAttribute("data-ordercode", ordercode);
+                btnCustom.textContent = "Hủy đơn hàng";
+
+                // Khi bấm nút, mở modal và truyền dữ liệu
+                btnCustom.onclick = function () {
+                    const cancelModal = document.getElementById("cancelModal");
+                    const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+                    const cancelReason = document.getElementById("cancelReason");
+
+                    cancelReason.value = "";
+
+                    // Truyền dữ liệu vào nút xác nhận trong modal
+                    confirmCancelBtn.setAttribute("data-orderid", orderid);
+                    confirmCancelBtn.setAttribute("data-ordercode", ordercode);
+
+                    // Mở modal
+                    const bootstrapModal = new bootstrap.Modal(cancelModal);
+                    bootstrapModal.show();
+
+                    document.body.style.overflowY = "scroll";
+                };
             }
-            else {
-                console.log("Hủy thất bại");
+            else if (cancelrequested == 1) {
+                btnCustom.classList.add("disabled");
+                btnCustom.textContent = "Đã gửi yêu cầu hủy đơn hàng";
+                btnCustom.onclick = null;
             }
+            else if (cancelrequested == 2) {
+                btnCustom.classList.add("disabled");
+                btnCustom.textContent = "Yêu cầu hủy đơn hàng bị từ chối";
+                btnCustom.onclick = null;
+            }
+
         }
-        const shippingDetail1 = await getShippingDetail(ordercode1);
-
-        // Gọi hàm đổi trạng thái đơn hàng
-        const response = await fetch('/Order/ChangeOrder_OrderStatus', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                order_id: orderId,
-                order_status: 1, // Trạng thái mới
-                createat: new Date(shippingDetail1.updated_date).toISOString()
-            })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            // Điều hướng đến trang khác sau khi cập nhật trạng thái
-            const url = `@Url.Action("Index", "Profile")?order_status_id=${'@currentStatusId'}&MaTaiKhoan=${'@MaTaiKhoan'}&view=OrderPartial`;
-            window.location.href = url;
+        else if (shippingDetail.status === "delivered" && orderstatusname === "Chờ giao hàng") {
+            btnCustom.setAttribute("data-orderid", orderid);
+            btnCustom.setAttribute("data-ordercode", ordercode);
+            btnCustom.textContent = "Đã nhận hàng";
+            btnCustom.onclick = function () {
+                setOrderStatusTwo(this); // Gọi hàm xác nhận đã nhận hàng
+            };
         }
-        else
-        {
-            alert(result.message);
+        else if (shippingDetail.status !== "ready_to_pick" && shippingDetail.status !== "picking" && shippingDetail.status !== "delivered" && orderstatusname === "Chờ giao hàng") {
+            btnCustom.classList.add("disabled");
+            btnCustom.textContent = "Hủy đơn hàng";
+            btnCustom.onclick = null;
         }
     }
+
+    document.getElementById("confirmCancelBtn").onclick = async function () {
+        const orderId = this.getAttribute("data-orderid");
+        const cancelReason = document.getElementById("cancelReason").value.trim();
+
+        if (!cancelReason) {
+            const modalBody = document.querySelector("#MessagesModal .modal-body p");
+            modalBody.textContent = `Để gửi, hãy thêm lý do.`; // Thông báo lỗi
+
+            // Hiển thị modal với jQuery
+            $("#MessagesModal").modal("show");
+
+            // Tự động tắt modal sau 3 giây
+            setTimeout(function () {
+                $("#MessagesModal").modal("hide");
+            }, 1500);
+
+            // Khôi phục thanh cuộn khi modal mở
+            document.body.style.overflowY = "scroll"; // Đảm bảo trang có thể cuộn lại
+
+            return;
+        }
+
+        try
+        {
+            // Gửi yêu cầu cập nhật trạng thái hủy đơn hàng lên server
+            const response = await fetch('/Order/RequestCancellation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        cancelReason: cancelReason
+                    })
+                });
+
+            const result = await response.json();
+
+            if (result.success)
+            {
+                location.reload(); // Reload lại trang để cập nhật UI
+            }
+            else
+            {
+                alert(result.message);
+            }
+        }
+        catch (error) {
+            console.error("Lỗi trong quá trình gửi yêu cầu:", error);
+            alert("Không thể gửi yêu cầu hủy đơn hàng. Vui lòng thử lại.");
+        }
+    };
 
     async function setOrderStatusTwo(button) {
         const orderId = button.getAttribute('data-orderid');  // Lấy orderId từ nút được nhấn
@@ -628,7 +690,7 @@
             },
             body: JSON.stringify({
                 order_id: orderId,
-                order_status: 2, // Trạng thái mới
+                order_status: 2,
                 finishdate: new Date(shippingDetail1.finish_date).toISOString()
             })
         });

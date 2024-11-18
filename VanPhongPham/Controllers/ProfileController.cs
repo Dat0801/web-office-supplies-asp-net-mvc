@@ -121,6 +121,8 @@ namespace VanPhongPham.Controllers
                     DeliveryDate = o.delivery_date,
                     TotalAmount = o.total_amount,
                     OrderStatusName = o.order_status.order_status_name,
+                    CancellationRequested = o.cancellation_requested ?? 0,
+                    CancellationReason = o.cancellation_reason,
                     CreatedAt = o.created_at,
                     OrderDetails = o.order_details.Select(od => new OrderDetailViewModel // Sử dụng OrderDetailViewModel
                     {
@@ -171,6 +173,8 @@ namespace VanPhongPham.Controllers
                     TotalAmount = o.total_amount,
                     OrderStatusID = o.order_status_id,
                     OrderStatusName = o.order_status.order_status_name,
+                    CancellationRequested = o.cancellation_requested ?? 0,
+                    CancellationReason = o.cancellation_reason,
                     CreatedAt = o.created_at,
                     OrderDetails = o.order_details.Select(od => new OrderDetailViewModel
                     {
