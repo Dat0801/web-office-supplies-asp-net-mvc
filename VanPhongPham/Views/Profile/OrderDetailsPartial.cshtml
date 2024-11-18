@@ -180,7 +180,7 @@
         <hr />
 
         <div class="row m-0 p-0">
-            <div class="col-8">
+            <div class="col p-0">
                 <p style="font-size: 14px; color: #555;">
                     @if (Model.OrderStatusName == "Đã hủy")
                     {
@@ -284,6 +284,9 @@
                     </div>
                 </div>
             </div>
+
+            <hr />
+            <span class="price-info" style="color: #555;">Lý do: @Model.CancellationReason</span>
         }
         else
         {
@@ -326,7 +329,6 @@
                 <hr />
             }
 
-
             <div class="order-cost-details mt-3">
                 <div class="d-flex">
                     <div class="col-8 text-right p-0">
@@ -368,12 +370,25 @@
                 leadtime.innerHTML = `NGÀY GIAO DỰ KIẾN: ${formattimelead}`;
             }
 
-            const statusItem = document.createElement("div");
+            const statusItem1 = document.createElement("div");
+            statusItem1.classList.add("timeline-item", "completed");
 
-            statusItem.classList.add("timeline-item", "completed");
+            statusItem1.innerHTML = `
+                <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                <div class="timeline-content">
+                    <p class="status-text">Đơn hàng đã được đặt</p>
+                    <span class="timestamp">${"@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")"}</span>
+                </div>
+            `;
+
+            timelineContainer.prepend(statusItem1);
+
 
             const createdDate = new Date(shippingDetail.created_date);
             const formattedDate = formatDate(createdDate); // Hàm định dạng ngày giờ
+
+            const statusItem = document.createElement("div");
+            statusItem.classList.add("timeline-item", "completed");
 
             statusItem.innerHTML = `
                 <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
@@ -385,7 +400,7 @@
 
             timelineContainer.prepend(statusItem);
 
-            if (shippingDetail.log.length > 0 && Array.isArray(shippingDetail.log)) {
+            if (shippingDetail.log.length > 0 && Array.isArray(shippingDetail.log) && shippingDetail.log) {
                 shippingDetail.log.forEach(logEntry => {
                     const logDate = new Date(logEntry.updated_date);
                     const formattedLogDate = formatDate(logDate); // Hàm định dạng ngày giờ
@@ -404,7 +419,22 @@
             }
         }
         catch (error) {
-            console.error("Lỗi trong quá trình xử lý:", error);
+            if ("@Html.Raw(Model.OrderStatusName)" === "Chờ xác nhận") {
+                const timelineContainer = document.getElementById("shipping_items");
+
+                const statusItem1 = document.createElement("div");
+                statusItem1.classList.add("timeline-item", "completed");
+
+                statusItem1.innerHTML = `
+                    <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                    <div class="timeline-content">
+                        <p class="status-text">Đơn hàng đã được đặt</p>
+                        <span class="timestamp">${"@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")"}</span>
+                    </div>
+                `;
+
+                timelineContainer.prepend(statusItem1);
+            }
         }
     });
 

@@ -139,6 +139,7 @@ namespace VanPhongPham.Controllers
                     method_id = method_id,
                     shipping_fee = shipping_fee,
                     order_status_id = 1,
+                    cancellation_requested = 0,
                     created_at = DateTime.Now
                 };
 
@@ -156,6 +157,7 @@ namespace VanPhongPham.Controllers
                     method_id = method_id,
                     shipping_fee = shipping_fee,
                     order_status_id = 1,
+                    cancellation_requested = 0,
                     created_at = DateTime.Now
                 };
 

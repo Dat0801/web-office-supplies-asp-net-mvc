@@ -11,7 +11,7 @@
 <div class="row">
     <div class="navbar-nav my-3 ml-2">
         <!-- Search -->
-        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Index", "UserOrder")" method="get">
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("CanceledOrders", "UserOrder")" method="get">
             <span class="navbar-search-input">
                 <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.search_str ?? "")">
             </span>
@@ -48,18 +48,13 @@
                     <td>@order.created_at.Value.ToString("HH:mm dd-MM-yyyy")</td>
                     <td>₫@(order.total_amount.HasValue ? order.total_amount.Value.ToString("N0") : "0")</td>
 
-                    @if (order.order_status.order_status_name != "Đã hủy")
-                    {
-                        <td class="text-success" style="font-weight: bold">@order.order_status.order_status_name</td>
-                    }
-                    else
-                    {
-                        <td class="text-danger" style="font-weight: bold">@order.order_status.order_status_name</td>
-                    }
+
+                    <td class="text-danger" style="font-weight: bold">@order.order_status.order_status_name</td>
+
                     <td>
                         <a class="btn icon-btn btn-outline-info"
                            title="Xem chi tiết"
-                           href="@Url.Action("UserOrderDetails", "UserOrder", new { ord_id = order.order_id, view = "Index" })">
+                           href="@Url.Action("UserOrderDetails", "UserOrder", new { ord_id = order.order_id, view = "CanceledOrders" })">
                             <i class="feather icon-eye navbar-icon align-middle"></i>
                         </a>
                     </td>
@@ -69,7 +64,7 @@
     </table>
     <div class="d-flex justify-content-center">
         <div class="pagination-container">
-            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+            @Html.PagedListPager(Model, page => Url.Action("CanceledOrders", new { page }))
         </div>
     </div>
 </div>
