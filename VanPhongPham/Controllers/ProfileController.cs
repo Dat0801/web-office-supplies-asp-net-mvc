@@ -155,7 +155,7 @@ namespace VanPhongPham.Controllers
             return PartialView(orders.ToPagedList(pageNumber, pageSize));
         }
 
-        public ActionResult OrderDetailsPartial(string ord_id, int order_status_id)
+        public ActionResult OrderDetailsPartial(string ord_id, int order_status_id, string MaTaiKhoan)
         {
             var order = db.orders
                 .Where(o => o.order_id == ord_id)
@@ -193,6 +193,9 @@ namespace VanPhongPham.Controllers
                 })
                 .FirstOrDefault(); // Chỉ lấy một đối tượng OrderViewModel
 
+            var cartid = db.cart_sections.FirstOrDefault(c => c.user_id == MaTaiKhoan).cart_id;
+
+            ViewBag.CartID = cartid;
             ViewBag.OrderStatusID = order_status_id;
             return PartialView(order);
         }

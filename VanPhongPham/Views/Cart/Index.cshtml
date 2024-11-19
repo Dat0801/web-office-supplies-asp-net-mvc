@@ -87,7 +87,9 @@
                                     </td>
                                     <td style="text-align:left">
                                         <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px">
-                                        @item.ProductName
+                                        <a href="@Url.Action("Details", "ProductClient", new { id = item.ProductID, cart_id = ViewBag.CartID })" style="text-decoration: none; color: black">
+                                            @item.ProductName
+                                        </a>
                                     </td>
                                     if (item.Promotion_Price == 0)
                                     {

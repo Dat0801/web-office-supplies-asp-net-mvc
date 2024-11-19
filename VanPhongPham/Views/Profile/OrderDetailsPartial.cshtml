@@ -241,7 +241,7 @@
         @foreach (var detail in Model.OrderDetails)
         {
             totalItemCost += detail.TotalAmount;
-            <a href="#" style="text-decoration: none; color: #555 ">
+            <a href="@Url.Action("Details", "ProductClient", new { id = detail.ProductID, cart_id = ViewBag.CartID })" style="text-decoration: none; color: #555 ">
                 <div class="order-details">
                     <div class="product-info">
                         <img src="@detail.ImageUrl" alt="Product Image" />

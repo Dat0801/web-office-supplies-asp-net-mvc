@@ -245,6 +245,7 @@
                     .then(data => {
                         if (data.success) {
                             showNotification(data.message, "success"); // Hiển thị thông báo thành công
+                            displayUserName();
                         } else {
                             showNotification(data.message, "danger"); // Hiển thị thông báo lỗi
                         }
