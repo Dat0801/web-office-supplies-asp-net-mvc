@@ -19,8 +19,10 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Giá nhập</label>
-                    <input type="text" class="form-control" name="product_id" readonly
-                           placeholder="Giá nhập sẽ có sau khi đặt hàng từ nhà cung cấp"/>
+                    <input type="number" class="form-control" name="purchase_price"
+                           placeholder="Giá nhập sẽ có sau khi đặt hàng từ nhà cung cấp"
+                           step="1000" min="1000" max="5000000"/>
+                    <div class="clearfix"></div>
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
@@ -32,21 +34,21 @@
             <div class="form-row">
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Giá bán</label>
-                    <input type="text" class="form-control" name="product_id" readonly
+                    <input type="text" class="form-control" name="price" readonly
                            placeholder="Giá bán = Giá nhập * Hệ số"/>
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Số lượng tồn</label>
-                    <input type="text" class="form-control" name="product_id" readonly
-                           placeholder="Số lượng tồn sẽ có khi nhập hàng"/>
+                    <input type="number" class="form-control" id="" name="stock_quantity" placeholder="Số lượng tồn sẽ có sau khi đặt hàng từ nhà cung cấp" step="1" min="1" max="2000"/>
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="productImage">Hình ảnh sản phẩm</label>
-                    <input type="file" class="form-control" name="productImage" accept="image/*" id="productImage" required style="display: none;" />
+                    <input type="file" class="form-control" name="productImage" accept="image/*" id="productImage" style="display: none;" />
                     <button type="button" id="customProductImageButton" class="btn btn-primary form-control" style="margin-top: 5px;">Chọn ảnh sản phẩm</button>
                     <img id="imagePreview" src="#" alt="Hình ảnh xem trước" style="display: none; margin-top: 10px; max-width: 25%;" />
+                    <div id="imageWarning" style="color: red; font-size: 12px; display: none; margin-top: 5px;">Vui lòng chọn hình ảnh sản phẩm!</div>
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">

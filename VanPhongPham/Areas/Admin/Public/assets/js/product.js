@@ -106,6 +106,10 @@ async function saveProduct(productId = null) {
 }
 
 document.getElementById('ProductForm').onsubmit = function (event) {
+    if (!validateForm()) {
+        event.preventDefault();
+        return;
+    }
     event.preventDefault();
     // Đồng bộ nội dung CKEditor với textarea gốc
     editorInstance.updateSourceElement(); // Cập nhật nội dung CKEditor
@@ -113,6 +117,17 @@ document.getElementById('ProductForm').onsubmit = function (event) {
     const productId = document.getElementById('productId') ? document.getElementById('productId').value : null; // Lấy productId từ form (nếu có)
     saveProduct(productId); // Gọi hàm với productId
 };
+
+function validateForm() {
+    var imageInput = document.getElementById("productImage").files.length;
+    if (imageInput === 0) {
+        document.getElementById("imageWarning").style.display = "block"; // Hiển thị cảnh báo nếu chưa chọn ảnh
+        return false;  // Ngừng gửi form nếu không có ảnh
+    } else {
+        document.getElementById("imageWarning").style.display = "none";  // Ẩn cảnh báo nếu đã chọn ảnh
+        return true;
+    }
+}
 
 const selectedFiles = [];
 

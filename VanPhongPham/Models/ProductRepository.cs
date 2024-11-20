@@ -320,7 +320,9 @@ namespace VanPhongPham.Models
                 product.product_name = p_product.product_name;
                 product.category_id = p_product.category_id;
                 product.description = p_product.description;
+                product.purchase_price = p_product.purchase_price;
                 product.price_coefficient = p_product.price_coefficient;
+                product.stock_quantity = p_product.stock_quantity;
                 product.status = p_product.status;
                 _context.SubmitChanges();
                 return true;

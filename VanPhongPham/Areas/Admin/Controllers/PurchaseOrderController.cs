@@ -1,10 +1,14 @@
-﻿using PagedList;
+﻿using OfficeOpenXml;
+using PagedList;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using VanPhongPham.Models;
+using VanPhongPham.Services;
+
 namespace VanPhongPham.Areas.Admin.Controllers
 {
     public class PurchaseOrderController : Controller
@@ -12,13 +16,14 @@ namespace VanPhongPham.Areas.Admin.Controllers
         private readonly PurchaseOrderRepository purchaseOrderRepository;
         private readonly ProductRepository productRepository;
         private readonly SupplierRepository supplierRepository;
-
+        private readonly ExcelReportService _excelReportService;
 
         public PurchaseOrderController()
         {
             purchaseOrderRepository = new PurchaseOrderRepository();
             productRepository = new ProductRepository();
             supplierRepository = new SupplierRepository();
+            _excelReportService = new ExcelReportService();
         }
 
         // GET: Admin/PurchaseOrder
@@ -68,7 +73,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
         public ActionResult Create(purchase_order order, List<purchase_order_detail> orderDetails)
         {
             var result = purchaseOrderRepository.AddPurchaseOrder(order);
-            if(result)
+            if (result)
             {
                 foreach (var orderDetail in orderDetails)
                 {
@@ -77,13 +82,23 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 }
                 TempData["Message"] = "Tạo phiếu đặt thành công!";
                 TempData["MessageType"] = "success";
-            } else
+            }
+            else
             {
                 TempData["Message"] = "Tạo phiếu đặt thất bại!";
                 TempData["MessageType"] = "danger";
             }
-            
+
             return RedirectToAction("Index");
+        }
+
+        public ActionResult PurchaseOrderExportToExcel()
+        {
+            var data = purchaseOrderRepository.GetPurchaseOrders();
+            var userName = ((user)Session["Admin"]).full_name;
+            var fileContent = _excelReportService.GeneratePurchaseOrderReport(data, userName);
+            return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "danh_sach_phieu_dat_hang.xlsx");
+
         }
 
         public ActionResult Receipt(int? page, string search_str)
@@ -124,7 +139,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
         public ActionResult CreateReceipt(receipt receipt, List<receipt_detail> receiptDetails)
         {
             var result = purchaseOrderRepository.AddReceipt(receipt);
-            if(result)
+            if (result)
             {
                 foreach (var receiptDetail in receiptDetails)
                 {
@@ -134,12 +149,13 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 }
                 TempData["Message"] = "Tạo phiếu nhập hàng thành công!";
                 TempData["MessageType"] = "success";
-            } else
+            }
+            else
             {
                 TempData["Message"] = "Tạo phiếu nhập hàng thất bại!";
                 TempData["MessageType"] = "danger";
             }
-            
+
             return RedirectToAction("Index");
         }
 
