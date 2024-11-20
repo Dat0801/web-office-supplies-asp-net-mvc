@@ -26,7 +26,77 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
             return View(orders.ToPagedList(pageNumber, pageSize));
         }
-        public ActionResult UserOrderDetails(string ord_id)
+        public ActionResult ConfirmRequest(int? page, string search_str)
+        {
+            var orders = db.orders.Where(o => o.order_status_id == 1).ToList();
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            if (search_str != null)
+            {
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                ViewBag.search_str = search_str;
+            }
+            return View(orders.ToPagedList(pageNumber, pageSize));
+        }
+        public ActionResult CancelRequest(int? page, string search_str)
+        {
+            var orders = db.orders.Where(o => o.cancellation_requested == 1).ToList();
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            if (search_str != null)
+            {
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                ViewBag.search_str = search_str;
+            }
+            return View(orders.ToPagedList(pageNumber, pageSize));
+        }
+        public ActionResult DeliveringOrders(int? page, string search_str)
+        {
+            var orders = db.orders.Where(o => o.order_status_id == 2).ToList();
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            if (search_str != null)
+            {
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                ViewBag.search_str = search_str;
+            }
+            return View(orders.ToPagedList(pageNumber, pageSize));
+        }
+        public ActionResult DeliveredOrders(int? page, string search_str)
+        {
+            var orders = db.orders.Where(o => o.order_status_id == 3).ToList();
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            if (search_str != null)
+            {
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                ViewBag.search_str = search_str;
+            }
+            return View(orders.ToPagedList(pageNumber, pageSize));
+        }
+        public ActionResult CanceledOrders(int? page, string search_str)
+        {
+            var orders = db.orders.Where(o => o.order_status_id == 4).ToList();
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            if (search_str != null)
+            {
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                ViewBag.search_str = search_str;
+            }
+            return View(orders.ToPagedList(pageNumber, pageSize));
+        }
+        public ActionResult UserOrderDetails(string ord_id, string view)
         {
             var cartdetails = db.orders
                 .Where(o => o.order_id == ord_id)
@@ -47,6 +117,8 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     TotalAmount = o.total_amount,
                     OrderStatusID = o.order_status_id,
                     OrderStatusName = o.order_status.order_status_name,
+                    CancellationRequested = o.cancellation_requested ?? 0,
+                    CancellationReason = o.cancellation_reason,
                     CreatedAt = o.created_at,
                     OrderDetails = o.order_details.Select(od => new OrderDetailViewModel
                                     {
@@ -98,6 +170,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
             ViewBag.TotalWeight = totalWeight;
             ViewBag.TotalAmountOrder = totalAmountOrder;
+            ViewBag.View = view;
             return View(cartdetails);
         }
         public ActionResult UpdateOrderAfterConfirm(string ord_id, string employeeid, string ordercode)
@@ -116,6 +189,50 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 db.SubmitChanges();
 
                 return Json(new { success = true, message = "Dữ liệu đã được lưu thành công." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        public ActionResult UpdateRequestCancelOrder(string order_id, string finishdate, int check)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(order_id))
+                {
+                    var ord = db.orders.FirstOrDefault(o => o.order_id == order_id);
+
+                    if (ord != null)
+                    {
+                        if (check == 1)
+                        {
+                            ord.order_status_id = 4;
+                            ord.cancellation_requested = 3;
+                            if (!string.IsNullOrEmpty(finishdate) && DateTime.TryParse(finishdate, out DateTime parsedDate))
+                            {
+                                ord.created_at = parsedDate.ToLocalTime();
+                            }
+                        }
+                        else if (check == 0)
+                        {
+                            ord.cancellation_requested = 2;
+                        }    
+
+                        try
+                        {
+                            db.SubmitChanges();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error during SubmitChanges: " + ex.Message);
+                            return Json(new { success = false, message = ex.Message });
+                        }
+                    }
+                }
+
+                return Json(new { success = true });
             }
             catch (Exception ex)
             {

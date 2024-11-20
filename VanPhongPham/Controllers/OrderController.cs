@@ -62,6 +62,30 @@ namespace VanPhongPham.Controllers
             }
         }
 
+        public ActionResult RequestCancellation(string order_id, string cancelReason)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(order_id))
+                {
+                    var ord = db.orders.FirstOrDefault(o => o.order_id == order_id);
+
+                    if (ord != null)
+                    {
+
+                        ord.cancellation_requested = 1;
+                        ord.cancellation_reason = cancelReason;
+                    }
+                }
+
+                db.SubmitChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
 
         [HttpPost]
