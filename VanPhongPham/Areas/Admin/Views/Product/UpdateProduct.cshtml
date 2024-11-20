@@ -25,9 +25,9 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Giá nhập</label>
-                    <input type="text" class="form-control" name="product_id" readonly
+                    <input type="number" class="form-control" name="purchase_price"
                            placeholder="Giá nhập sẽ có sau khi đặt hàng từ nhà cung cấp"
-                           value="@Model.purchase_price" />
+                           step="1000" min="1000" max="5000000" value="@Model.purchase_price" required/>
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
@@ -48,9 +48,9 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="supplier_name">Số lượng tồn</label>
-                    <input type="text" class="form-control" name="product_id" readonly
-                           placeholder="Số lượng tồn sẽ có khi nhập hàng"
-                           value="@Model.stock_quantity" />
+                    <input type="number" class="form-control" id="" name="stock_quantity" placeholder="Nhập số lượng tồn" 
+                           step="1" min="0" max="2000" required 
+                           value="@Model.stock_quantity"/>
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">

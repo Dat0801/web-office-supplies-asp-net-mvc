@@ -15,6 +15,7 @@ namespace VanPhongPham
     {
         protected void Application_Start()
         {
+            OfficeOpenXml.ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             VanPhongPham.Services.FirebaseService.Initialize();

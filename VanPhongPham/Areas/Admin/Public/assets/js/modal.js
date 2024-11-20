@@ -163,7 +163,7 @@ function openAttributeValueModalFromCheckbox() {
     var selectedCheckbox = $('#attributeCheckboxes input[type="checkbox"]:checked');
 
     if (selectedCheckbox.length > 0) {
-        var attributeId = selectedCheckbox.first().val(); // Lấy attribute_id của checkbox đầu tiên
+        var attributeId = selectedCheckbox.last().val(); // Lấy attribute_id của checkbox đầu tiên
         openAttributeValueModal(attributeId); // Gọi modal với attribute_id
     } else {
         alert("Vui lòng chọn một thuộc tính trước khi thêm giá trị thuộc tính.");
