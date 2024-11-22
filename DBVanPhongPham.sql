@@ -449,7 +449,7 @@ BEGIN
 END;
 GO
 
---Trigger cập nhật số lượng sản phẩm đã bán khi trạng thái đơn hàng thay đổi thành "Chờ giao hàng".
+--Trigger cập nhật số lượng sản phẩm đã bán khi trạng thái đơn hàng thay đổi thành "Hoàn thành".
 CREATE TRIGGER trg_UpdateProductSoldOnOrderStatus
 ON orders
 AFTER UPDATE
@@ -463,7 +463,7 @@ BEGIN
         FROM products p
         INNER JOIN order_details od ON p.product_id = od.product_id
         INNER JOIN inserted i ON od.order_id = i.order_id
-        WHERE i.order_status_id = 2; 
+        WHERE i.order_status_id = 3; 
     END
 END;
 GO

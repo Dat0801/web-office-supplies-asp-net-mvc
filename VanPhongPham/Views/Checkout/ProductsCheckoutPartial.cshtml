@@ -20,9 +20,11 @@
                     {
                         var weight = int.Parse(item.ProductWeight.Split(' ')[0]) * item.Quantity;
                         <tr class="product-item" style="@(item.QuantityProduct == 0 ? "background-color: #FAFAFA;" : "")" data-name="@item.ProductName" data-quantity="@item.Quantity" data-weight="@weight">
-                            <td style="text-align: left; color: #272727">
-                                <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px">
-                                @item.ProductName
+                            <td style="text-align: left; color: #272727; display: flex; width: 800px; align-items: center;">
+                                <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px; margin-right: 10px;">
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 110px);">
+                                    @item.ProductName
+                                </div>
                             </td>
                             @if(item.Promotion_Price == 0)
                             {
