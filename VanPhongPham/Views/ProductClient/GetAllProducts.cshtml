@@ -149,20 +149,17 @@
                                     }
                                     else
                                     {
-                                        var activesPromotions = Model.PromotionViewModel
-                                        .Where(p => p.StartDate.Date == DateTime.Now.Date)
-                                        .ToList();
-
-                                        if (activesPromotions.Any())
+                                        var activePromotions = Model.PromotionViewModel
+                                            .Where(p => p.StartDate.Date <= DateTime.Now.Date && p.EndDate.Date >= DateTime.Now.Date)
+                                            .ToList();
+                                        if (product.PromotionPrice < product.Price)
                                         {
-                                            <div>
-                                                <span style="color: forestgreen">@string.Format("{0:N0}", product.PromotionPrice) VND</span>
-                                                <del>@string.Format("{0:N0}", product.Price) VND</del>
-                                            </div>
+                                            <span style="color: forestgreen">@string.Format("{0:N0}", product.PromotionPrice) VND</span>
+                                            <del style="margin-left: 5px; color: gray">@string.Format("{0:N0}", product.Price) VND</del>
                                         }
                                         else
                                         {
-                                            <div style="color: forestgreen">@string.Format("{0:N0}", product.Price) VND</div>
+                                            <span style="color: forestgreen">@string.Format("{0:N0}", product.Price) VND</span>
                                         }
                                     }
                                 </div>

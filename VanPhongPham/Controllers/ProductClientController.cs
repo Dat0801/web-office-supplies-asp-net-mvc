@@ -31,8 +31,16 @@ namespace VanPhongPham.Controllers
         public ActionResult Details(string id, string cart_id)
         {
             var product = _productRepository.GetProductsModelViewById(id);
+            var deletedProduct = _productRepository.GetProductsDeletedModelViewById(id);
             ViewBag.CartID = cart_id;
-            return View(product);
+            if (deletedProduct != null)
+            {
+                return View(deletedProduct);
+            }
+            else
+            {
+                return View(product);
+            }
         }
     }
 }

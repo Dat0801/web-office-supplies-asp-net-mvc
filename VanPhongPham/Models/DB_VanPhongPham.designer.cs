@@ -66,6 +66,9 @@ namespace VanPhongPham.Models
     partial void Insertpayment_method(payment_method instance);
     partial void Updatepayment_method(payment_method instance);
     partial void Deletepayment_method(payment_method instance);
+    partial void Insertpayment_status(payment_status instance);
+    partial void Updatepayment_status(payment_status instance);
+    partial void Deletepayment_status(payment_status instance);
     partial void Insertproduct_attribute_value(product_attribute_value instance);
     partial void Updateproduct_attribute_value(product_attribute_value instance);
     partial void Deleteproduct_attribute_value(product_attribute_value instance);
@@ -102,15 +105,13 @@ namespace VanPhongPham.Models
     partial void Insertuser_role(user_role instance);
     partial void Updateuser_role(user_role instance);
     partial void Deleteuser_role(user_role instance);
-    #endregion
-		
-		public DB_VanPhongPhamDataContext() : 
-				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString"].ConnectionString, mappingSource)
-		{
-			OnCreated();
-		}
-		
-		public DB_VanPhongPhamDataContext(string connection) : 
+        #endregion
+        public DB_VanPhongPhamDataContext() :
+               base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString1"].ConnectionString, mappingSource)
+        {
+            OnCreated();
+        }
+        public DB_VanPhongPhamDataContext(string connection) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
@@ -227,6 +228,14 @@ namespace VanPhongPham.Models
 			get
 			{
 				return this.GetTable<payment_method>();
+			}
+		}
+		
+		public System.Data.Linq.Table<payment_status> payment_status
+		{
+			get
+			{
+				return this.GetTable<payment_status>();
 			}
 		}
 		
@@ -2599,6 +2608,8 @@ namespace VanPhongPham.Models
 		
 		private int _order_status_id;
 		
+		private int _payment_status_id;
+		
 		private System.Nullable<int> _cancellation_requested;
 		
 		private string _cancellation_reason;
@@ -2614,6 +2625,8 @@ namespace VanPhongPham.Models
 		private EntityRef<order_status> _order_status;
 		
 		private EntityRef<payment_method> _payment_method;
+		
+		private EntityRef<payment_status> _payment_status;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -2641,6 +2654,8 @@ namespace VanPhongPham.Models
     partial void Ontotal_amountChanged();
     partial void Onorder_status_idChanging(int value);
     partial void Onorder_status_idChanged();
+    partial void Onpayment_status_idChanging(int value);
+    partial void Onpayment_status_idChanged();
     partial void Oncancellation_requestedChanging(System.Nullable<int> value);
     partial void Oncancellation_requestedChanged();
     partial void Oncancellation_reasonChanging(string value);
@@ -2656,6 +2671,7 @@ namespace VanPhongPham.Models
 			this._user1 = default(EntityRef<user>);
 			this._order_status = default(EntityRef<order_status>);
 			this._payment_method = default(EntityRef<payment_method>);
+			this._payment_status = default(EntityRef<payment_status>);
 			OnCreated();
 		}
 		
@@ -2895,6 +2911,30 @@ namespace VanPhongPham.Models
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_payment_status_id", DbType="Int NOT NULL")]
+		public int payment_status_id
+		{
+			get
+			{
+				return this._payment_status_id;
+			}
+			set
+			{
+				if ((this._payment_status_id != value))
+				{
+					if (this._payment_status.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onpayment_status_idChanging(value);
+					this.SendPropertyChanging();
+					this._payment_status_id = value;
+					this.SendPropertyChanged("payment_status_id");
+					this.Onpayment_status_idChanged();
+				}
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_cancellation_requested", DbType="Int")]
 		public System.Nullable<int> cancellation_requested
 		{
@@ -3104,6 +3144,40 @@ namespace VanPhongPham.Models
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="payment_status_order", Storage="_payment_status", ThisKey="payment_status_id", OtherKey="payment_status_id", IsForeignKey=true)]
+		public payment_status payment_status
+		{
+			get
+			{
+				return this._payment_status.Entity;
+			}
+			set
+			{
+				payment_status previousValue = this._payment_status.Entity;
+				if (((previousValue != value) 
+							|| (this._payment_status.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._payment_status.Entity = null;
+						previousValue.orders.Remove(this);
+					}
+					this._payment_status.Entity = value;
+					if ((value != null))
+					{
+						value.orders.Add(this);
+						this._payment_status_id = value.payment_status_id;
+					}
+					else
+					{
+						this._payment_status_id = default(int);
+					}
+					this.SendPropertyChanged("payment_status");
+				}
+			}
+		}
+		
 		public event PropertyChangingEventHandler PropertyChanging;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -3248,6 +3322,120 @@ namespace VanPhongPham.Models
 		{
 			this.SendPropertyChanging();
 			entity.payment_method = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.payment_status")]
+	public partial class payment_status : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _payment_status_id;
+		
+		private string _payment_status_name;
+		
+		private EntitySet<order> _orders;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onpayment_status_idChanging(int value);
+    partial void Onpayment_status_idChanged();
+    partial void Onpayment_status_nameChanging(string value);
+    partial void Onpayment_status_nameChanged();
+    #endregion
+		
+		public payment_status()
+		{
+			this._orders = new EntitySet<order>(new Action<order>(this.attach_orders), new Action<order>(this.detach_orders));
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_payment_status_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int payment_status_id
+		{
+			get
+			{
+				return this._payment_status_id;
+			}
+			set
+			{
+				if ((this._payment_status_id != value))
+				{
+					this.Onpayment_status_idChanging(value);
+					this.SendPropertyChanging();
+					this._payment_status_id = value;
+					this.SendPropertyChanged("payment_status_id");
+					this.Onpayment_status_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_payment_status_name", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string payment_status_name
+		{
+			get
+			{
+				return this._payment_status_name;
+			}
+			set
+			{
+				if ((this._payment_status_name != value))
+				{
+					this.Onpayment_status_nameChanging(value);
+					this.SendPropertyChanging();
+					this._payment_status_name = value;
+					this.SendPropertyChanged("payment_status_name");
+					this.Onpayment_status_nameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="payment_status_order", Storage="_orders", ThisKey="payment_status_id", OtherKey="payment_status_id")]
+		public EntitySet<order> orders
+		{
+			get
+			{
+				return this._orders;
+			}
+			set
+			{
+				this._orders.Assign(value);
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_orders(order entity)
+		{
+			this.SendPropertyChanging();
+			entity.payment_status = this;
+		}
+		
+		private void detach_orders(order entity)
+		{
+			this.SendPropertyChanging();
+			entity.payment_status = null;
 		}
 	}
 	

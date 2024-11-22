@@ -15,7 +15,7 @@ namespace VanPhongPham.Services
         public void Configuration(IAppBuilder app)
         {
             // Lấy chuỗi kết nối từ web.config
-            string connectionString = ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString3"].ConnectionString;
+            string connectionString = ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString1"].ConnectionString;
 
             // Cấu hình Hangfire với SQL Server
             GlobalConfiguration.Configuration

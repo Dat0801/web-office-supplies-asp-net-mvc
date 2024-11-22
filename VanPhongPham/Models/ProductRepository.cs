@@ -14,51 +14,14 @@ namespace VanPhongPham.Models
         public ProductRepository()
         {
             _context = new DB_VanPhongPhamDataContext();
-        }        
+        }
+
         public ViewModels GetAllProducts()
         {
-            var product = _context.products.Where(p => p.status == true).Select(p => new ProductViewModel
-            {
-                ProductId = p.product_id,
-                ProductName = p.product_name,
-                Description = p.description,
-                PurchasePrice = p.purchase_price,
-                Price = p.price,
-                PromotionPrice = p.promotion_price,
-                StockQuantity = p.stock_quantity,
-                SoldQuantity = p.sold,
-                AvgRating = p.avgRating,
-                VisitCount = p.visited,                
-                Images = p.images.Select(i => new ImageViewModel
-                {
-                    ImageId = i.image_id,
-                    ImageUrl = i.image_url,                    
-                    IsPrimary = (bool)i.is_primary
-                }).ToList(),
-                Categories = p.category
-            }).ToList();
-            var promotions = _context.promotions.Where(p => p.status == true).Select(p => new PromotionViewModel
-            {
-                PromotionId = p.promotion_id,
-                PromotionName = p.promotion_name,
-                Description = p.description,
-                DiscountPercent = p.discount_percent,
-                StartDate = p.start_date,
-                EndDate = p.end_date,                
-            }).ToList();
-            var viewModels = new ViewModels
-            {
-                ProductViewModel = product,
-                PromotionViewModel = promotions
-            };
-            return viewModels;
-        }
-        public ViewModels GetTopSellingProducts(int topCount = 10)
-        {
-            var topSellingProducts = _context.products
+            var currentDate = DateTime.Now;
+
+            var products = _context.products
                 .Where(p => p.status == true)
-                .OrderByDescending(p => p.sold)
-                .Take(topCount) 
                 .Select(p => new ProductViewModel
                 {
                     ProductId = p.product_id,
@@ -66,7 +29,17 @@ namespace VanPhongPham.Models
                     Description = p.description,
                     PurchasePrice = p.purchase_price,
                     Price = p.price,
-                    PromotionPrice = p.promotion_price,
+                    PromotionPrice = _context.product_promotions
+                        .Where(pp => pp.product_id == p.product_id)
+                        .Join(_context.promotions,
+                            pp => pp.promotion_id,
+                            promo => promo.promotion_id,
+                            (pp, promo) => new { promo.discount_percent, promo.start_date, promo.end_date, promo.status })
+                        .Where(promo => promo.status == true
+                            && promo.start_date <= currentDate
+                            && promo.end_date >= currentDate)
+                        .Select(promo => p.price * (1 - promo.discount_percent / 100))
+                        .FirstOrDefault() ?? p.price,
                     StockQuantity = p.stock_quantity,
                     SoldQuantity = p.sold,
                     AvgRating = p.avgRating,
@@ -78,7 +51,8 @@ namespace VanPhongPham.Models
                         IsPrimary = (bool)i.is_primary
                     }).ToList(),
                     Categories = p.category
-                }).ToList();
+                })
+                .ToList();
 
             var promotions = _context.promotions
                 .Where(p => p.status == true)
@@ -91,64 +65,25 @@ namespace VanPhongPham.Models
                     StartDate = p.start_date,
                     EndDate = p.end_date,
                 }).ToList();
-            var categories = _context.categories
-                .Where(c => c.status == true)
-                .Select(c => new CategoryViewModel
-                {
-                    CategoryId = c.category_id,
-                    CategoryName = c.category_name,                    
-                    Status = c.status,
-                    CreatedAt = c.created_at,
-                    UpdateAt = c.updated_at,
-                    ProductCount = c.products.Count()
-                }).ToList();
+
             var viewModels = new ViewModels
             {
-                ProductViewModel = topSellingProducts,
-                PromotionViewModel = promotions,
-                CategoryViewModel = categories
+                ProductViewModel = products,
+                PromotionViewModel = promotions
             };
 
             return viewModels;
         }
 
-        public ViewModels GetProductsModelViewById(string pro_id)
+
+        public ViewModels GetTopSellingProducts(int topCount = 10)
         {
-            var product = _context.products.Where(p => p.status == true && p.product_id == pro_id).Select(p => new ProductViewModel
-            {
-                ProductId = p.product_id,
-                ProductName = p.product_name,
-                Description = p.description,
-                PurchasePrice = p.purchase_price,
-                Price = p.price,
-                PromotionPrice = p.promotion_price,
-                StockQuantity = p.stock_quantity,
-                SoldQuantity = p.sold,
-                AvgRating = p.avgRating,
-                VisitCount = p.visited,
-                Images = p.images.Where(i => i.product_id == pro_id).Select(i => new ImageViewModel
-                {
-                    ImageId = i.image_id,
-                    ImageUrl = i.image_url,                    
-                    IsPrimary = (bool)i.is_primary
-                }).ToList(),
-                Categories = p.category,
-                Attributes = (from pav in _context.product_attribute_values
-                              join av in _context.attribute_values on pav.attribute_value_id equals av.attribute_value_id
-                              join a in _context.attributes on av.attribute_id equals a.attribute_id
-                              where pav.product_id == pro_id && av.status == true && a.status == true
-                              select new AttributeViewModel
-                              {
-                                  AttributeName = a.attribute_name,
-                                  Value = av.value
-                              }).ToList()
-            }).ToList();
-            if (product == null)
-            {
-                return null;
-            }
-            var relatedProducts = _context.products
-                .Where(p => p.status == true && p.category == product.FirstOrDefault().Categories && p.product_id != pro_id)
+            var currentDate = DateTime.Now;
+
+            var topSellingProducts = _context.products
+                .Where(p => p.status == true)
+                .OrderByDescending(p => p.sold)
+                .Take(topCount)
                 .Select(p => new ProductViewModel
                 {
                     ProductId = p.product_id,
@@ -156,7 +91,142 @@ namespace VanPhongPham.Models
                     Description = p.description,
                     PurchasePrice = p.purchase_price,
                     Price = p.price,
-                    PromotionPrice = p.promotion_price,
+                    PromotionPrice = _context.product_promotions
+                        .Where(pp => pp.product_id == p.product_id)
+                        .Join(_context.promotions,
+                            pp => pp.promotion_id,
+                            promo => promo.promotion_id,
+                            (pp, promo) => new { promo.discount_percent, promo.start_date, promo.end_date, promo.status })
+                        .Where(promo => promo.status == true
+                            && promo.start_date <= currentDate
+                            && promo.end_date >= currentDate)
+                        .Select(promo => p.price * (1 - promo.discount_percent / 100))
+                        .FirstOrDefault() ?? p.price,
+                    StockQuantity = p.stock_quantity,
+                    SoldQuantity = p.sold,
+                    AvgRating = p.avgRating,
+                    VisitCount = p.visited,
+                    Images = p.images.Select(i => new ImageViewModel
+                    {
+                        ImageId = i.image_id,
+                        ImageUrl = i.image_url,
+                        IsPrimary = (bool)i.is_primary
+                    }).ToList(),
+                    Categories = p.category
+                })
+                .ToList();
+
+            var promotions = _context.promotions
+                .Where(p => p.status == true)
+                .Select(p => new PromotionViewModel
+                {
+                    PromotionId = p.promotion_id,
+                    PromotionName = p.promotion_name,
+                    Description = p.description,
+                    DiscountPercent = p.discount_percent,
+                    StartDate = p.start_date,
+                    EndDate = p.end_date,
+                }).ToList();
+
+            var viewModels = new ViewModels
+            {
+                ProductViewModel = topSellingProducts,
+                PromotionViewModel = promotions
+            };
+
+            return viewModels;
+        }
+
+
+
+        public ViewModels GetProductsModelViewById(string pro_id)
+        {
+            var currentDate = DateTime.Now;
+
+            // Lấy danh sách khuyến mãi hợp lệ
+            var promotions = _context.promotions
+                .Where(p => p.status == true && p.start_date <= currentDate && p.end_date >= currentDate)
+                .ToList();  // Lấy danh sách khuyến mãi vào bộ nhớ
+
+            // Lấy sản phẩm theo product_id
+            var product = _context.products
+                .Where(p => p.status == true && p.product_id == pro_id)
+                .Select(p => new
+                {
+                    p.product_id,
+                    p.product_name,
+                    p.description,
+                    p.purchase_price,
+                    p.price,
+                    p.stock_quantity,
+                    p.sold,
+                    p.avgRating,
+                    p.visited,
+                    p.category,
+                    Images = p.images.Select(i => new ImageViewModel
+                    {
+                        ImageId = i.image_id,
+                        ImageUrl = i.image_url,
+                        IsPrimary = (bool)i.is_primary
+                    }).ToList(),
+                    Attributes = (from pav in _context.product_attribute_values
+                                  join av in _context.attribute_values on pav.attribute_value_id equals av.attribute_value_id
+                                  join a in _context.attributes on av.attribute_id equals a.attribute_id
+                                  where pav.product_id == pro_id && av.status == true && a.status == true
+                                  select new AttributeViewModel
+                                  {
+                                      AttributeName = a.attribute_name,
+                                      Value = av.value
+                                  }).ToList()
+                })
+                .FirstOrDefault();
+
+            if (product == null)
+            {
+                return null;
+            }
+
+            // Tính toán PromotionPrice cho sản phẩm chính từ danh sách promotions đã tải vào bộ nhớ
+            var promotionPrice = promotions
+                .Where(promo => _context.product_promotions
+                    .Any(pp => pp.product_id == product.product_id && pp.promotion_id == promo.promotion_id))
+                .Select(promo => product.price * (1 - promo.discount_percent / 100))
+                .FirstOrDefault() ?? product.price;
+
+            var productViewModel = new ProductViewModel
+            {
+                ProductId = product.product_id,
+                ProductName = product.product_name,
+                Description = product.description,
+                PurchasePrice = product.purchase_price,
+                Price = product.price,
+                PromotionPrice = promotionPrice,
+                StockQuantity = product.stock_quantity,
+                SoldQuantity = product.sold,
+                AvgRating = product.avgRating,
+                VisitCount = product.visited,
+                Images = product.Images,
+                Categories = product.category,
+                Attributes = product.Attributes
+            };
+
+            // Lấy danh sách sản phẩm liên quan trong cùng một danh mục, loại trừ sản phẩm hiện tại
+            var relatedProducts = _context.products
+                .Where(p => p.status == true && p.category == product.category && p.product_id != pro_id)
+                .ToList()  // Chuyển dữ liệu sản phẩm liên quan vào bộ nhớ
+                .Select(p => new ProductViewModel
+                {
+                    ProductId = p.product_id,
+                    ProductName = p.product_name,
+                    Description = p.description,
+                    PurchasePrice = p.purchase_price,
+                    Price = p.price,
+                    // Tính toán PromotionPrice cho các sản phẩm liên quan từ danh sách promotions
+                    PromotionPrice = promotions
+                        .Where(promo => _context.product_promotions
+                            .Any(pp => pp.product_id == p.product_id && pp.promotion_id == promo.promotion_id))
+                        .Select(promo => p.price * (1 - promo.discount_percent / 100))
+                        .FirstOrDefault() ?? p.price,
                     StockQuantity = p.stock_quantity,
                     SoldQuantity = p.sold,
                     AvgRating = p.avgRating,
@@ -167,67 +237,227 @@ namespace VanPhongPham.Models
                         ImageUrl = i.image_url,
                         IsPrimary = (bool)i.is_primary
                     }).ToList()
-                }).ToList();
-            var promotions = _context.promotions.Where(p => p.status == true).Select(p => new PromotionViewModel
-            {
-                PromotionId = p.promotion_id,
-                PromotionName = p.promotion_name,
-                Description = p.description,
-                DiscountPercent = p.discount_percent,
-                StartDate = p.start_date,
-                EndDate = p.end_date,
-            }).ToList();
+                })
+                .ToList();  // Chuyển dữ liệu vào bộ nhớ sau khi tính toán
+
             var viewModels = new ViewModels
             {
-                ProductViewModel = product,
-                PromotionViewModel = promotions,
+                ProductViewModel = new List<ProductViewModel> { productViewModel },
+                PromotionViewModel = promotions.Select(p => new PromotionViewModel
+                {
+                    PromotionId = p.promotion_id,
+                    PromotionName = p.promotion_name
+                }).ToList(),
                 RelatedProducts = relatedProducts
             };
+
             return viewModels;
         }
-        public ViewModels GetProductsModelViewByCategory(string cate_id)
+        public ViewModels GetProductsDeletedModelViewById(string pro_id)
         {
-            var product = _context.products.Where(p => p.status == true && p.category_id == cate_id).Select(p => new ProductViewModel
-            {
-                ProductId = p.product_id,
-                ProductName = p.product_name,
-                Description = p.description,
-                PurchasePrice = p.purchase_price,
-                Price = p.price,
-                PromotionPrice = p.promotion_price,
-                StockQuantity = p.stock_quantity,
-                SoldQuantity = p.sold,
-                AvgRating = p.avgRating,
-                VisitCount = p.visited,
-                Images = p.images.Where(i => i.product_id == p.product_id).Select(i => new ImageViewModel
+            var currentDate = DateTime.Now;
+
+            // Lấy danh sách khuyến mãi hợp lệ
+            var promotions = _context.promotions
+                .Where(p => p.status == true && p.start_date <= currentDate && p.end_date >= currentDate)
+                .ToList();  // Lấy danh sách khuyến mãi vào bộ nhớ
+
+            // Lấy sản phẩm theo product_id
+            var product = _context.products
+                .Where(p => p.status == false && p.product_id == pro_id)
+                .Select(p => new
                 {
-                    ImageId = i.image_id,
-                    ImageUrl = i.image_url,
-                    IsPrimary = (bool)i.is_primary
-                }).ToList(),
-                Categories = p.category,
-                
-            }).ToList();
+                    p.product_id,
+                    p.product_name,
+                    p.description,
+                    p.purchase_price,
+                    p.price,
+                    p.stock_quantity,
+                    p.sold,
+                    p.avgRating,
+                    p.visited,
+                    p.category,
+                    p.status,
+                    Images = p.images.Select(i => new ImageViewModel
+                    {
+                        ImageId = i.image_id,
+                        ImageUrl = i.image_url,
+                        IsPrimary = (bool)i.is_primary
+                    }).ToList(),
+                    Attributes = (from pav in _context.product_attribute_values
+                                  join av in _context.attribute_values on pav.attribute_value_id equals av.attribute_value_id
+                                  join a in _context.attributes on av.attribute_id equals a.attribute_id
+                                  where pav.product_id == pro_id && av.status == true && a.status == true
+                                  select new AttributeViewModel
+                                  {
+                                      AttributeName = a.attribute_name,
+                                      Value = av.value
+                                  }).ToList()
+                })
+                .FirstOrDefault();
+
             if (product == null)
             {
                 return null;
-            }            
-            var promotions = _context.promotions.Where(p => p.status == true).Select(p => new PromotionViewModel
+            }
+
+            // Tính toán PromotionPrice cho sản phẩm chính từ danh sách promotions đã tải vào bộ nhớ
+            var promotionPrice = promotions
+                .Where(promo => _context.product_promotions
+                    .Any(pp => pp.product_id == product.product_id && pp.promotion_id == promo.promotion_id))
+                .Select(promo => product.price * (1 - promo.discount_percent / 100))
+                .FirstOrDefault() ?? product.price;
+
+            var productViewModel = new ProductViewModel
             {
-                PromotionId = p.promotion_id,
-                PromotionName = p.promotion_name,
-                Description = p.description,
-                DiscountPercent = p.discount_percent,
-                StartDate = p.start_date,
-                EndDate = p.end_date,
-            }).ToList();
+                ProductId = product.product_id,
+                ProductName = product.product_name,
+                Description = product.description,
+                PurchasePrice = product.purchase_price,
+                Price = product.price,
+                PromotionPrice = promotionPrice,
+                StockQuantity = product.stock_quantity,
+                SoldQuantity = product.sold,
+                AvgRating = product.avgRating,
+                VisitCount = product.visited,
+                Images = product.Images,
+                Status = product.status,
+                Categories = product.category,
+                Attributes = product.Attributes
+            };
+
+            // Lấy danh sách sản phẩm liên quan trong cùng một danh mục, loại trừ sản phẩm hiện tại
+            var relatedProducts = _context.products
+                .Where(p => p.status == true && p.category == product.category && p.product_id != pro_id)
+                .ToList()  // Chuyển dữ liệu sản phẩm liên quan vào bộ nhớ
+                .Select(p => new ProductViewModel
+                {
+                    ProductId = p.product_id,
+                    ProductName = p.product_name,
+                    Description = p.description,
+                    PurchasePrice = p.purchase_price,
+                    Price = p.price,
+                    // Tính toán PromotionPrice cho các sản phẩm liên quan từ danh sách promotions
+                    PromotionPrice = promotions
+                        .Where(promo => _context.product_promotions
+                            .Any(pp => pp.product_id == p.product_id && pp.promotion_id == promo.promotion_id))
+                        .Select(promo => p.price * (1 - promo.discount_percent / 100))
+                        .FirstOrDefault() ?? p.price,
+                    StockQuantity = p.stock_quantity,
+                    SoldQuantity = p.sold,
+                    AvgRating = p.avgRating,
+                    VisitCount = p.visited,
+                    Images = p.images.Select(i => new ImageViewModel
+                    {
+                        ImageId = i.image_id,
+                        ImageUrl = i.image_url,
+                        IsPrimary = (bool)i.is_primary
+                    }).ToList()
+                })
+                .ToList();  // Chuyển dữ liệu vào bộ nhớ sau khi tính toán
+
             var viewModels = new ViewModels
             {
-                ProductViewModel = product,
-                PromotionViewModel = promotions                
+                ProductViewModel = new List<ProductViewModel> { productViewModel },
+                PromotionViewModel = promotions.Select(p => new PromotionViewModel
+                {
+                    PromotionId = p.promotion_id,
+                    PromotionName = p.promotion_name
+                }).ToList(),
+                RelatedProducts = relatedProducts
             };
+
             return viewModels;
         }
+
+
+
+
+
+        public ViewModels GetProductsModelViewByCategory(string cate_id)
+        {
+            var currentDate = DateTime.Now;
+
+            // Lấy danh sách promotions
+            var promotions = _context.promotions
+                .Where(p => p.status == true && p.start_date <= currentDate && p.end_date >= currentDate)
+                .ToList();
+
+            // Lấy danh sách sản phẩm từ database
+            var products = _context.products
+                .Where(p => p.status == true && p.category_id == cate_id)
+                .Select(p => new
+                {
+                    ProductId = p.product_id,
+                    ProductName = p.product_name,
+                    Description = p.description,
+                    PurchasePrice = p.purchase_price,
+                    Price = p.price,
+                    StockQuantity = p.stock_quantity,
+                    SoldQuantity = p.sold,
+                    AvgRating = p.avgRating,
+                    VisitCount = p.visited,
+                    Images = p.images.Select(i => new ImageViewModel
+                    {
+                        ImageId = i.image_id,
+                        ImageUrl = i.image_url,
+                        IsPrimary = (bool)i.is_primary
+                    }).ToList(),
+                    Categories = p.category
+                })
+                .ToList();
+
+            // Lấy danh sách khuyến mãi áp dụng cho sản phẩm
+            var promotionPrices = _context.product_promotions
+                .Where(pp => promotions.Select(p => p.promotion_id).Contains(pp.promotion_id))
+                .ToList()
+                .GroupBy(pp => pp.product_id)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Join(promotions,
+                                pp => pp.promotion_id,
+                                promo => promo.promotion_id,
+                                (pp, promo) => promo.discount_percent).FirstOrDefault()
+                );
+
+            // Xử lý tính toán khuyến mãi trên bộ nhớ
+            var productViewModels = products.Select(p => new ProductViewModel
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                Description = p.Description,
+                PurchasePrice = p.PurchasePrice,
+                Price = p.Price,
+                PromotionPrice = promotionPrices.ContainsKey(p.ProductId)
+                    ? p.Price * (1 - promotionPrices[p.ProductId] / 100)
+                    : p.Price,
+                StockQuantity = p.StockQuantity,
+                SoldQuantity = p.SoldQuantity,
+                AvgRating = p.AvgRating,
+                VisitCount = p.VisitCount,
+                Images = p.Images,
+                Categories = p.Categories
+            }).ToList();
+
+            // Kiểm tra danh sách sản phẩm
+            if (!productViewModels.Any())
+            {
+                return null;
+            }
+
+            // Trả về ViewModels
+            return new ViewModels
+            {
+                ProductViewModel = productViewModels,
+                PromotionViewModel = promotions.Select(p => new PromotionViewModel
+                {
+                    PromotionId = p.promotion_id,
+                    PromotionName = p.promotion_name
+                }).ToList(),
+            };
+        }
+
+
         public List<category> GetAllCategory()
         {
             return _context.categories.Where(c => c.status == true).ToList();

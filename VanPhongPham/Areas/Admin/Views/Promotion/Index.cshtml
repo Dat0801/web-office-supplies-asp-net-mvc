@@ -1,0 +1,177 @@
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.PromotionViewModel>
+@{
+    ViewBag.Title = "Khuyến mãi - Quản Trị";
+    var message = ViewBag.Message;
+    var messageType = ViewBag.MessageType;
+}
+
+@if (message != null)
+{
+    <div class="alert alert-dark-@messageType alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        @message
+    </div>
+}
+
+<div class="card mb-4">
+    <h6 class="card-header">Thêm mới khuyến mãi <span><a class="btn btn-primary float-right" href="@Url.Action("RecoverPromotion")">Khuyến mãi đã xóa</a></span></h6>
+    <div class="card-body">
+        <form method="post" action="/Promotion/ManagePromotion">
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="PromotionId">Mã khuyến mãi</label>
+                    <input type="text" class="form-control" id="PromotionId" name="PromotionId" readonly
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.PromotionId : ViewBag.PromoId ?? "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="PromotionName">Tên khuyến mãi</label>
+                    <input type="text" class="form-control" id="PromotionName" name="PromotionName" required
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.PromotionName : "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="Description">Mô tả</label>
+                    <input type="text" class="form-control" id="Description" name="Description" required
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.Description : "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="DiscountPercent">Giảm giá (%)</label>
+                    <input type="number" min="0" max="100" class="form-control" id="DiscountPercent" name="DiscountPercent" required
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.DiscountPercent : "")" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="StartDate">Ngày bắt đầu</label>
+                    <input type="date" class="form-control" id="StartDate" name="StartDate" required
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.StartDate.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="EndDate">Ngày kết thúc</label>
+                    <input type="date" class="form-control" id="EndDate" name="EndDate" required
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.EndDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(7).ToString("yyyy-MM-dd"))" />
+                    <div class="clearfix"></div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="Products">Sản phẩm áp dụng</label>
+                    <select id="Products" name="SelectedProductIds" class="form-control" multiple>
+                        @foreach (var product in ViewBag.Products.ProductViewModel)
+                        {
+                            var isSelected = ViewBag.SelectedProductIds.Contains(product.ProductId);
+                            <option value="@product.ProductId" @(isSelected ? "selected" : "")>
+                                @product.ProductName
+                            </option>
+                        }
+                    </select>
+                </div>
+
+
+                <div class="form-group col-md-3">
+                    <label for="status">Trạng thái</label>
+                    <select class="form-control" id="status" name="Status" required>
+                        <option value="1" @(ViewBag.promotion != null && ViewBag.promotion.Status == 1 ? "selected" : "")>Hoạt động</option>
+                        <option value="0" @(ViewBag.promotion != null && ViewBag.promotion.Status == 0 ? "selected" : "")>Không hoạt động</option>
+                    </select>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
+            <button type="submit" name="action" value="edit" class="btn btn-primary">Sửa</button>
+        </form>
+    </div>
+</div>
+
+<h4 class="font-weight-bold mb-0">Danh sách khuyến mãi</h4>
+<div class="row">
+    <div class="navbar-nav my-3 ml-2">
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Index", "Promotion")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")">
+            </span>
+            <button class="btn icon-btn btn-outline-primary" title="Tìm kiếm">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <form method="post" action="/Promotion/DeletePromotion">
+        <table class="table card-table table-responsive-md">
+            <thead class="thead-light">
+                <tr>
+                    <th><input type="checkbox" id="select-all" />Chọn tất cả</th>
+                    <th>Mã KM</th>
+                    <th>Tên khuyến mãi</th>
+                    <th>Giảm giá (%)</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày kết thúc</th>                    
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var promotion in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="selectedPromotions" value="@promotion.PromotionId" />
+                        </td>
+                        <td>@promotion.PromotionId</td>
+                        <td>@promotion.PromotionName</td>
+                        <td>@promotion.DiscountPercent%</td>
+                        <td>@promotion.StartDate.ToString("dd/MM/yyyy")</td>
+                        <td>@promotion.EndDate.ToString("dd/MM/yyyy")</td>                        
+                        <td>
+                            <a class="btn icon-btn btn-outline-danger"
+                               title="Xóa"
+                               onclick="confirmDelete('@Url.Action("DeletePromotion", "Promotion", new { promo_id = promotion.PromotionId })'); return false;">
+                                <i class="feather icon-trash-2 navbar-icon align-middle"></i>
+                            </a>
+                            <a class="btn icon-btn btn-outline-info ml-2"
+                               title="Sửa"
+                               href="@Url.Action("Index", "Promotion", new { promo_id = promotion.PromotionId })">
+                                <i class="feather icon-edit navbar-icon align-middle"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-danger mt-3">Xóa hàng loạt</button>
+    </form>
+    <div class="d-flex justify-content-center">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("select-all").addEventListener("click", function (e) {
+        var checkboxes = document.querySelectorAll("input[name='selectedPromotions']");
+        checkboxes.forEach((checkbox) => {
+            checkbox.checked = e.target.checked;
+        });
+    });
+
+    function confirmDelete(url) {
+        if (confirm('Bạn có chắc chắn muốn xóa khuyến mãi này?')) {
+            window.location.href = url;
+        }
+    }
+
+    // Validate dates
+    document.querySelector('form').addEventListener('submit', function(e) {
+        var startDate = new Date(document.getElementById('start_date').value);
+        var endDate = new Date(document.getElementById('end_date').value);
+
+        if (endDate < startDate) {
+            e.preventDefault();
+            alert('Ngày kết thúc phải sau ngày bắt đầu!');
+        }
+    });
+</script>

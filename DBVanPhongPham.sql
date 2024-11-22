@@ -97,7 +97,7 @@ create table users
 	email nvarchar(max),
 	gender nvarchar(50),
 	dob date,
-	avt_url nvarchar(max),
+	avt_url nvarchar(max),	
 	password varchar(32),
 	status bit default 0
 )
@@ -136,7 +136,11 @@ create table order_status
 	order_status_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
 	order_status_name NVARCHAR(255) NOT NULL
 )
-
+create table payment_status
+(
+	payment_status_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	payment_status_name NVARCHAR(255) NOT NULL
+)
 create table orders
 (
 	order_id varchar(10) not null,
@@ -150,6 +154,7 @@ create table orders
 	shipping_fee float,
 	total_amount float default 0,
 	order_status_id int not null,
+	payment_status_id int not null,
 	cancellation_requested int default 0,
 	cancellation_reason nvarchar(255),
 	created_at datetime default getdate(),
@@ -296,6 +301,10 @@ foreign key (method_id) references payment_methods(method_id);
 alter table orders
 add constraint FK_Orders_OrderStatus
 foreign key (order_status_id) references order_status(order_status_id);
+
+alter table orders
+add constraint FK_Orders_PaymentStatus
+foreign key (payment_status_id) references payment_status(payment_status_id);
 
 alter table order_details
 add constraint FK_OrderDetails_Orders
@@ -745,6 +754,12 @@ VALUES
 (N'Chờ giao hàng'),
 (N'Hoàn thành'),
 (N'Đã hủy')
+
+INSERT INTO payment_status (payment_status_name)
+VALUES
+(N'Chưa thanh toán'),
+(N'Đã thanh toán'),
+(N'Đã hoàn tiền')
 
 INSERT INTO users (user_id, full_name, username)
 VALUES

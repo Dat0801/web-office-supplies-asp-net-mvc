@@ -17,6 +17,7 @@ namespace VanPhongPham.Models
         public int? SoldQuantity { get; set; }
         public double? AvgRating { get; set; }
         public int? VisitCount { get; set; }        
+        public bool? Status { get; set; }
         public List<ImageViewModel> Images { get; set; }
         public category Categories { get; set; }
         public List<AttributeViewModel> Attributes { get; set; }
