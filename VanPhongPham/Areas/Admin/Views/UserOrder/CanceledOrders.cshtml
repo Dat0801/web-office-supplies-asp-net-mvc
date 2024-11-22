@@ -1,0 +1,70 @@
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.order>
+
+@{
+    ViewBag.Title = "Bán hàng - Quản Trị";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h4 class="font-weight-bold mb-0">Danh sách đơn hàng</h4>
+<div class="row">
+    <div class="navbar-nav my-3 ml-2">
+        <!-- Search -->
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("CanceledOrders", "UserOrder")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.search_str ?? "")">
+            </span>
+            <button class="btn icon-btn btn-outline-primary">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <table class="table card-table table-responsive-lg">
+        <thead class="thead-light">
+            <tr>
+                <th>Mã hóa đơn</th>
+                <th>Tên khách hàng</th>
+                <th>SĐT</th>
+                <th>Ngày đặt</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                var addressParts = order.info_address.Split(new[] { ", " }, StringSplitOptions.None);
+                var name = addressParts.ElementAtOrDefault(0) ?? "";
+                var phone = addressParts.ElementAtOrDefault(1) ?? "";
+                var address = string.Join(", ", addressParts.Skip(2));
+                <tr>
+                    <td>@order.order_id</td>
+                    <td>@name</td>
+                    <td>@phone</td>
+                    <td>@order.created_at.Value.ToString("HH:mm dd-MM-yyyy")</td>
+                    <td>₫@(order.total_amount.HasValue ? order.total_amount.Value.ToString("N0") : "0")</td>
+
+
+                    <td class="text-danger" style="font-weight: bold">@order.order_status.order_status_name</td>
+
+                    <td>
+                        <a class="btn icon-btn btn-outline-info"
+                           title="Xem chi tiết"
+                           href="@Url.Action("UserOrderDetails", "UserOrder", new { ord_id = order.order_id, view = "CanceledOrders" })">
+                            <i class="feather icon-eye navbar-icon align-middle"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center">
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("CanceledOrders", new { page }))
+        </div>
+    </div>
+</div>

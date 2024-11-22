@@ -163,7 +163,7 @@
     <div class="order-container">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <!-- Nút Trở lại có thể quay lại trang trước -->
-            <a href="javascript:history.back()" style="display: flex; align-items: center; font-size: 15px; color: inherit; text-decoration: none;">
+            <a href="@Url.Action("Index", "Profile", new { order_status_id = ViewBag.OrderStatusID, MaTaiKhoan = Model.CustomerId, view = "OrderPartial" })"  style="display: flex; align-items: center; font-size: 15px; color: inherit; text-decoration: none;">
                 <img src="~/Public/img/icons/icons8-backorder.png" width="15" height="15" style="margin-right: 5px;" /> TRỞ LẠI
             </a>
 
@@ -180,8 +180,8 @@
         <hr />
 
         <div class="row m-0 p-0">
-            <div class="col-8">
-                <p style="font-size: 14px; color: #555">
+            <div class="col p-0">
+                <p style="font-size: 14px; color: #555;">
                     @if (Model.OrderStatusName == "Đã hủy")
                     {
                         <span>ĐƠN HÀNG ĐÃ HỦY VÀO: @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
@@ -190,12 +190,13 @@
                     {
                         <span>ĐƠN HÀNG ĐÃ ĐẶT VÀO: @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
                     }
-
                 </p>
                 <p id="leadtime" style="font-size: 14px; color: #555">
                 </p>
-            </div>
-            <div class="col-4 p-0 d-flex justify-content-end align-items-center" id="buttonContainer">
+                @if (Model.OrderStatusName == "Hoàn thành")
+                {
+                    <p style="font-size: 14px; color: #555">ĐÃ NHẬN HÀNG VÀO: @Model.DeliveryDate.Value.ToString("HH:mm dd-MM-yyyy")</p>
+                }
             </div>
         </div>
 
@@ -240,12 +241,12 @@
         @foreach (var detail in Model.OrderDetails)
         {
             totalItemCost += detail.TotalAmount;
-            <a href="#" style="text-decoration: none; color: #555 ">
+            <a href="@Url.Action("Details", "ProductClient", new { id = detail.ProductID, cart_id = ViewBag.CartID })" style="text-decoration: none; color: #555 ">
                 <div class="order-details">
                     <div class="product-info">
                         <img src="@detail.ImageUrl" alt="Product Image" />
-                        <div>
-                            <div class="product-name" style="font-size: 17px">@detail.ProductName</div>
+                        <div style="display: block; width: 700px; align-items: center;">
+                            <div class="product-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 110px); font-size: 17px">@detail.ProductName</div>
                             <div><span>x</span>@detail.Quantity</div>
                         </div>
                     </div>
@@ -283,6 +284,9 @@
                     </div>
                 </div>
             </div>
+
+            <hr />
+            <span class="price-info" style="color: #555;">Lý do: @Model.CancellationReason</span>
         }
         else
         {
@@ -325,7 +329,6 @@
                 <hr />
             }
 
-
             <div class="order-cost-details mt-3">
                 <div class="d-flex">
                     <div class="col-8 text-right p-0">
@@ -360,16 +363,6 @@
             if (shippingDetail.status === "delivered" && "@Html.Raw(Model.OrderStatusName)" === "Chờ giao hàng") {
                 const formattimelead = `${day}-${month}-${year}`;
                 leadtime.innerHTML = `NGÀY GIAO DỰ KIẾN: ${formattimelead}`;
-
-                var button = document.createElement("button");
-                button.classList.add("btn", "btn-danger", "setOrderStatusTwo");
-                button.setAttribute("data-orderid", "@Model.OrderId");
-                button.textContent = "Đã Nhận Hàng";
-                button.onclick = function () {
-                    setOrderStatusTwo(this); // Gọi hàm setOrderStatusTwo khi nút được nhấn
-                };
-
-                document.getElementById("buttonContainer").appendChild(button);
             }
             else if (shippingDetail.status !== "delivered" && "@Html.Raw(Model.OrderStatusName)" === "Chờ giao hàng")
             {
@@ -377,24 +370,37 @@
                 leadtime.innerHTML = `NGÀY GIAO DỰ KIẾN: ${formattimelead}`;
             }
 
-            const statusItem = document.createElement("div");
+            const statusItem1 = document.createElement("div");
+            statusItem1.classList.add("timeline-item", "completed");
 
-            statusItem.classList.add("timeline-item", "completed");
+            statusItem1.innerHTML = `
+                <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                <div class="timeline-content">
+                    <p class="status-text">Đơn hàng đã được đặt</p>
+                    <span class="timestamp">${"@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")"}</span>
+                </div>
+            `;
+
+            timelineContainer.prepend(statusItem1);
+
 
             const createdDate = new Date(shippingDetail.created_date);
             const formattedDate = formatDate(createdDate); // Hàm định dạng ngày giờ
 
+            const statusItem = document.createElement("div");
+            statusItem.classList.add("timeline-item", "completed");
+
             statusItem.innerHTML = `
                 <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
                 <div class="timeline-content">
-                    <p class="status-text">Chờ lấy hàng</p>
+                    <p class="status-text">Người bán đang chuẩn bị hàng</p>
                     <span class="timestamp">${formattedDate}</span>
                 </div>
             `;
 
             timelineContainer.prepend(statusItem);
 
-            if (shippingDetail.log.length > 0 && Array.isArray(shippingDetail.log)) {
+            if (shippingDetail.log.length > 0 && Array.isArray(shippingDetail.log) && shippingDetail.log) {
                 shippingDetail.log.forEach(logEntry => {
                     const logDate = new Date(logEntry.updated_date);
                     const formattedLogDate = formatDate(logDate); // Hàm định dạng ngày giờ
@@ -413,7 +419,22 @@
             }
         }
         catch (error) {
-            console.error("Lỗi trong quá trình xử lý:", error);
+            if ("@Html.Raw(Model.OrderStatusName)" === "Chờ xác nhận") {
+                const timelineContainer = document.getElementById("shipping_items");
+
+                const statusItem1 = document.createElement("div");
+                statusItem1.classList.add("timeline-item", "completed");
+
+                statusItem1.innerHTML = `
+                    <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                    <div class="timeline-content">
+                        <p class="status-text">Đơn hàng đã được đặt</p>
+                        <span class="timestamp">${"@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")"}</span>
+                    </div>
+                `;
+
+                timelineContainer.prepend(statusItem1);
+            }
         }
     });
 
@@ -432,11 +453,13 @@
     function getStatusText(status) {
         switch (status) {
             case 'picking':
-                return 'Nhân viên đang lấy hàng';
+                return 'Đang lấy hàng';
+            case 'cancel':
+                return 'Hủy đơn hàng';
+            case 'picking':
+                return 'Đang lấy hàng';
             case 'picked':
                 return 'Nhân viên đã lấy hàng';
-            case 'Hoàn thành':
-                return 'Hoàn thành';
             case 'storing':
                 return 'Hàng đang nằm ở kho';
             case 'transporting':
@@ -446,32 +469,7 @@
             case 'delivering':
                 return 'Nhân viên đang giao cho người nhận';
             case 'delivered':
-                return 'Nhân viên đã giao hàng thành công';
-        }
-    }
-
-    async function setOrderStatusTwo(button) {
-        const orderId = button.getAttribute('data-orderid');  // Lấy orderId từ nút được nhấn
-
-        // Gọi hàm đổi trạng thái đơn hàng
-        const response = await fetch('/Order/ChangeOrder_OrderStatus', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                order_id: orderId,
-                order_status: 2  // Trạng thái mới
-            })
-        });
-
-        const result = await response.json();
-        if (result.success) {
-            // Điều hướng đến trang khác sau khi cập nhật trạng thái
-            const url = `@Url.Action("Index", "Profile")?order_status_id=${'@Model.OrderStatusID'}&MaTaiKhoan=${'@Model.CustomerId'}&view=OrderPartial`;
-            window.location.href = url;
-        } else {
-            alert(result.message);
+                return 'Giao hàng thành công';
         }
     }
 </script>

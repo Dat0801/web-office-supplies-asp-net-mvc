@@ -107,7 +107,32 @@
             <ul class="sidenav-menu">
                 <li class="sidenav-item">
                     <a href="@Url.Action("Index", "UserOrder")" class="sidenav-link">
-                        <div>Quản lý đơn hàng</div>
+                        <div>Tất cả</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="@Url.Action("ConfirmRequest", "UserOrder")" class="sidenav-link">
+                        <div>Chờ xác nhận</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="@Url.Action("DeliveringOrders", "UserOrder")" class="sidenav-link">
+                        <div>Chờ giao hàng</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="@Url.Action("DeliveredOrders", "UserOrder")" class="sidenav-link">
+                        <div>Hoàn thành</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="@Url.Action("CancelRequest", "UserOrder")" class="sidenav-link">
+                        <div>Yêu cầu hủy</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="@Url.Action("CanceledOrders", "UserOrder")" class="sidenav-link">
+                        <div>Đã hủy</div>
                     </a>
                 </li>
             </ul>

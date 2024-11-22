@@ -253,7 +253,122 @@ namespace VanPhongPham.Models
 
             return viewModels;
         }
+        public ViewModels GetProductsDeletedModelViewById(string pro_id)
+        {
+            var currentDate = DateTime.Now;
 
+            // Lấy danh sách khuyến mãi hợp lệ
+            var promotions = _context.promotions
+                .Where(p => p.status == true && p.start_date <= currentDate && p.end_date >= currentDate)
+                .ToList();  // Lấy danh sách khuyến mãi vào bộ nhớ
+
+            // Lấy sản phẩm theo product_id
+            var product = _context.products
+                .Where(p => p.status == false && p.product_id == pro_id)
+                .Select(p => new
+                {
+                    p.product_id,
+                    p.product_name,
+                    p.description,
+                    p.purchase_price,
+                    p.price,
+                    p.stock_quantity,
+                    p.sold,
+                    p.avgRating,
+                    p.visited,
+                    p.category,
+                    p.status,
+                    Images = p.images.Select(i => new ImageViewModel
+                    {
+                        ImageId = i.image_id,
+                        ImageUrl = i.image_url,
+                        IsPrimary = (bool)i.is_primary
+                    }).ToList(),
+                    Attributes = (from pav in _context.product_attribute_values
+                                  join av in _context.attribute_values on pav.attribute_value_id equals av.attribute_value_id
+                                  join a in _context.attributes on av.attribute_id equals a.attribute_id
+                                  where pav.product_id == pro_id && av.status == true && a.status == true
+                                  select new AttributeViewModel
+                                  {
+                                      AttributeName = a.attribute_name,
+                                      Value = av.value
+                                  }).ToList()
+                })
+                .FirstOrDefault();
+
+            if (product == null)
+            {
+                return null;
+            }
+
+            // Tính toán PromotionPrice cho sản phẩm chính từ danh sách promotions đã tải vào bộ nhớ
+            var promotionPrice = promotions
+                .Where(promo => _context.product_promotions
+                    .Any(pp => pp.product_id == product.product_id && pp.promotion_id == promo.promotion_id))
+                .Select(promo => product.price * (1 - promo.discount_percent / 100))
+                .FirstOrDefault() ?? product.price;
+
+            var productViewModel = new ProductViewModel
+            {
+                ProductId = product.product_id,
+                ProductName = product.product_name,
+                Description = product.description,
+                PurchasePrice = product.purchase_price,
+                Price = product.price,
+                PromotionPrice = promotionPrice,
+                StockQuantity = product.stock_quantity,
+                SoldQuantity = product.sold,
+                AvgRating = product.avgRating,
+                VisitCount = product.visited,
+                Images = product.Images,
+                Status = product.status,
+                Categories = product.category,
+                Attributes = product.Attributes
+            };
+
+            // Lấy danh sách sản phẩm liên quan trong cùng một danh mục, loại trừ sản phẩm hiện tại
+            var relatedProducts = _context.products
+                .Where(p => p.status == true && p.category == product.category && p.product_id != pro_id)
+                .ToList()  // Chuyển dữ liệu sản phẩm liên quan vào bộ nhớ
+                .Select(p => new ProductViewModel
+                {
+                    ProductId = p.product_id,
+                    ProductName = p.product_name,
+                    Description = p.description,
+                    PurchasePrice = p.purchase_price,
+                    Price = p.price,
+                    // Tính toán PromotionPrice cho các sản phẩm liên quan từ danh sách promotions
+                    PromotionPrice = promotions
+                        .Where(promo => _context.product_promotions
+                            .Any(pp => pp.product_id == p.product_id && pp.promotion_id == promo.promotion_id))
+                        .Select(promo => p.price * (1 - promo.discount_percent / 100))
+                        .FirstOrDefault() ?? p.price,
+                    StockQuantity = p.stock_quantity,
+                    SoldQuantity = p.sold,
+                    AvgRating = p.avgRating,
+                    VisitCount = p.visited,
+                    Images = p.images.Select(i => new ImageViewModel
+                    {
+                        ImageId = i.image_id,
+                        ImageUrl = i.image_url,
+                        IsPrimary = (bool)i.is_primary
+                    }).ToList()
+                })
+                .ToList();  // Chuyển dữ liệu vào bộ nhớ sau khi tính toán
+
+            var viewModels = new ViewModels
+            {
+                ProductViewModel = new List<ProductViewModel> { productViewModel },
+                PromotionViewModel = promotions.Select(p => new PromotionViewModel
+                {
+                    PromotionId = p.promotion_id,
+                    PromotionName = p.promotion_name
+                }).ToList(),
+                RelatedProducts = relatedProducts
+            };
+
+            return viewModels;
+        }
 
 
 
@@ -435,7 +550,9 @@ namespace VanPhongPham.Models
                 product.product_name = p_product.product_name;
                 product.category_id = p_product.category_id;
                 product.description = p_product.description;
+                product.purchase_price = p_product.purchase_price;
                 product.price_coefficient = p_product.price_coefficient;
+                product.stock_quantity = p_product.stock_quantity;
                 product.status = p_product.status;
                 _context.SubmitChanges();
                 return true;
@@ -461,6 +578,11 @@ namespace VanPhongPham.Models
                 Console.WriteLine(ex.Message);
                 return false;
             }
+        }
+
+        public List<image> GetMainImages()
+        {
+            return _context.images.Where(img => img.is_primary == true).ToList();
         }
 
         public image GetMainImageByProductId(string product_id)

@@ -133,7 +133,7 @@ namespace VanPhongPham.Controllers
 
             var dbuser = db.users.FirstOrDefault(u => u.user_id == user_id);
             var addressDefault = dbuser.addresses.FirstOrDefault(a => a.isDefault == true);
-            string addressDefaultStr = addressDefault.address_line;
+            string addressDefaultStr = addressDefault.full_name + ", " + addressDefault.phone_number + ", " + addressDefault.address_line;
             string address = info_adrs ?? addressDefaultStr;
             DateTime expireDate = DateTime.Now.AddDays(1);
             TempData["user_id"] = user_id;
@@ -200,10 +200,10 @@ namespace VanPhongPham.Controllers
             var current_orderid = orderID ?? GenerateOrderId();
 
             var dbuser = db.users.FirstOrDefault(u => u.user_id == user_id);
-            int paymentStatusID = 0;
+            int paymentStatusID = 1;
             if (method_id == "PAY002")
             {
-                paymentStatusID = 1;
+                paymentStatusID = 2;
             }
             if (info_adrs != null)
             {
@@ -217,7 +217,8 @@ namespace VanPhongPham.Controllers
                     shipping_fee = shipping_fee,
                     order_status_id = 1,
                     created_at = DateTime.Now,
-                    payment_status_id = paymentStatusID
+                    payment_status_id = paymentStatusID,
+                    cancellation_requested = 0                    
                 };
 
                 db.orders.InsertOnSubmit(ord);
@@ -235,7 +236,8 @@ namespace VanPhongPham.Controllers
                     shipping_fee = shipping_fee,
                     order_status_id = 1,
                     created_at = DateTime.Now,
-                    payment_status_id = paymentStatusID
+                    payment_status_id = paymentStatusID,
+                    cancellation_requested = 0                    
                 };
 
                 db.orders.InsertOnSubmit(ord);

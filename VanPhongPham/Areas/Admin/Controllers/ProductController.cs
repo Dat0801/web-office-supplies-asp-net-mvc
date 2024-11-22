@@ -7,15 +7,21 @@ using VanPhongPham.Models;
 using PagedList;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using OfficeOpenXml;
+using System.Drawing;
+using VanPhongPham.Services;
 
 namespace VanPhongPham.Areas.Admin.Controllers
 {
     public class ProductController : Controller
     {
         private readonly ProductRepository productRepository;
+        private readonly ExcelReportService _excelReportService;
+
         public ProductController()
         {
             productRepository = new ProductRepository();
+            _excelReportService = new ExcelReportService();
         }
         public ActionResult Index(int? page, string category_name, string search_str)
         {
@@ -26,7 +32,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 ViewBag.Message = message;
                 ViewBag.MessageType = messageType;
             }
-            int pageSize = 7;
+            int pageSize = 5;
             int pageNumber = (page ?? 1);
             List<product> listProduct;
             if (search_str != null)
@@ -42,6 +48,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             {
                 listProduct = productRepository.GetProducts();
             }
+            ViewBag.mainImages = productRepository.GetMainImages();
             return View(listProduct.ToPagedList(pageNumber, pageSize));
         }
 
@@ -88,14 +95,17 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     };
                     productRepository.AddImages(additionalImage);
                 }
-                foreach (var value_id in attribute_value_id)
+                if(attribute_value_id != null)
                 {
-                    product_attribute_value product_Attribute_Value = new product_attribute_value
+                    foreach (var value_id in attribute_value_id)
                     {
-                        product_id = product.product_id,
-                        attribute_value_id = value_id,
-                    };
-                    productRepository.AddProductAttributeValue(product_Attribute_Value);
+                        product_attribute_value product_Attribute_Value = new product_attribute_value
+                        {
+                            product_id = product.product_id,
+                            attribute_value_id = value_id,
+                        };
+                        productRepository.AddProductAttributeValue(product_Attribute_Value);
+                    }
                 }
                 return Task.FromResult(Json(new { success = true }));
             }
@@ -188,6 +198,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
         public ActionResult RecycleProductIndex()
         {
             List<product> listProduct = productRepository.GetRecycleProducts();
+            ViewBag.mainImages = productRepository.GetMainImages();
             return View(listProduct);
         }
 
@@ -205,6 +216,14 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 TempData["MessageType"] = "danger";
             }
             return RedirectToAction("Index");
+        }
+
+        public ActionResult ProductExportToExcel()
+        {
+            var data = productRepository.GetProducts();
+            var userName = ((user)Session["Admin"]).full_name;
+            var fileContent = _excelReportService.GenerateProductReport(data, userName);
+            return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "danh_sach_san_pham.xlsx");
         }
 
         public ActionResult Category(int? page, string category_id, string search_str)

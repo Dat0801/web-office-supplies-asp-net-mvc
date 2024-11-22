@@ -123,6 +123,8 @@
       <Column Name="total_amount" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="order_status_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="payment_status_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="cancellation_requested" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="cancellation_reason" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Association Name="order_order_detail" Member="order_details" ThisKey="order_id" OtherKey="order_id" Type="order_detail" />
       <Association Name="user_order" Member="user" ThisKey="customer_id" OtherKey="user_id" Type="user" IsForeignKey="true" />

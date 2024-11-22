@@ -78,6 +78,14 @@
                             <span>Liên hệ để biết thêm chi tiết</span>
                         </div>
                     }
+                    if (products.Status == false)
+                    {
+                        <div class="text-danger">
+                            <span>Sản phẩm đã ngừng kinh doanh</span>
+                            <br />
+                            <span>Liên hệ để biết thêm chi tiết</span>
+                        </div>
+                    }
                     else
                     {
                         var activePromotions = Model.PromotionViewModel
@@ -96,96 +104,97 @@
                 }
             </h3>
             @*<div class="d-flex mb-3">
-                    <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
-                    <form>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-1" name="size">
-                            <label class="custom-control-label" for="size-1">XS</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-2" name="size">
-                            <label class="custom-control-label" for="size-2">S</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-3" name="size">
-                            <label class="custom-control-label" for="size-3">M</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-4" name="size">
-                            <label class="custom-control-label" for="size-4">L</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-5" name="size">
-                            <label class="custom-control-label" for="size-5">XL</label>
-                        </div>
-                    </form>
+            <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
+            <form>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="size-1" name="size">
+                    <label class="custom-control-label" for="size-1">XS</label>
                 </div>
-                <div class="d-flex mb-4">
-                    <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
-                    <form>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-1" name="color">
-                            <label class="custom-control-label" for="color-1">Black</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-2" name="color">
-                            <label class="custom-control-label" for="color-2">White</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-3" name="color">
-                            <label class="custom-control-label" for="color-3">Red</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-4" name="color">
-                            <label class="custom-control-label" for="color-4">Blue</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-5" name="color">
-                            <label class="custom-control-label" for="color-5">Green</label>
-                        </div>
-                    </form>
-                </div>*@
-        <div class="d-flex align-items-center mb-4 pt-2">
-            <div class="input-group quantity mr-3" style="width: 130px;">
-                <div class="input-group-btn">
-                    <button class="btn btn-primary btn-minus">
-                        <i class="fa fa-minus"></i>
-                    </button>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="size-2" name="size">
+                    <label class="custom-control-label" for="size-2">S</label>
                 </div>
-                <input type="text" class="form-control bg-secondary text-center" value="1">
-                <div class="input-group-btn">
-                    <button class="btn btn-primary btn-plus">
-                        <i class="fa fa-plus"></i>
-                    </button>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="size-3" name="size">
+                    <label class="custom-control-label" for="size-3">M</label>
                 </div>
-            </div>            
-                
-            @if (products.StockQuantity > 0)
-            {
-                <a href="#" class="btn btn-primary px-3 addToCartLink" data-product-id="@products.ProductId">
-                    <i class="fas fa-shopping-cart mr-1"></i>Thêm Vào Giỏ Hàng
-                </a>
-            }
-            
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="size-4" name="size">
+                    <label class="custom-control-label" for="size-4">L</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="size-5" name="size">
+                    <label class="custom-control-label" for="size-5">XL</label>
+                </div>
+            </form>
         </div>
-            <div class="d-flex pt-2">
-                <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
-                <div class="d-inline-flex">
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-facebook-f"></i>
+        <div class="d-flex mb-4">
+            <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
+            <form>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="color-1" name="color">
+                    <label class="custom-control-label" for="color-1">Black</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="color-2" name="color">
+                    <label class="custom-control-label" for="color-2">White</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="color-3" name="color">
+                    <label class="custom-control-label" for="color-3">Red</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="color-4" name="color">
+                    <label class="custom-control-label" for="color-4">Blue</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="color-5" name="color">
+                    <label class="custom-control-label" for="color-5">Green</label>
+                </div>
+            </form>
+        </div>*@
+            @if (products.StockQuantity > 0 && products.Status == true)
+            {
+                <div class="d-flex align-items-center mb-4 pt-2">
+                    <div class="input-group quantity mr-3" style="width: 130px;">
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary btn-minus">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                        </div>
+                        <input type="text" class="form-control bg-secondary text-center" value="1">
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary btn-plus">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <a href="#" class="btn btn-primary px-3 addToCartLink" data-product-id="@products.ProductId">
+                        <i class="fas fa-shopping-cart mr-1"></i>Thêm Vào Giỏ Hàng
                     </a>
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-pinterest"></i>
-                    </a>
+                </div>
+            }
+
+                
+                <div class="d-flex pt-2">
+                    <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
+                    <div class="d-inline-flex">
+                        <a class="text-dark px-2" href="">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a class="text-dark px-2" href="">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a class="text-dark px-2" href="">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a class="text-dark px-2" href="">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
     </div>
     <div class="row px-xl-5">
         <div class="col">
@@ -381,6 +390,7 @@
                         .then(data => {
                             if (data.success) {
                                 showNotification(data.message, "success"); // Hiển thị thông báo thành công
+                                displayUserName();
                             } else {
                                 showNotification(data.message, "danger"); // Hiển thị thông báo lỗi
                             }

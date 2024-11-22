@@ -429,6 +429,7 @@ Products End -->
                     .then(data => {
                         if (data.success) {
                             showNotification(data.message, "success"); // Hiển thị thông báo thành công
+                            displayUserName();
                         } else {
                             showNotification(data.message, "danger"); // Hiển thị thông báo lỗi
                         }
@@ -437,6 +438,7 @@ Products End -->
                         console.error("Error:", error);
                         showNotification("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.", "danger");
                     });
+
             });
         }
 

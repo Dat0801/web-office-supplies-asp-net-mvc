@@ -34,12 +34,17 @@
     <a class="btn icon-btn btn-outline-secondary my-3 ml-2" href="@Url.Action("RecycleProductIndex","Product")" title="Phục hồi">
         <i class="feather icon-rotate-cw navbar-icon align-middle"></i>
     </a>
+    <!-- Export to Excel -->
+    <a class="btn icon-btn btn-outline-success my-3 ml-2" href="@Url.Action("ProductExportToExcel","Product")" title="Xuất excel">
+        <i class="feather icon-printer navbar-icon align-middle"></i>
+    </a>
 </div>
 <div class="card">
     <table class="table card-table table-responsive-lg">
         <thead class="thead-light">
             <tr>
                 <th>Mã sản phẩm</th>
+                <th>Hình ảnh</th>
                 <th>Tên sản phẩm</th>
                 <th>Giá nhập</th>
                 <th>Giá bán</th>
@@ -53,6 +58,15 @@
             {
                 <tr>
                     <td>@product.product_id</td>
+                    @foreach (var image in ViewBag.mainImages)
+                    {
+                        if (image.product.product_id == product.product_id)
+                        {
+                            <td>
+                                <img src="@image.image_url" alt="Ảnh sản phẩm" style="width: 50px; height: auto;">
+                            </td>
+                        }
+                    }
                     <td>@product.product_name</td>
                     <td>@product.purchase_price</td>
                     <td>

@@ -120,7 +120,7 @@ create table user_roles
 
 create table addresses
 (
-    address_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL, -- Thêm IDENTITY(1,1) để tăng tự động
+    address_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
     user_id NVARCHAR(255) NOT NULL,
     full_name NVARCHAR(MAX) NOT NULL,
     phone_number VARCHAR(10) NOT NULL,
@@ -155,6 +155,8 @@ create table orders
 	total_amount float default 0,
 	order_status_id int not null,
 	payment_status_id int not null,
+	cancellation_requested int default 0,
+	cancellation_reason nvarchar(255),
 	created_at datetime default getdate(),
 )
 
@@ -384,9 +386,14 @@ ON categories
 AFTER UPDATE
 AS
 BEGIN
-    UPDATE categories
-    SET updated_at = GETDATE()
-    WHERE category_id IN (SELECT category_id FROM inserted);
+	SET NOCOUNT ON;
+
+    IF EXISTS (SELECT 1 FROM inserted WHERE updated_at IS NULL OR updated_at < GETDATE())
+    BEGIN
+		UPDATE categories
+		SET updated_at = GETDATE()
+		WHERE category_id IN (SELECT category_id FROM inserted);
+    END
 END;
 GO
 
@@ -396,20 +403,25 @@ ON suppliers
 AFTER UPDATE
 AS
 BEGIN
-    UPDATE suppliers
-    SET updated_at = GETDATE()
-    WHERE supplier_id IN (SELECT supplier_id FROM inserted);
+	SET NOCOUNT ON;
+
+    IF EXISTS (SELECT 1 FROM inserted WHERE updated_at IS NULL OR updated_at < GETDATE())
+    BEGIN
+		UPDATE suppliers
+		SET updated_at = GETDATE()
+		WHERE supplier_id IN (SELECT supplier_id FROM inserted);
+    END
 END;
 GO
 
--- Trigger tính toán giá bán sản phẩm dựa trên giá mua và hệ số giá, với làm tròn giá
+-- Trigger tính toán giá bán sản phẩm dựa trên giá mua và hệ số.
 CREATE TRIGGER trg_CalculateProductPrice
 ON products
 AFTER INSERT, UPDATE
 AS
 BEGIN
     UPDATE products
-    SET price = ROUND(purchase_price * price_coefficient, 2)  -- Làm tròn đến 2 chữ số thập phân
+    SET price = ROUND(purchase_price * price_coefficient, 2)
     WHERE product_id IN (SELECT product_id FROM inserted);
 END;
 GO
@@ -431,85 +443,71 @@ BEGIN
 END;
 GO
 
---Trigger cập nhật số lượng sản phẩm tồn kho dựa trên số lượng sản phẩm trong đơn hàng.
+-- Trigger cập nhật số lượng sản phẩm tồn kho sau khi sản phẩm được bán.
 CREATE TRIGGER trg_UpdateProductStock
 ON order_details
 AFTER INSERT
 AS
 BEGIN
-    -- Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
     SET NOCOUNT ON;
 
-    -- Cập nhật bảng products dựa trên chi tiết đơn hàng vừa thêm
     UPDATE p
     SET p.stock_quantity = p.stock_quantity - inserted.quantity
     FROM products p
     INNER JOIN inserted ON p.product_id = inserted.product_id;
-
-    -- Kết thúc transaction
 END;
-
 GO
 
---Trigger cập nhật số lượng bán ra trong bảng products khi một đơn hàng được cập nhật trạng thái = 2.
+--Trigger cập nhật số lượng sản phẩm đã bán khi trạng thái đơn hàng thay đổi thành "Hoàn thành".
 CREATE TRIGGER trg_UpdateProductSoldOnOrderStatus
 ON orders
 AFTER UPDATE
 AS
 BEGIN
-    -- Chỉ cập nhật khi trạng thái đơn hàng chuyển thành 2 (Chờ giao hàng)
     IF UPDATE(order_status_id)
     BEGIN
-        -- Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
         SET NOCOUNT ON;
-
-        -- Cập nhật số lượng bán ra trong bảng products dựa trên các sản phẩm trong đơn hàng khi order_status_id = 2
         UPDATE p
-        SET p.sold = p.sold + od.quantity  -- Tăng số lượng đã bán
+        SET p.sold = p.sold + od.quantity 
         FROM products p
         INNER JOIN order_details od ON p.product_id = od.product_id
         INNER JOIN inserted i ON od.order_id = i.order_id
-        WHERE i.order_status_id = 2;  -- Kiểm tra trạng thái đơn hàng là 2 (Chờ giao hàng)
-
-        -- Kết thúc transaction
+        WHERE i.order_status_id = 3; 
     END
 END;
-
 GO
 
---Trigger kiểm tra khi stock sản phẩm bằng 0, cập nhật isSelected trong cart_details
+--Trigger cập nhật trạng thái "isSelected" trong giỏ hàng khi số lượng tồn kho của sản phẩm giảm xuống 0.
 CREATE TRIGGER trg_UpdateCartDetails
 ON products
 AFTER UPDATE
 AS
 BEGIN
-    -- Kiểm tra nếu stock của sản phẩm bằng 0 thì cập nhật isSelected trong cart_details thành 0
     UPDATE cd
     SET cd.isSelected = 0
     FROM cart_details cd
     INNER JOIN inserted i ON cd.product_id = i.product_id
-    WHERE i.stock_quantity = 0;  -- Nếu số lượng tồn của sản phẩm bằng 0
+    WHERE i.stock_quantity = 0;
 END;
 
 GO
 
---Trigger kiểm tra khi status sản phẩm bằng 0, cập nhật isSelected trong cart_details
+--Trigger bỏ chọn sản phẩm trong giỏ hàng khi sản phẩm ngừng kinh doanh.
 CREATE TRIGGER trg_UpdateCartDetailsOnStatus
 ON products
 AFTER UPDATE
 AS
 BEGIN
-    -- Kiểm tra nếu status của sản phẩm bằng 0, cập nhật isSelected trong cart_details thành 0
     UPDATE cd
     SET cd.isSelected = 0
     FROM cart_details cd
     INNER JOIN inserted i ON cd.product_id = i.product_id
-    WHERE i.status = 0;  -- Nếu status của sản phẩm là 0
+    WHERE i.status = 0; 
 END;
 
 GO
 
---Trigger xóa các sản phẩm có product_id từ order_details trong cart_details
+--Trigger xóa sản phẩm khỏi giỏ hàng của người dùng sau khi sản phẩm đó được đặt hàng.
 CREATE TRIGGER trg_ClearSpecificCartDetailsOnOrder
 ON order_details
 AFTER INSERT
@@ -517,16 +515,13 @@ AS
 BEGIN
     DECLARE @order_id VARCHAR(10), @user_id NVARCHAR(255);
 
-    -- Lấy order_id từ bản ghi mới thêm vào order_details
     SELECT @order_id = order_id
     FROM inserted;
 
-    -- Lấy user_id từ bảng orders của order_id tương ứng
     SELECT @user_id = customer_id
     FROM orders
     WHERE order_id = @order_id;
 
-    -- Xóa các sản phẩm có product_id từ order_details trong cart_details của user_id tương ứng
     DELETE cd
     FROM cart_details cd
     INNER JOIN cart_section cs ON cd.cart_id = cs.cart_id
@@ -536,27 +531,22 @@ END
 
 GO
 
--- Trigger khôi phục số lượng tồn kho khi một đơn hàng bị hủy.
+-- Trigger khôi phục số lượng tồn kho của sản phẩm khi đơn hàng bị hủy.
 CREATE TRIGGER trg_RestoreProductStockOnOrderCancel
 ON orders
 AFTER UPDATE
 AS
 BEGIN
-    -- Chỉ cập nhật khi trạng thái đơn hàng chuyển thành 4 (Đã hủy)
     IF UPDATE(order_status_id)
     BEGIN
-        -- Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
         SET NOCOUNT ON;
 
-        -- Khôi phục số lượng tồn kho trong bảng products dựa trên các sản phẩm trong đơn hàng khi order_status_id = 4
         UPDATE p
-        SET p.stock_quantity = p.stock_quantity + od.quantity  -- Tăng số lượng tồn kho
+        SET p.stock_quantity = p.stock_quantity + od.quantity
         FROM products p
         INNER JOIN order_details od ON p.product_id = od.product_id
         INNER JOIN inserted i ON od.order_id = i.order_id
-        WHERE i.order_status_id = 4;  -- Kiểm tra trạng thái đơn hàng là 4 (Đã hủy)
-
-        -- Kết thúc transaction
+        WHERE i.order_status_id = 4;
     END
 END;
 
@@ -580,7 +570,7 @@ END;
 
 GO
 
--- Trigger để cập nhật item_count sau khi thêm mới chi tiết đơn hàng
+-- Trigger để cập nhật item_count sau khi thêm mới chi tiết đơn đặt hàng
 CREATE TRIGGER trg_AfterInsertPurchaseOrderDetail
 ON purchase_order_detail
 AFTER INSERT
@@ -616,7 +606,6 @@ ON receipt_details
 AFTER INSERT
 AS
 BEGIN
-    -- Cập nhật số lượng tồn kho trong bảng products
     UPDATE p
     SET p.stock_quantity = p.stock_quantity + i.quantity
     FROM products p
@@ -632,7 +621,6 @@ ON receipt_details
 AFTER INSERT
 AS
 BEGIN
-    -- Cập nhật số lượng đã nhận trong bảng purchase_order_detail
     UPDATE pod
     SET pod.quantity_received = pod.quantity_received + i.quantity
     FROM purchase_order_detail pod
@@ -648,7 +636,6 @@ ON receipt_details
 AFTER INSERT
 AS
 BEGIN
-    -- Cập nhật trạng thái đơn hàng thành 'Đã giao' nếu tất cả sản phẩm trong đơn hàng đã nhập đủ số lượng
     UPDATE po
     SET po.status = N'Đã giao'
     FROM purchase_order po
@@ -659,7 +646,7 @@ BEGIN
         FROM purchase_order_detail pod2
         WHERE pod2.purchase_order_id = po.purchase_order_id
         AND pod2.quantity > pod2.quantity_received
-    );  -- Kiểm tra nếu có sản phẩm nào chưa nhập đủ số lượng đã yêu cầu
+    ); 
 END;
 GO
 
