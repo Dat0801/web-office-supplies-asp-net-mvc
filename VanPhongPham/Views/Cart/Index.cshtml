@@ -69,111 +69,111 @@
                     <tbody class="align-middle" style="font-size: 15px">
                         @foreach (var item in Model)
                         {
-                        <tr style="@(item.QuantityProduct == 0 || item.Product_status == false ? "background-color: #FAFAFA;" : "")">
-                            @if (item.Product_status == false)
-                            {
-                                <td class="align-middle">
-                                    <span style="color: white; font-weight: bold; background-color: #A3A3A3; padding: 5px; font-size: 10px; border-radius: 10px">ĐÃ ẨN</span>
-                                </td>
-                                <td style="text-align:left" class="align-middle">
-                                    <div style="display: flex; align-items: center;">
-                                        <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px; margin-right: 10px;">
-                                        <a
-                                           class="product-name"
-                                           style="text-decoration: none; color: #737373;">
-                                            @item.ProductName
-                                        </a>
-                                    </div>
-                                </td>
-                                <td class="align-middle">₫0</td>
-                                <td class="align-middle">0</td>
-                                <td class="align-middle" style="color: #ff4747;">₫0</td>
-                                <td class="align-middle">
-                                    <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
-                                        <i class="fa fa-times"></i>
-                                    </button>
-                                </td>
-                            }
-                            else if (item.QuantityProduct == 0)
-                            {
-                                <td class="align-middle">
-                                    <span style="color: white; font-weight: bold; background-color: #A3A3A3; padding: 5px; font-size: 10px; border-radius: 10px">HẾT HÀNG</span>
-                                </td>
-                                <td style="text-align:left" class="align-middle">
-                                    <div style="display: flex; align-items: center;">
-                                        <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px; margin-right: 10px;">
-                                        <a
-                                           class="product-name"
-                                           style="text-decoration: none; color: #737373;">
-                                            @item.ProductName
-                                        </a>
-                                    </div>
-                                </td>
-                                <td class="align-middle">₫0</td>
-                                <td class="align-middle">0</td>
-                                <td class="align-middle" style="color: #ff4747;">₫0</td>
-                                <td class="align-middle">
-                                    <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
-                                        <i class="fa fa-times"></i>
-                                    </button>
-                                </td>
-                            }
-                            else
-                            {
-                                <td class="align-middle">
-                                    <input type="checkbox" data-product-id="@item.ProductID" style="margin-right: 14px" @(item.isSelected == 1 ? "checked" : "") />
-                                </td>
-                                <td style="text-align:left" class="align-middle">
-                                    <div style="display: flex; align-items: center;">
-                                        <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px; margin-right: 10px;">
-                                        <a href="@Url.Action("Details", "ProductClient", new { id = item.ProductID, cart_id = ViewBag.CartID })"
-                                           class="product-name"
-                                           style="text-decoration: none; color: black;">
-                                            @item.ProductName
-                                        </a>
-                                    </div>
-                                </td>
-                                if (item.Promotion_Price == 0)
+                            <tr style="@(item.QuantityProduct == 0 || item.Product_status == false ? "background-color: #FAFAFA;" : "")">
+                                @if (item.Product_status == false)
                                 {
-                                    <td class="align-middle" style="color: #272727;">₫@item.Price.ToString("N0")</td>
+                                    <td class="align-middle">
+                                        <span style="color: white; font-weight: bold; background-color: #A3A3A3; padding: 5px; font-size: 10px; border-radius: 10px">ĐÃ ẨN</span>
+                                    </td>
+                                    <td style="text-align:left" class="align-middle">
+                                        <div style="display: flex; align-items: center;">
+                                            <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px; margin-right: 10px;">
+                                            <a
+                                               class="product-name"
+                                               style="text-decoration: none; color: #737373;">
+                                                @item.ProductName
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle">₫0</td>
+                                    <td class="align-middle">0</td>
+                                    <td class="align-middle" style="color: #ff4747;">₫0</td>
+                                    <td class="align-middle">
+                                        <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </td>
+                                }
+                                else if (item.QuantityProduct == 0)
+                                {
+                                    <td class="align-middle">
+                                        <span style="color: white; font-weight: bold; background-color: #A3A3A3; padding: 5px; font-size: 10px; border-radius: 10px">HẾT HÀNG</span>
+                                    </td>
+                                    <td style="text-align:left" class="align-middle">
+                                        <div style="display: flex; align-items: center;">
+                                            <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px; margin-right: 10px;">
+                                            <a
+                                               class="product-name"
+                                               style="text-decoration: none; color: #737373;">
+                                                @item.ProductName
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle">₫0</td>
+                                    <td class="align-middle">0</td>
+                                    <td class="align-middle" style="color: #ff4747;">₫0</td>
+                                    <td class="align-middle">
+                                        <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </td>
                                 }
                                 else
                                 {
-                                    <td class="align-middle" style="color: #272727;"><del style="margin-right:10px; color: #777777">₫@item.Price.ToString("N0")</del>₫@item.Promotion_Price.ToString("N0")</td>
+                                    <td class="align-middle">
+                                        <input type="checkbox" data-product-id="@item.ProductID" style="margin-right: 14px" @(item.isSelected == 1 ? "checked" : "") />
+                                    </td>
+                                    <td style="text-align:left" class="align-middle">
+                                        <div style="display: flex; align-items: center;">
+                                            <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px; margin-right: 10px;">
+                                            <a href="@Url.Action("Details", "ProductClient", new { id = item.ProductID, cart_id = ViewBag.CartID })"
+                                               class="product-name"
+                                               style="text-decoration: none; color: black;">
+                                                @item.ProductName
+                                            </a>
+                                        </div>
+                                    </td>
+                                    if (item.Promotion_Price == 0)
+                                    {
+                                        <td class="align-middle" style="color: #272727;">₫@item.Price.ToString("N0")</td>
+                                    }
+                                    else
+                                    {
+                                        <td class="align-middle" style="color: #272727;"><del style="margin-right:10px; color: #777777">₫@item.Price.ToString("N0")</del>₫@item.Promotion_Price.ToString("N0")</td>
+                                    }
+                                    <td class="align-middle">
+                                        <div class="input-group quantity mx-auto" style="width: 100px;">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-sm btn-primary" onclick="changeQuantity(this, -1)">
+                                                    <i class="fa fa-minus"></i>
+                                                </button>
+                                            </div>
+                                            <input type="number"
+                                                   class="form-control form-control-sm bg-secondary text-center"
+                                                   value="@item.Quantity"
+                                                   min="1"
+                                                   step="1"
+                                                   oninput="preventLeadingZero(this)"
+                                                   data-cartdetail-quantity="@item.Quantity"
+                                                   data-product-id="@item.ProductID"
+                                                   data-product-price="@item.Price"
+                                                   data-product-totalamount="@item.TotalAmount"
+                                                   onblur="checkStock(this)" style="padding: 2px">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-sm btn-primary" onclick="changeQuantity(this, 1)">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle" style="color: #ff4747;">₫@item.TotalAmount.ToString("N0")</td>
+                                    <td class="align-middle">
+                                        <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </td>
                                 }
-                                <td class="align-middle">
-                                    <div class="input-group quantity mx-auto" style="width: 100px;">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary" onclick="changeQuantity(this, -1)">
-                                                <i class="fa fa-minus"></i>
-                                            </button>
-                                        </div>
-                                        <input type="number"
-                                               class="form-control form-control-sm bg-secondary text-center"
-                                               value="@item.Quantity"
-                                               min="1"
-                                               step="1"
-                                               oninput="preventLeadingZero(this)"
-                                               data-cartdetail-quantity="@item.Quantity"
-                                               data-product-id="@item.ProductID"
-                                               data-product-price="@item.Price"
-                                               data-product-totalamount="@item.TotalAmount"
-                                               onblur="checkStock(this)" style="padding: 2px">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary" onclick="changeQuantity(this, 1)">
-                                                <i class="fa fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="align-middle" style="color: #ff4747;">₫@item.TotalAmount.ToString("N0")</td>
-                                <td class="align-middle">
-                                    <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
-                                        <i class="fa fa-times"></i>
-                                    </button>
-                                </td>
-                            }
-                        </tr>
+                            </tr>
                         }
                     </tbody>
                 </table>
@@ -375,20 +375,22 @@ else
         document.body.style.overflowY = "scroll";  // Đặt lại overflow khi modal đóng
     });
 
-    function toggleSelectAll(mainCheckbox) {
+    async function toggleSelectAll(mainCheckbox) {
         const checkboxes = document.querySelectorAll('input[type="checkbox"][data-product-id]');
         const isChecked = mainCheckbox.checked;
 
-        checkboxes.forEach(checkbox => {
+        // Cập nhật trạng thái từng checkbox và isSelected trong DB
+        for (const checkbox of checkboxes) {
+            const productId = checkbox.getAttribute("data-product-id");
             checkbox.checked = isChecked;
-            updateIsSelected(checkbox.getAttribute("data-product-id"), isChecked);
-            updatePaymentSummary()
-        });
+            await updateIsSelected(productId, isChecked); // Đợi cập nhật DB hoàn tất
+        }
 
-        // Cập nhật trạng thái của checkbox ở Cart Summary và nút "Chọn Tất Cả"
+        // Cập nhật trạng thái checkbox ở Cart Summary
         document.getElementById('summaryCheckbox').checked = isChecked;
         document.getElementById('mainProductCheckbox').checked = isChecked;
 
+        // Cập nhật lại trang sau khi hoàn tất
         location.reload();
     }
 
