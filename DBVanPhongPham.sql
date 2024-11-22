@@ -552,6 +552,27 @@ END;
 
 GO
 
+-- Trigger tính avgRating cho products
+CREATE TRIGGER trg_UpdateAvgRating
+ON product_review
+AFTER INSERT
+AS
+BEGIN
+    -- Nếu xảy ra bất kỳ lỗi nào, bỏ qua trigger
+    SET NOCOUNT ON;
+
+    -- Cập nhật avgRating cho các sản phẩm bị đánh giá mới
+    UPDATE products
+    SET avgRating = (
+        SELECT AVG(CAST(rating AS FLOAT))
+        FROM product_review
+        WHERE product_review.product_id = products.product_id
+    )
+    WHERE product_id IN (SELECT DISTINCT product_id FROM inserted);
+END;
+GO
+
+
 -- Trigger tính toán tổng số tiền của một đơn hàng.
 CREATE TRIGGER trg_CalculateOrderTotalAmount
 ON order_details
