@@ -18,7 +18,8 @@
                 <tbody class="align-middle">
                     @foreach (var item in Model)
                     {
-                        var weight = int.Parse(item.ProductWeight.Split(' ')[0]) * item.Quantity;
+                        var weight = (int.TryParse(item.ProductWeight?.Split(' ')[0], out int productWeight) ? productWeight : 0) * item.Quantity;
+
                         <tr class="product-item" style="@(item.QuantityProduct == 0 ? "background-color: #FAFAFA;" : "")" data-name="@item.ProductName" data-quantity="@item.Quantity" data-weight="@weight">
                             <td style="text-align: left; color: #272727">
                                 <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px">

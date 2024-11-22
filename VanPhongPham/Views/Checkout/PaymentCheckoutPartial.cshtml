@@ -238,7 +238,8 @@
                                 info_adrs: addressData,
                                 ordernote: ordnote.value.trim(),
                                 method_id: selectedMethod,
-                                shipping_fee: shipping_fee
+                                shipping_fee: shipping_fee,
+                                orderID: null
                             })
                 });
 
@@ -248,11 +249,48 @@
                     const url = `@Url.Action("Index", "Profile")?order_status_id=${1}&MaTaiKhoan=${userData.MaTaiKhoan}&view=OrderPartial`;
                     window.location.href = url;
                 }
+            } else if (selectedMethod === "PAY002") {
+                const response = await fetch('/Checkout/InitVNPay', {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userData1.MaTaiKhoan,
+                        cart_id: userData1.CartID,
+                        info_adrs: addressData,
+                        ordernote: ordnote.value.trim(),
+                        shipping_fee: shipping_fee
+                    })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    window.location.href = result.vnpayUrl;
+                }
             }
-
         } catch (error) {
             console.error("Không thể lưu Order", error);
         }
     });
+    function showNotification(message, messageType) {
+        var notificationContainer = document.getElementById("notification-container");
+        var notification = document.createElement("div");
+        notification.className = `alert alert-${messageType} alert-dismissible fade show`;
+        notification.innerHTML = `
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            ${message}
+        `;
+        
+        notificationContainer.appendChild(notification);
+        
+        setTimeout(function () {
+            notification.remove();
+        }, 3000);
+    }
+    
+    @if (!string.IsNullOrEmpty(ViewBag.Msg))
+    {
+        <text>            
+            showNotification('@ViewBag.Msg', 'danger');
+        </text>
+    }
 </script>
 

@@ -88,11 +88,15 @@ namespace VanPhongPham.Controllers
             return PartialView(cartdetails);
         }
 
-        public ActionResult PaymentCheckoutPartial(address adrs)
+        public ActionResult PaymentCheckoutPartial(address adrs, string msg)
         {
             var paymentmethod = db.payment_methods.ToList();
             ViewBag.adrs = adrs;
             ViewBag.TotalAmount = db.cart_details.Where(a => a.isSelected == 1).Sum(a => a.total_amount);
+            if(!string.IsNullOrWhiteSpace(msg))
+            {
+                ViewBag.msg = msg;
+            }
             return PartialView(paymentmethod);
         }
 
@@ -116,18 +120,91 @@ namespace VanPhongPham.Controllers
 
             return order_id;
         }
+        public ActionResult InitVNPay(string user_id, int cart_id, string info_adrs, string ordernote, float shipping_fee)
+        {
+            if (string.IsNullOrWhiteSpace(ordernote))
+            {
+                ordernote = "";
+            }
+            
+            var current_orderid = GenerateOrderId();
+            var cartDetails = db.cart_details.Where(a => a.cart_id == cart_id && a.isSelected == 1).ToList();
+            double totalAmount = (double)cartDetails.Sum(c => c.total_amount);
 
-        public ActionResult SaveOrder(string user_id, int cart_id, string info_adrs, string ordernote, string method_id, float shipping_fee)
+            var dbuser = db.users.FirstOrDefault(u => u.user_id == user_id);
+            var addressDefault = dbuser.addresses.FirstOrDefault(a => a.isDefault == true);
+            string addressDefaultStr = addressDefault.address_line;
+            string address = info_adrs ?? addressDefaultStr;
+            DateTime expireDate = DateTime.Now.AddDays(1);
+            TempData["user_id"] = user_id;
+            TempData["cart_id"] = cart_id;
+            TempData["info_adrs"] = address;
+            TempData["ordernote"] = ordernote;
+            TempData["shipping_fee"] = shipping_fee;
+            TempData["orderID"] = current_orderid;
+
+            var vnpay = new VnPayLibrary();
+            vnpay.AddRequestData("vnp_Version", "2.1.0");
+            vnpay.AddRequestData("vnp_Command", "pay");
+            vnpay.AddRequestData("vnp_TmnCode", "262XSFHX");
+            vnpay.AddRequestData("vnp_Amount", ((int)(totalAmount+shipping_fee) * 100).ToString()); // Tổng số tiền thanh toán
+            vnpay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData("vnp_CurrCode", "VND");
+            vnpay.AddRequestData("vnp_IpAddr", Request.UserHostAddress);
+            vnpay.AddRequestData("vnp_Locale", "vn");
+            vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang" + current_orderid); // Thông tin đơn hàng
+            vnpay.AddRequestData("vnp_OrderType", "other"); // Loại hình thanh toán
+            vnpay.AddRequestData("vnp_ReturnUrl", Url.Action("VNPayReturn", "Checkout", null, Request.Url.Scheme));
+            vnpay.AddRequestData("vnp_TxnRef", DateTime.Now.Ticks.ToString()); // Mã giao dịch
+            vnpay.AddRequestData("vnp_ExpireDate", expireDate.ToString("yyyyMMddHHmmss"));
+
+            string paymentUrl = vnpay.CreateRequestUrl("https://sandbox.vnpayment.vn/paymentv2/vpcpay.html", "MMZXWISZNUUUNKGOZQPCPASLLTHYGMTB");
+
+            return Json(new { success = true, vnpayUrl = paymentUrl });
+        }
+        public ActionResult VNPayReturn()
+        {
+            var vnpay = new VnPayLibrary();
+            foreach (string s in Request.QueryString)
+            {
+                vnpay.AddResponseData(s, Request.QueryString[s]);
+            }
+
+            var userId = TempData["user_id"]?.ToString();
+            var cartId = Convert.ToInt32(TempData["cart_id"]);
+            var infoAdrs = TempData["info_adrs"]?.ToString();
+            var ordernote = TempData["ordernote"]?.ToString();
+            float shippingFee = float.Parse(TempData["shipping_fee"].ToString());
+            var orderId = TempData["orderID"]?.ToString();
+
+            string responseCode = vnpay.GetResponseData("vnp_ResponseCode");
+
+            if (responseCode == "00")
+            {
+                SaveOrder(userId, cartId, infoAdrs, ordernote, "PAY002", shippingFee, orderId);
+                return RedirectToAction("Index", "Profile", new { order_status_id = 1, MaTaiKhoan = userId, view = "OrderPartial" });
+            }
+            else
+            {                
+                return RedirectToAction("PaymentCheckoutPartial", "Checkout", new { adrs = infoAdrs, msg = "Thanh toán thất bại!" });
+            }
+        }
+
+        public ActionResult SaveOrder(string user_id, int cart_id, string info_adrs, string ordernote, string method_id, float shipping_fee,  string orderID)
         {
             if (ordernote == "")
             {
                 ordernote = null;
             }  
             
-            var current_orderid = GenerateOrderId();
+            var current_orderid = orderID ?? GenerateOrderId();
 
             var dbuser = db.users.FirstOrDefault(u => u.user_id == user_id);
-
+            int paymentStatusID = 0;
+            if (method_id == "PAY002")
+            {
+                paymentStatusID = 1;
+            }
             if (info_adrs != null)
             {
                 order ord = new order
@@ -139,7 +216,8 @@ namespace VanPhongPham.Controllers
                     method_id = method_id,
                     shipping_fee = shipping_fee,
                     order_status_id = 1,
-                    created_at = DateTime.Now
+                    created_at = DateTime.Now,
+                    payment_status_id = paymentStatusID
                 };
 
                 db.orders.InsertOnSubmit(ord);
@@ -156,7 +234,8 @@ namespace VanPhongPham.Controllers
                     method_id = method_id,
                     shipping_fee = shipping_fee,
                     order_status_id = 1,
-                    created_at = DateTime.Now
+                    created_at = DateTime.Now,
+                    payment_status_id = paymentStatusID
                 };
 
                 db.orders.InsertOnSubmit(ord);

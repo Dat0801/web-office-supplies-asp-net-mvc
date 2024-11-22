@@ -19,7 +19,7 @@ namespace VanPhongPham
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             VanPhongPham.Services.FirebaseService.Initialize();
 
-            GlobalConfiguration.Configuration.UseSqlServerStorage(ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString3"].ConnectionString);
+            GlobalConfiguration.Configuration.UseSqlServerStorage(ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString1"].ConnectionString);
 
             // Đăng ký công việc lặp lại với Hangfire
             RecurringJob.AddOrUpdate<OrderUpdater>(
