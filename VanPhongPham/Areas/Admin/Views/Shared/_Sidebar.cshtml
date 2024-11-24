@@ -137,6 +137,31 @@
                 </li>
             </ul>
         </li>
+
+        <!-- Quản lý khuyến mãi -->
+        <li class="sidenav-item">
+            <a href="javascript:" class="sidenav-link sidenav-toggle">
+                <i class="sidenav-icon feather icon-percent"></i>
+                <div>Quản lý khuyến mãi</div>
+            </a>
+            <ul class="sidenav-menu">
+                <li class="sidenav-item">
+                    <a href="@Url.Action("Index", "Promotion")" class="sidenav-link">
+                        <div>Danh sách khuyến mãi</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="@Url.Action("RecoverPromotion", "Promotion")" class="sidenav-link">
+                        <div>Khuyến mãi đã xóa</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="@Url.Action("Statistics", "Promotion")" class="sidenav-link">
+                        <div>Thống kê khuyến mãi</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
     </ul>
 </div>
 <!-- [ Layout sidenav ] End -->

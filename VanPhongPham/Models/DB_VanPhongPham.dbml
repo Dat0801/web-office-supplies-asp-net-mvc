@@ -123,6 +123,7 @@
       <Column Name="shipping_fee" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="total_amount" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="order_status_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="payment_status_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="cancellation_requested" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="cancellation_reason" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
@@ -131,6 +132,7 @@
       <Association Name="user_order1" Member="user1" ThisKey="employee_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
       <Association Name="order_status_order" Member="order_status" ThisKey="order_status_id" OtherKey="order_status_id" Type="order_status" IsForeignKey="true" />
       <Association Name="payment_method_order" Member="payment_method" ThisKey="method_id" OtherKey="method_id" Type="payment_method" IsForeignKey="true" />
+      <Association Name="payment_status_order" Member="payment_status" ThisKey="payment_status_id" OtherKey="payment_status_id" Type="payment_status" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.payment_methods" Member="payment_methods">
@@ -138,6 +140,13 @@
       <Column Name="method_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="method_name" Type="System.String" DbType="NVarChar(30) NOT NULL" CanBeNull="false" />
       <Association Name="payment_method_order" Member="orders" ThisKey="method_id" OtherKey="method_id" Type="order" />
+    </Type>
+  </Table>
+  <Table Name="dbo.payment_status" Member="payment_status">
+    <Type Name="payment_status">
+      <Column Name="payment_status_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="payment_status_name" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Association Name="payment_status_order" Member="orders" ThisKey="payment_status_id" OtherKey="payment_status_id" Type="order" />
     </Type>
   </Table>
   <Table Name="dbo.product_attribute_values" Member="product_attribute_values">

@@ -97,7 +97,7 @@ create table users
 	email nvarchar(max),
 	gender nvarchar(50),
 	dob date,
-	avt_url nvarchar(max),
+	avt_url nvarchar(max),	
 	password varchar(32),
 	status bit default 0
 )
@@ -136,7 +136,11 @@ create table order_status
 	order_status_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
 	order_status_name NVARCHAR(255) NOT NULL
 )
-
+create table payment_status
+(
+	payment_status_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	payment_status_name NVARCHAR(255) NOT NULL
+)
 create table orders
 (
 	order_id varchar(10) not null,
@@ -150,6 +154,7 @@ create table orders
 	shipping_fee float,
 	total_amount float default 0,
 	order_status_id int not null,
+	payment_status_id int not null,
 	cancellation_requested int default 0,
 	cancellation_reason nvarchar(255),
 	created_at datetime default getdate(),
@@ -296,6 +301,10 @@ foreign key (method_id) references payment_methods(method_id);
 alter table orders
 add constraint FK_Orders_OrderStatus
 foreign key (order_status_id) references order_status(order_status_id);
+
+alter table orders
+add constraint FK_Orders_PaymentStatus
+foreign key (payment_status_id) references payment_status(payment_status_id);
 
 alter table order_details
 add constraint FK_OrderDetails_Orders
@@ -449,7 +458,7 @@ BEGIN
 END;
 GO
 
---Trigger cập nhật số lượng sản phẩm đã bán khi trạng thái đơn hàng thay đổi thành "Chờ giao hàng".
+--Trigger cập nhật số lượng sản phẩm đã bán khi trạng thái đơn hàng thay đổi thành "Hoàn thành".
 CREATE TRIGGER trg_UpdateProductSoldOnOrderStatus
 ON orders
 AFTER UPDATE
@@ -463,7 +472,7 @@ BEGIN
         FROM products p
         INNER JOIN order_details od ON p.product_id = od.product_id
         INNER JOIN inserted i ON od.order_id = i.order_id
-        WHERE i.order_status_id = 2; 
+        WHERE i.order_status_id = 3; 
     END
 END;
 GO
@@ -542,6 +551,27 @@ BEGIN
 END;
 
 GO
+
+-- Trigger tính avgRating cho products
+CREATE TRIGGER trg_UpdateAvgRating
+ON product_review
+AFTER INSERT
+AS
+BEGIN
+    -- Nếu xảy ra bất kỳ lỗi nào, bỏ qua trigger
+    SET NOCOUNT ON;
+
+    -- Cập nhật avgRating cho các sản phẩm bị đánh giá mới
+    UPDATE products
+    SET avgRating = (
+        SELECT AVG(CAST(rating AS FLOAT))
+        FROM product_review
+        WHERE product_review.product_id = products.product_id
+    )
+    WHERE product_id IN (SELECT DISTINCT product_id FROM inserted);
+END;
+GO
+
 
 -- Trigger tính toán tổng số tiền của một đơn hàng.
 CREATE TRIGGER trg_CalculateOrderTotalAmount
@@ -745,6 +775,12 @@ VALUES
 (N'Chờ giao hàng'),
 (N'Hoàn thành'),
 (N'Đã hủy')
+
+INSERT INTO payment_status (payment_status_name)
+VALUES
+(N'Chưa thanh toán'),
+(N'Đã thanh toán'),
+(N'Đã hoàn tiền')
 
 INSERT INTO users (user_id, full_name, username)
 VALUES

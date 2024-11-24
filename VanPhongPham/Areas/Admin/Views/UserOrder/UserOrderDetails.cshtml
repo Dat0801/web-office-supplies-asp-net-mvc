@@ -127,7 +127,7 @@
                 <tr class="text-center">
                     <th>STT</th>
                     <th>Sản phẩm</th>
-                    <th>Tên</th>
+                    <th></th>
                     <th>Số lượng</th>
                     <th>Đơn giá</th>
                     <th>Thành tiền</th>
@@ -154,7 +154,22 @@
                         <td class="align-middle">
                             <img src="@Model.OrderDetails[i].ImageUrl" alt="Ảnh sản phẩm" style="width: 80px; height: auto;">
                         </td>
-                        <td class="align-middle">@Model.OrderDetails[i].ProductName</td>
+                        <td class="align-middle" style="
+                            display: flex;
+                            justify-content: left;
+                            align-items: center;
+                            width: 500px;
+                            height: 100px;  /* Đặt chiều cao cho td nếu cần */
+                            text-align: center;">
+                            <div style="
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                max-width: 100%; /* Hoặc bất kỳ giá trị nào bạn muốn cho chiều rộng */
+                                display: block;">
+                                @Model.OrderDetails[i].ProductName
+                            </div>
+                        </td>
                         <td class="align-middle">@Model.OrderDetails[i].Quantity</td>
 
                         @if (Model.OrderDetails[i].Promotion_Price == 0)

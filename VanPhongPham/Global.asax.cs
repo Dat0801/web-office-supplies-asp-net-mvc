@@ -20,7 +20,7 @@ namespace VanPhongPham
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             VanPhongPham.Services.FirebaseService.Initialize();
 
-            GlobalConfiguration.Configuration.UseSqlServerStorage(ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString3"].ConnectionString);
+            GlobalConfiguration.Configuration.UseSqlServerStorage(ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString1"].ConnectionString);
 
             // Cập nhật công việc lặp lại mỗi 2 phút một lần sử dụng RecurringJobOptions
             RecurringJob.AddOrUpdate<OrderUpdater>(
