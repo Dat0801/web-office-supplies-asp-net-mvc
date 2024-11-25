@@ -47,7 +47,6 @@ async function saveProduct(productId = null) {
         const imagePreview = document.getElementById('imagePreview');
         mainImageUrl = imagePreview.src; // Lưu trữ URL của ảnh cũ
     }
-
     formData.append("mainImageUrl", mainImageUrl);
 
     // Xử lý hình ảnh phụ
@@ -82,10 +81,10 @@ async function saveProduct(productId = null) {
             }
         }
     }
+    console.log(additionalImages);
 
     // Thêm danh sách URL hình ảnh phụ vào FormData
     formData.append("additionalImageUrlsJson", JSON.stringify(additionalImageUrls));
-
     try {
         const response = await fetch(productId ? '/Product/UpdateProduct' : '/Product/AddProduct', {
             method: 'POST',

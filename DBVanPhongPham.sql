@@ -690,7 +690,23 @@ VALUES
 Đặc điểm:</strong></p><p>- Ruột chì mềm, nét đậm, ít bột chì<br>- Thân gỗ mềm dễ chuốt<br>- 
 Bền đẹp không gãy chì<br>- Bút dùng để viết, vẽ phác thảo trên giấy tập học sinh, sổ tay, giấy photocopy, gỗ hoặc giấy vẽ chuyên dụng<br>- Lướt rất nhẹ nhàng trên bề mặt viết<br>- Dùng để đánh bóng các bức vẽ, đạt đến nhiều mức độ sáng tối khác nhau. 
 Ngoài ra khá hữu dụng trong việc tô đậm vào ô trả lời trắc nghiệm nhanh nhất.<br>- Thân lục giác, 5B.<br>- Thân bút được thiết kế hiện đại với họa tiết xoắn quanh bút cho cây bút sinh động và thu hút</p><p><strong>Bảo quản:</strong></p><p>- Tránh va đập mạnh làm gãy chì.<br>- Tránh xa nguồn nhiệt .</p>', 0, 1.5, 0, 0, 1),
-('PRO004', 'CAT003', N'Máy tính văn phòng Thiên Long Flexio CAL-011', N'<p><strong>Đặc tính sản phẩm:</strong></p><p>- Máy tính văn phòng CAL-011 đa năng này phù hợp sử dụng tại nhà, trường học, văn phòng hoặc cửa hàng. Sự kết hợp chip xử lý và mạch điều khiển công nghệ hiện đại đưa ra những kết quả phép tính đáng tin cậy, nhanh chóng đáp ứng tốt cho mục đích cá nhân hoặc chuyên nghiệp.&nbsp;</p><p>- Thiết kế nhỏ gọn và di động, bạn có thể dễ dàng mang theo bất cứ mọi nơi.&nbsp;</p><p>- Bộ vỏ nguyên liệu ABS cao cấp, bền và sử dụng thiết kế thân thiện, máy tính văn phòng CAL-011 cung cấp sự tiện lợi và hiệu quả trong tất cả các nhu cầu tính toán.</p>', 0, 1.5, 0, 0, 1)
+('PRO004', 'CAT003', N'Máy tính văn phòng Thiên Long Flexio CAL-011', 
+N'<p><strong>Đặc tính sản phẩm:</strong></p><p>- Máy tính văn phòng CAL-011 đa năng này phù hợp sử dụng tại nhà, trường học, văn phòng hoặc cửa hàng. Sự kết hợp chip xử lý và mạch điều khiển công nghệ hiện đại đưa ra những kết quả phép tính đáng tin cậy, nhanh chóng đáp ứng tốt cho mục đích cá nhân hoặc chuyên nghiệp.&nbsp;</p><p>- 
+Thiết kế nhỏ gọn và di động, bạn có thể dễ dàng mang theo bất cứ mọi nơi.&nbsp;</p><p>- Bộ vỏ nguyên liệu ABS cao cấp, bền và sử dụng thiết kế thân thiện, máy tính văn phòng CAL-011 cung cấp sự tiện lợi và hiệu quả trong tất cả các nhu cầu tính toán.</p>', 0, 1.5, 0, 0, 1),
+('PRO005', 'CAT001', N'Combo 20 bút bi FlexOffice FO-023 mực đen', N'<p>BÚT BI SNAPE FO-023 là sản phẩm do Tập đoàn Thiên Long sản xuất, mang nhãn hiệu FlexOffice. Sản phẩm được sản xuất theo công nghệ hiện đại, kiểu dáng phù hợp cho đối tượng học sinh, nhân viên văn phòng, sinh viên , giáo viên…</p><p>Những đặc điểm nổi bật của bút bi FO-023:</p><p>- Bút bi FO-023 được sản xuất theo công nghệ mới.<br>- Nét viết trơn, êm, mực ra đều và liên tục.<br>- Dạng bút bi cửa sổ bấm. Nút bấm và lò xo rất nhạy và bền, không bung, không kẹt, không tự rơi ra ngoài của sổ bấm.<br>- Công nghệ Smooth writing tiên tiến , viết trơn , êm , mực ra đều liên tục<br>- Đầu bi 0.7mm, viết trơn êm, màu mực đậm tươi, mực ra đều và liên tục.<br>- Thiết kế đẹp, đơn giản , rất chắc chắn , dễ cầm và chắc tay</p>', 0, 1.5, 0, 0, 1),
+('PRO006', 'CAT001', N'Combo 20 Bút bi Thiên Long TL 048', N'<p>Bút có thiết kế thân tròn to, tạo cảm giác khỏe, chắc chắn.Thân bút làm từ nhựa trong có pha màu. Giắt bút bằng kim loại mạ crom sáng bóng. Tảm có đệm mềm (grip) giúp cầm êm tay và giảm trơn trợt khi viết.</p><p><strong>Đặc điểm:</strong></p><p>- Bút bi dạng bấm khế, có Grip.</p><p><strong>Lợi ích:</strong></p><p>- Đệm mềm (Grip) giúp êm tay và chống trơn tuột khi viết thường xuyên.<br>- Kiểu dáng hiện đại, sang trọng, sản phẩm phù hợp cho sinh viên, giáo viên và nhân viên văn phòng.<br>- Thay ruột khi hết mực.</p>', 0, 1.5, 0, 0, 1),
+('PRO007', 'CAT001', N'Combo 20 Bút bi Thiên Long TL 093', N'<p>Bút có cấu tạo khác hoàn toàn với các dạng bút truyền thống. Mực được bơm thẳng vào thân bút để sử dụng.Bút đùn là dạng bút không ruột, mực được bơm thẳng vào vỏ bút (hay nói cách khác là ruột bút cũng chính là thân bút). Chính vì thế mà trọng lượng của bút nhẹ hơn, phù hợp những người cần viết nhiều, tốc ký, ít gây mỏi tay.</p><p>Thân bút bằng nhựa trắng đục pha màu dạng sọc thẳng.Nắp bút bằng nhựa trong. Nét chữ thanh mảnh, sắc nét, gọn gàng.&nbsp;</p>', 0, 1.5, 0, 0, 1),
+('PRO008', 'CAT001', N'Combo 20 Bút Bi Thiên Long TL 036', N'<p>Bút sử dụng cơ cấu bấm, thân tròn và chắc chắn.Thân bút làm từ nhựa màu đục. Giắt bút bằng kim loại mạ crom sáng bóng. Tảm có đệm mềm (grip) giúp cầm êm tay và giảm trơn trượt khi viết. Đầu bút dạng cone , 0.7mm sản xuất tại Thụy Sĩ.</p><p>Đặc điểm:</p><p>- Bút bi dạng bấm khế, có grip.</p><p><strong>Lợi ích:</strong></p><p>- Grip giúp êm tay và giảm trơn tuột khi viết thường xuyên.<br>- Giắt được làm bằng kim loại, tảm và nút xi kim loại sáng bóng tạo sự sang trọng.<br>- Sản phẩm phù hợp cho sinh viên, giáo viên và giới văn phòng.<br>- Thiết kế trẻ trung kiểu dáng mạnh mẽ</p><p><strong>Bảo quản:</strong></p><p>- Nhiệt độ: 10 ~ 55º C.<br>- Độ ẩm: 55 ~ 95% RH.</p>', 0, 1.5, 0, 0, 1),
+('PRO009', 'CAT002', N'Combo 20 Bút chì mỹ thuật Thiên Long 4B GP-023', N'<p>Bút chì mỹ thuật Thiên Long 4B GP-023 thích hợp cho các hoạt động như ghi chép, vẽ nháp, học tập.</p><p><strong>Đặc điểm:</strong></p><p>- Ruột chì mềm, nét đậm, ít bột chì<br>- Thân gỗ mềm dễ chuốt<br>- Bền đẹp không gãy chì<br>- Bút dùng để viết, vẽ phác thảo trên giấy tập học sinh, sổ tay, giấy photocopy, gỗ hoặc giấy vẽ chuyên dụng<br>- Lướt rất nhẹ nhàng trên bề mặt viết<br>- Dùng để đánh bóng các bức vẽ, đạt đến nhiều mức độ sáng tối khác nhau. Ngoài ra khá hữu dụng trong việc tô đậm vào ô trả lời trắc nghiệm nhanh nhất.<br>- Thân lục giác, 4B.<br>- Thân bút được thiết kế hiện đại với họa tiết xoắn quanh bút cho cây bút sinh động và thu hút</p><p><strong>Bảo quản:</strong></p><p>- Tránh va đập mạnh làm gãy chì.<br>- Tránh xa nguồn nhiệt .</p>', 0, 1.5, 0, 0, 1),
+('PRO010', 'CAT002', N'Combo 20 Bút chì mỹ thuật Thiên Long 3B GP-022', N'<p>Bút chì mỹ thuật Thiên Long 3B GP-022 thích hợp cho các hoạt động như ghi chép, vẽ nháp, học tập.</p><p><strong>Đặc điểm:</strong></p><p>- Ruột chì mềm, nét đậm, ít bột chì<br>- Thân gỗ mềm dễ chuốt<br>- Bền đẹp không gãy chì<br>- Bút dùng để viết, vẽ phác thảo trên giấy tập học sinh, sổ tay, giấy photocopy, gỗ hoặc giấy vẽ chuyên dụng<br>- Lướt rất nhẹ nhàng trên bề mặt viết<br>- Dùng để đánh bóng các bức vẽ, đạt đến nhiều mức độ sáng tối khác nhau. Ngoài ra khá hữu dụng trong việc tô đậm vào ô trả lời trắc nghiệm nhanh nhất.<br>- Thân lục giác, 3B.<br>- Thân bút được thiết kế hiện đại với họa tiết xoắn quanh bút cho cây bút sinh động và thu hút</p><p><strong>Bảo quản:</strong></p><p>- Tránh va đập mạnh làm gãy chì.<br>- Tránh xa nguồn nhiệt .</p>', 0, 1.5, 0, 0, 1),
+('PRO011', 'CAT002', N'Combo 20 Bút chì gỗ cao cấp Bizner BIZ-P03', N'<p>Hiện nay, Bút chì gỗ cao cấp Thiên Long - Bizner BIZ-P03 đang dần trở nên gần gũi đối với các bạn học sinh, nhất là dùng trong môn học vẽ, hình học, phác thảo, tốc ký,&nbsp; thi trắc nghiệm... Nó là dụng cụ không thể thiếu với các nhà thiết kế, nhân viên văn phòng chuyên về các hoạt động sáng tạo và cho nhiều mục đích cá nhân khác.</p><p><strong>Đặc điểm:</strong></p><p>- Bút chì thuộc dòng bút cao cấp Bizner</p><p>- Thiết kế đơn giản nhưng tinh tế và sang trọng.</p><p>- Độ cứng ruột chì: H - cho nét vẽ sắc nét, viết trơn êm, nét viết ra đều.</p><p>- Thân bút hình lục giác, dễ cầm, không trơn, không mỏi tay khi cầm viết lâu</p><p>- Thích hợp cho phác thảo và tốc ký</p><p><strong>Bảo quản:</strong></p><p>- Hạn chế rơi nhiều lần,&nbsp;va đập mạnh khi vận chuyển và sử dụng.<br>- Lưu trữ và trưng bày nơi thoáng mát.<br>- Tránh xa nguồn nhiệt và những nơi có ánh nắng trực tiếp chiếu vào.</p>', 0, 1.5, 0, 0, 1),
+('PRO012', 'CAT002', N'Combo 20 Bút chì bấm Thiên Long PC-024', N'<p>Thuộc loại bút chì bấm mang thương hiệu Thiên Long. Bút chì bấm Thiên Long PC-024 cóchất lượng bền bỉ, đáng tin cậy. Thiết kế hiện đại, các chi tiết sắc xảo và tinh tế.</p><p><strong>Đặc điểm :</strong></p><p>- Bút có trang bị gôm ở đuôi bút, tiện lợi và dễ dàng sử dụng.<br>- Min chì cứng, khó gãy, nét viết thanh mảnh, sắc nét.<br>- Ngòi bút HB 0.5mm<br>- Giắt bút chắc chắn thuận tiện cho việc gài lên túi áo hoặc lên sổ tay</p><p><strong>Bảo quản:</strong></p><p>- Tránh va đập mạnh làm gãy chì.<br>- Tránh xa nguồn nhiệt.</p>', 0, 1.5, 0, 0, 1),
+('PRO013', 'CAT002', N'Combo 20 Bút chì gỗ Thiên Long GP-03', N'<p>Bút chì gỗ Thiên Long TP GP-03 thích hợp cho các hoạt động như ghi chép, vẽ nháp, học tập.</p><p><strong>Đặc điểm:</strong></p><p>- Nét đậm, để lại nhiều than chì trên giấy<br>- Lướt rất nhẹ nhàng trên bề mặt viết<br>- Dùng để đánh bóng các bức vẽ, đạt đến nhiều mức độ sáng tối khác nhau. Ngoài ra khá hữu dụng trong việc tô đậm vào ô trả lời trắc nghiệm nhanh nhất.<br>- Thân lục giác, 2B.</p><p><strong>Lưu trữ &amp; bảo quản:</strong></p><p>- Hạn chế rơi nhiều lần,&nbsp;va đập mạnh khi vận chuyển và sử dụng.<br>- Lưu trữ và trưng bày nơi thoáng mát.<br>- Tránh xa nguồn nhiệt và những nơi có ánh nắng trực tiếp chiếu vào.</p>', 0, 1.5, 0, 0, 1),
+('PRO014', 'CAT003', N'Máy tính văn phòng Thiên Long Flexio CAL-010', N'<p><strong>Đặc tính sản phẩm:</strong></p><p>- Máy tính văn phòng CAL-010 đa năng này phù hợp sử dụng tại nhà, trường học, văn phòng hoặc cửa hàng. Sự kết hợp chip xử lý và mạch điều khiển công nghệ hiện đại đưa ra những kết quả phép tính đáng tin cậy, nhanh chóng đáp ứng tốt cho mục đích cá nhân hoặc chuyên nghiệp.&nbsp;</p><p>- Ngoài phép tính cơ bản. máy tính văn phòng CAL-010 còn có chức năng tính Thuế (TAX -, TAX+).&nbsp;</p><p>- Kiểu dáng thiết kế hiện đại thân thiện người dùng.&nbsp;</p><p>- Bộ vỏ nguyên liệu ABS cao cấp, bền và sử dụng thiết kế thân thiện, máy tính văn phòng CAL-10 cung cấp sự tiện lợi và hiệu quả trong tất cả các nhu cầu tính toán.</p>', 0, 1.5, 0, 0, 1),
+('PRO015', 'CAT003', N'Máy tính văn phòng Thiên Long Flexio CAL-009', N'<p><strong>Đặc tính sản phẩm:</strong></p><p>- Máy tính văn phòng CAL-009 đa năng này phù hợp sử dụng tại nhà, trường học, văn phòng hoặc cửa hàng. Sự kết hợp chip xử lý và mạch điều khiển công nghệ hiện đại đưa ra những kết quả phép tính đáng tin cậy, nhanh chóng đáp ứng tốt cho mục đích cá nhân hoặc chuyên nghiệp.&nbsp;</p><p>- Thiết kế nhỏ gọn và di động, bạn có thể dễ dàng mang theo bất cứ mọi nơi.&nbsp;</p><p>- Bộ vỏ nguyên liệu ABS cao cấp, bền và sử dụng thiết kế thân thiện, máy tính văn phòng CAL-009 cung cấp sự tiện lợi và hiệu quả trong tất cả các nhu cầu tính toán.</p>', 0, 1.5, 0, 0, 1),
+('PRO016', 'CAT003', N'Máy tính văn phòng Thiên Long Flexio CAL-008', N'<p><strong>Đặc tính sản phẩm:</strong></p><p>- Máy tính văn phòng CAL-008 đa năng này phù hợp sử dụng tại nhà, trường học, văn phòng hoặc cửa hàng. Sự kết hợp chíp xử lý và mạch điều khiển công nghệ hiện đại đưa ra những kết quả phép tính đáng tin cậy, nhanh chóng đáp ứng tốt cho mục đích cá nhân hoặc chuyên nghiệp.&nbsp;</p><p>- Nhỏ gọn và di động, bạn có thể dễ dàng mang theo bất cứ mọi nơi.&nbsp;</p><p>- Bộ vỏ nguyên liệu ABS cao cấp, bền và sử dụng thiết kế thân thiện, máy tính văn phòng CAL-008 cung cấp sự tiện lợi và hiệu quả trong tất cả các nhu cầu tính toán.</p>', 0, 1.5, 0, 0, 1),
+('PRO017', 'CAT003', N'Máy tính văn phòng Thiên Long Flexio CAL-007', N'<p><strong>Đặc tính sản phẩm:</strong></p><p>- Máy tính văn phòng CAL-007 đa năng này phù hợp sử dụng tại nhà, trường học, văn phòng hoặc cửa hàng.&nbsp;</p><p>- Sự kết hợp chip xử lý và mạch điều khiển công nghệ hiện đại đưa ra những kết quả phép tính đáng tin cậy, nhanh chóng đáp ứng tốt cho mục đích cá nhân hoặc chuyên nghiệp.&nbsp;</p><p>- Nhỏ gọn và di động, bạn có thể dễ dàng mang theo bất cứ mọi nơi.&nbsp;</p><p>- Bộ vỏ nguyên liệu ABS cao cấp, bền và sử dụng thiết kế thân thiện, máy tính văn phòng CAL-007 cung cấp sự tiện lợi và hiệu quả trong tất cả các nhu cầu tính toán.</p>', 0, 1.5, 0, 0, 1),
+('PRO018', 'CAT003', N'Máy tính Flexoffice FLEXIO CAL-05P', N'<p><strong>Tính năng nổi bật:</strong></p><p>• Mẫu mã đẹp. Sản phẩm được thiết kế nhỏ gọn, vừa tay cầm tạo cảm giác vừa thoải mái vừa chắc chắn và thuận tiện khi sử dụng.</p><p>• Các phím bấm được thiết kế rộng, làm từ nhựa ABS giúp thao tác nhanh và chính xác.</p><p>• Bề mặt kim loại sáng bóng.</p><p>• Màn hình LCD rộng và sáng, hiển thị số rõ nét. Màn hình thiết kế nghiêng dễ nhìn, được làm bằng chất liệu Acrylic, hiển thị 12 chữ số.</p><p>• Bao bì làm bằng chất liệu giấy cao cấp, sang trọng, thiết kế đẹp.</p>', 0, 1.5, 0, 0, 1)
 
 INSERT INTO attributes (attribute_id, attribute_name)
 VALUES ('ATT001', N'Thương hiệu'),
@@ -717,7 +733,21 @@ VALUES ('VAL001', 'ATT001', N'Thiên Long'),
 ('VAL011', 'ATT001', N'Flexio'),
 ('VAL012', 'ATT007', N'LCD'),
 ('VAL013', 'ATT008', N'ABS'),
-('VAL014', 'ATT009', N'AAA (1.55V)');
+('VAL014', 'ATT009', N'AAA (1.55V)'),
+('VAL015', 'ATT004', '218 gram'),
+('VAL016', 'ATT001', 'Flexoffice'),
+('VAL017', 'ATT004', '20 gram'),
+('VAL018', 'ATT005', '1.0 mm'),
+('VAL019', 'ATT005', '0.6 mm'),
+('VAL020', 'ATT005', '0.7 mm'),
+('VAL021', 'ATT005', '11 gram'),
+('VAL022', 'ATT006', '4B'),
+('VAL023', 'ATT006', '3B'),
+('VAL024', 'ATT004', '7 gram'),
+('VAL025', 'ATT001', N'Bizner'),
+('VAL026', 'ATT004', '100 gram'),
+('VAL027', 'ATT006', '2B'),
+('VAL028', 'ATT004', '123 gram')
 
 INSERT INTO product_attribute_values (product_id, attribute_value_id)
 VALUES ('PRO001', 'VAL001'),
@@ -736,11 +766,65 @@ VALUES ('PRO001', 'VAL001'),
 ('PRO002', 'VAL007'),
 ('PRO003', 'VAL008'),
 ('PRO003', 'VAL009'),
-('PRO003', 'VAL011'),
-('PRO004', 'VAL008'),
+('PRO003', 'VAL001'),
+('PRO004', 'VAL011'),
 ('PRO004', 'VAL012'),
 ('PRO004', 'VAL013'),
-('PRO004', 'VAL014');
+('PRO004', 'VAL014'),
+('PRO004', 'VAL015'),
+('PRO005', 'VAL016'),
+('PRO005', 'VAL005'),
+('PRO005', 'VAL008'),
+('PRO006', 'VAL001'),
+('PRO006', 'VAL018'),
+('PRO006', 'VAL010'),
+('PRO006', 'VAL017'),
+('PRO007', 'VAL001'),
+('PRO007', 'VAL008'),
+('PRO007', 'VAL005'),
+('PRO007', 'VAL019'),
+('PRO008', 'VAL001'),
+('PRO008', 'VAL020'),
+('PRO008', 'VAL005'),
+('PRO008', 'VAL021'),
+('PRO009', 'VAL001'),
+('PRO009', 'VAL022'),
+('PRO009', 'VAL010'),
+('PRO009', 'VAL008'),
+('PRO010', 'VAL001'),
+('PRO010', 'VAL023'),
+('PRO010', 'VAL010'),
+('PRO010', 'VAL008'),
+('PRO011', 'VAL024'),
+('PRO011', 'VAL025'),
+('PRO011', 'VAL010'),
+('PRO012', 'VAL001'),
+('PRO012', 'VAL026'),
+('PRO012', 'VAL010'),
+('PRO013', 'VAL001'),
+('PRO013', 'VAL024'),
+('PRO013', 'VAL027'),
+('PRO013', 'VAL010'),
+('PRO014', 'VAL011'),
+('PRO014', 'VAL012'),
+('PRO014', 'VAL013'),
+('PRO014', 'VAL015'),
+('PRO015', 'VAL011'),
+('PRO015', 'VAL012'),
+('PRO015', 'VAL013'),
+('PRO015', 'VAL015'),
+('PRO016', 'VAL011'),
+('PRO016', 'VAL012'),
+('PRO016', 'VAL013'),
+('PRO016', 'VAL015'),
+('PRO016', 'VAL014'),
+('PRO017', 'VAL011'),
+('PRO017', 'VAL012'),
+('PRO017', 'VAL013'),
+('PRO017', 'VAL015'),
+('PRO017', 'VAL014'),
+('PRO018', 'VAL016'),
+('PRO018', 'VAL028')
 
 INSERT INTO images (product_id, image_url, is_primary)
 VALUES
@@ -755,7 +839,37 @@ VALUES
 ('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731053976/ookezmryr9dg2d6kwmsb.webp', 1),
 ('PRO003', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731054041/cskuxusg6kbrllcsl6x9.jpg', 0),
 ('PRO004', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731055234/u4oje3oyhrzadlw9glms.webp', 1),
-('PRO004', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731055235/sn45tefezfkholxonrip.webp', 0);
+('PRO004', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1731055235/sn45tefezfkholxonrip.webp', 0),
+('PRO005', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732432392/x1khnbva94fh1lz5fewb.webp', 1),
+('PRO005', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732432394/k7dfx7j38sxok2fcelea.webp', 0),
+('PRO006', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732434735/quvdfmps9w6ydwwsxmfy.webp', 1),
+('PRO006', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732434737/ov3hm1izy6htszwdtoin.webp', 0),
+('PRO007', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732435616/qdsbblbee0ceyprmlnox.webp', 1),
+('PRO007', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732435620/jbe6oopdhuymwrwumiuq.webp', 0),
+('PRO007', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732435622/u4vdoq1ojjt6u9wbohdj.webp', 0),
+('PRO008', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732436894/xxmmwse886mssyaeap8b.jpg', 1),
+('PRO008', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732436895/sjcuccvck97nua9iczn6.webp', 0),
+('PRO008', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732436896/oficgzacncbinwzqqz60.webp', 0),
+('PRO009', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732437884/ud7zjvlc7lbdlct3nomj.webp', 1),
+('PRO009', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732437886/m8npz5jhnv3ejysegkya.webp', 0),
+('PRO010', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732439040/aag5k487gtqutbltzcmk.webp', 1),
+('PRO010', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732439041/pwdj13bo3buez84pid0y.webp', 0),
+('PRO011', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732447857/u2hhdutjwtkqpjdgzrvi.webp', 1),
+('PRO011', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732447858/eylw5u6ulepxqjs85oya.webp', 0),
+('PRO012', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732449803/nuznmjusaqvcf3ib2pyk.webp', 1),
+('PRO012', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732449804/m4eshjdhemkziankfkav.webp', 0),
+('PRO013', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732450879/vv1nuzhyf6yykshtzjgd.webp', 1),
+('PRO013', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732450881/on7us2ri5vyey4kjzf5s.webp', 0),
+('PRO014', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732452189/nfalxf7n0zuqviiytirw.webp', 1),
+('PRO014', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732452193/p1whx9nqr5arwnoafhmd.jpg', 0),
+('PRO015', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732452947/ikmsxjxhpaabbx7s55co.webp', 1),
+('PRO015', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732452948/k9dexvwyimrzsxc8y3tc.webp', 0),
+('PRO016', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732454001/lrtc5saja3q541ebagtw.webp', 1),
+('PRO016', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732454003/vzwkhdlz61tjaxo5pbs8.webp', 0),
+('PRO017', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732456670/zc8abah7azzsmmrc2kt2.webp', 1),
+('PRO017', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732456672/xpcppsc7khf84ptzpief.webp', 0),
+('PRO018', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732456991/nyr8dca5uxtsjvtnw3nj.webp', 1),
+('PRO018', 'https://res.cloudinary.com/dvpzullxc/image/upload/v1732456992/j1kx8dios3e3dsrseuph.webp', 0)
 
 INSERT INTO roles (role_name, description)
 VALUES
@@ -798,22 +912,73 @@ WHERE username = 'qwe';
 
 INSERT INTO purchase_order (purchase_order_id, supplier_id, employee_id)
 VALUES
-('POD001', 'SUP001', 'ADMIN001')
+('POD001', 'SUP001', 'ADMIN001'),
+('POD002', 'SUP002', 'ADMIN001')
 
 INSERT INTO purchase_order_detail
 VALUES
-('POD001', 'PRO001', 100, 3500, 0),
+('POD001', 'PRO001', 100, 4500, 0),
 ('POD001', 'PRO002', 80, 4000, 0),
-('POD001', 'PRO003', 70, 14000, 0),
-('POD001', 'PRO004', 60, 55000, 0)
+('POD001', 'PRO003', 70, 110000, 0),
+('POD001', 'PRO004', 60, 95000, 0),
+('POD001', 'PRO005', 50, 80000, 0),
+('POD002', 'PRO006', 40, 400000, 0),
+('POD002', 'PRO007', 50, 60000, 0),
+('POD002', 'PRO008', 60, 200000, 0),
+('POD002', 'PRO009', 60, 100000, 0),
+('POD002', 'PRO010', 60, 100000, 0),
+('POD002', 'PRO011', 60, 150000, 0),
+('POD002', 'PRO012', 60, 260000, 0),
+('POD002', 'PRO013', 60, 70000, 0),
+('POD002', 'PRO014', 60, 160000, 0),
+('POD002', 'PRO015', 60, 70000, 0),
+('POD002', 'PRO016', 60, 100000, 0),
+('POD002', 'PRO017', 60, 90000, 0),
+('POD002', 'PRO018', 60, 160000, 0)
 
 INSERT INTO receipts (receipt_id, purchase_order_id, entry_count)
 VALUES 
-('REC001', 'POD001', 1)
+('REC001', 'POD001', 1),
+('REC002', 'POD002', 1),
+('REC003', 'POD002', 2)
 
 INSERT INTO receipt_details
 VALUES
 ('REC001', 'POD001', 'PRO001', 100),
 ('REC001', 'POD001', 'PRO002', 80),
 ('REC001', 'POD001', 'PRO003', 70),
-('REC001', 'POD001', 'PRO004', 60)
+('REC001', 'POD001', 'PRO004', 60),
+('REC001', 'POD001', 'PRO005', 50),
+('REC002', 'POD002', 'PRO006', 20),
+('REC002', 'POD002', 'PRO007', 30),
+('REC002', 'POD002', 'PRO008', 30),
+('REC002', 'POD002', 'PRO009', 30),
+('REC002', 'POD002', 'PRO010', 30),
+('REC002', 'POD002', 'PRO011', 30),
+('REC002', 'POD002', 'PRO012', 30),
+('REC002', 'POD002', 'PRO013', 30),
+('REC002', 'POD002', 'PRO014', 30),
+('REC002', 'POD002', 'PRO015', 30),
+('REC002', 'POD002', 'PRO016', 30),
+('REC002', 'POD002', 'PRO017', 30),
+('REC002', 'POD002', 'PRO018', 30)
+
+INSERT INTO receipt_details
+VALUES
+('REC003', 'POD002', 'PRO006', 20),
+('REC003', 'POD002', 'PRO007', 20),
+('REC003', 'POD002', 'PRO008', 30),
+('REC003', 'POD002', 'PRO009', 30),
+('REC003', 'POD002', 'PRO010', 30),
+('REC003', 'POD002', 'PRO011', 30),
+('REC003', 'POD002', 'PRO012', 30),
+('REC003', 'POD002', 'PRO013', 30),
+('REC003', 'POD002', 'PRO014', 30),
+('REC003', 'POD002', 'PRO015', 30),
+('REC003', 'POD002', 'PRO016', 30),
+('REC003', 'POD002', 'PRO017', 30),
+('REC003', 'POD002', 'PRO018', 30)
+
+
+
+

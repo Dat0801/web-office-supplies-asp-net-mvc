@@ -32,7 +32,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 ViewBag.Message = message;
                 ViewBag.MessageType = messageType;
             }
-            int pageSize = 5;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
             List<product> listProduct;
             if (search_str != null)
@@ -43,6 +43,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             else if (category_name != null)
             {
                 listProduct = productRepository.GetProductByCategoryName(category_name);
+                ViewBag.category_name = category_name;
             }
             else
             {
@@ -235,7 +236,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 ViewBag.Message = message;
                 ViewBag.MessageType = messageType;
             }
-            int pageSize = 5;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
             List<category> listCategory;
             if (category_id != null)
@@ -392,7 +393,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 ViewBag.Message = message;
                 ViewBag.MessageType = messageType;
             }
-            int pageSize = 5;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
             List<attribute> listAttribute;
             if (attribute_id != null)
@@ -546,7 +547,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 ViewBag.Message = message;
                 ViewBag.MessageType = messageType;
             }
-            int pageSize = 5;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
             List<attribute_value> listAttributeValue;
             ViewBag.attributes = productRepository.GetAttributes();

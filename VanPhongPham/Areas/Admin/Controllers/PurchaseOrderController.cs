@@ -36,7 +36,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 ViewBag.Message = message;
                 ViewBag.MessageType = messageType;
             }
-            int pageSize = 5;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
             List<purchase_order> purchase_Orders;
             if (search_str != null)
@@ -53,7 +53,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
         public ActionResult Detail(int? page, string purchase_order_id)
         {
-            int pageSize = 5;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
             List<purchase_order_detail> purchase_Order_Details = purchaseOrderRepository.GetPurchaseOrderDetails(purchase_order_id);
             return View(purchase_Order_Details.ToPagedList(pageNumber, pageSize));
@@ -72,20 +72,28 @@ namespace VanPhongPham.Areas.Admin.Controllers
         [HttpPost]
         public ActionResult Create(purchase_order order, List<purchase_order_detail> orderDetails)
         {
-            var result = purchaseOrderRepository.AddPurchaseOrder(order);
-            if (result)
+            if (orderDetails != null && orderDetails.Count > 0)
             {
-                foreach (var orderDetail in orderDetails)
+                var result = purchaseOrderRepository.AddPurchaseOrder(order);
+                if (result)
                 {
-                    orderDetail.purchase_order_id = order.purchase_order_id;
-                    purchaseOrderRepository.AddPurchaseOrderDetail(orderDetail);
+                    foreach (var orderDetail in orderDetails)
+                    {
+                        orderDetail.purchase_order_id = order.purchase_order_id;
+                        purchaseOrderRepository.AddPurchaseOrderDetail(orderDetail);
+                    }
+                    TempData["Message"] = "Tạo phiếu đặt thành công!";
+                    TempData["MessageType"] = "success";
                 }
-                TempData["Message"] = "Tạo phiếu đặt thành công!";
-                TempData["MessageType"] = "success";
+                else
+                {
+                    TempData["Message"] = "Tạo phiếu đặt thất bại!";
+                    TempData["MessageType"] = "danger";
+                }
             }
             else
             {
-                TempData["Message"] = "Tạo phiếu đặt thất bại!";
+                TempData["Message"] = "Không có chi tiết đơn hàng!";
                 TempData["MessageType"] = "danger";
             }
 
@@ -103,7 +111,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
         public ActionResult Receipt(int? page, string search_str)
         {
-            int pageSize = 5;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
             List<receipt> receipts;
             if (search_str != null)
@@ -120,7 +128,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
         public ActionResult ReceiptDetail(int? page, string receipt_id)
         {
-            int pageSize = 5;
+            int pageSize = 10;
             int pageNumber = (page ?? 1);
             List<receipt_detail> receipt_Details = purchaseOrderRepository.GetReceiptDetails(receipt_id);
             return View(receipt_Details.ToPagedList(pageNumber, pageSize));
