@@ -103,7 +103,7 @@
     </table>
     <div class="d-flex justify-content-center">
         <div class="pagination-container">
-            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, category_name = ViewBag.category_name, search_str = ViewBag.search_str }))
         </div>
     </div>
 </div>

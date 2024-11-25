@@ -5,13 +5,12 @@
 <div class="card mb-4">
     <h6 class="card-header">Tạo Phiếu Đặt Hàng</h6>
     <div class="card-body">
-        <form method="post" action="">
+        <form method="post" action="@Url.Action("Create", "PurchaseOrder")">
             <div class="form-row">
                 <div class="form-group col-md-4">
-                    <label for="supplier_name">Mã phiếu đặt</label>
+                    <label for="purchase_order_id">Mã phiếu đặt</label>
                     <input type="text" class="form-control" name="purchase_order_id" readonly
                            value="@(ViewBag.purchase_order_id ?? "")" />
-                    <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-4">
                     <label for="supplier_name">Tên Nhà Cung Cấp</label>
@@ -23,41 +22,50 @@
                     </select>
                 </div>
                 <div class="form-group col-md-4">
-                    <label for="supplier_name">Tên nhân viên</label>
+                    <label for="employee_name">Tên nhân viên</label>
                     <input type="text" class="form-control" name="employee_name" readonly
                            value="@(ViewBag.user.full_name ?? "")" />
                     <input type="hidden" class="form-control" name="employee_id"
                            value="@(ViewBag.user.user_id ?? "")" />
-                    <div class="clearfix"></div>
                 </div>
             </div>
+
             <div id="orderDetailsContainer">
                 <div class="order-detail">
                     <div class="form-row">
                         <div class="form-group col-md-4">
-                            <label for="product">Chọn Sản Phẩm</label>
-                            <select class="form-control" name="orderDetails[0].product_id">
-                                @foreach (var product in ViewBag.products as SelectList)
-                                {
-                                    <option value="@product.Value">@product.Text</option>
-                                }
-                            </select>
+                            <label for="productCode">Mã Sản Phẩm</label>
+                            <input type="text" class="form-control" id="productCode" placeholder="Nhập mã sản phẩm" />
                         </div>
                         <div class="form-group col-md-3">
                             <label for="quantity">Số Lượng</label>
-                            <input type="number" class="form-control" name="orderDetails[0].quantity" placeholder="Nhập số lượng" step="1" min="1" required />
-                            <div class="clearfix"></div>
+                            <input type="number" class="form-control" id="quantity" placeholder="Nhập số lượng" step="1" min="1" />
                         </div>
                         <div class="form-group col-md-3">
                             <label for="price">Giá</label>
-                            <input type="number" step="500" min="3000" class="form-control" placeholder="Nhập giá bán" name="orderDetails[0].price" />
+                            <input type="number" class="form-control" id="price" placeholder="Nhập giá bán" step="500" min="3000" />
                         </div>
-                        <div id="removeButtonContainer" class="form-group col-md-2 my-4"></div>
+                        <div class="form-group col-md-2 my-4">
+                            <button type="button" id="addProduct" class="btn btn-secondary">Thêm Sản Phẩm</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <button type="button" id="addProduct" class="btn btn-secondary">Thêm Sản Phẩm</button>
+            <table class="table table-bordered" id="orderDetailsTable">
+                <thead>
+                    <tr>
+                        <th>Mã Sản Phẩm</th>
+                        <th>Tên Sản Phẩm</th>
+                        <th>Số Lượng</th>
+                        <th>Giá</th>
+                        <th>Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
             <button type="submit" class="btn btn-primary ml-2">Tạo Phiếu Đặt</button>
             <a class="btn icon-btn btn-outline-secondary my-3 ml-2" href="@Url.Action("Index","PurchaseOrder")" title="Quay lại">
                 <i class="feather icon-corner-up-left"></i>
@@ -65,41 +73,89 @@
         </form>
     </div>
 </div>
-
 <script>
-    let orderDetailIndex = 1;
+let orderDetailIndex = 0; // Để theo dõi chỉ số của từng dòng sản phẩm
+let products = @Html.Raw(Json.Encode(ViewBag.products)); // Lấy danh sách sản phẩm từ ViewBag
 
-    document.getElementById("addProduct").addEventListener("click", function () {
-        let newOrderDetail = document.querySelector(".order-detail").cloneNode(true);
-        let select = newOrderDetail.querySelector("select");
-        let quantity = newOrderDetail.querySelector("input[name*='quantity']");
-        let price = newOrderDetail.querySelector("input[name*='price']");
+// Lắng nghe sự kiện khi nhấn nút "Thêm Sản Phẩm"
+document.getElementById("addProduct").addEventListener("click", function () {
+    // Lấy thông tin từ các ô nhập liệu
+    let productCode = document.getElementById("productCode").value;
+    let quantity = document.getElementById("quantity").value;
+    let price = document.getElementById("price").value;
 
-        // Cập nhật tên của các input theo chỉ số orderDetails[i]
-        select.name = `orderDetails[${orderDetailIndex}].product_id`;
-        quantity.name = `orderDetails[${orderDetailIndex}].quantity`;
-        price.name = `orderDetails[${orderDetailIndex}].price`;
+    // Kiểm tra xem có nhập đầy đủ thông tin không
+    if (!productCode || !quantity || !price) {
+        alert("Vui lòng nhập đầy đủ thông tin.");
+        return;
+    }
 
-        // Xóa các giá trị hiện tại trong input khi thêm phần tử mới
-        quantity.value = "";
-        price.value = "";
+    // Kiểm tra mã sản phẩm có hợp lệ không
+    let product = products.find(p => p.Value === productCode);
 
-        let removeButtonContainer = newOrderDetail.querySelector("#removeButtonContainer");
+    if (!product) {
+        alert("Mã sản phẩm không hợp lệ.");
+        return;
+    }
 
-        // Tạo nút "Xóa Sản Phẩm" cho các sản phẩm bổ sung
-        let removeButton = document.createElement("button");
-        removeButton.type = "button";
-        removeButton.className = "btn btn-danger btn-sm remove-product";
-        removeButton.textContent = "Xóa Sản Phẩm";
+    // Kiểm tra xem sản phẩm đã có trong bảng chưa
+    let existingRow = Array.from(document.querySelectorAll("#orderDetailsTable tbody tr")).find(row => {
+        return row.cells[0].textContent === productCode;
+    });
 
-        removeButton.addEventListener("click", function () {
-            this.closest(".order-detail").remove();
+    if (existingRow) {
+        // Nếu sản phẩm đã có trong bảng, cộng dồn số lượng
+        let quantityInput = existingRow.querySelector(".quantity-input");
+        let priceInput = existingRow.querySelector(".price-input");
+
+        // Cộng dồn số lượng và cập nhật giá mới (nếu có)
+        quantityInput.value = parseInt(quantityInput.value) + parseInt(quantity);
+
+        // Kiểm tra nếu giá nhập vào khác giá hiện tại trong bảng thì cập nhật giá mới
+        if (parseFloat(priceInput.value) !== parseFloat(price)) {
+            priceInput.value = price; // Cập nhật giá mới
+        }
+    } else {
+        // Nếu sản phẩm chưa có, thêm một dòng mới vào bảng
+        let newRow = document.createElement("tr");
+        newRow.innerHTML = `
+            <td>${product.Value}</td>
+            <td>${product.Text}</td>
+            <td><input type="hidden" class="form-control quantity-input" name="orderDetails[${orderDetailIndex}].product_id" value="${product.Value}" min="1" /></td>
+            <td><input type="number" class="form-control quantity-input" name="orderDetails[${orderDetailIndex}].quantity" value="${quantity}" min="1" /></td>
+            <td><input type="number" class="form-control price-input" name="orderDetails[${orderDetailIndex}].price" value="${price}" min="3000" step="500" /></td>
+            <td><button type="button" class="btn btn-danger btn-sm remove-product">Xóa</button></td>
+        `;
+
+        // Thêm dòng mới vào bảng
+        document.querySelector("#orderDetailsTable tbody").appendChild(newRow);
+
+        // Thêm chức năng xóa cho nút
+        newRow.querySelector(".remove-product").addEventListener("click", function () {
+            newRow.remove();
         });
 
-        removeButtonContainer.appendChild(removeButton);
-
-        // Thêm phần tử vào container
-        document.getElementById("orderDetailsContainer").appendChild(newOrderDetail);
+        // Tăng chỉ số orderDetailIndex cho lần thêm tiếp theo
         orderDetailIndex++;
-    });
+    }
+
+    // Xóa các ô nhập liệu để người dùng nhập tiếp sản phẩm khác
+    document.getElementById("productCode").value = "";
+    document.getElementById("quantity").value = "";
+    document.getElementById("price").value = "";
+});
+
+// Khi form được gửi, thu thập chi tiết đơn hàng từ bảng
+document.querySelector("form").addEventListener("submit", function (event) {
+    // Ngừng gửi form nếu bảng không có sản phẩm
+    let rows = document.querySelectorAll("#orderDetailsTable tbody tr");
+
+    if (rows.length === 0) {
+        event.preventDefault();  // Ngừng gửi form
+        alert("Vui lòng thêm sản phẩm vào bảng trước khi tạo phiếu đặt.");
+        return;
+    }
+});
+
+
 </script>
