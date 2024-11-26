@@ -367,7 +367,8 @@
                 cfpassword.classList.remove("is-invalid");
             }
 
-            if (dob.value.trim() === "") {
+            if (dob.value.trim() === "")
+            {
                 dob.classList.add("is-invalid");
                 const dobFeedback = dob.parentElement.querySelector('.invalid-feedback');
                 if (dobFeedback) {
@@ -375,7 +376,8 @@
                     dobFeedback.style.display = 'block';
                 }
                 isValid = false;
-            } else if (!isOver16(dob.value)) {
+            } else if (!isOver16(dob.value))
+            {
                 dob.classList.add("is-invalid");
                 const dobFeedback = dob.parentElement.querySelector('.invalid-feedback');
                 if (dobFeedback) {
@@ -383,7 +385,8 @@
                     dobFeedback.style.display = 'block';
                 }
                 isValid = false;
-            } else {
+            } else
+            {
                 dob.classList.remove("is-invalid");
                 const dobFeedback = dob.parentElement.querySelector('.invalid-feedback');
                 if (dobFeedback) {
