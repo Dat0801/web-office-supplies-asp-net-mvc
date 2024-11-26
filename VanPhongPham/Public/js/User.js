@@ -104,7 +104,7 @@ function displayUserName() {
         cartLink.href = "/Auth/Login";
 
         // Reset số lượng giỏ hàng
-        cartBadge.innerText = '0';
+        cartBadge.innerText = '';
 
     }
 }
