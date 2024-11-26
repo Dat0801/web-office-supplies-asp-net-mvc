@@ -19,9 +19,10 @@
             </div>
 
             <div class="form-group row mb-3">
-                <label class="col-sm-3 col-form-label text-end">Tên</label>
+                <label class="col-sm-3 col-form-label text-end">Họ và tên</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" name="full_name" value="@Model.full_name" />
+                    <input type="text" class="form-control" name="full_name" id="full_name" value="@Model.full_name" />
+                    <div class="invalid-feedback"></div>
                 </div>
             </div>
 
@@ -154,20 +155,53 @@
     });
 
     document.getElementById('profile-form').addEventListener('submit', function (event) {
-        var dob = document.getElementById('dob').value;
-        var dobError = document.getElementById('dob-error');
+        // Khai báo biến isValid
+        let isValid = true;
 
-        if (dob) {
-            // Sử dụng hàm isOver16 để kiểm tra
-            if (!isOver16(dob)) {
-                event.preventDefault();
-                dobError.style.display = 'block';
-                return;
-            } else {
-                dobError.style.display = 'none';
-            }
+        // Kiểm tra họ và tên
+        const fullname = document.getElementById('full_name');
+        const fullnameFeedback = fullname.parentElement.querySelector('.invalid-feedback');
+
+        // Reset trạng thái lỗi
+        fullname.classList.remove("is-invalid");
+        fullnameFeedback.style.display = 'none';
+
+        if (fullname.value.trim() === "") {
+            fullname.classList.add("is-invalid");
+            fullnameFeedback.innerText = "Vui lòng nhập họ và tên của bạn.";
+            fullnameFeedback.style.display = 'block';
+            isValid = false;
+        } else if (fullname.value.trim().length < 6) {
+            fullname.classList.add("is-invalid");
+            fullnameFeedback.innerText = "Họ và tên phải có ít nhất 6 ký tự.";
+            fullnameFeedback.style.display = 'block';
+            isValid = false;
+        } else if (fullname.value.trim().length > 30) {
+            fullname.classList.add("is-invalid");
+            fullnameFeedback.innerText = "Họ và tên tối đa 30 ký tự.";
+            fullnameFeedback.style.display = 'block';
+            isValid = false;
         }
 
+        // Kiểm tra ngày sinh
+        const dob = document.getElementById('dob').value;
+        const dobError = document.getElementById('dob-error');
+
+        // Reset trạng thái lỗi
+        dobError.style.display = 'none';
+
+        if (dob && !isOver16(dob)) {
+            dobError.style.display = 'block';
+            isValid = false;
+        }
+
+        // Nếu không hợp lệ, ngăn form submit
+        if (!isValid) {
+            event.preventDefault();
+            return;
+        }
+
+        // Hiển thị modal khi hợp lệ
         var modal = new bootstrap.Modal(document.getElementById('success-modal'));
         modal.show();
     });
