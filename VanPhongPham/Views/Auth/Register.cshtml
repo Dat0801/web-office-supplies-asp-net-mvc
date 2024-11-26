@@ -268,16 +268,54 @@
                 fullname.classList.add("is-invalid");
                 isValid = false;
             }
-            else {
+            else if (fullname.value.trim().length < 6)
+            {
+                fullname.classList.add("is-invalid");
+                const fullnameFeedback = fullname.parentElement.querySelector('.invalid-feedback');
+                fullnameFeedback.innerText = "Họ và tên phải có ít nhất 6 ký tự.";
+                fullnameFeedback.style.display = 'block';
+                isValid = false;
+            }
+            else if (fullname.value.trim().length > 30)
+            {
+                fullname.classList.add("is-invalid");
+                const fullnameFeedback = fullname.parentElement.querySelector('.invalid-feedback');
+                fullnameFeedback.innerText = "Họ và tên tối đa 30 ký tự.";
+                fullnameFeedback.style.display = 'block';
+                isValid = false;
+            }
+            else
+            {
                 fullname.classList.remove("is-invalid");
+                const fullnameFeedback = fullname.parentElement.querySelector('.invalid-feedback');
+                fullnameFeedback.style.display = 'none';
             }
 
             if (username.value.trim() === "") {
                 username.classList.add("is-invalid");
                 isValid = false;
             }
-            else {
+            else if (username.value.trim().length < 6)
+            {
+                username.classList.add("is-invalid");
+                const usernameFeedback = username.parentElement.querySelector('.invalid-feedback');
+                usernameFeedback.innerText = "Tên đăng nhập phải có ít nhất 6 ký tự.";
+                usernameFeedback.style.display = 'block';
+                isValid = false;
+            }
+            else if (username.value.trim().length > 30)
+            {
+                username.classList.add("is-invalid");
+                const usernameFeedback = username.parentElement.querySelector('.invalid-feedback');
+                usernameFeedback.innerText = "Tên đăng nhập tối đa 30 ký tự.";
+                usernameFeedback.style.display = 'block';
+                isValid = false;
+            }
+            else
+            {
                 username.classList.remove("is-invalid");
+                const usernameFeedback = username.parentElement.querySelector('.invalid-feedback');
+                usernameFeedback.style.display = 'none';
             }
 
             if (email.value.trim() === "") {
@@ -292,10 +330,17 @@
                 password.classList.add("is-invalid");
                 isValid = false;
             }
-            else if (password.value.length < 6) {
+            else if (password.value.trim().length < 6) {
                 password.classList.add("is-invalid");
                 const passwordFeedback = password.parentElement.querySelector('.invalid-feedback');
                 passwordFeedback.innerText = "Mật khẩu phải có ít nhất 6 ký tự.";
+                passwordFeedback.style.display = 'block';
+                isValid = false;
+            }
+            else if (password.value.trim().length > 30) {
+                password.classList.add("is-invalid");
+                const passwordFeedback = password.parentElement.querySelector('.invalid-feedback');
+                passwordFeedback.innerText = "Mật khẩu tối đa 30 ký tự.";
                 passwordFeedback.style.display = 'block';
                 isValid = false;
             }
