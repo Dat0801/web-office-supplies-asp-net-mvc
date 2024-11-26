@@ -121,8 +121,10 @@ document.getElementById("addProduct").addEventListener("click", function () {
         newRow.innerHTML = `
             <td>${product.Value}</td>
             <td>${product.Text}</td>
-            <td><input type="hidden" class="form-control quantity-input" name="orderDetails[${orderDetailIndex}].product_id" value="${product.Value}" min="1" /></td>
-            <td><input type="number" class="form-control quantity-input" name="orderDetails[${orderDetailIndex}].quantity" value="${quantity}" min="1" /></td>
+            <td>
+                <input type="hidden" name="orderDetails[${orderDetailIndex}].product_id" value="${product.Value}"/>
+                <input type="number" class="form-control quantity-input" name="orderDetails[${orderDetailIndex}].quantity" value="${quantity}" min="1" />
+            </td>
             <td><input type="number" class="form-control price-input" name="orderDetails[${orderDetailIndex}].price" value="${price}" min="3000" step="500" /></td>
             <td><button type="button" class="btn btn-danger btn-sm remove-product">Xóa</button></td>
         `;
@@ -156,6 +158,4 @@ document.querySelector("form").addEventListener("submit", function (event) {
         return;
     }
 });
-
-
 </script>
