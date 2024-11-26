@@ -65,7 +65,10 @@ namespace VanPhongPham.Areas.Admin.Controllers
                                                         Attribute_value_id = av.attribute_value_id,
                                                         Value = av.value,
                                                         Attribute_id = av.attribute_id
-                                                    }).ToList();
+                                                    })
+                                                    .OrderBy(av => av.Attribute_id)
+                                                    .ThenBy(av => AttributeValueDTO.GetSortKey(av.Value))
+                                                    .ToList();
             ViewBag.attribute_values = attributeValues;
             return View();
         }
@@ -135,7 +138,10 @@ namespace VanPhongPham.Areas.Admin.Controllers
                                                         Attribute_value_id = av.attribute_value_id,
                                                         Value = av.value,
                                                         Attribute_id = av.attribute_id
-                                                    }).ToList();
+                                                    })
+                                                    .OrderBy(av => av.Attribute_id)
+                                                    .ThenBy(av => AttributeValueDTO.GetSortKey(av.Value))
+                                                    .ToList();
             ViewBag.attribute_values = attributeValues;
             var attributeIds = attributeValuesForProduct.Select(av => av.Attribute_id).Distinct();
             var attributesForProduct = productRepository.GetAttributes()

@@ -52,14 +52,25 @@
                                 <input type="number" class="form-control" value="@(order.quantity - order.quantity_received)" readonly />
                                 <div class="clearfix"></div>
                             </div>
+                            @if (ViewBag.entry_count == 3)
+                            {
+                                <div class="form-group col-md-2">
+                                    <label for="quantity">Số lượng nhập</label>
+                                    <input type="number" class="form-control" name="receiptDetails[@receiptDetailIndex].quantity" value="@(order.quantity - order.quantity_received)" readonly />
+                                    <div class="clearfix"></div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group col-md-2">
+                                    <label for="quantity">Số lượng nhập</label>
+                                    <input type="number" class="form-control" name="receiptDetails[@receiptDetailIndex].quantity" step="1" min="1" max="@(order.quantity - order.quantity_received)" required />
+                                    <div class="clearfix"></div>
+                                </div>
+                            }
 
-                            <div class="form-group col-md-2">
-                                <label for="quantity">Số lượng nhập</label>
-                                <input type="number" class="form-control" name="receiptDetails[@receiptDetailIndex].quantity" step="1" min="1" max="@(order.quantity - order.quantity_received)" required />
-                                <div class="clearfix"></div>
-                            </div>
                         </div>
-                        { 
+                        {
                             receiptDetailIndex++;
                         }
                     }

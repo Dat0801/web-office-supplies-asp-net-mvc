@@ -81,7 +81,6 @@ async function saveProduct(productId = null) {
             }
         }
     }
-    console.log(additionalImages);
 
     // Thêm danh sách URL hình ảnh phụ vào FormData
     formData.append("additionalImageUrlsJson", JSON.stringify(additionalImageUrls));
@@ -119,7 +118,11 @@ document.getElementById('ProductForm').onsubmit = function (event) {
 
 function validateForm() {
     var imageInput = document.getElementById("productImage").files.length;
-    if (imageInput === 0) {
+    var imagePreview = document.getElementById('imagePreview').src;
+    var previewHash = imagePreview[imagePreview.length-1];
+
+    // Kiểm tra nếu không có ảnh chọn và không có ảnh preview
+    if (imageInput === 0 && (imagePreview === "" || previewHash === "#" || imagePreview === undefined)) {
         document.getElementById("imageWarning").style.display = "block"; // Hiển thị cảnh báo nếu chưa chọn ảnh
         return false;  // Ngừng gửi form nếu không có ảnh
     } else {
