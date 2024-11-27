@@ -1,8 +1,6 @@
-﻿@using PagedList.Mvc;
-@using PagedList;
-@model IPagedList<VanPhongPham.Models.PromotionViewModel>
+﻿@model List<VanPhongPham.Models.PromotionViewModel>
 @{
-    ViewBag.Title = "Khuyến mãi - Quản Trị";
+    ViewBag.Title = "PromotionAvailable";
     var message = ViewBag.Message;
     var messageType = ViewBag.MessageType;
 }
@@ -23,37 +21,37 @@
                 <div class="form-group col-md-3">
                     <label for="PromotionId">Mã khuyến mãi</label>
                     <input type="text" class="form-control" id="PromotionId" name="PromotionId" readonly
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.PromotionId : ViewBag.PromoId ?? "")" />
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.PromotionId : ViewBag.PromoId ?? "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="PromotionName">Tên khuyến mãi</label>
                     <input type="text" class="form-control" id="PromotionName" name="PromotionName" required
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.PromotionName : "")" />
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.PromotionName : "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Description">Mô tả</label>
                     <input type="text" class="form-control" id="Description" name="Description" required
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.Description : "")" />
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.Description : "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="DiscountPercent">Giảm giá (%)</label>
                     <input type="number" min="0" max="100" class="form-control" id="DiscountPercent" name="DiscountPercent" required
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.DiscountPercent : "")" />
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.DiscountPercent : "")" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="StartDate">Ngày bắt đầu</label>
                     <input type="date" class="form-control" id="StartDate" name="StartDate" required
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.StartDate.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))" />
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.StartDate.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="EndDate">Ngày kết thúc</label>
                     <input type="date" class="form-control" id="EndDate" name="EndDate" required
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.EndDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(7).ToString("yyyy-MM-dd"))" />
+                           value="@(ViewBag.promotion != null ? ViewBag.promotion.EndDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(7).ToString("yyyy-MM-dd"))" />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-6">
@@ -73,8 +71,8 @@
                 <div class="form-group col-md-3">
                     <label for="status">Trạng thái</label>
                     <select class="form-control" id="status" name="Status" required>
-                        <option value="true" @(ViewBag.Promotion != null && ViewBag.Promotion.Status == 1 ? "selected" : "")>Hoạt động</option>
-                        <option value="false" @(ViewBag.Promotion != null && ViewBag.Promotion.Status == 0 ? "selected" : "")>Không hoạt động</option>
+                        <option value="1" @(ViewBag.promotion != null && ViewBag.promotion.Status == 1 ? "selected" : "")>Hoạt động</option>
+                        <option value="0" @(ViewBag.promotion != null && ViewBag.promotion.Status == 0 ? "selected" : "")>Không hoạt động</option>
                     </select>
                     <div class="clearfix"></div>
                 </div>
@@ -86,24 +84,15 @@
 </div>
 
 <h4 class="font-weight-bold mb-0">Danh sách khuyến mãi</h4>
-<div>
+<div class="row">
     <div class="navbar-nav my-3 ml-2">
-        <form class="nav-item navbar-text navbar-search-box p-0 active d-flex" action="@Url.Action("Index", "Promotion")" method="get">
-            <div class="d-flex flex-grow-1">
-                <span class="navbar-search-input">
-                    <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")">
-                </span>
-                <button class="btn icon-btn btn-outline-primary" title="Tìm kiếm">
-                    <i class="feather icon-search navbar-icon align-middle"></i>
-                </button>
-            </div>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <div class="ml-auto">
-                <div class="form-check" style="width:200px">
-                    <input type="checkbox" class="form-check-input" id="active-promotions" name="onlyActive" value="true" @(ViewBag.OnlyActive == true ? "checked" : "")>
-                    <label class="form-check-label" for="active-promotions">Khuyến mãi đang áp dụng</label>
-                </div>
-            </div>
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("Index", "Promotion")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")">
+            </span>
+            <button class="btn icon-btn btn-outline-primary" title="Tìm kiếm">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
         </form>
     </div>
 </div>
@@ -118,7 +107,7 @@
                     <th>Tên khuyến mãi</th>
                     <th>Giảm giá (%)</th>
                     <th>Ngày bắt đầu</th>
-                    <th>Ngày kết thúc</th>                    
+                    <th>Ngày kết thúc</th>
                     <th>Thao tác</th>
                 </tr>
             </thead>
@@ -133,7 +122,7 @@
                         <td>@promotion.PromotionName</td>
                         <td>@promotion.DiscountPercent%</td>
                         <td>@promotion.StartDate.ToString("dd/MM/yyyy")</td>
-                        <td>@promotion.EndDate.ToString("dd/MM/yyyy")</td>                        
+                        <td>@promotion.EndDate.ToString("dd/MM/yyyy")</td>
                         <td>
                             <a class="btn icon-btn btn-outline-danger"
                                title="Xóa"
@@ -151,12 +140,7 @@
             </tbody>
         </table>
         <button type="submit" class="btn btn-danger mt-3">Xóa hàng loạt</button>
-    </form>
-    <div class="d-flex justify-content-center">
-        <div class="pagination-container">
-            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
-        </div>
-    </div>
+    </form>    
 </div>
 
 <script>
@@ -174,7 +158,7 @@
     }
 
     // Validate dates
-    document.querySelector('form').addEventListener('submit', function(e) {
+    document.querySelector('form').addEventListener('submit', function (e) {
         var startDate = new Date(document.getElementById('start_date').value);
         var endDate = new Date(document.getElementById('end_date').value);
 

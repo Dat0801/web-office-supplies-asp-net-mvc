@@ -163,6 +163,7 @@ namespace VanPhongPham.Models
                     p.avgRating,
                     p.visited,
                     p.category,
+                    p.status,
                     Images = p.images.Select(i => new ImageViewModel
                     {
                         ImageId = i.image_id,
@@ -207,7 +208,8 @@ namespace VanPhongPham.Models
                 VisitCount = product.visited,
                 Images = product.Images,
                 Categories = product.category,
-                Attributes = product.Attributes
+                Attributes = product.Attributes,
+                Status = product.status
             };
 
             // Lấy danh sách sản phẩm liên quan trong cùng một danh mục, loại trừ sản phẩm hiện tại
@@ -239,7 +241,16 @@ namespace VanPhongPham.Models
                     }).ToList()
                 })
                 .ToList();  // Chuyển dữ liệu vào bộ nhớ sau khi tính toán
-
+            var reviews = _context.product_reviews.Where(r => r.product_id == pro_id).ToList()
+                .Select(r => new ProductReviewViewModel
+                {
+                    ReviewId = r.review_id,
+                    ProductId = r.product_id,
+                    UserId= r.user_id,
+                    Rating = r.rating,
+                    ReviewContent = r.review_content,
+                    CreatedAt = (DateTime)r.created_at
+                }).ToList();
             var viewModels = new ViewModels
             {
                 ProductViewModel = new List<ProductViewModel> { productViewModel },
@@ -248,7 +259,8 @@ namespace VanPhongPham.Models
                     PromotionId = p.promotion_id,
                     PromotionName = p.promotion_name
                 }).ToList(),
-                RelatedProducts = relatedProducts
+                RelatedProducts = relatedProducts,
+                ReviewViewModel = reviews
             };
 
             return viewModels;

@@ -70,12 +70,12 @@
             <h3 class="font-weight-semi-bold mb-4">
                 @{
                     var products = Model.ProductViewModel.FirstOrDefault();
-                    if (products.StockQuantity == 0)
+                    if (products.StockQuantity == 0 || products.Price == 0)
                     {
                         <div class="text-danger">
                             <span>Hết hàng</span>
                             <br />
-                            <span>Liên hệ để biết thêm chi tiết</span>
+                            <span><a href="#">Liên hệ để biết thêm chi tiết</a></span>
                         </div>
                     }
                     if (products.Status == false)
@@ -104,55 +104,55 @@
                 }
             </h3>
             @*<div class="d-flex mb-3">
-            <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
-            <form>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" class="custom-control-input" id="size-1" name="size">
-                    <label class="custom-control-label" for="size-1">XS</label>
+                    <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
+                    <form>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="size-1" name="size">
+                            <label class="custom-control-label" for="size-1">XS</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="size-2" name="size">
+                            <label class="custom-control-label" for="size-2">S</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="size-3" name="size">
+                            <label class="custom-control-label" for="size-3">M</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="size-4" name="size">
+                            <label class="custom-control-label" for="size-4">L</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="size-5" name="size">
+                            <label class="custom-control-label" for="size-5">XL</label>
+                        </div>
+                    </form>
                 </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" class="custom-control-input" id="size-2" name="size">
-                    <label class="custom-control-label" for="size-2">S</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" class="custom-control-input" id="size-3" name="size">
-                    <label class="custom-control-label" for="size-3">M</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" class="custom-control-input" id="size-4" name="size">
-                    <label class="custom-control-label" for="size-4">L</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" class="custom-control-input" id="size-5" name="size">
-                    <label class="custom-control-label" for="size-5">XL</label>
-                </div>
-            </form>
-        </div>
-        <div class="d-flex mb-4">
-            <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
-            <form>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" class="custom-control-input" id="color-1" name="color">
-                    <label class="custom-control-label" for="color-1">Black</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" class="custom-control-input" id="color-2" name="color">
-                    <label class="custom-control-label" for="color-2">White</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" class="custom-control-input" id="color-3" name="color">
-                    <label class="custom-control-label" for="color-3">Red</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" class="custom-control-input" id="color-4" name="color">
-                    <label class="custom-control-label" for="color-4">Blue</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                    <input type="radio" class="custom-control-input" id="color-5" name="color">
-                    <label class="custom-control-label" for="color-5">Green</label>
-                </div>
-            </form>
-        </div>*@
+                <div class="d-flex mb-4">
+                    <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
+                    <form>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="color-1" name="color">
+                            <label class="custom-control-label" for="color-1">Black</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="color-2" name="color">
+                            <label class="custom-control-label" for="color-2">White</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="color-3" name="color">
+                            <label class="custom-control-label" for="color-3">Red</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="color-4" name="color">
+                            <label class="custom-control-label" for="color-4">Blue</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="color-5" name="color">
+                            <label class="custom-control-label" for="color-5">Green</label>
+                        </div>
+                    </form>
+                </div>*@
             @if (products.StockQuantity > 0 && products.Status == true)
             {
                 <div class="d-flex align-items-center mb-4 pt-2">
@@ -162,7 +162,8 @@
                                 <i class="fa fa-minus"></i>
                             </button>
                         </div>
-                        <input type="text" class="form-control bg-secondary text-center" value="1">
+                        <input type="number" class="form-control bg-secondary text-center"
+                               value="1" min="1" max="@products.StockQuantity">
                         <div class="input-group-btn">
                             <button class="btn btn-primary btn-plus">
                                 <i class="fa fa-plus"></i>
@@ -170,14 +171,15 @@
                         </div>
                     </div>
 
-                    <a href="#" class="btn btn-primary px-3 addToCartLink" data-product-id="@products.ProductId">
+                    <a href="#" class="btn btn-primary px-3 addToCartLink" data-product-id="@products.ProductId" data-stock-quantity="@products.StockQuantity">
                         <i class="fas fa-shopping-cart mr-1"></i>Thêm Vào Giỏ Hàng
                     </a>
                 </div>
             }
 
-                
-                <div class="d-flex pt-2">
+
+
+            @*<div class="d-flex pt-2">
                     <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
                     <div class="d-inline-flex">
                         <a class="text-dark px-2" href="">
@@ -193,15 +195,15 @@
                             <i class="fab fa-pinterest"></i>
                         </a>
                     </div>
-                </div>
-            </div>
+                </div>*@
+        </div>
     </div>
     <div class="row px-xl-5">
         <div class="col">
             <div class="nav nav-tabs justify-content-center border-secondary mb-4">
                 <a class="nav-item nav-link active" data-toggle="tab" href="#tab-pane-1">Mô tả</a>
                 <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-2">Thông tin</a>
-                @*<a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3">Reviews (0)</a>*@
+                <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3">Đánh giá (@Model.ReviewViewModel.Count())</a>
             </div>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="tab-pane-1">
@@ -235,58 +237,41 @@
                         </div>
                     </div>
                 </div>
-                @*<div class="tab-pane fade" id="tab-pane-3">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4 class="mb-4">1 review for "Colorful Stylish Shirt"</h4>
-                                <div class="media mb-4">
-                                    <img src="img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
-                                    <div class="media-body">
-                                        <h6>John Doe<small> - <i>01 Jan 2045</i></small></h6>
-                                        <div class="text-primary mb-2">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star-half-alt"></i>
-                                            <i class="far fa-star"></i>
-                                        </div>
-                                        <p>Diam amet duo labore stet elitr ea clita ipsum, tempor labore accusam ipsum et no at. Kasd diam tempor rebum magna dolores sed sed eirmod ipsum.</p>
+                <div class="tab-pane fade" id="tab-pane-3">
+                    <h4 class="mb-3">Đánh giá sản phẩm</h4>
+                    @if (Model.ReviewViewModel.FirstOrDefault() != null && Model.ProductViewModel.Any())
+                    {
+                        <div class="reviews">
+                            @foreach (var review in Model.ReviewViewModel)
+                            {
+                                <div class="review-item border-bottom mb-3 pb-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h5 class="mb-0">@review.UserId</h5>
+                                        <span class="ml-3 text-muted">@review.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
                                     </div>
+                                    <div class="rating mb-2">
+                                        @for (var i = 0; i < review.Rating; i++)
+                                        {
+                                            <i class="fa fa-star text-warning"></i>
+                                        }
+                                        @for (var i = review.Rating; i < 5; i++)
+                                        {
+                                            <i class="fa fa-star text-muted"></i>
+                                        }
+                                    </div>
+                                    <p class="mb-0">@review.ReviewContent</p>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h4 class="mb-4">Leave a review</h4>
-                                <small>Your email address will not be published. Required fields are marked *</small>
-                                <div class="d-flex my-3">
-                                    <p class="mb-0 mr-2">Your Rating * :</p>
-                                    <div class="text-primary">
-                                        <i class="far fa-star"></i>
-                                        <i class="far fa-star"></i>
-                                        <i class="far fa-star"></i>
-                                        <i class="far fa-star"></i>
-                                        <i class="far fa-star"></i>
-                                    </div>
-                                </div>
-                                <form>
-                                    <div class="form-group">
-                                        <label for="message">Your Review *</label>
-                                        <textarea id="message" cols="30" rows="5" class="form-control"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="name">Your Name *</label>
-                                        <input type="text" class="form-control" id="name">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="email">Your Email *</label>
-                                        <input type="email" class="form-control" id="email">
-                                    </div>
-                                    <div class="form-group mb-0">
-                                        <input type="submit" value="Leave Your Review" class="btn btn-primary px-3">
-                                    </div>
-                                </form>
-                            </div>
+                            }
                         </div>
-                    </div>*@
+                    }
+                    else
+                    {
+                        <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
+                    }
+
+                    
+                </div>
+
             </div>
         </div>
     </div>
@@ -364,20 +349,28 @@
 
             // Gắn sự kiện click cho từng link
             addToCartLink.addEventListener("click", function (event) {
-                event.preventDefault(); // Ngăn điều hướng mặc định
+                event.preventDefault();
 
-                // Lấy productId từ data-product-id
                 var productId = this.getAttribute("data-product-id");
-
-                // Tìm input quantity trong cùng cha
                 var quantityInput = this.parentElement.querySelector(".quantity input");
-
-                // Lấy số lượng từ input hoặc mặc định là 1
                 var quantity = quantityInput && quantityInput.value ? parseInt(quantityInput.value, 10) : 1;
 
-                // Kiểm tra nếu cartId có giá trị
+                // Get stock quantity from data attribute (you'll need to add this to your HTML)
+                var stockQuantity = parseInt(this.getAttribute("data-stock-quantity"), 10);
+
+                // Validate quantity
+                if (quantity > stockQuantity) {
+                    showNotification(`Chỉ còn ${stockQuantity} sản phẩm trong kho`, "warning");
+                    return;
+                }
+
+                if (quantity <= 0) {
+                    showNotification("Số lượng phải lớn hơn 0", "warning");
+                    return;
+                }
+
+                // Continue with existing cart logic
                 if (cartId != null) {
-                    // Gửi yêu cầu thêm vào giỏ hàng bằng Fetch API
                     fetch('/Cart/AddToCart', {
                         method: 'POST',
                         headers: {

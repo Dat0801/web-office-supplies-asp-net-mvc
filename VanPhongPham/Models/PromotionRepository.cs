@@ -186,7 +186,7 @@ namespace VanPhongPham.Models
         }
         public string GeneratePromotionId()
         {
-            promotion us = _context.promotions.Where(u => u.status == true).ToList().LastOrDefault();
+            promotion us = _context.promotions.ToList().LastOrDefault();
             if (us == null)
             {
                 return "PROMO001";

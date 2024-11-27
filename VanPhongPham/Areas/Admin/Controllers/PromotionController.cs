@@ -19,7 +19,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
         }
         // GET: Admin/Promotion
-        public ActionResult Index(int? page, string promo_id, string search_str)
+        public ActionResult Index(int? page, string promo_id, string search_str, bool? onlyActive)
         {
             int pageSize = 5;
             int pageNumber = page ?? 1;
@@ -53,6 +53,11 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 listPromo = promotionRepository.SearchPromotion(search_str);
                 ViewBag.SearchStr = search_str;
             }
+            else if (onlyActive.HasValue && onlyActive.Value)
+            {
+                listPromo = promotionRepository.GetActivePromotions();
+                ViewBag.OnlyActive = true;
+            }
             else
             {
                 listPromo = promotionRepository.GetPromotions();
@@ -61,8 +66,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             ViewBag.PromoId = promotionRepository.GeneratePromotionId();
 
             return View(listPromo.ToPagedList(pageNumber, pageSize));
-        }
-
+        }        
         public ActionResult RecoverPromotion(string search_str)
         {
             List<PromotionViewModel> sup;
@@ -136,7 +140,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     }
                     else
                     {
-                        TempData["Message"] = "Thêm khuyến mãi thất bại!";
+                        TempData["Message"] = "Khuyến mãi đã tồn tại!";
                         TempData["MessageType"] = "danger";
                     }
                 }
