@@ -16,3 +16,11 @@
     </div>
 </div>
 
+<script>
+    @if (!string.IsNullOrEmpty(ViewBag.Msg))
+    {
+        <text>
+            showNotification('@ViewBag.Msg', 'danger');
+        </text>
+    }
+</script>

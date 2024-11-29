@@ -1,0 +1,165 @@
+﻿@model VanPhongPham.Models.StatisticsViewModel
+@{
+    ViewBag.Title = "Rates";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="m-0">Bảng Thống Kê</h1>
+
+
+                <div class="period-selector">
+                    <form method="get" class="form-inline">
+                        <label for="startDate" class="mr-2">Ngày bắt đầu:</label>
+                        <input type="date"
+                               name="startDate"
+                               class="form-control mr-2"
+                               value="@(Model.StartDate.ToString("yyyy-MM-dd"))" />
+
+                        <label for="endDate" class="mr-2">Ngày kết thúc:</label>
+                        <input type="date"
+                               name="endDate"
+                               class="form-control mr-2"
+                               value="@(Model.EndDate.ToString("yyyy-MM-dd"))" />
+
+                        <button type="submit" class="btn btn-primary">Xem thống kê</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">            
+            <div>
+                <center><h3>Sản phẩm được đánh giá cao nhất</h3></center>
+                <canvas id="highestRatedChart" width="400" height="200"></canvas>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Sản phẩm được đánh giá cao</h3>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Đánh giá TB</th>
+                                <th>Số lượng đánh giá</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model.HighestRatedProducts)
+                            {
+                                <tr>
+                                    <td>@product.ProductName</td>
+                                    <td>@product.AverageRating:F1</td>
+                                    <td>@product.ReviewCount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br /><br />
+            <div>
+                <center><h3>Sản phẩm được đánh giá thấp nhất</h3></center>
+                <canvas id="lowestRatedChart" width="400" height="200"></canvas>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Sản phẩm bị đánh giá thấp</h3>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Đánh giá TB</th>
+                                <th>Số lượng đánh giá</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model.LowestRatedProducts)
+                            {
+                                <tr>
+                                    <td>@product.ProductName</td>
+                                    <td>@product.AverageRating:F1</td>
+                                    <td>@product.ReviewCount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+    @{
+    var highestRatedScores = Model.HighestRatedProducts.Select(x => x.AverageRating).ToArray();
+    var highestRatedNames = Model.HighestRatedProducts.Select(x => x.ProductName).ToArray();
+    }
+    var highestRatedData = @Html.Raw(Json.Encode(highestRatedScores));
+    var highestRatedLabels = @Html.Raw(Json.Encode(highestRatedNames));
+
+    var ctxHighestRated = document.getElementById('highestRatedChart').getContext('2d');
+    var highestRatedChart = new Chart(ctxHighestRated, {
+        type: 'bar',
+        data: {
+            labels: highestRatedLabels,
+            datasets: [{
+                label: 'Đánh giá trung bình',
+                data: highestRatedData,
+                backgroundColor: '#81C784',
+                borderColor: '#4CAF50',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Sản phẩm được đánh giá thấp nhất
+    @{
+        var lowestRatedScores = Model.LowestRatedProducts.Select(x => x.AverageRating).ToArray();
+        var lowestRatedNames = Model.LowestRatedProducts.Select(x => x.ProductName).ToArray();
+    }
+    var lowestRatedData = @Html.Raw(Json.Encode(lowestRatedScores));
+    var lowestRatedLabels = @Html.Raw(Json.Encode(lowestRatedNames));
+
+    var ctxLowestRated = document.getElementById('lowestRatedChart').getContext('2d');
+    var lowestRatedChart = new Chart(ctxLowestRated, {
+        type: 'bar',
+        data: {
+            labels: lowestRatedLabels,
+            datasets: [{
+                label: 'Đánh giá trung bình',
+                data: lowestRatedData,
+                backgroundColor: '#E57373',
+                borderColor: '#F44336',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+
+
+

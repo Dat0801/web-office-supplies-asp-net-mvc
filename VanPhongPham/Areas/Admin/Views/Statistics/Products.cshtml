@@ -1,0 +1,165 @@
+﻿@model VanPhongPham.Models.StatisticsViewModel
+@{
+    ViewBag.Title = "Products";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="m-0">Bảng Thống Kê</h1>
+
+
+                <div class="period-selector">
+                    <form method="get" class="form-inline">
+                        <label for="startDate" class="mr-2">Ngày bắt đầu:</label>
+                        <input type="date"
+                               name="startDate"
+                               class="form-control mr-2"
+                               value="@(Model.StartDate.ToString("yyyy-MM-dd"))" />
+
+                        <label for="endDate" class="mr-2">Ngày kết thúc:</label>
+                        <input type="date"
+                               name="endDate"
+                               class="form-control mr-2"
+                               value="@(Model.EndDate.ToString("yyyy-MM-dd"))" />
+
+                        <button type="submit" class="btn btn-primary">Xem thống kê</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">            
+            <div>
+                <center><h3>Sản phẩm bán chạy nhất</h3></center>
+                <canvas id="bestSellingChart" width="400" height="200"></canvas>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Sản phẩm bán chạy nhất</h3>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Doanh thu</th>
+                                <th>Lợi nhuận</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model.BestSellingProducts)
+                            {
+                                <tr>
+                                    <td>@product.ProductName</td>
+                                    <td>@product.TotalQuantitySold</td>
+                                    <td>@string.Format("{0:N0}", product.TotalRevenue) VND</td>
+                                    <td>@string.Format("{0:N0}", product.TotalProfit) VND</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br/><br />
+            <div>
+                <center><h3>Sản phẩm bán chậm nhất</h3></center>
+                <canvas id="slowSellingChart" width="400" height="200"></canvas>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Sản phẩm bán chậm</h3>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Doanh thu</th>
+                                <th>Lợi nhuận</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model.SlowSellingProducts)
+                            {
+                                <tr>
+                                    <td>@product.ProductName</td>
+                                    <td>@product.TotalQuantitySold</td>
+                                    <td>@string.Format("{0:N0}", product.TotalRevenue) VND</td>
+                                    <td>@string.Format("{0:N0}", product.TotalProfit) VND</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+    @{
+    var quantities = Model.BestSellingProducts.Select(x => x.TotalQuantitySold).ToArray();
+    var productNames = Model.BestSellingProducts.Select(x => x.ProductName).ToArray();
+    }
+    var bestSellingData = @Html.Raw(Json.Encode(quantities));
+    var bestSellingLabels = @Html.Raw(Json.Encode(productNames));
+    var ctx2 = document.getElementById('bestSellingChart').getContext('2d');
+    var bestSellingChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: bestSellingLabels, // Tên sản phẩm
+            datasets: [{
+                label: 'Sản phẩm bán chạy nhất',
+                data: bestSellingData, // Số lượng bán
+                backgroundColor: '#36A2EB',
+                borderColor: '#36A2EB',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    @{
+        var slowSellingQuantities = Model.SlowSellingProducts.Select(x => x.TotalQuantitySold).ToArray();
+        var slowSellingNames = Model.SlowSellingProducts.Select(x => x.ProductName).ToArray();
+    }
+    var slowSellingData = @Html.Raw(Json.Encode(slowSellingQuantities));
+    var slowSellingLabels = @Html.Raw(Json.Encode(slowSellingNames));
+
+    var ctxSlowSelling = document.getElementById('slowSellingChart').getContext('2d');
+    var slowSellingChart = new Chart(ctxSlowSelling, {
+        type: 'bar',
+        data: {
+            labels: slowSellingLabels,
+            datasets: [{
+                label: 'Sản phẩm bán chậm nhất',
+                data: slowSellingData,
+                backgroundColor: '#FFB74D',
+                borderColor: '#FF9800',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+

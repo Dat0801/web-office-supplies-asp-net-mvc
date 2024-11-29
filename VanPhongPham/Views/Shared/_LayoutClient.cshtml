@@ -55,11 +55,16 @@
                     sessionStorage.setItem('redirected', 'true');
                     logout();
                 }
-            } else {
+            }
+            else
+            {
                 // Xóa cờ nếu người dùng có token, tránh chuyển hướng không cần thiết
                 sessionStorage.removeItem('redirected');
                 fetchUserData();
             }
+
+            // Luôn hiển thị lại thông tin người dùng
+            displayUserName(); // Cập nhật giao diện người dùng
         });
     </script>
 </body>
