@@ -11,11 +11,15 @@ namespace VanPhongPham.Controllers
     {
         private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
         // GET: Checkout
-        public ActionResult Index(string userid, int cartid)
+        public ActionResult Index(string userid, int cartid, string msg)
         {
             var address = db.addresses.FirstOrDefault(u => u.user_id == userid);
             ViewBag.UserID = userid;
             ViewBag.CartID = cartid;
+            if (!string.IsNullOrWhiteSpace(msg))
+            {
+                ViewBag.msg = msg;
+            }
             return View(address);
         }
 
@@ -88,15 +92,11 @@ namespace VanPhongPham.Controllers
             return PartialView(cartdetails);
         }
 
-        public ActionResult PaymentCheckoutPartial(address adrs, string msg)
+        public ActionResult PaymentCheckoutPartial(address adrs)
         {
             var paymentmethod = db.payment_methods.ToList();
             ViewBag.adrs = adrs;
             ViewBag.TotalAmount = db.cart_details.Where(a => a.isSelected == 1).Sum(a => a.total_amount);
-            if(!string.IsNullOrWhiteSpace(msg))
-            {
-                ViewBag.msg = msg;
-            }
             return PartialView(paymentmethod);
         }
 
@@ -186,7 +186,7 @@ namespace VanPhongPham.Controllers
             }
             else
             {                
-                return RedirectToAction("PaymentCheckoutPartial", "Checkout", new { adrs = infoAdrs, msg = "Thanh toán thất bại!" });
+                return RedirectToAction("Index", "Checkout", new { userid = userId, cartid = cartId, msg = "Thanh toán thất bại!" });
             }
         }
 

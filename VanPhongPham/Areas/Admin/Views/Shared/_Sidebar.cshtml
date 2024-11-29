@@ -154,14 +154,36 @@
                     <a href="@Url.Action("RecoverPromotion", "Promotion")" class="sidenav-link">
                         <div>Khuyến mãi đã xóa</div>
                     </a>
+                </li>                
+            </ul>
+        </li>
+        <!-- Quản lý thống kê -->
+        <li class="sidenav-item">
+            <a href="javascript:" class="sidenav-link sidenav-toggle">
+                <i class="sidenav-icon feather icon-bar-chart-2"></i>
+                <div>Thống kê</div>
+            </a>
+            <ul class="sidenav-menu">
+                <li class="sidenav-item">
+                    <a href="@Url.Action("Index", "Statistics")" class="sidenav-link">
+                        <div>Tổng quan thống kê</div>
+                    </a>
                 </li>
                 <li class="sidenav-item">
-                    <a href="@Url.Action("Statistics", "Promotion")" class="sidenav-link">
-                        <div>Thống kê khuyến mãi</div>
+                    <a href="@Url.Action("Revenue", "Statistics")" class="sidenav-link">
+                        <div>Doanh thu & Lợi nhuận</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="@Url.Action("Products", "Statistics")" class="sidenav-link">
+                        <div>Thống kê sản phẩm</div>
+                    </a>
+                </li>
+                <li class="sidenav-item">
+                    <a href="@Url.Action("Rates", "Statistics")" class="sidenav-link">
+                        <div>Thống kê đánh giá</div>
                     </a>
                 </li>
             </ul>
-        </li>
-    </ul>
 </div>
 <!-- [ Layout sidenav ] End -->
