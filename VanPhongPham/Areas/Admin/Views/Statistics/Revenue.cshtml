@@ -1,0 +1,97 @@
+﻿
+@{
+    ViewBag.Title = "Revenue";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="m-0">Bảng Thống Kê</h1>
+
+
+                <div class="period-selector">
+                    <form method="get" class="form-inline">
+                        <label for="startDate" class="mr-2">Ngày bắt đầu:</label>
+                        <input type="date"
+                               name="startDate"
+                               class="form-control mr-2"
+                               value="@(Model.StartDate.ToString("yyyy-MM-dd"))" />
+
+                        <label for="endDate" class="mr-2">Ngày kết thúc:</label>
+                        <input type="date"
+                               name="endDate"
+                               class="form-control mr-2"
+                               value="@(Model.EndDate.ToString("yyyy-MM-dd"))" />
+
+                        <button type="submit" class="btn btn-primary">Xem thống kê</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">             
+            <div>
+                <center><h3>Doanh thu và lợi nhuận</h3></center>
+                <div class="row">
+                    <div class="col-md-6 col-sm-12 mb-3">
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h3>@string.Format("{0:N0}", Model.TotalRevenue) VND</h3>
+                                <p>Tổng Doanh Thu</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-sm-12 mb-3">
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>@string.Format("{0:N0}", Model.TotalProfit) VND</h3>
+                                <p>Tổng Lợi Nhuận</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <canvas id="revenueProfitChart" width="400" height="200"></canvas>
+            </div>            
+        </div>
+    </section>
+</div>
+<script>
+    var ctx = document.getElementById('revenueProfitChart').getContext('2d');
+    var revenueProfitChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Tổng Doanh Thu', 'Tổng Lợi Nhuận'],
+            datasets: [{
+                label: '',
+                data: [@ViewBag.TotalRevenue, @ViewBag.TotalProfit],
+                backgroundColor: ['lightblue', 'lightgreen'],
+                borderColor: ['lightblue', 'lightgreen'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>

@@ -656,6 +656,10 @@
       <LastGenOutput>DB_VanPhongPham.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Areas\Admin\Views\Statistics\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Statistics\Revenue.cshtml" />
+    <Content Include="Areas\Admin\Views\Statistics\Products.cshtml" />
+    <Content Include="Areas\Admin\Views\Statistics\Rates.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>
@@ -758,6 +762,7 @@
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
     <Compile Include="Areas\Admin\Controllers\PromotionController.cs" />
     <Compile Include="Areas\Admin\Controllers\PurchaseOrderController.cs" />
+    <Compile Include="Areas\Admin\Controllers\StatisticsController.cs" />
     <Compile Include="Areas\Admin\Controllers\SupplierController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserOrderController.cs" />
@@ -788,10 +793,13 @@
     <Compile Include="Models\OrderViewModel.cs" />
     <Compile Include="Models\ProductAttributeViewModel.cs" />
     <Compile Include="Models\ProductRepository.cs" />
+    <Compile Include="Models\ProductReviewViewModel.cs" />
+    <Compile Include="Models\ProductStatisticsViewModel.cs" />
     <Compile Include="Models\ProductViewModel.cs" />
     <Compile Include="Models\PromotionRepository.cs" />
     <Compile Include="Models\PromotionViewModel.cs" />
     <Compile Include="Models\PurchaseOrderRepository.cs" />
+    <Compile Include="Models\StatisticsViewModel.cs" />
     <Compile Include="Models\SupplierRepository.cs" />
     <Compile Include="Models\UserRepository.cs" />
     <Compile Include="Models\UserViewModel.cs" />
