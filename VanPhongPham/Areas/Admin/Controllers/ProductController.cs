@@ -79,7 +79,23 @@ namespace VanPhongPham.Areas.Admin.Controllers
         {
             try
             {
+                var ProductNameExist = productRepository.GetProductByName(product.product_name);
+                var ProductNameRecycleExist = productRepository.GetRecycleProduct(product.product_name);
+
+                if (ProductNameExist != null)
+                {
+                    return Task.FromResult(Json(new { success = false, message = "Tên sản phẩm đã tồn tại! Vui lòng nhập tên khác!" }));
+                }
+
+                if (ProductNameRecycleExist != null)
+                {
+                    return Task.FromResult(Json(new { success = false, message = "Sản phẩm có tên này đã bị xóa! Hãy khôi phục sản phẩm ở trang phục hồi!" }));
+                }
                 bool result = productRepository.AddProduct(product);
+                if(!result)
+                {
+                    return Task.FromResult(Json(new { success = false, message = "Thêm thất bại" }));
+                }
                 List<string> additionalImageUrls = JsonConvert.DeserializeObject<List<string>>(additionalImageUrlsJson);
                 image mainImage = new image
                 {

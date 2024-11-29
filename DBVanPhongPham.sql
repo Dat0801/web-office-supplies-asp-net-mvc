@@ -875,8 +875,7 @@ INSERT INTO roles (role_name, description)
 VALUES
 (N'Khách hàng', N'Khách mua hàng'),
 (N'Quản lý', N'Quản lý toàn bộ hệ thống'),
-(N'Nhân viên bán hàng', N'Nhân viên bán hàng'),
-(N'Nhân viên nhập hàng', N'Nhân viên nhập hàng');
+(N'Nhân viên bán hàng', N'Nhân viên bán hàng');
 
 INSERT INTO payment_methods (method_id, method_name)
 VALUES

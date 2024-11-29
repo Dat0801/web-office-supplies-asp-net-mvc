@@ -95,7 +95,7 @@ async function saveProduct(productId = null) {
             alert(`Sản phẩm đã ${productId ? 'được cập nhật' : 'thêm mới'} thành công!`);
             window.location.href = '/Admin/Product/Index';
         } else {
-            alert('Có lỗi xảy ra khi xử lý sản phẩm!');
+            alert(result.message);
         }
     } catch (error) {
         alert('Lỗi khi gửi yêu cầu đến máy chủ.');
