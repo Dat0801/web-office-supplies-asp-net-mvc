@@ -16,47 +16,102 @@ namespace VanPhongPham.Models
             _context = new DB_VanPhongPhamDataContext();
         }
 
-        public ViewModels GetAllProducts()
+        public ViewModels GetAllProducts(string priceRange = null, List<string> colors = null, List<string> brands = null)
         {
             var currentDate = DateTime.Now;
+            var query = _context.products.Where(p => p.status == true);
 
-            var products = _context.products
-                .Where(p => p.status == true)
-                .Select(p => new ProductViewModel
+            // Apply price range filter
+            if (!string.IsNullOrWhiteSpace(priceRange))
+            {
+                var prices = priceRange.Split('-');
+                if (prices.Length == 2 && double.TryParse(prices[0], out double minPrice) &&
+                    double.TryParse(prices[1], out double maxPrice))
                 {
-                    ProductId = p.product_id,
-                    ProductName = p.product_name,
-                    Description = p.description,
-                    PurchasePrice = p.purchase_price,
-                    Price = p.price,
-                    PromotionPrice = _context.product_promotions
-                        .Where(pp => pp.product_id == p.product_id)
-                        .Join(_context.promotions,
-                            pp => pp.promotion_id,
-                            promo => promo.promotion_id,
-                            (pp, promo) => new { promo.discount_percent, promo.start_date, promo.end_date, promo.status })
-                        .Where(promo => promo.status == true
-                            && promo.start_date <= currentDate
-                            && promo.end_date >= currentDate)
-                        .Select(promo => p.price * (1 - promo.discount_percent / 100))
-                        .FirstOrDefault() ?? p.price,
-                    StockQuantity = p.stock_quantity,
-                    SoldQuantity = p.sold,
-                    AvgRating = p.avgRating,
-                    VisitCount = p.visited,
+                    query = query.Where(p => p.price >= minPrice && p.price <= maxPrice);
+                }
+            }
+
+            // Get promotions once for all products
+            var promotions = _context.promotions
+                .Where(p => p.status == true && p.start_date <= currentDate && p.end_date >= currentDate)
+                .ToList();
+
+            // Get products with their attributes
+            var products = query
+                .Select(p => new
+                {
+                    p.product_id,
+                    p.product_name,
+                    p.description,
+                    p.purchase_price,
+                    p.price,
+                    p.stock_quantity,
+                    p.sold,
+                    p.avgRating,
+                    p.visited,
+                    p.category,
                     Images = p.images.Select(i => new ImageViewModel
                     {
                         ImageId = i.image_id,
                         ImageUrl = i.image_url,
                         IsPrimary = (bool)i.is_primary
                     }).ToList(),
-                    Categories = p.category
+                    Attributes = (from pav in _context.product_attribute_values
+                                  join av in _context.attribute_values on pav.attribute_value_id equals av.attribute_value_id
+                                  join a in _context.attributes on av.attribute_id equals a.attribute_id
+                                  where pav.product_id == p.product_id && av.status == true && a.status == true
+                                  select new AttributeViewModel
+                                  {
+                                      AttributeName = a.attribute_name,
+                                      Value = av.value
+                                  }).ToList()
                 })
-                .ToList();
+                .ToList();  // Materialize the query
 
-            var promotions = _context.promotions
-                .Where(p => p.status == true)
-                .Select(p => new PromotionViewModel
+            // Apply color and brand filters in memory
+            if (colors != null && colors.Any())
+            {
+                products = products.Where(p => p.Attributes
+                    .Any(a => a.AttributeName.ToLower() == "color" &&
+                             colors.Contains(a.Value, StringComparer.OrdinalIgnoreCase)))
+                    .ToList();
+            }
+
+            if (brands != null && brands.Any())
+            {
+                products = products.Where(p => p.Attributes
+                    .Any(a => a.AttributeName.ToLower() == "brand" &&
+                             brands.Contains(a.Value, StringComparer.OrdinalIgnoreCase)))
+                    .ToList();
+            }
+
+            // Convert to ProductViewModel
+            var productViewModels = products.Select(p => new ProductViewModel
+            {
+                ProductId = p.product_id,
+                ProductName = p.product_name,
+                Description = p.description,
+                PurchasePrice = p.purchase_price,
+                Price = p.price,
+                PromotionPrice = promotions
+                    .Where(promo => _context.product_promotions
+                        .Any(pp => pp.product_id == p.product_id && pp.promotion_id == promo.promotion_id))
+                    .Select(promo => p.price * (1 - promo.discount_percent / 100))
+                    .FirstOrDefault() ?? p.price,
+                StockQuantity = p.stock_quantity,
+                SoldQuantity = p.sold,
+                AvgRating = p.avgRating,
+                VisitCount = p.visited,
+                Images = p.Images,
+                Categories = p.category,
+                Attributes = p.Attributes
+            }).ToList();
+
+            var viewModels = new ViewModels
+            {
+                ProductViewModel = productViewModels,
+                PromotionViewModel = promotions.Select(p => new PromotionViewModel
                 {
                     PromotionId = p.promotion_id,
                     PromotionName = p.promotion_name,
@@ -64,12 +119,7 @@ namespace VanPhongPham.Models
                     DiscountPercent = p.discount_percent,
                     StartDate = p.start_date,
                     EndDate = p.end_date,
-                }).ToList();
-
-            var viewModels = new ViewModels
-            {
-                ProductViewModel = products,
-                PromotionViewModel = promotions
+                }).ToList()
             };
 
             return viewModels;
@@ -246,7 +296,7 @@ namespace VanPhongPham.Models
                 {
                     ReviewId = r.review_id,
                     ProductId = r.product_id,
-                    UserId= r.user_id,
+                    UserId = r.user_id,
                     Rating = r.rating,
                     ReviewContent = r.review_content,
                     CreatedAt = (DateTime)r.created_at
@@ -415,7 +465,16 @@ namespace VanPhongPham.Models
                         ImageUrl = i.image_url,
                         IsPrimary = (bool)i.is_primary
                     }).ToList(),
-                    Categories = p.category
+                    Categories = p.category,
+                    Attributes = (from pav in _context.product_attribute_values
+                                  join av in _context.attribute_values on pav.attribute_value_id equals av.attribute_value_id
+                                  join a in _context.attributes on av.attribute_id equals a.attribute_id
+                                  where pav.product_id == p.product_id && av.status == true && a.status == true
+                                  select new AttributeViewModel
+                                  {
+                                      AttributeName = a.attribute_name,
+                                      Value = av.value
+                                  }).ToList()
                 })
                 .ToList();
 
@@ -448,7 +507,8 @@ namespace VanPhongPham.Models
                 AvgRating = p.AvgRating,
                 VisitCount = p.VisitCount,
                 Images = p.Images,
-                Categories = p.Categories
+                Categories = p.Categories,
+                Attributes = p.Attributes
             }).ToList();
 
             // Kiểm tra danh sách sản phẩm
@@ -530,7 +590,7 @@ namespace VanPhongPham.Models
                 .Where(p => p.status == true &&
                             (p.product_name.Contains(search_str) ||
                             p.product_id.Contains(search_str) ||
-                            p.category.category_name.Contains(search_str)))   
+                            p.category.category_name.Contains(search_str)))
                 .ToList();
         }
 
@@ -538,10 +598,10 @@ namespace VanPhongPham.Models
         {
             try
             {
-                product.price = string.IsNullOrEmpty(product.price.ToString()) ? 0 : product.price;
-                product.purchase_price = string.IsNullOrEmpty(product.purchase_price.ToString()) ? 0 : product.purchase_price;
-                product.stock_quantity = string.IsNullOrEmpty(product.stock_quantity.ToString()) ? 0 : product.stock_quantity;
-                product.created_at = string.IsNullOrEmpty(product.created_at.ToString()) ? DateTime.Now : product.created_at;
+                product.price = string.IsNullOrWhiteSpace(product.price.ToString()) ? 0 : product.price;
+                product.purchase_price = string.IsNullOrWhiteSpace(product.purchase_price.ToString()) ? 0 : product.purchase_price;
+                product.stock_quantity = string.IsNullOrWhiteSpace(product.stock_quantity.ToString()) ? 0 : product.stock_quantity;
+                product.created_at = string.IsNullOrWhiteSpace(product.created_at.ToString()) ? DateTime.Now : product.created_at;
 
                 _context.products.InsertOnSubmit(product);
                 _context.SubmitChanges();
