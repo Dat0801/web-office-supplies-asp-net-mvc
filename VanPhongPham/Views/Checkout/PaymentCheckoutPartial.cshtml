@@ -249,7 +249,13 @@
                     const url = `@Url.Action("Index", "Profile")?order_status_id=${1}&MaTaiKhoan=${userData.MaTaiKhoan}&view=OrderPartial`;
                     window.location.href = url;
                 }
-            } else if (selectedMethod === "PAY002") {
+                else if (!result.success) {
+                    @*const url = `@Url.Action("Index", "Cart")?cart_id=${userData1.CartID}`;
+                    window.location.href = url;*@
+                    showNotification('Số lượng tồn kho không đủ', 'danger');
+                }
+            }
+            else if (selectedMethod === "PAY002") {
                 const response = await fetch('/Checkout/InitVNPay', {
                     method: "POST",
                     headers: { 'Content-Type': 'application/json' },
@@ -265,6 +271,10 @@
                 if (result.success) {
                     window.location.href = result.vnpayUrl;
                 }
+                else if (!result.success)
+                {
+                    showNotification('Số lượng tồn kho không đủ', 'danger');
+                }
             }
         } catch (error) {
             console.error("Không thể lưu Order", error);
@@ -278,9 +288,9 @@
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             ${message}
         `;
-        
+
         notificationContainer.appendChild(notification);
-        
+
         setTimeout(function () {
             notification.remove();
         }, 3000);

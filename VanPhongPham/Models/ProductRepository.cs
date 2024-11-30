@@ -245,6 +245,8 @@ namespace VanPhongPham.Models
                 .Select(r => new ProductReviewViewModel
                 {
                     ReviewId = r.review_id,
+                    UserName = r.user.username,
+                    AvtUrl = r.user.avt_url,
                     ProductId = r.product_id,
                     UserId= r.user_id,
                     Rating = r.rating,
