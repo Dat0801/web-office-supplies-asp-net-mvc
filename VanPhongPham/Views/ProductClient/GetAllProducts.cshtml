@@ -1,8 +1,8 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "GetAllProducts";
     Layout = "~/Views/Shared/_LayoutClient.cshtml";
 }
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
 @model VanPhongPham.Models.ViewModels
 <!-- Shop Start -->
@@ -12,114 +12,144 @@
         <div class="col-lg-3 col-md-12">
             <!-- Price Start -->
             <div class="border-bottom mb-4 pb-4">
-                <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
-                <form>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" checked id="price-all">
-                        <label class="custom-control-label" for="price-all">All Price</label>
-                        <span class="badge border font-weight-normal">1000</span>
+                <h5 class="font-weight-semi-bold mb-4">Lọc sản phẩm theo giá</h5>
+                <form id="priceFilterForm">
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input price-filter" name="priceFilter" checked id="price-all" value="all">
+                        <label class="custom-control-label" for="price-all">Tất cả giá</label>
+                        @if (Model.ProductViewModel != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.ProductViewModel.Count()
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
                     </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="price-1">
-                        <label class="custom-control-label" for="price-1">$0 - $100</label>
-                        <span class="badge border font-weight-normal">150</span>
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input price-filter" name="priceFilter" id="price-1" value="0-100000">
+                        <label class="custom-control-label" for="price-1">0 - 100,000 VND</label>
+                        @if (Model.ProductViewModel != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.ProductViewModel.Count(p => p.Price >= 0 && p.Price <= 100000)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
                     </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="price-2">
-                        <label class="custom-control-label" for="price-2">$100 - $200</label>
-                        <span class="badge border font-weight-normal">295</span>
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input price-filter" name="priceFilter" id="price-2" value="100000-200000">
+                        <label class="custom-control-label" for="price-2">100,000 - 200,000 VND</label>
+                        @if (Model.ProductViewModel != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.ProductViewModel.Count(p => p.Price >= 100000 && p.Price <= 200000)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
                     </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="price-3">
-                        <label class="custom-control-label" for="price-3">$200 - $300</label>
-                        <span class="badge border font-weight-normal">246</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="price-4">
-                        <label class="custom-control-label" for="price-4">$300 - $400</label>
-                        <span class="badge border font-weight-normal">145</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                        <input type="checkbox" class="custom-control-input" id="price-5">
-                        <label class="custom-control-label" for="price-5">$400 - $500</label>
-                        <span class="badge border font-weight-normal">168</span>
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input price-filter" name="priceFilter" id="price-3" value="200000-300000">
+                        <label class="custom-control-label" for="price-3">200,000 - 300,000 VND</label>
+                        @if (Model.ProductViewModel != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.ProductViewModel.Count(p => p.Price >= 200000 && p.Price <= 300000)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
                     </div>
                 </form>
             </div>
-            <!-- Price End -->
+
+
             <!-- Color Start -->
             <div class="border-bottom mb-4 pb-4">
-                <h5 class="font-weight-semi-bold mb-4">Filter by color</h5>
-                <form>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" checked id="color-all">
-                        <label class="custom-control-label" for="price-all">All Color</label>
-                        <span class="badge border font-weight-normal">1000</span>
+                <h5 class="font-weight-semi-bold mb-4">Lọc sản phẩm theo màu sắc</h5>
+                <form id="colorFilterForm">
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input color-filter" checked id="color-all" name="color" value="all">
+                        <label class="custom-control-label" for="color-all">Tất cả màu sắc</label>
+                        @if (Model.ProductViewModel != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.ProductViewModel.Count()
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
                     </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="color-1">
-                        <label class="custom-control-label" for="color-1">Black</label>
-                        <span class="badge border font-weight-normal">150</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="color-2">
-                        <label class="custom-control-label" for="color-2">White</label>
-                        <span class="badge border font-weight-normal">295</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="color-3">
-                        <label class="custom-control-label" for="color-3">Red</label>
-                        <span class="badge border font-weight-normal">246</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="color-4">
-                        <label class="custom-control-label" for="color-4">Blue</label>
-                        <span class="badge border font-weight-normal">145</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                        <input type="checkbox" class="custom-control-input" id="color-5">
-                        <label class="custom-control-label" for="color-5">Green</label>
-                        <span class="badge border font-weight-normal">168</span>
-                    </div>
+                    @if (Model.ProductViewModel != null)
+                    {
+                        foreach (var color in Model.ProductViewModel.SelectMany(p => p.Attributes)
+                            .Where(a => a.AttributeName.ToLower() == "màu sắc")
+                            .Select(a => a.Value)
+                            .Distinct())
+                        {
+                            <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                <input type="radio" class="custom-control-input color-filter" id="color-@color" name="color" value="@color">
+                                <label class="custom-control-label" for="color-@color">@color</label>
+                                <span class="badge border font-weight-normal">
+                                    @Model.ProductViewModel.Count(p => p.Attributes.Any(a =>
+                                        a.AttributeName.ToLower() == "màu sắc" && a.Value == color))
+                                </span>
+                            </div>
+                        }
+                    }
                 </form>
             </div>
-            <!-- Color End -->
-            <!-- Size Start -->
+
+            <!-- Brand Start -->
             <div class="mb-5">
-                <h5 class="font-weight-semi-bold mb-4">Filter by size</h5>
-                <form>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" checked id="size-all">
-                        <label class="custom-control-label" for="size-all">All Size</label>
-                        <span class="badge border font-weight-normal">1000</span>
+                <h5 class="font-weight-semi-bold mb-4">Lọc sản phẩm theo thương hiệu</h5>
+                <form id="brandFilterForm">
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input brand-filter" checked id="brand-all" name="brand" value="all">
+                        <label class="custom-control-label" for="brand-all">Tất cả thương hiệu</label>
+                        @if (Model.ProductViewModel != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.ProductViewModel.Count()
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
                     </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="size-1">
-                        <label class="custom-control-label" for="size-1">XS</label>
-                        <span class="badge border font-weight-normal">150</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="size-2">
-                        <label class="custom-control-label" for="size-2">S</label>
-                        <span class="badge border font-weight-normal">295</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="size-3">
-                        <label class="custom-control-label" for="size-3">M</label>
-                        <span class="badge border font-weight-normal">246</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                        <input type="checkbox" class="custom-control-input" id="size-4">
-                        <label class="custom-control-label" for="size-4">L</label>
-                        <span class="badge border font-weight-normal">145</span>
-                    </div>
-                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                        <input type="checkbox" class="custom-control-input" id="size-5">
-                        <label class="custom-control-label" for="size-5">XL</label>
-                        <span class="badge border font-weight-normal">168</span>
-                    </div>
+                    @if (Model.ProductViewModel != null)
+                    {
+                        foreach (var brand in Model.ProductViewModel.SelectMany(p => p.Attributes)
+                            .Where(a => a.AttributeName.ToLower() == "thương hiệu")
+                            .Select(a => a.Value)
+                            .Distinct())
+                        {
+                            <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                <input type="radio" class="custom-control-input brand-filter" id="brand-@brand" name="brand" value="@brand">
+                                <label class="custom-control-label" for="brand-@brand">@brand</label>
+                                <span class="badge border font-weight-normal">
+                                    @Model.ProductViewModel.Count(p => p.Attributes.Any(a =>
+                                        a.AttributeName.ToLower() == "thương hiệu" && a.Value == brand))
+                                </span>
+                            </div>
+                        }
+                    }
                 </form>
             </div>
+
             <!-- Size End -->
         </div>
         <!-- Shop Sidebar End -->
@@ -127,78 +157,87 @@
         <!--<div class="container-fluid pt-5">
             <div class="row px-xl-5">-->
         <!-- Shop Product Start -->
-        <div class="col-lg-9 col-md-12">
+        <div id="product-container" class="col-lg-9 col-md-12">
             <div class="row pb-3">
-                @foreach (var product in Model.ProductViewModel)
+                @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
                 {
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="@product.Images.FirstOrDefault().ImageUrl" alt="@product.ProductName">
-                            </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">@product.ProductName</h6>
-                                <div class="d-flex justify-content-center">
-                                    @if (product.StockQuantity == 0)
-                                    {
-                                        <div class="text-danger">
-                                            <span>Hết hàng</span>
-                                            <br />
-                                            <span>Liên hệ để biết thêm chi tiết</span>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        var activePromotions = Model.PromotionViewModel
-                                            .Where(p => p.StartDate.Date <= DateTime.Now.Date && p.EndDate.Date >= DateTime.Now.Date)
-                                            .ToList();
-                                        if (product.PromotionPrice < product.Price)
+                    <div class="alert alert-danger">
+                        @ViewBag.ErrorMessage
+                    </div>
+                }
+                else
+                {
+                    foreach (var product in Model.ProductViewModel)
+                    {
+                        <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+                            <div class="card product-item border-0 mb-4">
+                                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                                    <img class="img-fluid w-100" src="@product.Images.FirstOrDefault().ImageUrl" alt="@product.ProductName">
+                                </div>
+                                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                                    <h6 class="text-truncate mb-3">@product.ProductName</h6>
+                                    <div class="d-flex justify-content-center">
+                                        @if (product.StockQuantity == 0)
                                         {
-                                            <span style="color: forestgreen">@string.Format("{0:N0}", product.PromotionPrice) VND</span>
-                                            <del style="margin-left: 5px; color: gray">@string.Format("{0:N0}", product.Price) VND</del>
+                                            <div class="text-danger">
+                                                <span>Hết hàng</span>
+                                                <br />
+                                                <span>Liên hệ để biết thêm chi tiết</span>
+                                            </div>
                                         }
                                         else
                                         {
-                                            <span style="color: forestgreen">@string.Format("{0:N0}", product.Price) VND</span>
+                                            var activePromotions = Model.PromotionViewModel
+                                                .Where(p => p.StartDate.Date <= DateTime.Now.Date && p.EndDate.Date >= DateTime.Now.Date)
+                                                .ToList();
+                                            if (product.PromotionPrice < product.Price)
+                                            {
+                                                <span style="color: forestgreen">@string.Format("{0:N0}", product.PromotionPrice) VND</span>
+                                                <del style="margin-left: 5px; color: gray">@string.Format("{0:N0}", product.Price) VND</del>
+                                            }
+                                            else
+                                            {
+                                                <span style="color: forestgreen">@string.Format("{0:N0}", product.Price) VND</span>
+                                            }
                                         }
+                                    </div>
+                                </div>
+                                <div class="card-footer d-flex justify-content-between bg-light border">
+                                    <a href="@Url.Action("Details", "ProductClient", new { id = product.ProductId })" class="btn btn-sm text-dark p-0">
+                                        <i class="fas fa-eye text-primary mr-1"></i>Xem chi tiết
+                                    </a>
+                                    @if (product.StockQuantity > 0)
+                                    {
+                                        <a href="#" class="btn btn-sm text-dark p-0 addToCartLink" data-product-id="@product.ProductId">
+                                            <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ Hàng
+                                        </a>
                                     }
                                 </div>
                             </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="@Url.Action("Details", "ProductClient", new { id = product.ProductId })" class="btn btn-sm text-dark p-0">
-                                    <i class="fas fa-eye text-primary mr-1"></i>Xem chi tiết
-                                </a>
-                                @if (product.StockQuantity > 0)
-                                {
-                                    <a href="#" class="btn btn-sm text-dark p-0 addToCartLink" data-product-id="@product.ProductId">
-                                        <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ Hàng
-                                    </a>
-                                }
-                            </div>
                         </div>
+                    }
+                    <div class="col-12 pb-1">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mb-3">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 }
-                <div class="col-12 pb-1">
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center mb-3">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                            </li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
             </div>
         </div>
         <!-- Shop Product End -->
@@ -207,72 +246,152 @@
 
 <!-- Shop End -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var addToCartLinks = document.getElementsByClassName("addToCartLink");
+    // Create a namespace for our functions to avoid global scope pollution
+    const ProductFilter = {
+        init: function() {
+            this.attachFilterHandlers();
+            this.attachAddToCartHandlers();
+        },
 
+        attachFilterHandlers: function() {
+            $(document).on('change', '.custom-control-input', function() {
+                var filterType = $(this).attr('id').split('-')[0];
+                var isAll = $(this).attr('id').endsWith('-all');
 
-        for (var i = 0; i < addToCartLinks.length; i++) {
-            var addToCartLink = addToCartLinks[i];
-
-            // Thêm sự kiện click cho từng link
-            addToCartLink.addEventListener('click', function (event) {
-                event.preventDefault(); // Ngăn hành động mặc định
-
-                // Lấy thông tin sản phẩm
-                var productId = this.getAttribute("data-product-id");
-                var user = sessionStorage.getItem("user");
-                var cartId = user ? JSON.parse(user).CartID : null;
-                var quantity = 1; // Số lượng mặc định
-
-                if (cartId === null) {
-                    window.location.href = "/Auth/Login";
-                    return;
+                if (isAll && $(this).is(':checked')) {
+                    $(`input[id^="${filterType}-"]`).not(this).prop('checked', false);
+                } else if (!isAll && $(this).is(':checked')) {
+                    $(`#${filterType}-all`).prop('checked', false);
                 }
 
-                // Gửi AJAX đến Controller
-                fetch('/Cart/AddToCart', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value // CSRF Token
-                    },
-                    body: JSON.stringify({ cart_id: cartId, productId: productId, quantity: quantity })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            showNotification(data.message, "success"); // Hiển thị thông báo thành công
-                            displayUserName();
-                        } else {
-                            showNotification(data.message, "danger"); // Hiển thị thông báo lỗi
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        showNotification("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.", "danger");
-                    });
+                ProductFilter.applyFilters();
             });
-        }
+        },
 
-        // Hàm hiển thị thông báo
-        function showNotification(message, messageType) {
-            // Tạo phần tử HTML cho thông báo
+        attachAddToCartHandlers: function() {
+            $(document).on('click', '.addToCartLink', function(event) {
+                event.preventDefault();
+                ProductFilter.handleAddToCart(this);
+            });
+        },
+
+        applyFilters: function() {
+            var selectedPrices = [];
+            var selectedColors = [];
+            var selectedBrands = [];
+
+            if (!$('#price-all').is(':checked')) {
+                $('input[id^="price-"]:checked').not('#price-all').each(function() {
+                    selectedPrices.push($(this).val());
+                });
+            }
+
+            if (!$('#color-all').is(':checked')) {
+                $('input[id^="color-"]:checked').not('#color-all').each(function() {
+                    selectedColors.push($(this).val());
+                });
+            }
+
+            if (!$('#brand-all').is(':checked')) {
+                $('input[id^="brand-"]:checked').not('#brand-all').each(function() {
+                    selectedBrands.push($(this).val());
+                });
+            }
+
+            $.ajax({
+                url: '@Url.Action("GetAllProducts", "ProductClient")',
+                data: {
+                    categoryID: '@ViewBag.CategoryID',
+                    priceRange: selectedPrices.join(','),
+                    colors: selectedColors,
+                    brands: selectedBrands
+                },
+                traditional: true,
+                method: 'GET',
+                success: function(result) {
+                    // Only update the product container instead of the entire page
+                    $('#product-container').html($(result).find('#product-container').html());
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error filtering products:', error);
+                    ProductFilter.showNotification('Có lỗi xảy ra khi lọc sản phẩm. Vui lòng thử lại.', 'danger');
+                }
+            });
+        },
+
+        handleAddToCart: function(element) {
+            var productId = $(element).data('product-id');
+            var user = sessionStorage.getItem("user");
+            var cartId = user ? JSON.parse(user).CartID : null;
+            var quantity = 1;
+
+            if (cartId === null) {
+                window.location.href = "/Auth/Login";
+                return;
+            }
+
+            fetch('/Cart/AddToCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({ cart_id: cartId, productId: productId, quantity: quantity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    ProductFilter.showNotification(data.message, "success");
+                    displayUserName();
+                } else {
+                    ProductFilter.showNotification(data.message, "danger");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                ProductFilter.showNotification("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.", "danger");
+            });
+        },
+
+        showNotification: function(message, messageType) {
             var notificationContainer = document.getElementById("notification-container");
             var notification = document.createElement("div");
             notification.className = `alert alert-dark-${messageType} alert-dismissible fade show`;
             notification.innerHTML = `
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            ${message}
-        `;
-
-            // Thêm thông báo vào container
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                ${message}
+            `;
             notificationContainer.appendChild(notification);
-
-            // Tự động xóa thông báo sau 2 giây
             setTimeout(function () {
                 notification.remove();
             }, 3000);
         }
-    });
+    };
 
+    // Initialize when document is ready
+    $(document).ready(function() {
+        ProductFilter.init();
+    });
 </script>
+
+<style>
+    .loading {
+        opacity: 0.5;
+        pointer-events: none;
+        position: relative;
+    }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+</style>
