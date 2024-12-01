@@ -19,5 +19,6 @@ namespace VanPhongPham.Models
         public string ImageUrl { get; set; }
         public double Price { get; set; }
         public double Promotion_Price { get; set; }
+        public PromotionViewModel Promotions { get; set; }
     }
 }
