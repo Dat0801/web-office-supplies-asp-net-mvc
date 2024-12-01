@@ -78,8 +78,7 @@
                                     <td style="text-align:left" class="align-middle">
                                         <div style="display: flex; align-items: center;">
                                             <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px; margin-right: 10px;">
-                                            <a
-                                               class="product-name"
+                                            <a class="product-name"
                                                style="text-decoration: none; color: #737373;">
                                                 @item.ProductName
                                             </a>
@@ -102,8 +101,7 @@
                                     <td style="text-align:left" class="align-middle">
                                         <div style="display: flex; align-items: center;">
                                             <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px; margin-right: 10px;">
-                                            <a
-                                               class="product-name"
+                                            <a class="product-name"
                                                style="text-decoration: none; color: #737373;">
                                                 @item.ProductName
                                             </a>
@@ -121,11 +119,16 @@
                                 else
                                 {
                                     <td class="align-middle">
-                                        <input type="checkbox" data-product-id="@item.ProductID" style="margin-right: 14px" @(item.isSelected == 1 ? "checked" : "") />
+                                        <input type="checkbox" data-product-id="@item.ProductID"
+                                               style="margin-right: 14px"
+                                               @(item.isSelected == 1 ? "checked" : "") />
                                     </td>
+
+                                    <!-- Product Info -->
                                     <td style="text-align:left" class="align-middle">
                                         <div style="display: flex; align-items: center;">
-                                            <img src="@item.ImageUrl" alt="" style="width: 100px; height: 100px; margin-right: 10px;">
+                                            <img src="@item.ImageUrl" alt="@item.ProductName"
+                                                 style="width: 100px; height: 100px; margin-right: 10px;">
                                             <a href="@Url.Action("Details", "ProductClient", new { id = item.ProductID, cart_id = ViewBag.CartID })"
                                                class="product-name"
                                                style="text-decoration: none; color: black;">
@@ -133,14 +136,40 @@
                                             </a>
                                         </div>
                                     </td>
-                                    if (item.Promotion_Price == 0)
-                                    {
-                                        <td class="align-middle" style="color: #272727;">₫@item.Price.ToString("N0")</td>
-                                    }
-                                    else
-                                    {
-                                        <td class="align-middle" style="color: #272727;"><del style="margin-right:10px; color: #777777">₫@item.Price.ToString("N0")</del>₫@item.Promotion_Price.ToString("N0")</td>
-                                    }
+
+                                    <!-- Price Display -->
+                                    <td class="align-middle">
+                                        @if (item.QuantityProduct == 0 || item.Price == 0)
+                                        {
+                                            <div class="text-danger">
+                                                <span>Hết hàng</span>
+                                                <br />
+                                                <span><a href="#">Liên hệ để biết thêm chi tiết</a></span>
+                                            </div>
+                                        }
+                                        else if (!item.Product_status)
+                                        {
+                                            <div class="text-danger">
+                                                <span>Sản phẩm đã ngừng kinh doanh</span>
+                                                <br />
+                                                <span>Liên hệ để biết thêm chi tiết</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            if (item.Promotion_Price > 0 && item.Promotion_Price < item.Price)
+                                            {
+                                                <span style="color: forestgreen">₫@item.Promotion_Price.ToString("N0")</span>
+                                                <del style="margin-left: 5px; color: gray">₫@item.Price.ToString("N0")</del>
+                                            }
+                                            else
+                                            {
+                                                <span style="color: forestgreen">₫@item.Price.ToString("N0")</span>
+                                            }
+                                        }
+                                    </td>
+
+                                    <!-- Quantity Controls -->
                                     <td class="align-middle">
                                         <div class="input-group quantity mx-auto" style="width: 100px;">
                                             <div class="input-group-btn">
@@ -158,7 +187,8 @@
                                                    data-product-id="@item.ProductID"
                                                    data-product-price="@item.Price"
                                                    data-product-totalamount="@item.TotalAmount"
-                                                   onblur="checkStock(this)" style="padding: 2px">
+                                                   onblur="checkStock(this)"
+                                                   style="padding: 2px">
                                             <div class="input-group-btn">
                                                 <button class="btn btn-sm btn-primary" onclick="changeQuantity(this, 1)">
                                                     <i class="fa fa-plus"></i>
@@ -166,7 +196,11 @@
                                             </div>
                                         </div>
                                     </td>
+
+                                    <!-- Total Amount -->
                                     <td class="align-middle" style="color: #ff4747;">₫@item.TotalAmount.ToString("N0")</td>
+
+                                    <!-- Remove Button -->
                                     <td class="align-middle">
                                         <button class="btn btn-sm btn-primary" onclick="removeFromCart('@item.ProductID')">
                                             <i class="fa fa-times"></i>
