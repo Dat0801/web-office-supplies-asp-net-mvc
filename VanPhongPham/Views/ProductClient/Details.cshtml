@@ -3,6 +3,36 @@
     ViewBag.Title = "Details";
     Layout = "~/Views/Shared/_LayoutClient.cshtml";
 }
+<style>
+    .review-item {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .review-avatar img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+    }
+
+    .review-content {
+        flex-grow: 1;
+    }
+
+    .rating i {
+        margin-right: 2px;
+    }
+
+    .review-content .text-muted {
+        font-size: 0.875rem; /* Kích thước nhỏ hơn cho ngày */
+    }
+    /* Ẩn mũi tên tăng giảm của input type number */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
 @model VanPhongPham.Models.ViewModels
 <!-- Page Header Start -->
 @*<div class="container-fluid bg-secondary mb-5">
@@ -44,7 +74,7 @@
 
         <div class="col-lg-7 pb-5">
             <h3 class="font-weight-semi-bold">@Model.ProductViewModel.FirstOrDefault().ProductName</h3>
-            <div class="d-flex mb-3">
+            <div class="d-flex mb-3 align-items-center">
                 <div class="text-primary mr-2">
                     @{
                         var avgRating = Model.ProductViewModel.FirstOrDefault()?.AvgRating ?? 0;
@@ -64,7 +94,7 @@
                         <small class="far fa-star"></small>
                     }
                 </div>
-                <small class="pt-1">(@avgRating)</small>
+                <small class="pt-1" style="color: black; font-size: 18px">(@avgRating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture))</small>
             </div>
 
             <h3 class="font-weight-semi-bold mb-4">
@@ -163,7 +193,7 @@
                             </button>
                         </div>
                         <input type="number" class="form-control bg-secondary text-center"
-                               value="1" min="1" max="@products.StockQuantity">
+                               value="1" min="1" max="@products.StockQuantity" style="padding: 2px">
                         <div class="input-group-btn">
                             <button class="btn btn-primary btn-plus">
                                 <i class="fa fa-plus"></i>
@@ -241,35 +271,69 @@
                     <h4 class="mb-3">Đánh giá sản phẩm</h4>
                     @if (Model.ReviewViewModel.FirstOrDefault() != null && Model.ProductViewModel.Any())
                     {
-                        <div class="reviews">
-                            @foreach (var review in Model.ReviewViewModel)
-                            {
-                                <div class="review-item border-bottom mb-3 pb-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <h5 class="mb-0">@review.UserId</h5>
-                                        <span class="ml-3 text-muted">@review.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
-                                    </div>
-                                    <div class="rating mb-2">
+                <div class="reviews">
+                    @foreach (var review in Model.ReviewViewModel.OrderByDescending(o => o.CreatedAt))
+                    {
+                        <div class="review-item border-bottom mb-3 pb-3 d-flex">
+                            <!-- Hình ảnh bên trái -->
+                            <div class="review-avatar mr-3">
+                                @if (string.IsNullOrEmpty(review.AvtUrl))
+                                {
+                                    <img src="/Public/img/icons/icons8-male-user-100.png" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;" />
+                                }
+                                else
+                                {
+                                    <img src="@review.AvtUrl" alt="Avatar" class="rounded-circle" style="width: 30px; height: 30px;" />
+                                }
+                            </div>
+
+                            <!-- Nội dung bên phải -->
+                            <div class="review-content flex-grow-1">
+                                <!-- Tên người dùng và ngày đánh giá -->
+                                <div class="d-flex flex-column mb-2">
+                                    @{ 
+                                        string displayName = string.Empty;
+                                        if (!string.IsNullOrEmpty(review.UserName))
+                                        {
+                                            if (review.UserName.Length > 1)
+                                            {
+                                                displayName = review.UserName[0] + new string('*', review.UserName.Length - 2) + review.UserName[review.UserName.Length - 1];
+                                            }
+                                            else
+                                            {
+                                                displayName = review.UserName;
+                                            }
+                                        } 
+                                    }
+                                    <h5 class="mb-1" style="font-size: 14px">@displayName</h5>
+                                    <!-- Xếp hạng sao -->
+                                    <div class="rating mb-1">
                                         @for (var i = 0; i < review.Rating; i++)
                                         {
-                                            <i class="fa fa-star text-warning"></i>
+                                            <i class="fa fa-star text-warning" style="font-size: 14px"></i>
                                         }
                                         @for (var i = review.Rating; i < 5; i++)
                                         {
-                                            <i class="fa fa-star text-muted"></i>
+                                            <i class="fa fa-star text-muted" style="font-size: 14px"></i>
                                         }
                                     </div>
-                                    <p class="mb-0">@review.ReviewContent</p>
+                                    <span class="text-muted" style="font-size: 0.875rem;">@review.CreatedAt.ToString("dd-MM-yyyy HH:mm")</span>
                                 </div>
-                            }
+
+
+                                <!-- Nội dung đánh giá -->
+                                <p class="mb-0" style="color:black">@review.ReviewContent</p>
+                            </div>
                         </div>
+                    }
+                </div>
                     }
                     else
                     {
                         <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
                     }
 
-                    
+
                 </div>
 
             </div>

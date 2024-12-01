@@ -13,6 +13,27 @@ namespace VanPhongPham.Controllers
         // GET: Checkout
         public ActionResult Index(string userid, int cartid, string msg)
         {
+            // Lấy tất cả sản phẩm trong giỏ hàng mà người dùng đã chọn và có số lượng đủ
+            var cart_items1 = db.cart_details
+                                .Where(a => a.cart_id == cartid && a.isSelected == 1 && a.product.stock_quantity >= a.quantity)
+                                .ToList();
+
+            if (cart_items1.Count != 0)
+            {
+                // Kiểm tra xem có sản phẩm nào bị thiếu số lượng trong kho không
+                foreach (var item1 in cart_items1)
+                {
+                    if (item1.quantity > item1.product.stock_quantity)
+                    {
+                        ViewBag.Check = 1;
+                    }
+                }
+            }
+            else
+            {
+                ViewBag.Check = 1;
+            }
+
             var address = db.addresses.FirstOrDefault(u => u.user_id == userid);
             ViewBag.UserID = userid;
             ViewBag.CartID = cartid;
@@ -122,6 +143,27 @@ namespace VanPhongPham.Controllers
         }
         public ActionResult InitVNPay(string user_id, int cart_id, string info_adrs, string ordernote, float shipping_fee)
         {
+            // Lấy tất cả sản phẩm trong giỏ hàng mà người dùng đã chọn và có số lượng đủ
+            var cart_items1 = db.cart_details
+                                .Where(a => a.cart_id == cart_id && a.isSelected == 1 && a.product.stock_quantity >= a.quantity)
+                                .ToList();
+
+            if (cart_items1.Count != 0)
+            {
+                // Kiểm tra xem có sản phẩm nào bị thiếu số lượng trong kho không
+                foreach (var item1 in cart_items1)
+                {
+                    if (item1.quantity > item1.product.stock_quantity)
+                    {
+                        return Json(new { success = false, message = "Dữ liệu không lưu thành công. Số lượng sản phẩm không đủ trong kho." });
+                    }
+                }
+            }
+            else
+            {
+                return Json(new { success = false, message = "Dữ liệu không lưu thành công. Số lượng sản phẩm không đủ trong kho." });
+            }
+
             if (string.IsNullOrWhiteSpace(ordernote))
             {
                 ordernote = "";
@@ -192,6 +234,28 @@ namespace VanPhongPham.Controllers
 
         public ActionResult SaveOrder(string user_id, int cart_id, string info_adrs, string ordernote, string method_id, float shipping_fee,  string orderID)
         {
+            // Lấy tất cả sản phẩm trong giỏ hàng mà người dùng đã chọn và có số lượng đủ
+            var cart_items1 = db.cart_details
+                                .Where(a => a.cart_id == cart_id && a.isSelected == 1 && a.product.stock_quantity >= a.quantity)
+                                .ToList();
+
+            if (cart_items1.Count != 0)
+            {
+                // Kiểm tra xem có sản phẩm nào bị thiếu số lượng trong kho không
+                foreach (var item1 in cart_items1)
+                {
+                    if (item1.quantity > item1.product.stock_quantity)
+                    {
+                        return Json(new { success = false, message = "Dữ liệu không lưu thành công. Số lượng sản phẩm không đủ trong kho." });
+                    }
+                }
+            }
+            else
+            {
+                return Json(new { success = false, message = "Dữ liệu không lưu thành công. Số lượng sản phẩm không đủ trong kho." });
+            }
+
+
             if (ordernote == "")
             {
                 ordernote = null;

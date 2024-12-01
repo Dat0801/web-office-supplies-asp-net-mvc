@@ -4,23 +4,43 @@
     Layout = "~/Views/Shared/_LayoutClient.cshtml";
 }
 
-<div class="container p-0">
-    <div class="row">
-        <div class="col-12" style="background-color: #f1f3f5">
-            @Html.Action("AddressCheckoutPartial", "Checkout", new { userid = ViewBag.UserID })
+@if (ViewBag.Check == 1)
+{
+<script>
+        function showNotification(message, messageType) {
+            var notificationContainer = document.getElementById("notification-container");
+            var notification = document.createElement("div");
+            notification.className = `alert alert-${messageType} alert-dismissible fade show`;
+            notification.innerHTML = `
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    ${message}
+                `;
 
-            @Html.Action("ProductsCheckoutPartial", "Checkout", new { cart_id = ViewBag.CartID })
+            notificationContainer.appendChild(notification);
 
-            @Html.Action("PaymentCheckoutPartial", "Checkout", new { adrs = Model })
+            setTimeout(function () {
+                notification.remove();
+
+                const url = `@Url.Action("Index", "Cart")?cart_id=${'@ViewBag.CartID'}`;
+                window.location.href = url;
+
+            }, 2000);
+        }
+
+        showNotification('Số lượng tồn kho không đủ', 'danger');
+</script>
+}
+else
+{
+    <div class="container p-0">
+        <div class="row">
+            <div class="col-12" style="background-color: #f1f3f5">
+                @Html.Action("AddressCheckoutPartial", "Checkout", new { userid = ViewBag.UserID })
+
+                @Html.Action("ProductsCheckoutPartial", "Checkout", new { cart_id = ViewBag.CartID })
+
+                @Html.Action("PaymentCheckoutPartial", "Checkout", new { adrs = Model })
+            </div>
         </div>
     </div>
-</div>
-
-<script>
-    @if (!string.IsNullOrEmpty(ViewBag.Msg))
-    {
-        <text>
-            showNotification('@ViewBag.Msg', 'danger');
-        </text>
-    }
-</script>
+}
