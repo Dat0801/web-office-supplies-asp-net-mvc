@@ -85,7 +85,6 @@
             </div>
         </div>
     </div>
-
     <!-- Đăng ký 11 - Bootstrap Brain Component -->
     <section class="py-3 py-md-5 py-xl-8 bg-white">
         <div class="container">
@@ -271,24 +270,21 @@
                 fullnameFeedback.style.display = 'block';
                 isValid = false;
             }
-            else if (fullname.value.trim().length < 6)
-            {
+            else if (fullname.value.trim().length < 6) {
                 fullname.classList.add("is-invalid");
                 const fullnameFeedback = fullname.parentElement.querySelector('.invalid-feedback');
                 fullnameFeedback.innerText = "Họ và tên phải có ít nhất 6 ký tự.";
                 fullnameFeedback.style.display = 'block';
                 isValid = false;
             }
-            else if (fullname.value.trim().length > 30)
-            {
+            else if (fullname.value.trim().length > 30) {
                 fullname.classList.add("is-invalid");
                 const fullnameFeedback = fullname.parentElement.querySelector('.invalid-feedback');
                 fullnameFeedback.innerText = "Họ và tên tối đa 30 ký tự.";
                 fullnameFeedback.style.display = 'block';
                 isValid = false;
             }
-            else
-            {
+            else {
                 fullname.classList.remove("is-invalid");
                 const fullnameFeedback = fullname.parentElement.querySelector('.invalid-feedback');
                 fullnameFeedback.style.display = 'none';
@@ -301,24 +297,21 @@
                 usernameFeedback.style.display = 'block';
                 isValid = false;
             }
-            else if (username.value.trim().length < 6)
-            {
+            else if (username.value.trim().length < 6) {
                 username.classList.add("is-invalid");
                 const usernameFeedback = username.parentElement.querySelector('.invalid-feedback');
                 usernameFeedback.innerText = "Tên đăng nhập phải có ít nhất 6 ký tự.";
                 usernameFeedback.style.display = 'block';
                 isValid = false;
             }
-            else if (username.value.trim().length > 30)
-            {
+            else if (username.value.trim().length > 30) {
                 username.classList.add("is-invalid");
                 const usernameFeedback = username.parentElement.querySelector('.invalid-feedback');
                 usernameFeedback.innerText = "Tên đăng nhập tối đa 30 ký tự.";
                 usernameFeedback.style.display = 'block';
                 isValid = false;
             }
-            else
-            {
+            else {
                 username.classList.remove("is-invalid");
                 const usernameFeedback = username.parentElement.querySelector('.invalid-feedback');
                 usernameFeedback.style.display = 'none';
@@ -367,8 +360,7 @@
                 cfpassword.classList.remove("is-invalid");
             }
 
-            if (dob.value.trim() === "")
-            {
+            if (dob.value.trim() === "") {
                 dob.classList.add("is-invalid");
                 const dobFeedback = dob.parentElement.querySelector('.invalid-feedback');
                 if (dobFeedback) {
@@ -376,8 +368,7 @@
                     dobFeedback.style.display = 'block';
                 }
                 isValid = false;
-            } else if (!isOver16(dob.value))
-            {
+            } else if (!isOver16(dob.value)) {
                 dob.classList.add("is-invalid");
                 const dobFeedback = dob.parentElement.querySelector('.invalid-feedback');
                 if (dobFeedback) {
@@ -385,8 +376,7 @@
                     dobFeedback.style.display = 'block';
                 }
                 isValid = false;
-            } else
-            {
+            } else {
                 dob.classList.remove("is-invalid");
                 const dobFeedback = dob.parentElement.querySelector('.invalid-feedback');
                 if (dobFeedback) {
