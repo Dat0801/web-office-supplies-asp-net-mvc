@@ -137,37 +137,14 @@
                                         </div>
                                     </td>
 
-                                    <!-- Price Display -->
-                                    <td class="align-middle">
-                                        @if (item.QuantityProduct == 0 || item.Price == 0)
-                                        {
-                                            <div class="text-danger">
-                                                <span>Hết hàng</span>
-                                                <br />
-                                                <span><a href="#">Liên hệ để biết thêm chi tiết</a></span>
-                                            </div>
-                                        }
-                                        else if (!item.Product_status)
-                                        {
-                                            <div class="text-danger">
-                                                <span>Sản phẩm đã ngừng kinh doanh</span>
-                                                <br />
-                                                <span>Liên hệ để biết thêm chi tiết</span>
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            if (item.Promotion_Price > 0 && item.Promotion_Price < item.Price)
-                                            {
-                                                <span style="color: forestgreen">₫@item.Promotion_Price.ToString("N0")</span>
-                                                <del style="margin-left: 5px; color: gray">₫@item.Price.ToString("N0")</del>
-                                            }
-                                            else
-                                            {
-                                                <span style="color: forestgreen">₫@item.Price.ToString("N0")</span>
-                                            }
-                                        }
-                                    </td>
+                                    if (item.Promotion_Price == 0)
+                                    {
+                                        <td class="align-middle" style="color: #272727;">₫@item.Price.ToString("N0")</td>
+                                    }
+                                    else
+                                    {
+                                        <td class="align-middle" style="color: #272727;"><del style="margin-right:10px; color: #777777">₫@item.Price.ToString("N0")</del>₫@item.Promotion_Price.ToString("N0")</td>
+                                    }
 
                                     <!-- Quantity Controls -->
                                     <td class="align-middle">
