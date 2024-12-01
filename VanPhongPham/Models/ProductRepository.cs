@@ -420,6 +420,20 @@ namespace VanPhongPham.Models
                 })
                 .ToList();  // Chuyển dữ liệu vào bộ nhớ sau khi tính toán
 
+            var reviews = _context.product_reviews.Where(r => r.product_id == pro_id).ToList()
+                .Select(r => new ProductReviewViewModel
+                {
+                    ReviewId = r.review_id,
+                    UserName = r.user.username,
+                    AvtUrl = r.user.avt_url,
+                    ProductId = r.product_id,
+                    UserId = r.user_id,
+                    Rating = r.rating,
+                    ReviewContent = r.review_content,
+                    CreatedAt = (DateTime)r.created_at
+                }).ToList();
+
+
             var viewModels = new ViewModels
             {
                 ProductViewModel = new List<ProductViewModel> { productViewModel },
@@ -428,7 +442,8 @@ namespace VanPhongPham.Models
                     PromotionId = p.promotion_id,
                     PromotionName = p.promotion_name
                 }).ToList(),
-                RelatedProducts = relatedProducts
+                RelatedProducts = relatedProducts,
+                ReviewViewModel = reviews
             };
 
             return viewModels;

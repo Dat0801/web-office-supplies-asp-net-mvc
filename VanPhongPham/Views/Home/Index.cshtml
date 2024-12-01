@@ -42,65 +42,6 @@
     </div>
 </div>
 <!-- Navbar End -->
-<!-- Categories Start -->
-<@*div class="container-fluid pt-5">
-    <div class="row px-xl-5 pb-3">
-        <div class="col-lg-2 col-md-4 col-sm-12 pb-1">
-            <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
-                <p class="text-right">15 Sản phẩm</p>
-                <a href="" class="cat-img position-relative overflow-hidden mb-3">
-                    <img class="img-fluid" src="~/Public/img/cat-1.jpg" alt="">
-                </a>
-                <h5 class="font-weight-semi-bold m-0">Bút bi</h5>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4 pb-1">
-            <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
-                <p class="text-right">15 Sản phẩm</p>
-                <a href="" class="cat-img position-relative overflow-hidden mb-3">
-                    <img class="img-fluid" src="~/Public/img/cat-2.jpg" alt="">
-                </a>
-                <h5 class="font-weight-semi-bold m-0">Máy tính</h5>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4 pb-1">
-            <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
-                <p class="text-right">15 Sản phẩm</p>
-                <a href="" class="cat-img position-relative overflow-hidden mb-3">
-                    <img class="img-fluid" src="~/Public/img/cat-3.jpg" alt="">
-                </a>
-                <h5 class="font-weight-semi-bold m-0">Giấy in</h5>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4 pb-1">
-            <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
-                <p class="text-right">15 Sản phẩm</p>
-                <a href="" class="cat-img position-relative overflow-hidden mb-3">
-                    <img class="img-fluid" src="~/Public/img/cat-4.jpg" alt="">
-                </a>
-                <h5 class="font-weight-semi-bold m-0">Bút màu</h5>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4 pb-1">
-            <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
-                <p class="text-right">15 Sản phẩm</p>
-                <a href="" class="cat-img position-relative overflow-hidden mb-3">
-                    <img class="img-fluid" src="~/Public/img/cat-5.jpg" alt="">
-                </a>
-                <h5 class="font-weight-semi-bold m-0">Bút dạ quang</h5>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4 pb-1">
-            <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
-                <p class="text-right">15 Sản phẩm</p>
-                <a href="" class="cat-img position-relative overflow-hidden mb-3">
-                    <img class="img-fluid" src="~/Public/img/cat-6.jpg" alt="">
-                </a>
-                <h5 class="font-weight-semi-bold m-0">Sách tiếng anh</h5>
-            </div>
-        </div>
-    </div>
-</div>*@
 <!-- Categories End -->
 <!-- Offer Start -->
 <div class="container-fluid offer pt-5">
@@ -156,21 +97,23 @@
                                 </div>
                             }
                             else
-                            {                                
+                            {
                                 var activePromotions = Model.PromotionViewModel
                                     .Where(p => p.StartDate.Date <= DateTime.Now.Date && p.EndDate.Date >= DateTime.Now.Date)
                                     .ToList();
-                                
 
-                                
+
+
                                 if (product.PromotionPrice < product.Price)
                                 {
-                                    <span style="color: forestgreen">@string.Format("{0:N0}", product.PromotionPrice) VND</span>
-                                    <del style="margin-left: 5px; color: gray">@string.Format("{0:N0}", product.Price) VND</del>
+                                    <div class="d-flex align-items-center">
+                                        <span style="font-weight: normal; color: #ff4747; font-size: 16px;">₫@string.Format("{0:N0}", product.PromotionPrice)</span>
+                                        <del style="font-weight: normal; font-size: 14px; margin-left: 5px; color: #777777">₫@string.Format("{0:N0}", product.Price)</del>
+                                    </div>
                                 }
                                 else
                                 {
-                                    <span style="color: forestgreen">@string.Format("{0:N0}", product.Price) VND</span>
+                                    <span style="font-weight: normal; color: #ff4747; font-size: 16px;">₫@string.Format("{0:N0}", product.Price)</span>
                                 }
                             }
                         </div>
