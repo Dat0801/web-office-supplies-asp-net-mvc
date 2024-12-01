@@ -560,6 +560,16 @@ namespace VanPhongPham.Models
             return _context.products.FirstOrDefault(p => p.status == true && p.product_id == product_id);
         }
 
+        public product GetRecycleProduct(string product_name)
+        {
+            return _context.products.FirstOrDefault(p => p.status == false && p.product_name == product_name);
+        }
+
+        public product GetProductByName(string product_name)
+        {
+            return _context.products.FirstOrDefault(p => p.status == true && p.product_name == product_name);
+        }
+
         public List<product> GetProductByCategoryName(string category_name)
         {
             return _context.products.Where(p => p.category.category_name == category_name && p.status == true).ToList();
@@ -600,11 +610,14 @@ namespace VanPhongPham.Models
         {
             try
             {
-                product.price = string.IsNullOrWhiteSpace(product.price.ToString()) ? 0 : product.price;
-                product.purchase_price = string.IsNullOrWhiteSpace(product.purchase_price.ToString()) ? 0 : product.purchase_price;
-                product.stock_quantity = string.IsNullOrWhiteSpace(product.stock_quantity.ToString()) ? 0 : product.stock_quantity;
-                product.created_at = string.IsNullOrWhiteSpace(product.created_at.ToString()) ? DateTime.Now : product.created_at;
-
+                product.price = string.IsNullOrEmpty(product.price.ToString()) ? 0 : product.price;
+                product.promotion_price = string.IsNullOrEmpty(product.promotion_price.ToString()) ? 0 : product.promotion_price;
+                product.purchase_price = string.IsNullOrEmpty(product.purchase_price.ToString()) ? 0 : product.purchase_price;
+                product.stock_quantity = string.IsNullOrEmpty(product.stock_quantity.ToString()) ? 0 : product.stock_quantity;
+                product.sold = string.IsNullOrEmpty(product.sold.ToString()) ? 0 : product.sold;
+                product.avgRating = string.IsNullOrEmpty(product.avgRating.ToString()) ? 0 : product.avgRating;
+                product.visited = string.IsNullOrEmpty(product.visited.ToString()) ? 0 : product.visited;
+                product.created_at = string.IsNullOrEmpty(product.created_at.ToString()) ? DateTime.Now : product.created_at;
                 _context.products.InsertOnSubmit(product);
                 _context.SubmitChanges();
                 return true;
@@ -747,7 +760,7 @@ namespace VanPhongPham.Models
                             product_id = productId
 
                         };
-                        //AddImages(additionalImage);
+                        AddImages(additionalImage);
                     }
                 }
                 return true;
