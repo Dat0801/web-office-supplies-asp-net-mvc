@@ -105,13 +105,15 @@ namespace VanPhongPham.Models
     partial void Insertuser_role(user_role instance);
     partial void Updateuser_role(user_role instance);
     partial void Deleteuser_role(user_role instance);
-        #endregion
-        public DB_VanPhongPhamDataContext() :
-               base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString1"].ConnectionString, mappingSource)
-        {
-            OnCreated();
-        }
-        public DB_VanPhongPhamDataContext(string connection) : 
+    #endregion
+		
+		public DB_VanPhongPhamDataContext() : 
+				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString"].ConnectionString, mappingSource)
+		{
+			OnCreated();
+		}
+		
+		public DB_VanPhongPhamDataContext(string connection) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();

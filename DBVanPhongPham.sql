@@ -434,7 +434,7 @@ AFTER INSERT, UPDATE, DELETE
 AS
 BEGIN
     UPDATE p
-    SET p.promotion_price = p.price * (1 - pr.discount_percent / 100)
+    SET p.promotion_price = ROUND(p.price * (1 - pr.discount_percent / 100), 0)
     FROM products p
     INNER JOIN product_promotions pp ON p.product_id = pp.product_id
     INNER JOIN promotions pr ON pp.promotion_id = pr.promotion_id
@@ -977,7 +977,3 @@ VALUES
 ('REC003', 'POD002', 'PRO016', 30),
 ('REC003', 'POD002', 'PRO017', 30),
 ('REC003', 'POD002', 'PRO018', 30)
-
-
-
-
