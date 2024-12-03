@@ -71,16 +71,16 @@ function displayUserName() {
 
         // Hiển thị tên người dùng và liên kết đến trang cá nhân
         userInfoElement.innerHTML = `<a href="/Profile/Index?MaTaiKhoan=${encodeURIComponent(user.MaTaiKhoan)}" style="text-decoration: none;">${user.TenTaiKhoan}</a>`;
-        userInfoElement.style.display = 'inline';
+        userInfoElement.style.display = 'block';
 
         // Hiển thị ảnh đại diện nếu có, hoặc dùng ảnh mặc định, và đặt visibility thành visible
         profileImageElement.src = user.ImageProfile || '/Public/img/icons/icons8-male-user-100.png';
-        profileImageElement.style.visibility = 'visible';
 
         // Hiển thị nút đăng xuất, ẩn đăng nhập và đăng ký
-        logoutItem.style.display = 'inline';
+        logoutItem.style.display = 'block';
         loginItem.style.display = 'none';
         registerItem.style.display = 'none';
+        document.getElementById('profile-section').style.display = 'flex';
 
         // Đặt liên kết giỏ hàng đến trang giỏ hàng
         cartLink.href = `/Cart/Index?cart_id=${user.CartID}`;
@@ -92,13 +92,11 @@ function displayUserName() {
         userInfoElement.innerHTML = '';
         userInfoElement.style.display = 'none';
 
-        // Ẩn ảnh đại diện khi chưa đăng nhập
-        profileImageElement.style.visibility = 'hidden';
-
         // Hiển thị nút đăng nhập và đăng ký
-        loginItem.style.display = 'inline';
-        registerItem.style.display = 'inline';
+        loginItem.style.display = 'block';
+        registerItem.style.display = 'block';
         logoutItem.style.display = 'none';
+        document.getElementById('profile-section').style.display = 'none';
 
         // Đặt liên kết giỏ hàng đến trang đăng nhập
         cartLink.href = "/Auth/Login";

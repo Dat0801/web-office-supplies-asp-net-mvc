@@ -33,6 +33,8 @@ namespace VanPhongPham.Controllers
             if (!string.IsNullOrWhiteSpace(categoryID))
             {
                 viewModel = _productRepository.GetProductsModelViewByCategory(categoryID);
+                var category_name = _productRepository.GetCategory(categoryID).category_name;
+                ViewBag.category_name = category_name;
                 if (viewModel == null || viewModel.ProductViewModel == null)
                 {
                     viewModel = new ViewModels();

@@ -1,6 +1,6 @@
 ﻿@model VanPhongPham.Models.address
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Thanh toán đơn hàng - QVD";
     Layout = "~/Views/Shared/_LayoutClient.cshtml";
 }
 @if (ViewBag.Check == 1)
@@ -31,7 +31,7 @@
 }
 else
 {
-    <div class="container p-0">
+    <div class="container p-10 mt-2">
         <div class="row">
             <div class="col-12" style="background-color: #f1f3f5">
                 @Html.Action("AddressCheckoutPartial", "Checkout", new { userid = ViewBag.UserID })

@@ -91,11 +91,24 @@
         {
             if (defaultAddress != null)
             {
-                <div class="address-content">
-                    <span class="address-name">@defaultAddress.full_name</span>|<span class="address-phone">@defaultAddress.phone_number</span>
-                    <span class="address-spec">@defaultAddress.address_line</span>
-                    <span class="default-badge" style="margin-left: 10px">Mặc Định</span>
-                    <a href="#" id="changeAddressButton" data-address-id="@defaultAddress.address_id" class="edit-link" style="text-decoration: none">Thay Đổi</a>
+
+                <div class="address-content mb-3">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start">
+                        <div class="address-info mb-2 mb-sm-0">
+                            <span class="address-name">@defaultAddress.full_name</span> |
+                            <span class="address-phone">@defaultAddress.phone_number</span>
+                        </div>
+                        <a href="#" id="changeAddressButton" data-address-id="@defaultAddress.address_id" class="edit-link text-right" style="text-decoration: none; margin-left: 10px;">Thay Đổi</a>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start">
+                        <div class="address-spec mb-2 mb-sm-0">
+                            <span>@defaultAddress.address_line</span>
+                        </div>
+                        <div class="default-badge mt-2 mt-sm-0 ml-2" style="font-size: 12px;">
+                            Mặc Định
+                        </div>
+                    </div>
                 </div>
             }
         }

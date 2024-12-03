@@ -25,10 +25,10 @@
         border-color: #6c757d;
     }
 
-    .btn-outline-secondary:hover {
-        background-color: #6c757d;
-        color: #fff;
-    }
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            color: #fff;
+        }
 
     .d-flex {
         display: flex;
@@ -63,9 +63,9 @@
         text-decoration: none;
     }
 
-    .text-primary:hover {
-        text-decoration: underline;
-    }
+        .text-primary:hover {
+            text-decoration: underline;
+        }
 
     .button-group {
         display: flex;
@@ -77,9 +77,9 @@
         transform: translateY(-50%); /* Căn giữa theo chiều dọc */
     }
 
-    .button-group a {
-        margin-bottom: 5px; /* Khoảng cách giữa các nút */
-    }
+        .button-group a {
+            margin-bottom: 5px; /* Khoảng cách giữa các nút */
+        }
 </style>
 
 <div class="d-flex justify-content-between align-items-center">
@@ -141,7 +141,7 @@
                 <p>@address.address_line</p>
                 <div class="d-flex justify-content-between">
                     <div>
-                     
+
                         @if (address.isDefault == true)
                         {
                             <button class="btn btn-outline-danger btn-sm mr-2">Mặc định</button>
@@ -167,7 +167,7 @@
                         }
                     </div>
                 </div>
-            </div> 
+            </div>
         }
     }
     else
@@ -312,7 +312,7 @@
                 document.getElementById('defaultAddress').checked = true;
                 defaultAddressCheckbox.disabled = true;
             }
-            else if (isDefault === "False"){
+            else if (isDefault === "False") {
                 document.getElementById('defaultAddress').checked = false;
             }
 

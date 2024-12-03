@@ -1,5 +1,12 @@
 ﻿@{
-    ViewBag.Title = "GetAllProducts";
+    if (ViewBag.category_name != null)
+    {
+        ViewBag.Title = ViewBag.category_name + " - QVD";
+    }
+    else
+    {
+        ViewBag.Title = "Sản Phẩm - QVD";
+    }
     Layout = "~/Views/Shared/_LayoutClient.cshtml";
 }
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
