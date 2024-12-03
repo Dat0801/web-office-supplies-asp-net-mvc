@@ -51,6 +51,9 @@ namespace VanPhongPham.Models
     partial void Insertcategory(category instance);
     partial void Updatecategory(category instance);
     partial void Deletecategory(category instance);
+    partial void Insertcoupon(coupon instance);
+    partial void Updatecoupon(coupon instance);
+    partial void Deletecoupon(coupon instance);
     partial void Insertimage(image instance);
     partial void Updateimage(image instance);
     partial void Deleteimage(image instance);
@@ -190,6 +193,14 @@ namespace VanPhongPham.Models
 			get
 			{
 				return this.GetTable<category>();
+			}
+		}
+		
+		public System.Data.Linq.Table<coupon> coupons
+		{
+			get
+			{
+				return this.GetTable<coupon>();
 			}
 		}
 		
@@ -2005,6 +2016,308 @@ namespace VanPhongPham.Models
 		}
 	}
 	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.coupons")]
+	public partial class coupon : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private string _coupon_id;
+		
+		private string _coupon_code;
+		
+		private string _coupon_imgurl;
+		
+		private string _coupon_title;
+		
+		private string _coupon_description;
+		
+		private int _coupon_percent;
+		
+		private System.Nullable<int> _quantity;
+		
+		private System.Nullable<System.DateTime> _created_at;
+		
+		private System.DateTime _expires_at;
+		
+		private System.Nullable<System.DateTime> _updated_at;
+		
+		private System.Nullable<bool> _status;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Oncoupon_idChanging(string value);
+    partial void Oncoupon_idChanged();
+    partial void Oncoupon_codeChanging(string value);
+    partial void Oncoupon_codeChanged();
+    partial void Oncoupon_imgurlChanging(string value);
+    partial void Oncoupon_imgurlChanged();
+    partial void Oncoupon_titleChanging(string value);
+    partial void Oncoupon_titleChanged();
+    partial void Oncoupon_descriptionChanging(string value);
+    partial void Oncoupon_descriptionChanged();
+    partial void Oncoupon_percentChanging(int value);
+    partial void Oncoupon_percentChanged();
+    partial void OnquantityChanging(System.Nullable<int> value);
+    partial void OnquantityChanged();
+    partial void Oncreated_atChanging(System.Nullable<System.DateTime> value);
+    partial void Oncreated_atChanged();
+    partial void Onexpires_atChanging(System.DateTime value);
+    partial void Onexpires_atChanged();
+    partial void Onupdated_atChanging(System.Nullable<System.DateTime> value);
+    partial void Onupdated_atChanged();
+    partial void OnstatusChanging(System.Nullable<bool> value);
+    partial void OnstatusChanged();
+    #endregion
+		
+		public coupon()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_coupon_id", DbType="VarChar(10) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string coupon_id
+		{
+			get
+			{
+				return this._coupon_id;
+			}
+			set
+			{
+				if ((this._coupon_id != value))
+				{
+					this.Oncoupon_idChanging(value);
+					this.SendPropertyChanging();
+					this._coupon_id = value;
+					this.SendPropertyChanged("coupon_id");
+					this.Oncoupon_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_coupon_code", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string coupon_code
+		{
+			get
+			{
+				return this._coupon_code;
+			}
+			set
+			{
+				if ((this._coupon_code != value))
+				{
+					this.Oncoupon_codeChanging(value);
+					this.SendPropertyChanging();
+					this._coupon_code = value;
+					this.SendPropertyChanged("coupon_code");
+					this.Oncoupon_codeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_coupon_imgurl", DbType="VarChar(500) NOT NULL", CanBeNull=false)]
+		public string coupon_imgurl
+		{
+			get
+			{
+				return this._coupon_imgurl;
+			}
+			set
+			{
+				if ((this._coupon_imgurl != value))
+				{
+					this.Oncoupon_imgurlChanging(value);
+					this.SendPropertyChanging();
+					this._coupon_imgurl = value;
+					this.SendPropertyChanged("coupon_imgurl");
+					this.Oncoupon_imgurlChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_coupon_title", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string coupon_title
+		{
+			get
+			{
+				return this._coupon_title;
+			}
+			set
+			{
+				if ((this._coupon_title != value))
+				{
+					this.Oncoupon_titleChanging(value);
+					this.SendPropertyChanging();
+					this._coupon_title = value;
+					this.SendPropertyChanged("coupon_title");
+					this.Oncoupon_titleChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_coupon_description", DbType="NVarChar(MAX)")]
+		public string coupon_description
+		{
+			get
+			{
+				return this._coupon_description;
+			}
+			set
+			{
+				if ((this._coupon_description != value))
+				{
+					this.Oncoupon_descriptionChanging(value);
+					this.SendPropertyChanging();
+					this._coupon_description = value;
+					this.SendPropertyChanged("coupon_description");
+					this.Oncoupon_descriptionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_coupon_percent", DbType="Int NOT NULL")]
+		public int coupon_percent
+		{
+			get
+			{
+				return this._coupon_percent;
+			}
+			set
+			{
+				if ((this._coupon_percent != value))
+				{
+					this.Oncoupon_percentChanging(value);
+					this.SendPropertyChanging();
+					this._coupon_percent = value;
+					this.SendPropertyChanged("coupon_percent");
+					this.Oncoupon_percentChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_quantity", DbType="Int")]
+		public System.Nullable<int> quantity
+		{
+			get
+			{
+				return this._quantity;
+			}
+			set
+			{
+				if ((this._quantity != value))
+				{
+					this.OnquantityChanging(value);
+					this.SendPropertyChanging();
+					this._quantity = value;
+					this.SendPropertyChanged("quantity");
+					this.OnquantityChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_created_at", DbType="DateTime")]
+		public System.Nullable<System.DateTime> created_at
+		{
+			get
+			{
+				return this._created_at;
+			}
+			set
+			{
+				if ((this._created_at != value))
+				{
+					this.Oncreated_atChanging(value);
+					this.SendPropertyChanging();
+					this._created_at = value;
+					this.SendPropertyChanged("created_at");
+					this.Oncreated_atChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_expires_at", DbType="DateTime NOT NULL")]
+		public System.DateTime expires_at
+		{
+			get
+			{
+				return this._expires_at;
+			}
+			set
+			{
+				if ((this._expires_at != value))
+				{
+					this.Onexpires_atChanging(value);
+					this.SendPropertyChanging();
+					this._expires_at = value;
+					this.SendPropertyChanged("expires_at");
+					this.Onexpires_atChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_updated_at", DbType="DateTime")]
+		public System.Nullable<System.DateTime> updated_at
+		{
+			get
+			{
+				return this._updated_at;
+			}
+			set
+			{
+				if ((this._updated_at != value))
+				{
+					this.Onupdated_atChanging(value);
+					this.SendPropertyChanging();
+					this._updated_at = value;
+					this.SendPropertyChanged("updated_at");
+					this.Onupdated_atChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_status", DbType="Bit")]
+		public System.Nullable<bool> status
+		{
+			get
+			{
+				return this._status;
+			}
+			set
+			{
+				if ((this._status != value))
+				{
+					this.OnstatusChanging(value);
+					this.SendPropertyChanging();
+					this._status = value;
+					this.SendPropertyChanged("status");
+					this.OnstatusChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.images")]
 	public partial class image : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -2606,11 +2919,15 @@ namespace VanPhongPham.Models
 		
 		private System.Nullable<double> _shipping_fee;
 		
+		private System.Nullable<double> _discount_amount;
+		
 		private System.Nullable<double> _total_amount;
 		
 		private int _order_status_id;
 		
 		private int _payment_status_id;
+		
+		private string _coupon_applied;
 		
 		private System.Nullable<int> _cancellation_requested;
 		
@@ -2652,12 +2969,16 @@ namespace VanPhongPham.Models
     partial void Ondelivery_dateChanged();
     partial void Onshipping_feeChanging(System.Nullable<double> value);
     partial void Onshipping_feeChanged();
+    partial void Ondiscount_amountChanging(System.Nullable<double> value);
+    partial void Ondiscount_amountChanged();
     partial void Ontotal_amountChanging(System.Nullable<double> value);
     partial void Ontotal_amountChanged();
     partial void Onorder_status_idChanging(int value);
     partial void Onorder_status_idChanged();
     partial void Onpayment_status_idChanging(int value);
     partial void Onpayment_status_idChanged();
+    partial void Oncoupon_appliedChanging(string value);
+    partial void Oncoupon_appliedChanged();
     partial void Oncancellation_requestedChanging(System.Nullable<int> value);
     partial void Oncancellation_requestedChanged();
     partial void Oncancellation_reasonChanging(string value);
@@ -2869,6 +3190,26 @@ namespace VanPhongPham.Models
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_discount_amount", DbType="Float")]
+		public System.Nullable<double> discount_amount
+		{
+			get
+			{
+				return this._discount_amount;
+			}
+			set
+			{
+				if ((this._discount_amount != value))
+				{
+					this.Ondiscount_amountChanging(value);
+					this.SendPropertyChanging();
+					this._discount_amount = value;
+					this.SendPropertyChanged("discount_amount");
+					this.Ondiscount_amountChanged();
+				}
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_total_amount", DbType="Float")]
 		public System.Nullable<double> total_amount
 		{
@@ -2933,6 +3274,26 @@ namespace VanPhongPham.Models
 					this._payment_status_id = value;
 					this.SendPropertyChanged("payment_status_id");
 					this.Onpayment_status_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_coupon_applied", DbType="VarChar(10)")]
+		public string coupon_applied
+		{
+			get
+			{
+				return this._coupon_applied;
+			}
+			set
+			{
+				if ((this._coupon_applied != value))
+				{
+					this.Oncoupon_appliedChanging(value);
+					this.SendPropertyChanging();
+					this._coupon_applied = value;
+					this.SendPropertyChanged("coupon_applied");
+					this.Oncoupon_appliedChanged();
 				}
 			}
 		}

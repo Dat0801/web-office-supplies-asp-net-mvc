@@ -45,40 +45,38 @@ namespace VanPhongPham.Controllers
             var promotionIds = promotions.Select(p => p.promotion_id).ToList();
 
             var cartdetails = db.cart_details
-    .Where(o => o.cart_id == cart_id)
-    .Select(o => new OrderDetailViewModel
-    {
-        ProductID = o.product.product_id,
-        ProductName = o.product.product_name,
-        Quantity = o.quantity ?? 0,
-        QuantityProduct = o.product.stock_quantity ?? 0,
-        TotalAmount = o.total_amount ?? 0,
-        ImageUrl = o.product.images
-                    .Where(img => img.is_primary == true)
-                    .Select(img => img.image_url)
-                    .FirstOrDefault(),
-        Price = o.product.price ?? 0,
-        Promotion_Price = db.product_promotions
-            .Where(pp => promotionIds.Contains(pp.promotion_id) && pp.product_id == o.product.product_id)
-            .Select(pp => (o.product.price) * (1 - (pp.promotion.discount_percent / 100)))
-            .FirstOrDefault() ?? (o.product.price ?? 0),
-        isReviewed = false,
-        Product_status = o.product.status ?? false,
-        isSelected = o.isSelected ?? 0,
-        Promotions = db.product_promotions
-            .Where(pp => promotionIds.Contains(pp.promotion_id) && pp.product_id == o.product.product_id)
-            .Select(pp => new PromotionViewModel
-            {
-                PromotionId = pp.promotion_id,
-                PromotionName = pp.promotion.promotion_name,
-                Description = pp.promotion.description,
-                DiscountPercent = pp.promotion.discount_percent,
-                StartDate = pp.promotion.start_date,
-                EndDate = pp.promotion.end_date
-            }).FirstOrDefault()
-    }).ToList();
-
-
+                            .Where(o => o.cart_id == cart_id)
+                            .Select(o => new OrderDetailViewModel
+                            {
+                                ProductID = o.product.product_id,
+                                ProductName = o.product.product_name,
+                                Quantity = o.quantity ?? 0,
+                                QuantityProduct = o.product.stock_quantity ?? 0,
+                                TotalAmount = o.total_amount ?? 0,
+                                ImageUrl = o.product.images
+                                            .Where(img => img.is_primary == true)
+                                            .Select(img => img.image_url)
+                                            .FirstOrDefault(),
+                                Price = o.product.price ?? 0,
+                                Promotion_Price = db.product_promotions
+                                    .Where(pp => promotionIds.Contains(pp.promotion_id) && pp.product_id == o.product.product_id)
+                                    .Select(pp => (o.product.price) * (1 - (pp.promotion.discount_percent / 100)))
+                                    .FirstOrDefault() ?? (o.product.price ?? 0),
+                                isReviewed = false,
+                                Product_status = o.product.status ?? false,
+                                isSelected = o.isSelected ?? 0,
+                                Promotions = db.product_promotions
+                                    .Where(pp => promotionIds.Contains(pp.promotion_id) && pp.product_id == o.product.product_id)
+                                    .Select(pp => new PromotionViewModel
+                                    {
+                                        PromotionId = pp.promotion_id,
+                                        PromotionName = pp.promotion.promotion_name,
+                                        Description = pp.promotion.description,
+                                        DiscountPercent = pp.promotion.discount_percent,
+                                        StartDate = pp.promotion.start_date,
+                                        EndDate = pp.promotion.end_date
+                                    }).FirstOrDefault()
+                            }).ToList();
 
             return View(cartdetails);
         }

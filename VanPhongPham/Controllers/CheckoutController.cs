@@ -141,7 +141,7 @@ namespace VanPhongPham.Controllers
 
             return order_id;
         }
-        public ActionResult InitVNPay(string user_id, int cart_id, string info_adrs, string ordernote, float shipping_fee)
+        public ActionResult InitVNPay(string user_id, int cart_id, string info_adrs, string ordernote, float shipping_fee, float discount_amount, string coupon_applied)
         {
             // Lấy tất cả sản phẩm trong giỏ hàng mà người dùng đã chọn và có số lượng đủ
             var cart_items1 = db.cart_details
@@ -183,6 +183,8 @@ namespace VanPhongPham.Controllers
             TempData["info_adrs"] = address;
             TempData["ordernote"] = ordernote;
             TempData["shipping_fee"] = shipping_fee;
+            TempData["discount_amount"] = discount_amount;
+            TempData["coupon_applied"] = coupon_applied;
             TempData["orderID"] = current_orderid;
 
             var vnpay = new VnPayLibrary();
@@ -217,13 +219,15 @@ namespace VanPhongPham.Controllers
             var infoAdrs = TempData["info_adrs"]?.ToString();
             var ordernote = TempData["ordernote"]?.ToString();
             float shippingFee = float.Parse(TempData["shipping_fee"].ToString());
+            float discount_amount = float.Parse(TempData["discount_amount"].ToString());
+            string coupon_applied = TempData["coupon_applied"]?.ToString();
             var orderId = TempData["orderID"]?.ToString();
 
             string responseCode = vnpay.GetResponseData("vnp_ResponseCode");
 
             if (responseCode == "00")
             {
-                SaveOrder(userId, cartId, infoAdrs, ordernote, "PAY002", shippingFee, orderId);
+                SaveOrder(userId, cartId, infoAdrs, ordernote, "PAY002", shippingFee, discount_amount, coupon_applied, orderId);
                 return RedirectToAction("Index", "Profile", new { order_status_id = 1, MaTaiKhoan = userId, view = "OrderPartial" });
             }
             else
@@ -232,7 +236,7 @@ namespace VanPhongPham.Controllers
             }
         }
 
-        public ActionResult SaveOrder(string user_id, int cart_id, string info_adrs, string ordernote, string method_id, float shipping_fee,  string orderID)
+        public ActionResult SaveOrder(string user_id, int cart_id, string info_adrs, string ordernote, string method_id, float shipping_fee, float discount_amount, string coupon_applied,  string orderID)
         {
             // Lấy tất cả sản phẩm trong giỏ hàng mà người dùng đã chọn và có số lượng đủ
             var cart_items1 = db.cart_details
@@ -279,6 +283,8 @@ namespace VanPhongPham.Controllers
                     ordernote = ordernote,
                     method_id = method_id,
                     shipping_fee = shipping_fee,
+                    discount_amount = discount_amount,
+                    coupon_applied = coupon_applied,
                     order_status_id = 1,
                     created_at = DateTime.Now,
                     payment_status_id = paymentStatusID,
@@ -298,6 +304,8 @@ namespace VanPhongPham.Controllers
                     ordernote = ordernote,
                     method_id = method_id,
                     shipping_fee = shipping_fee,
+                    discount_amount = discount_amount,
+                    coupon_applied = coupon_applied,
                     order_status_id = 1,
                     created_at = DateTime.Now,
                     payment_status_id = paymentStatusID,
@@ -345,6 +353,38 @@ namespace VanPhongPham.Controllers
             }    
            
             return Json(new { success = true, message = "Dữ liệu đã được lưu thành công." });
+        }
+
+        [HttpPost]
+        public ActionResult CheckCoupon(string coupon_code)
+        {
+            if (string.IsNullOrEmpty(coupon_code))
+            {
+                return Json(new { success = false, message = "Mã giảm giá không được để trống." });
+            }
+
+            var coupon = db.coupons.FirstOrDefault(c => c.coupon_code == coupon_code);
+
+            if (coupon != null)
+            {
+                if (coupon.status == false)
+                {
+                    return Json(new { success = false, message = "Mã giảm giá đã ẩn." });
+                }    
+                if (coupon.quantity <= 0)
+                {
+                    return Json(new { success = false, message = "Mã giảm giá đã hết số lượng." });
+                }
+
+                if (coupon.expires_at < DateTime.Now)
+                {
+                    return Json(new { success = false, message = "Mã giảm giá đã hết hạn." });
+                }
+
+                return Json(new { success = true, couponid = coupon.coupon_id, percent = coupon.coupon_percent });
+            }
+
+            return Json(new { success = false, message = "Mã giảm giá không tồn tại." });
         }
     }
 }

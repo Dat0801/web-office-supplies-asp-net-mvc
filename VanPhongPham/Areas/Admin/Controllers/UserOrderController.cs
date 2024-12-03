@@ -114,6 +114,8 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     MethodName = o.payment_method.method_name,
                     DeliveryDate = o.delivery_date,
                     ShippingFee = o.shipping_fee,
+                    DiscountAmount = o.discount_amount,
+                    CounponApplied = o.coupon_applied,
                     TotalAmount = o.total_amount,
                     OrderStatusID = o.order_status_id,
                     OrderStatusName = o.order_status.order_status_name,
@@ -169,7 +171,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
 
             ViewBag.TotalWeight = totalWeight;
-            ViewBag.TotalAmountOrder = totalAmountOrder;
+            ViewBag.TotalAmountOrder = totalAmountOrder - cartdetails.DiscountAmount;
             ViewBag.View = view;
             return View(cartdetails);
         }
