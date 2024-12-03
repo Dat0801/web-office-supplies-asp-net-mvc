@@ -199,12 +199,14 @@
                                                 .ToList();
                                             if (product.PromotionPrice < product.Price)
                                             {
-                                                <span style="color: forestgreen">@string.Format("{0:N0}", product.PromotionPrice) VND</span>
-                                                <del style="margin-left: 5px; color: gray">@string.Format("{0:N0}", product.Price) VND</del>
+                                                <div class="d-flex align-items-center">
+                                                    <span style="font-weight: normal; color: #ff4747; font-size: 16px;">₫@string.Format("{0:N0}", product.PromotionPrice)</span>
+                                                    <del style="font-weight: normal; font-size: 14px; margin-left: 5px; color: #777777">₫@string.Format("{0:N0}", product.Price)</del>
+                                                </div>
                                             }
                                             else
                                             {
-                                                <span style="color: forestgreen">@string.Format("{0:N0}", product.Price) VND</span>
+                                                <span style="font-weight: normal; color: #ff4747; font-size: 16px;">₫@string.Format("{0:N0}", product.Price)</span>
                                             }
                                         }
                                     </div>

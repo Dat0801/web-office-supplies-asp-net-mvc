@@ -35,29 +35,54 @@ namespace VanPhongPham.Controllers
             db.Refresh(RefreshMode.KeepChanges, cart_items);
             db.SubmitChanges();
 
+            // Lấy danh sách khuyến mãi
+            var currentDate = DateTime.Now;
+            var promotions = db.promotions
+                .Where(p => p.status == true && p.start_date <= currentDate && p.end_date >= currentDate)
+                .ToList();
+
             // Lấy danh sách đơn hàng theo điều kiện
+            var promotionIds = promotions.Select(p => p.promotion_id).ToList();
+
             var cartdetails = db.cart_details
-                .Where(o => o.cart_id == cart_id)// Kiểm tra cả trạng thái và tài khoản
-                .Select(o => new OrderDetailViewModel // Sử dụng OrderViewModel
-                {
-                    ProductID = o.product.product_id, // Thêm thuộc tính ProductID nếu cần
-                    ProductName = o.product.product_name,
-                    Quantity = o.quantity.HasValue ? o.quantity.Value : 0, // Gán giá trị 0 nếu null
-                    QuantityProduct = o.product.stock_quantity.HasValue ? o.product.stock_quantity.Value : 0,
-                    TotalAmount = o.total_amount.HasValue ? o.total_amount.Value : 0, // Gán giá trị 0 nếu null
-                    ImageUrl = o.product.images
-                                .Where(img => img.is_primary == true) // Kiểm tra hình ảnh chính
-                                .Select(img => img.image_url)
-                                .FirstOrDefault(), // Lấy hình ảnh đầu tiên
-                    Price = o.product.price.HasValue ? o.product.price.Value : 0, // Gán giá trị 0 nếu null
-                    Promotion_Price = o.product.promotion_price.HasValue ? o.product.promotion_price.Value : 0,
-                    isReviewed = false, // Giả sử có thuộc tính này trong order_detail
-                    Product_status = o.product.status.HasValue ? o.product.status.Value : false,
-                    isSelected = o.isSelected.HasValue ? o.isSelected.Value : 0,
-                }).ToList();
-   
+    .Where(o => o.cart_id == cart_id)
+    .Select(o => new OrderDetailViewModel
+    {
+        ProductID = o.product.product_id,
+        ProductName = o.product.product_name,
+        Quantity = o.quantity ?? 0,
+        QuantityProduct = o.product.stock_quantity ?? 0,
+        TotalAmount = o.total_amount ?? 0,
+        ImageUrl = o.product.images
+                    .Where(img => img.is_primary == true)
+                    .Select(img => img.image_url)
+                    .FirstOrDefault(),
+        Price = o.product.price ?? 0,
+        Promotion_Price = db.product_promotions
+            .Where(pp => promotionIds.Contains(pp.promotion_id) && pp.product_id == o.product.product_id)
+            .Select(pp => (o.product.price) * (1 - (pp.promotion.discount_percent / 100)))
+            .FirstOrDefault() ?? (o.product.price ?? 0),
+        isReviewed = false,
+        Product_status = o.product.status ?? false,
+        isSelected = o.isSelected ?? 0,
+        Promotions = db.product_promotions
+            .Where(pp => promotionIds.Contains(pp.promotion_id) && pp.product_id == o.product.product_id)
+            .Select(pp => new PromotionViewModel
+            {
+                PromotionId = pp.promotion_id,
+                PromotionName = pp.promotion.promotion_name,
+                Description = pp.promotion.description,
+                DiscountPercent = pp.promotion.discount_percent,
+                StartDate = pp.promotion.start_date,
+                EndDate = pp.promotion.end_date
+            }).FirstOrDefault()
+    }).ToList();
+
+
+
             return View(cartdetails);
         }
+
         public ActionResult GetCartQuantity(int cart_id)
         {
             int quantity = db.cart_details.Where(c => c.cart_id == cart_id).Count();

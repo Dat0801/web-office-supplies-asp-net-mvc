@@ -50,18 +50,17 @@
 <div class="container-fluid py-5">
     <div class="row px-xl-5">
         <div class="col-lg-5 pb-5">
-            <div id="product-carousel" class="carousel slide" data-ride="carousel">
+            <div id="product-carousel" class="carousel slide" data-ride="carousel" style="max-width: 500px;">
                 <div class="carousel-inner border">
                     @foreach (var product in Model.ProductViewModel)
                     {
                         for (int i = 0; i < product.Images.Count; i++)
                         {
                             <div class="carousel-item @(i == 0 ? "active" : "")">
-                                <img class="w-100 h-100" src="@product.Images[i].ImageUrl" alt="@product.Images[i].Description">
+                                <img class="d-block mx-auto" style="width: 300px; height: auto;" src="@product.Images[i].ImageUrl" alt="@product.Images[i].Description">
                             </div>
                         }
                     }
-
                 </div>
                 <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
                     <i class="fa fa-2x fa-angle-left text-dark"></i>
@@ -70,10 +69,11 @@
                     <i class="fa fa-2x fa-angle-right text-dark"></i>
                 </a>
             </div>
+
         </div>
 
         <div class="col-lg-7 pb-5">
-            <h3 class="font-weight-semi-bold">@Model.ProductViewModel.FirstOrDefault().ProductName</h3>
+            <h3>@Model.ProductViewModel.FirstOrDefault().ProductName</h3>
             <div class="d-flex mb-3 align-items-center">
                 <div class="text-primary mr-2">
                     @{
@@ -97,38 +97,44 @@
                 <small class="pt-1" style="color: black; font-size: 18px">(@avgRating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture))</small>
             </div>
 
-            <h3 class="font-weight-semi-bold mb-4">
+            <h3>
                 @{
                     var products = Model.ProductViewModel.FirstOrDefault();
-                    if (products.StockQuantity == 0 || products.Price == 0)
-                    {
-                        <div class="text-danger">
-                            <span>Hết hàng</span>
-                            <br />
-                            <span><a href="#">Liên hệ để biết thêm chi tiết</a></span>
-                        </div>
-                    }
+
                     if (products.Status == false)
                     {
                         <div class="text-danger">
                             <span>Sản phẩm đã ngừng kinh doanh</span>
                             <br />
-                            <span>Liên hệ để biết thêm chi tiết</span>
+                            <span class="text-primary" style="font-size: 20px;">Liên hệ để biết thêm chi tiết</span>
                         </div>
                     }
                     else
                     {
-                        var activePromotions = Model.PromotionViewModel
-                            .Where(p => p.StartDate.Date <= DateTime.Now.Date && p.EndDate.Date >= DateTime.Now.Date)
-                            .ToList();
-                        if (products.PromotionPrice < products.Price)
+                        if (products.StockQuantity == 0 || products.Price == 0)
                         {
-                            <span style="color: forestgreen">@string.Format("{0:N0}", products.PromotionPrice) VND</span>
-                            <del style="margin-left: 5px; color: gray">@string.Format("{0:N0}", products.Price) VND</del>
+                            <div class="text-danger">
+                                <span>Hết hàng</span>
+                                <br />
+                                <span class="text-primary" style="font-size: 20px;">Liên hệ để biết thêm chi tiết</span>
+                            </div>
                         }
                         else
                         {
-                            <span style="color: forestgreen">@string.Format("{0:N0}", products.Price) VND</span>
+                            var activePromotions = Model.PromotionViewModel
+                                .Where(p => p.StartDate.Date <= DateTime.Now.Date && p.EndDate.Date >= DateTime.Now.Date)
+                                .ToList();
+                            if (products.PromotionPrice < products.Price)
+                            {
+                                <div class="d-flex align-items-center">
+                                    <span style="font-weight: normal; color: #ff4747">₫@string.Format("{0:N0}", products.PromotionPrice)</span>
+                                    <del style="font-weight: normal; font-size: 18px; margin-left: 5px; color: #777777">₫@string.Format("{0:N0}", products.Price)</del>
+                                </div>
+                            }
+                            else
+                            {
+                                <span style="font-weight: normal; color: #ff4747 ">₫@string.Format("{0:N0}", products.Price)</span>
+                            }
                         }
                     }
                 }
