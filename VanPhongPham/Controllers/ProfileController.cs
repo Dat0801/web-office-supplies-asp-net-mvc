@@ -170,6 +170,8 @@ namespace VanPhongPham.Controllers
                     MethodName = o.payment_method.method_name,
                     DeliveryDate = o.delivery_date,
                     ShippingFee = o.shipping_fee,
+                    DiscountAmount = o.discount_amount,
+                    CounponApplied = o.coupon_applied,
                     TotalAmount = o.total_amount,
                     OrderStatusID = o.order_status_id,
                     OrderStatusName = o.order_status.order_status_name,
