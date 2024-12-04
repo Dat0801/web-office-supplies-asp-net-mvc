@@ -378,9 +378,18 @@
                 </div>
                 @if (order.OrderStatusName == "Đã hủy")
                 {
-                    <div class="order-actions d-flex justify-content-start mt-2" style="font-size: 12px">
-                        <p>Đã hủy bởi bạn</p>
-                    </div>
+                    if (order.CancellationRequested == 4)
+                    {
+                        <div class="order-actions d-flex justify-content-start mt-2" style="font-size: 12px">
+                            <p>Đã hủy bởi người bán</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="order-actions d-flex justify-content-start mt-2" style="font-size: 12px">
+                            <p>Đã hủy bởi bạn</p>
+                        </div>
+                    }
                 }
                 else
                 {
@@ -480,7 +489,7 @@
 </div>
 
 <div id="MessagesModal" class="messagesmodal" tabindex="-1" role="dialog" aria-labelledby="MessagesModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered" style="background-color: rgba(0, 0, 0, 0.8);" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="background-color: rgba(0, 0, 0, 0.8);">
             <div class="modal-body p-0">
                 <p style="text-align: center"></p>

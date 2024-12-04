@@ -241,5 +241,31 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        public ActionResult CancelOrderWaitingConfirm(string employeeid, string order_id, string cancelReason)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(order_id))
+                {
+                    var ord = db.orders.FirstOrDefault(o => o.order_id == order_id);
+
+                    if (ord != null)
+                    {
+                        ord.employee_id = employeeid;
+                        ord.order_status_id = 4;
+                        ord.cancellation_requested = 4;
+                        ord.cancellation_reason = cancelReason;
+                        ord.created_at = DateTime.Now;
+                    }
+                }
+
+                db.SubmitChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
