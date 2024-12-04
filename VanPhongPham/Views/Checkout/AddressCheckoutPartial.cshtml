@@ -129,8 +129,59 @@
                 <h5 class="modal-title" id="AddressLabel">Địa Chỉ Của Tôi</h5>
             </div>
             <div class="modal-body">
+                @{
+                    var defaultAddresses = Model.Where(address => address.isDefault == true);
+                    var otherAddresses = Model.Where(address => address.isDefault == false).Reverse();
+                }
+                @foreach (var address in defaultAddresses)
+                {
+                    <div class="address-option">
+                        <div class="d-flex align-items-start">
+                            <input type="radio" name="address" @(address.isDefault ?? false ? "checked" : "") class="mt-1" data-addressid="@address.address_id" data-fullname="@address.full_name" data-phone="@address.phone_number" data-specificaddress="@address.address_line" data-city="@address.province" data-district="@address.district" data-ward="@address.ward" data-isDefault="@address.isDefault">
+                            <div class="ml-3">
+                                <!-- Thông tin địa chỉ -->
+                                <div>
+                                    <span class="address-name" style="margin-right: 5px">@address.full_name</span>|<span style="margin-left: 5px">@address.phone_number</span>
+                                </div>
+                                <div>
+                                    @if (address.address_line != null && address.address_line.Contains(","))
+                                    {
+                                        var addressParts = address.address_line.Split(new[] { ',' }, 2);
+                                        <span>@addressParts[0]</span> <!-- Dòng thứ 2 -->
+                                    }
+                                </div>
+                                <div>
+                                    @if (address.address_line != null && address.address_line.Contains(","))
+                                    {
+                                        var addressParts = address.address_line.Split(new[] { ',' }, 2);
+                                        <span>@addressParts[1]</span> <!-- Dòng thứ 3 -->
+                                    }
+                                </div>
+                                <!-- Dòng cuối nếu address là mặc định -->
+                                <div>
+                                    @if (address.isDefault == true)
+                                    {
+                                        <span class="default-badge">Mặc Định</span>
+                                    }
+                                </div>
+                            </div>
+                            <!-- Nút cập nhật bên phải -->
+                            <a href="#" class="edit-link ml-auto updateAddressButton"
+                               data-addressid="@address.address_id"
+                               data-fullname="@address.full_name"
+                               data-phone="@address.phone_number"
+                               data-specificaddress="@address.address_line"
+                               data-city="@address.province"
+                               data-district="@address.district"
+                               data-ward="@address.ward"
+                               data-isDefault="@address.isDefault"
+                               style="text-decoration: none">Cập nhật</a>
+                        </div>
+                    </div>
+                    <hr />
+                }
                 <!-- Nội dung danh sách địa chỉ -->
-                @foreach (var address in Model)
+                @foreach (var address in otherAddresses)
                 {
                     <div class="address-option">
                         <div class="d-flex align-items-start">

@@ -132,10 +132,24 @@ else
             }
             else
             {
-                sessionStorage.removeItem('appliedcoupon');
-                coupon1.value = "";
-                appliedCouponButton.disabled = true;
-                showNotification('Mã giảm giá không tồn tại.', 'danger');
+                if (result.message === "Mã giảm giá đã hết hạn.") {
+                    sessionStorage.removeItem('appliedcoupon');
+                    coupon1.value = "";
+                    appliedCouponButton.disabled = true;
+                    showNotification('Mã giảm giá đã hết hạn.', 'danger');
+                }
+                else if (result.message === "Mã giảm giá đã hết số lượng.") {
+                    sessionStorage.removeItem('appliedcoupon');
+                    coupon1.value = "";
+                    appliedCouponButton.disabled = true;
+                    showNotification('Mã giảm giá đã hết số lượng.', 'danger');
+                }
+                else {
+                    sessionStorage.removeItem('appliedcoupon');
+                    coupon1.value = "";
+                    appliedCouponButton.disabled = true;
+                    showNotification('Mã giảm giá không tồn tại.', 'danger');
+                }
             }
         });
     </script>

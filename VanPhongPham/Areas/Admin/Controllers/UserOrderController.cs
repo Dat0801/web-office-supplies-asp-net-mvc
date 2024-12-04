@@ -171,7 +171,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
 
             ViewBag.TotalWeight = totalWeight;
-            ViewBag.TotalAmountOrder = totalAmountOrder - cartdetails.DiscountAmount;
+            ViewBag.TotalAmountOrder = totalAmountOrder;
             ViewBag.View = view;
             return View(cartdetails);
         }
