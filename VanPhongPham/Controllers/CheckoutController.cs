@@ -370,16 +370,19 @@ namespace VanPhongPham.Controllers
                 if (coupon.status == false)
                 {
                     return Json(new { success = false, message = "Mã giảm giá đã ẩn." });
-                }    
-                if (coupon.quantity <= 0)
-                {
-                    return Json(new { success = false, message = "Mã giảm giá đã hết số lượng." });
                 }
 
                 if (coupon.expires_at < DateTime.Now)
                 {
                     return Json(new { success = false, message = "Mã giảm giá đã hết hạn." });
                 }
+
+                if (coupon.quantity <= 0)
+                {
+                    return Json(new { success = false, message = "Mã giảm giá đã hết số lượng." });
+                }
+
+
 
                 return Json(new { success = true, couponid = coupon.coupon_id, percent = coupon.coupon_percent });
             }

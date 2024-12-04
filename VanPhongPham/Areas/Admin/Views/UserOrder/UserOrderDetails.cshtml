@@ -64,7 +64,14 @@
 
                         @if (Model.OrderStatusName != "Đã hủy")
                         {
-                            <p><strong>Tình trạng đơn hàng:</strong> <span class="text-success" style="font-weight: bold">@Model.OrderStatusName</span></p>
+                            if (Model.OrderStatusName == "Chờ xác nhận")
+                            {
+                                <p><strong>Tình trạng đơn hàng:</strong> <span class="text-warning" style="font-weight: bold">@Model.OrderStatusName</span></p>
+                            }
+                            else
+                            {
+                                <p><strong>Tình trạng đơn hàng:</strong> <span class="text-success" style="font-weight: bold">@Model.OrderStatusName</span></p>
+                            }
                         }
                         else
                         {
@@ -93,6 +100,8 @@
                         <p><strong>Tổng tiền hàng:</strong> <span>₫@totalAmountOrder.ToString("N0")</span></p>
 
                         <p><strong>Phí vận chuyển:</strong> <span>₫@(Model.ShippingFee.HasValue ? Model.ShippingFee.Value.ToString("N0") : "0")</span></p>
+
+                        <p><strong>Giảm giá tiền hàng:</strong> <span>-₫@(Model.DiscountAmount.HasValue ? Model.DiscountAmount.Value.ToString("N0") : "0")</span></p>
 
                         <p><strong>Thành tiền:</strong> <span class="text-danger" style="font-weight: bold">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span></p>
 
