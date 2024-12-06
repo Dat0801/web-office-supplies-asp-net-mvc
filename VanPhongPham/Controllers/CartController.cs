@@ -61,7 +61,7 @@ namespace VanPhongPham.Controllers
                                 Promotion_Price = db.product_promotions
                                     .Where(pp => promotionIds.Contains(pp.promotion_id) && pp.product_id == o.product.product_id)
                                     .Select(pp => (o.product.price) * (1 - (pp.promotion.discount_percent / 100)))
-                                    .FirstOrDefault() ?? (o.product.price ?? 0),
+                                    .FirstOrDefault() ?? 0,
                                 isReviewed = false,
                                 Product_status = o.product.status ?? false,
                                 isSelected = o.isSelected ?? 0,

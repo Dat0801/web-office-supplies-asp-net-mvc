@@ -246,58 +246,87 @@
 
             var appcoupon = sessionStorage.getItem("appliedcoupon");
 
-            if (selectedMethod === "PAY001") {
-                const response = await fetch('/Checkout/SaveOrder', {
-                            method: "POST",
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                user_id: userData1.MaTaiKhoan,
-                                cart_id: userData1.CartID,
-                                info_adrs: addressData,
-                                ordernote: ordnote.value.trim(),
-                                method_id: selectedMethod,
-                                shipping_fee: shipping_fee,
-                                discount_amount: appcoupon ? parseFloat(JSON.parse(appcoupon).discount_amount) : 0,
-                                coupon_applied: appcoupon ? JSON.parse(appcoupon).coupon_applied : null,
-                                orderID: null
-                            })
-                });
+            const response12 = await fetch('/Checkout/CheckCoupon', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ coupon_code: JSON.parse(appcoupon).coupon_code })
+            });
 
-                const result = await response.json();
+            const result12 = await response12.json();
 
-                if (result.success) {
-                    const url = `@Url.Action("Index", "Profile")?order_status_id=${1}&MaTaiKhoan=${userData.MaTaiKhoan}&view=OrderPartial`;
-                    window.location.href = url;
+            if (result12.success) {
+                if (selectedMethod === "PAY001") {
+                    const response = await fetch('/Checkout/SaveOrder', {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            user_id: userData1.MaTaiKhoan,
+                            cart_id: userData1.CartID,
+                            info_adrs: addressData,
+                            ordernote: ordnote.value.trim(),
+                            method_id: selectedMethod,
+                            shipping_fee: shipping_fee,
+                            discount_amount: appcoupon ? parseFloat(JSON.parse(appcoupon).discount_amount) : 0,
+                            coupon_applied: appcoupon ? JSON.parse(appcoupon).coupon_applied : null,
+                            orderID: null
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        const url = `@Url.Action("Index", "Profile")?order_status_id=${1}&MaTaiKhoan=${userData.MaTaiKhoan}&view=OrderPartial`;
+                        window.location.href = url;
+                    }
+                    else if (!result.success) {
+                        @*const url = `@Url.Action("Index", "Cart")?cart_id=${userData1.CartID}`;
+                        window.location.href = url;*@
+                        showNotification('Số lượng tồn kho không đủ', 'danger');
+                    }
                 }
-                else if (!result.success) {
-                    @*const url = `@Url.Action("Index", "Cart")?cart_id=${userData1.CartID}`;
-                    window.location.href = url;*@
-                    showNotification('Số lượng tồn kho không đủ', 'danger');
+                else if (selectedMethod === "PAY002") {
+                    const response = await fetch('/Checkout/InitVNPay', {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            user_id: userData1.MaTaiKhoan,
+                            cart_id: userData1.CartID,
+                            info_adrs: addressData,
+                            ordernote: ordnote.value.trim(),
+                            shipping_fee: shipping_fee,
+                            discount_amount: appcoupon ? parseFloat(JSON.parse(appcoupon).discount_amount) : 0,
+                            coupon_applied: appcoupon ? JSON.parse(appcoupon).coupon_applied : null
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        window.location.href = result.vnpayUrl;
+                    }
+                    else if (!result.success) {
+                        showNotification('Số lượng tồn kho không đủ', 'danger');
+                    }
                 }
             }
-            else if (selectedMethod === "PAY002") {
-                const response = await fetch('/Checkout/InitVNPay', {
-                    method: "POST",
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        user_id: userData1.MaTaiKhoan,
-                        cart_id: userData1.CartID,
-                        info_adrs: addressData,
-                        ordernote: ordnote.value.trim(),
-                        shipping_fee: shipping_fee,
-                        discount_amount: appcoupon ? parseFloat(JSON.parse(appcoupon).discount_amount) : 0,
-                        coupon_applied: appcoupon ? JSON.parse(appcoupon).coupon_applied : null
-                    })
-                });
-                const result = await response.json();
-                if (result.success) {
-                    window.location.href = result.vnpayUrl;
+            else
+            {
+                if (result12.message === "Mã giảm giá đã hết hạn.") {
+                    sessionStorage.removeItem('appliedcoupon');
+                    showNotification('Mã giảm giá đã hết hạn.', 'danger');
+                    location.reload();
                 }
-                else if (!result.success)
-                {
-                    showNotification('Số lượng tồn kho không đủ', 'danger');
+                else if (result12.message === "Mã giảm giá đã hết số lượng.") {
+                    sessionStorage.removeItem('appliedcoupon');
+                    showNotification('Mã giảm giá đã hết số lượng.', 'danger');
+                    location.reload();
+                }
+                else {
+                    sessionStorage.removeItem('appliedcoupon');
+                    showNotification('Mã giảm giá không tồn tại.', 'danger');
+                    location.reload();
                 }
             }
+
+
         } catch (error) {
             console.error("Không thể lưu Order", error);
         }
