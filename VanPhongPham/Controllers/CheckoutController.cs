@@ -384,7 +384,7 @@ namespace VanPhongPham.Controllers
 
 
 
-                return Json(new { success = true, couponid = coupon.coupon_id, percent = coupon.coupon_percent });
+                return Json(new { success = true, couponid = coupon.coupon_id, couponcode = coupon.coupon_code, percent = coupon.coupon_percent });
             }
 
             return Json(new { success = false, message = "Mã giảm giá không tồn tại." });

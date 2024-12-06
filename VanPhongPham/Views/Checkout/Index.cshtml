@@ -112,11 +112,11 @@ else
 
                 // Tính toán số tiền giảm giá
                 let dis_amount = (result.percent * totalamount) / 100;
-                document.querySelector('.discount_amount').innerText = `-₫${dis_amount.toLocaleString('de-DE')}`;
+                document.querySelector('.discount_amount').innerText = `-₫${Math.round(dis_amount).toLocaleString('de-DE')}`;
 
                 // Cập nhật phần tổng thanh toán sau khi trừ giảm giá
                 const totalAmountWithFeeandCoupon = totalamount - dis_amount + feeshipamount;
-                document.querySelector('.total-payment').innerText = `₫${totalAmountWithFeeandCoupon.toLocaleString('de-DE')}`;
+                document.querySelector('.total-payment').innerText = `₫${Math.round(totalAmountWithFeeandCoupon).toLocaleString('de-DE')}`;
 
 
                 coupon1.value = "";
@@ -125,6 +125,7 @@ else
                 // Lưu thông tin vào sessionStorage
                 sessionStorage.setItem("appliedcoupon", JSON.stringify({
                     coupon_applied: result.couponid,
+                    coupon_code: result.couponcode,
                     discount_amount: dis_amount
                 }));
 
