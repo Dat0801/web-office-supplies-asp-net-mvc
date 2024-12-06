@@ -246,13 +246,18 @@
 
             var appcoupon = sessionStorage.getItem("appliedcoupon");
 
-            const response12 = await fetch('/Checkout/CheckCoupon', {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ coupon_code: JSON.parse(appcoupon).coupon_code })
-            });
+            let result12 = { success: true };
 
-            const result12 = await response12.json();
+            if (appcoupon)
+            {
+                const response12 = await fetch('/Checkout/CheckCoupon', {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ coupon_code: JSON.parse(appcoupon).coupon_code })
+                });
+
+                result12 = await response12.json();
+            }
 
             if (result12.success) {
                 if (selectedMethod === "PAY001") {
@@ -325,12 +330,11 @@
                     location.reload();
                 }
             }
-
-
         } catch (error) {
             console.error("Không thể lưu Order", error);
         }
     });
+
     function showNotification(message, messageType) {
         var notificationContainer = document.getElementById("notification-container");
         var notification = document.createElement("div");
