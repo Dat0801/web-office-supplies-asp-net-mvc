@@ -6,11 +6,13 @@ using System.Drawing;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using VanPhongPham.Areas.Admin.Filter;
 using VanPhongPham.Models;
 using VanPhongPham.Services;
 
 namespace VanPhongPham.Areas.Admin.Controllers
 {
+    [ImportStaff]
     public class PurchaseOrderController : Controller
     {
         private readonly PurchaseOrderRepository purchaseOrderRepository;

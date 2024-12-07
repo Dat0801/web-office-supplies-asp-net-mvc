@@ -22,7 +22,8 @@ namespace VanPhongPham.Models
                 DiscountPercent = p.discount_percent,
                 StartDate = p.start_date,
                 EndDate = p.end_date,
-                Description = p.description,                
+                Description = p.description,
+                Status = p.status ?? false,
                 ProductIds = _context.product_promotions
                              .Where(pp => pp.promotion_id == p.promotion_id)
                              .Select(pp => pp.product_id)
@@ -41,7 +42,8 @@ namespace VanPhongPham.Models
                 DiscountPercent = p.discount_percent,
                 StartDate = p.start_date,
                 EndDate = p.end_date,
-                Description = p.description,                
+                Description = p.description,    
+                Status = p.status ?? false,
                 ProductIds = _context.product_promotions
                              .Where(pp => pp.promotion_id == p.promotion_id)
                              .Select(pp => pp.product_id)
@@ -51,21 +53,23 @@ namespace VanPhongPham.Models
             return promotion;
         }
 
-        public PromotionViewModel GetPromotionByName(string promotionName)
+        public PromotionViewModel GetExistingPromotions(string promotionName, DateTime startDate, DateTime endDate)
         {
-            var promotion = _context.promotions.Where(p => p.promotion_name == promotionName && p.status == true).Select(p => new PromotionViewModel
-            {
-                PromotionId = p.promotion_id,
-                PromotionName = p.promotion_name,
-                DiscountPercent = p.discount_percent,
-                StartDate = p.start_date,
-                EndDate = p.end_date,
-                Description = p.description,
-                ProductIds = _context.product_promotions
-                             .Where(pp => pp.promotion_id == p.promotion_id)
-                             .Select(pp => pp.product_id)
-                             .ToList()
-            }).FirstOrDefault();
+            var promotion = _context.promotions.Where(p => p.promotion_name == promotionName && p.status == true || p.start_date >= startDate && p.end_date <= endDate && p.status == true)
+                            .Select(p => new PromotionViewModel
+                            {
+                                PromotionId = p.promotion_id,
+                                PromotionName = p.promotion_name,
+                                DiscountPercent = p.discount_percent,
+                                StartDate = p.start_date,
+                                EndDate = p.end_date,
+                                Description = p.description,
+                                Status = p.status ?? false,
+                                ProductIds = _context.product_promotions
+                                                .Where(pp => pp.promotion_id == p.promotion_id)
+                                                .Select(pp => pp.product_id)
+                                                .ToList()
+                            }).FirstOrDefault();
             return promotion;
         }
         public bool AddPromotion(PromotionViewModel promotion)
@@ -213,6 +217,7 @@ namespace VanPhongPham.Models
                 StartDate = p.start_date,
                 EndDate = p.end_date,
                 Description = p.description,
+                Status = p.status ?? false,
                 ProductIds = _context.product_promotions
                              .Where(pp => pp.promotion_id == p.promotion_id)
                              .Select(pp => pp.product_id)
@@ -255,6 +260,7 @@ namespace VanPhongPham.Models
                 StartDate = p.start_date,
                 EndDate = p.end_date,
                 Description = p.description,
+                Status = p.status ?? false,
                 ProductIds = _context.product_promotions
                              .Where(pp => pp.promotion_id == p.promotion_id)
                              .Select(pp => pp.product_id)
@@ -274,7 +280,8 @@ namespace VanPhongPham.Models
                 DiscountPercent = p.discount_percent,
                 StartDate = p.start_date,
                 EndDate = p.end_date,
-                Description = p.description
+                Description = p.description,
+                Status = p.status ?? false,
             }).ToList();
             return promotions;
         }

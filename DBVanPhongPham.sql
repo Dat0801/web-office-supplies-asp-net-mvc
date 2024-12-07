@@ -896,24 +896,23 @@ VALUES
 (N'Đã thanh toán'),
 (N'Đã hoàn tiền')
 
-INSERT INTO users (user_id, full_name, username)
+INSERT INTO users (user_id, full_name, username, status)
 VALUES
-('ADMIN001', N'Thành Đạt', 'qwe')
+('USER001', N'Thành Đạt', 'qwe', 'true')
 
 INSERT INTO user_roles
 VALUES
-('ADMIN001', 2)
+('USER001', 2)
 GO
 
 UPDATE users
 SET password = CONVERT(VARCHAR(32), HASHBYTES('MD5', '123'), 2)
 WHERE username = 'qwe';
 
-
 INSERT INTO purchase_order (purchase_order_id, supplier_id, employee_id)
 VALUES
-('POD001', 'SUP001', 'ADMIN001'),
-('POD002', 'SUP002', 'ADMIN001')
+('POD001', 'SUP001', 'USER001'),
+('POD002', 'SUP002', 'USER001')
 
 INSERT INTO purchase_order_detail
 VALUES

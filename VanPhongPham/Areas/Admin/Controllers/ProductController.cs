@@ -10,9 +10,11 @@ using Newtonsoft.Json;
 using OfficeOpenXml;
 using System.Drawing;
 using VanPhongPham.Services;
+using VanPhongPham.Areas.Admin.Filter;
 
 namespace VanPhongPham.Areas.Admin.Controllers
 {
+    [Admin]
     public class ProductController : Controller
     {
         private readonly ProductRepository productRepository;

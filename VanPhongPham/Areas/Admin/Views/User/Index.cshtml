@@ -3,6 +3,19 @@
     ViewBag.Title = "Người dùng - Quản Trị";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
+<style>
+    /* Đảm bảo rằng bảng có thể cuộn ngang */
+    .table-wrapper {
+        overflow-x: auto; /* Cho phép cuộn ngang */
+        -webkit-overflow-scrolling: touch; /* Thêm khả năng cuộn mượt mà trên thiết bị di động */
+        width: 100%;
+    }
+
+    .table {
+        width: 100%;
+        min-width: 800px; /* Thiết lập độ rộng tối thiểu cho bảng */
+    }
+</style>
 @if (TempData["Msg"] != null)
 {
     <div id="flashMessage" class="alert alert-dark-info">
@@ -18,48 +31,45 @@
                     <label for="UserId">Mã người dùng</label>
                     <input type="text" class="form-control" id="UserId" name="UserId" readonly
                            value="@(ViewBag.user != null ? ViewBag.user.UserId : ViewBag.user_id ?? "")" />
-                    <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="FullName">Họ tên người dùng</label>
-                    <input type="text" class="form-control" id="FullName" name="FullName" required
+                    <input type="text" class="form-control" id="FullName" name="FullName" required minlength="6"
                            value="@(ViewBag.user != null ? ViewBag.user.FullName : "")" />
-                    <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Username">Tên tài khoản</label>
                     <input type="text" class="form-control" id="Username" name="Username" required
                            value="@(ViewBag.user != null ? ViewBag.user.Username : "")" />
-                    <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Password">Mật khẩu</label>
                     <input type="password" class="form-control" id="Password" name="Password" required
                            value="@(ViewBag.user != null ? ViewBag.user.Password : "")" />
-                    <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Email">Email</label>
-                    <input type="email" class="form-control" id="Email" name="Email" required
+                    <input type="email" class="form-control" id="Email" name="Email" required                           
+                           title="Địa chỉ email phải đúng định dạng, ví dụ: example@domain.com"
                            value="@(ViewBag.user != null ? ViewBag.user.Email : "")" />
-                    <div class="clearfix"></div>
+
                 </div>
                 <div class="form-group col-md-3">
                     <label for="Gender">Giới tính</label>
-                    <input type="text" class="form-control" id="Gender" name="Gender" required
-                           value="@(ViewBag.user != null ? ViewBag.user.Gender : "")" />
-                    <div class="clearfix"></div>
+                    <select class="form-control" id="Gender" name="Gender" required>
+                        <option value="Nam" @(ViewBag.user?.Gender == "Nam" ? "selected" : "")>Nam</option>
+                        <option value="Nữ" @(ViewBag.user?.Gender == "Nữ" ? "selected" : "")>Nữ</option>
+                        <option value="Khác" @(ViewBag.user?.Gender == "Khác" ? "selected" : "")>Khác</option>
+                    </select>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="dob">Ngày sinh</label>
                     <input type="date" class="form-control" id="dob" name="Dob" required
-                           value="@(ViewBag.user != null ? ((DateTime)ViewBag.user.Dob).ToString("yyyy-MM-dd") : "")" />
-                    <div class="clearfix"></div>
+                           value="@(ViewBag.user != null ? (ViewBag.user.Dob).ToString("yyyy-MM-dd") : "")" />
                 </div>
-
                 <div class="form-group col-md-3">
                     <label for="AvatarFile">Tải ảnh lên</label>
-                    <input type="file" class="form-control" id="AvatarFile" name="AvatarFile" value="@(ViewBag.user != null ? ViewBag.user.AvatarUrl : "")" />
+                    <input type="file" class="form-control" id="AvatarFile" name="AvatarFile" />
                     @if (!string.IsNullOrEmpty(ViewBag.user?.AvatarUrl))
                     {
                         <div class="mt-2">
@@ -68,11 +78,26 @@
                         </div>
                     }
                 </div>
+                <div class="form-group col-md-3">
+                    <label for="Roles">Phân quyền</label>
+                    <select id="Roles" name="roleIds" class="form-control" multiple>
+                        @foreach (var role in ViewBag.Roles)
+                        {
+                            var userRoles = ViewBag.user?.Roles as List<string>;
+                            <option value="@role.RoleId"
+                                    @(userRoles != null && userRoles.Contains(role.RoleName) ? "selected" : "")>
+                                @role.RoleName
+                            </option>
+                        }
 
+                    </select>
+                </div>
             </div>
+
             <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
             <button type="submit" name="action" value="edit" class="btn btn-primary">Lưu thay đổi</button>
         </form>
+
     </div>
 </div>
 
@@ -92,69 +117,75 @@
 </div>
 <div class="card">
     <form method="post" action="/User/DeleteUser">
-        <table class="table card-table table-responsive-md">
-            <thead class="thead-light">
-                <tr>
-                    <th><input type="checkbox" id="select-all" />Chọn tất cả</th>
-                    <th>Mã người dùng</th>
-                    <th>Tên tài khoản</th>
-                    <th>Email</th>
-                    <th>Ngày sinh</th>
-                    <th>Ảnh đại diện</th>
-                    <th>Giới tính</th>
-                    <th>Tên người dùng</th>
-                    <th>Địa chỉ</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in Model)
-                {
+        <div class="table-wrapper">
+            <!-- Thêm div bao quanh bảng -->
+            <table class="table card-table table-responsive-md">
+                <thead class="thead-light">
                     <tr>
-                        <td>
-                            <input type="checkbox" name="selectedUsers" value="@user.UserId" />
-                        </td>
-                        <td>@user.UserId</td>
-                        <td>@user.Username</td>
-                        <td>@user.Email</td>
-                        <td>@user.Dob</td>
-                        <td><img src="@user.AvatarUrl" alt="Avatar" style="width: 50px; height: auto;" /></td>
-                        <td>@user.Gender</td>
-                        <td>@user.FullName</td>
-                        <td>
-                            <ul>
-                                @if (user.Addresses != null && user.Addresses.Count > 0)
-                                {
-                                    foreach (var address in user.Addresses)
-                                    {
-                                        <li>
-                                            @address.AddressLine, @address.Ward, @address.District, @address.Province <br />
-                                            SĐT: @address.PhoneNumber <br />
-                                            @if (address.isDefault == true)
-                                            {
-                                                <span style="color: green;">(Mặc định)</span>
-                                            }
-                                        </li>
-                                    }
-                                }
-                                else
-                                {
-                                    <li>Không có địa chỉ nào.</li>
-                                }
-                            </ul>
-                        </td>
-                        <td>
-                            <a class="btn icon-btn btn-outline-danger" href="@Url.Action("DeleteUser", "User", new { user_id = user.UserId })">
-                                <i class="feather icon-user-minus navbar-icon align-middle"></i>
-                            </a>
-                            <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("Index", "User", new { user_id = user.UserId })">
-                                <i class="feather icon-user-check navbar-icon align-middle"></i>
-                            </a>
-                        </td>
+                        <th><input type="checkbox" id="select-all" />Chọn tất cả</th>
+                        <th>Mã người dùng</th>
+                        <th>Tên tài khoản</th>
+                        <th>Email</th>
+                        <th>Ngày sinh</th>
+                        <th>Ảnh đại diện</th>
+                        <th>Giới tính</th>
+                        <th>Tên người dùng</th>
+                        <th>Địa chỉ</th>
+                        <th>Quyền</th>
+                        <th>Thao tác</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selectedUsers" value="@user.UserId" />
+                            </td>
+                            <td>@user.UserId</td>
+                            <td>@user.Username</td>
+                            <td>@user.Email</td>
+                            <td>@user.Dob</td>
+                            <td><img src="@user.AvatarUrl" alt="Avatar" style="width: 50px; height: auto;" /></td>
+                            <td>@user.Gender</td>
+                            <td>@user.FullName</td>
+                            <td>
+                                <ul>
+                                    @if (user.Addresses != null && user.Addresses.Count > 0)
+                                    {
+                                        foreach (var address in user.Addresses)
+                                        {
+                                            <li>
+                                                @address.AddressLine, @address.Ward, @address.District, @address.Province <br />
+                                                SĐT: @address.PhoneNumber <br />
+                                                @if (address.isDefault == true)
+                                                {
+                                                    <span style="color: green;">(Mặc định)</span>
+                                                }
+                                            </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <li>Không có địa chỉ nào.</li>
+                                    }
+                                </ul>
+                            </td>
+                            <td>@string.Join(", ", user.Roles)</td>
+                            <td>
+                                <a class="btn icon-btn btn-outline-danger" href="@Url.Action("DeleteUser", "User", new { user_id = user.UserId })">
+                                    <i class="feather icon-user-minus navbar-icon align-middle"></i>
+                                </a>
+                                <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("Index", "User", new { user_id = user.UserId })">
+                                    <i class="feather icon-user-check navbar-icon align-middle"></i>
+                                </a>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div> <!-- End table-wrapper -->
         <button type="submit" class="btn btn-danger mt-3">Xóa hàng loạt</button>
     </form>
 </div>
