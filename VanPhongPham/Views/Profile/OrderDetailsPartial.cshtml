@@ -271,7 +271,14 @@
                         <span style="font-size: 13px">Đã hủy bởi</span>
                     </div>
                     <div class="col-4 text-right p-0">
-                        <span>Người mua</span>
+                        @if (Model.CancellationRequested == 4)
+                        {
+                            <span>Người bán</span>
+                        }
+                        else
+                        {
+                            <span>Người mua</span>
+                        }
                     </div>
                 </div>
                 <hr />
@@ -306,6 +313,15 @@
                     </div>
                     <div class="col-4 text-right p-0">
                         <span>₫@(Model.ShippingFee.HasValue ? Model.ShippingFee.Value.ToString("N0") : "0")</span>
+                    </div>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-end">
+                    <div class="col-8 text-right p-0">
+                        <span style="font-size: 13px">Giảm giá tiền hàng</span>
+                    </div>
+                    <div class="col-4 text-right p-0">
+                        <span>-₫@(Model.DiscountAmount.HasValue ? Model.DiscountAmount.Value.ToString("N0") : "0.000")</span>
                     </div>
                 </div>
                 <hr />

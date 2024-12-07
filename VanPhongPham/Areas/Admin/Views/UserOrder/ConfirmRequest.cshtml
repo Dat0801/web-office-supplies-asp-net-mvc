@@ -3,7 +3,7 @@
 @model IPagedList<VanPhongPham.Models.order>
 
 @{
-    ViewBag.Title = "Bán hàng - Quản Trị";
+    ViewBag.Title = "Đơn hàng chờ xác nhận - Quản Trị";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
@@ -48,7 +48,7 @@
                     <td>@order.created_at.Value.ToString("HH:mm dd-MM-yyyy")</td>
                     <td>₫@(order.total_amount.HasValue ? order.total_amount.Value.ToString("N0") : "0")</td>
 
-                    <td class="text-success" style="font-weight: bold">@order.order_status.order_status_name</td>
+                    <td class="text-warning" style="font-weight: bold">@order.order_status.order_status_name</td>
 
                     <td>
                         <a class="btn icon-btn btn-outline-info"

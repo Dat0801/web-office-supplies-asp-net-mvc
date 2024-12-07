@@ -141,6 +141,22 @@ create table payment_status
 	payment_status_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
 	payment_status_name NVARCHAR(255) NOT NULL
 )
+
+CREATE TABLE coupons
+(
+    coupon_id VARCHAR(10) PRIMARY KEY NOT NULL,
+    coupon_code NVARCHAR(50) NOT NULL UNIQUE,
+	coupon_imgurl varchar(500) not null unique,
+    coupon_title NVARCHAR(255) NOT NULL UNIQUE,
+    coupon_description NVARCHAR(MAX) DEFAULT NULL,
+    coupon_percent INT NOT NULL CHECK (coupon_percent BETWEEN 1 AND 100),
+    quantity INT DEFAULT 0,
+    created_at DATETIME DEFAULT GETDATE(),
+    expires_at DATETIME NOT NULL,
+    updated_at DATETIME DEFAULT GETDATE(),
+	status bit default 1
+)
+
 create table orders
 (
 	order_id varchar(10) not null,
@@ -152,9 +168,11 @@ create table orders
 	method_id varchar(10) not null,
 	delivery_date datetime default DATEADD(DAY, 7, GETDATE()),
 	shipping_fee float,
+	discount_amount float default 0,
 	total_amount float default 0,
 	order_status_id int not null,
 	payment_status_id int not null,
+	coupon_applied VARCHAR(10),
 	cancellation_requested int default 0,
 	cancellation_reason nvarchar(255),
 	created_at datetime default getdate(),
@@ -434,7 +452,7 @@ AFTER INSERT, UPDATE, DELETE
 AS
 BEGIN
     UPDATE p
-    SET p.promotion_price = p.price * (1 - pr.discount_percent / 100)
+    SET p.promotion_price = ROUND(p.price * (1 - pr.discount_percent / 100), 0)
     FROM products p
     INNER JOIN product_promotions pp ON p.product_id = pp.product_id
     INNER JOIN promotions pr ON pp.promotion_id = pr.promotion_id
@@ -552,6 +570,53 @@ END;
 
 GO
 
+--Trigger cập nhật số lượng coupon khi đơn hàng được đặt.
+CREATE TRIGGER trg_UpdateCouponQuantity
+ON orders
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Kiểm tra nếu coupon_applied có giá trị (nếu có coupon áp dụng)
+    IF EXISTS (SELECT 1 FROM inserted WHERE coupon_applied IS NOT NULL)
+    BEGIN
+        -- Giảm số lượng coupon khi đơn hàng có coupon
+        UPDATE c
+        SET c.quantity = c.quantity - 1
+        FROM coupons c
+        INNER JOIN inserted i ON c.coupon_id = i.coupon_applied
+        WHERE i.coupon_applied = c.coupon_id;
+    END
+END;
+
+GO
+
+--Trigger khôi phục số lượng coupon khi đơn hàng bị hủy.
+CREATE TRIGGER trg_RestoreCouponQuantityOnOrderCancel
+ON orders
+AFTER UPDATE
+AS
+BEGIN
+    IF UPDATE(order_status_id)
+    BEGIN
+        SET NOCOUNT ON;
+
+        -- Kiểm tra nếu order_status_id đã thay đổi và đơn hàng bị hủy (status = 4)
+        IF EXISTS (SELECT 1 FROM inserted WHERE order_status_id = 4)
+        BEGIN
+            -- Cộng lại số lượng coupon khi đơn hàng bị hủy
+            UPDATE c
+            SET c.quantity = c.quantity + 1
+            FROM coupons c
+            INNER JOIN inserted i ON c.coupon_id = i.coupon_applied
+            WHERE i.coupon_applied = c.coupon_id AND i.order_status_id = 4;
+        END
+    END
+END;
+
+GO
+
 -- Trigger tính avgRating cho products
 CREATE TRIGGER trg_UpdateAvgRating
 ON product_review
@@ -581,7 +646,7 @@ AS
 BEGIN
     UPDATE orders
     SET total_amount = (
-        SELECT SUM(od.total_amount) + orders.shipping_fee
+        SELECT SUM(od.total_amount) - orders.discount_amount + orders.shipping_fee
         FROM order_details od
         WHERE od.order_id = orders.order_id
         GROUP BY od.order_id
@@ -875,8 +940,7 @@ INSERT INTO roles (role_name, description)
 VALUES
 (N'Khách hàng', N'Khách mua hàng'),
 (N'Quản lý', N'Quản lý toàn bộ hệ thống'),
-(N'Nhân viên bán hàng', N'Nhân viên bán hàng'),
-(N'Nhân viên nhập hàng', N'Nhân viên nhập hàng');
+(N'Nhân viên bán hàng', N'Nhân viên bán hàng');
 
 INSERT INTO payment_methods (method_id, method_name)
 VALUES
@@ -977,7 +1041,3 @@ VALUES
 ('REC003', 'POD002', 'PRO016', 30),
 ('REC003', 'POD002', 'PRO017', 30),
 ('REC003', 'POD002', 'PRO018', 30)
-
-
-
-

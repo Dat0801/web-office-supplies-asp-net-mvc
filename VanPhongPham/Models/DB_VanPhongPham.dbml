@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="DB_VanPhongPham" Class="DB_VanPhongPhamDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=.;Initial Catalog=DB_VanPhongPham;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DB_VanPhongPhamConnectionString" Provider="System.Data.SqlClient" />
   <Table Name="dbo.addresses" Member="addresses">
     <Type Name="address">
       <Column Name="address_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -80,6 +81,21 @@
       <Association Name="category_product" Member="products" ThisKey="category_id" OtherKey="category_id" Type="product" />
     </Type>
   </Table>
+  <Table Name="dbo.coupons" Member="coupons">
+    <Type Name="coupon">
+      <Column Name="coupon_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="coupon_code" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="coupon_imgurl" Type="System.String" DbType="VarChar(500) NOT NULL" CanBeNull="false" />
+      <Column Name="coupon_title" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="coupon_description" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="coupon_percent" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="quantity" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="expires_at" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="updated_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="status" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+    </Type>
+  </Table>
   <Table Name="dbo.images" Member="images">
     <Type Name="image">
       <Column Name="image_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -120,9 +136,11 @@
       <Column Name="method_id" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
       <Column Name="delivery_date" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="shipping_fee" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="discount_amount" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="total_amount" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="order_status_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="payment_status_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="coupon_applied" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
       <Column Name="cancellation_requested" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="cancellation_reason" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />

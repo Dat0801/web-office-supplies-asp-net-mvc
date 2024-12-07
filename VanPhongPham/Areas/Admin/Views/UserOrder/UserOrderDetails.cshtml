@@ -2,7 +2,7 @@
 @using VanPhongPham.Models;
 
 @{
-    ViewBag.Title = "UserOrderDetails";
+    ViewBag.Title = "Chi tiết đơn hàng - Quản trị";
     var totalWeight = ViewBag.TotalWeight;
     var totalAmountOrder = ViewBag.TotalAmountOrder;
     var addressParts = Model.InfoAddress.Split(new[] { ", " }, StringSplitOptions.None);
@@ -26,6 +26,20 @@
         border: 1px solid #ddd;
         border-radius: 4px;
         margin-top: 8px;
+    }
+    .messagesmodal {
+        display: none; /* Mặc định là ẩn */
+        position: fixed;
+        top: 20px; /* Đưa lên trên một chút */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        background-color: rgba(0, 0, 0, 0.8); /* Màu nền đen nhạt */
+        color: white; /* Chữ màu trắng */
+        border-radius: 5px;
+        font-size: 14px;
+        z-index: 9999;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 </style>
 
@@ -64,7 +78,14 @@
 
                         @if (Model.OrderStatusName != "Đã hủy")
                         {
-                            <p><strong>Tình trạng đơn hàng:</strong> <span class="text-success" style="font-weight: bold">@Model.OrderStatusName</span></p>
+                            if (Model.OrderStatusName == "Chờ xác nhận")
+                            {
+                                <p><strong>Tình trạng đơn hàng:</strong> <span class="text-warning" style="font-weight: bold">@Model.OrderStatusName</span></p>
+                            }
+                            else
+                            {
+                                <p><strong>Tình trạng đơn hàng:</strong> <span class="text-success" style="font-weight: bold">@Model.OrderStatusName</span></p>
+                            }
                         }
                         else
                         {
@@ -93,6 +114,8 @@
                         <p><strong>Tổng tiền hàng:</strong> <span>₫@totalAmountOrder.ToString("N0")</span></p>
 
                         <p><strong>Phí vận chuyển:</strong> <span>₫@(Model.ShippingFee.HasValue ? Model.ShippingFee.Value.ToString("N0") : "0")</span></p>
+
+                        <p><strong>Giảm giá tiền hàng:</strong> <span>-₫@(Model.DiscountAmount.HasValue ? Model.DiscountAmount.Value.ToString("N0") : "0")</span></p>
 
                         <p><strong>Thành tiền:</strong> <span class="text-danger" style="font-weight: bold">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span></p>
 
@@ -193,6 +216,7 @@
     @if (Model.OrderStatusID == 1)
     {
         <div class="text-center mt-5">
+            <button type="button" id="cancelBtn" data-orderid="@Model.OrderId" class="btn btn-primary">Từ chối</button>
             <button type="button" id="confirmBtn" class="btn btn-primary">Xác nhận</button>
         </div>
     }
@@ -209,6 +233,15 @@
     {
         <div class="text-center mt-5">
             <h3 class="text-center text-primary">Lý do hủy</h3>
+            <h5 class="text-left">Người mua:</h5>
+            <textarea class="review-textarea" style="height: 150px;" disabled>@Model.CancellationReason</textarea>
+        </div>
+    }
+    else if (Model.OrderStatusID == 4 && Model.CancellationRequested == 4)
+    {
+        <div class="text-center mt-5">
+            <h3 class="text-center text-primary">Lý do hủy</h3>
+            <h5 class="text-left">Người xử lý:</h5>
             <textarea class="review-textarea" style="height: 150px;" disabled>@Model.CancellationReason</textarea>
         </div>
     }
@@ -250,6 +283,33 @@ else if (ViewBag.View == "Index")
         <i class="feather icon-corner-up-left"></i>
     </a>
 }
+
+<div id="MessagesModal" class="messagesmodal" tabindex="-1" role="dialog" aria-labelledby="MessagesModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: rgba(0, 0, 0, 0.8);">
+            <div class="modal-body p-0">
+                <p style="text-align: center"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal nhập lý do hủy -->
+<div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true" data-backdrop="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalLabel">Nhập lý do hủy</h5>
+            </div>
+            <div class="modal-body">
+                <textarea id="cancelReason" class="review-textarea" style="height: 200px" maxlength="100" placeholder="Nhập nội dung hủy đơn hàng, tối đa 100 ký tự"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="confirmCancelBtn" class="btn btn-primary">Xác Nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     if (@Model.OrderStatusID === 1)
@@ -325,6 +385,11 @@ else if (ViewBag.View == "Index")
 
     document.addEventListener('DOMContentLoaded', function () {
         const confirmBtn = document.getElementById("confirmBtn");
+        const cancelBtn = document.getElementById("cancelBtn");
+        const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+        const AcceptBtn = document.getElementById("AcceptBtn");
+        const RefuseBtn = document.getElementById("RefuseBtn");
+
         if (confirmBtn)
         {
             document.getElementById("confirmBtn").addEventListener('click', async function () {
@@ -374,93 +439,168 @@ else if (ViewBag.View == "Index")
                 }
             });
         }
+        if (cancelBtn)
+        {
+            cancelBtn.onclick = async function () {
+                const orderId = this.getAttribute("data-orderid");
+                const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+                const cancelReason = document.getElementById("cancelReason");
+
+                cancelReason.value = "";
+
+                // Truyền dữ liệu vào nút xác nhận trong modal
+                confirmCancelBtn.setAttribute("data-orderid", orderId);
+
+                const bootstrapModal = new bootstrap.Modal(cancelModal);
+                bootstrapModal.show();
+            };
+        }
+        if (confirmCancelBtn)
+        {
+            confirmCancelBtn.onclick = async function ()
+            {
+                const orderId = this.getAttribute("data-orderid");
+                const cancelReason = document.getElementById("cancelReason").value.trim();
+
+                if (!cancelReason) {
+                    const modalBody = document.querySelector("#MessagesModal .modal-body p");
+                    modalBody.textContent = `Để từ chối, hãy thêm lý do.`; // Thông báo lỗi
+
+                    // Hiển thị modal với jQuery
+                    $("#MessagesModal").modal("show");
+
+                    // Tự động tắt modal sau 3 giây
+                    setTimeout(function () {
+                        $("#MessagesModal").modal("hide");
+                    }, 1500);
+
+                    return;
+                }
+
+                try {
+                    // Gửi yêu cầu cập nhật trạng thái hủy đơn hàng lên server
+                    const response = await fetch('/UserOrder/CancelOrderWaitingConfirm', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            employeeid: "@admin.user_id",
+                            order_id: orderId,
+                            cancelReason: cancelReason
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
+                        const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
+                        window.location.href = url; // Điều hướng
+                    }
+                    else {
+                        alert(result.message);
+                    }
+                }
+                catch (error) {
+                    console.error("Lỗi trong quá trình gửi yêu cầu:", error);
+                    alert("Không thể gửi yêu cầu hủy đơn hàng. Vui lòng thử lại.");
+                }
+            };
+        }
+        if (AcceptBtn)
+        {
+            AcceptBtn.onclick = async function ()
+            {
+                const orderId = this.getAttribute("data-orderid");
+                const ordercode = this.getAttribute("data-ordercode");
+
+                const result = await CancelOrder(ordercode);
+
+                if (result) {
+                    console.log("Hủy thành công");
+                }
+                else {
+                    console.log("Hủy thất bại");
+                }
+
+                const shippingDetail1 = await getShippingDetail(ordercode);
+
+                console.log(orderId);
+                console.log(shippingDetail1.updated_date);
+
+                try
+                {
+                    // Gửi yêu cầu cập nhật trạng thái hủy đơn hàng lên server
+                    const response = await fetch('/UserOrder/UpdateRequestCancelOrder', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            order_id: orderId,
+                            finishdate: new Date(shippingDetail1.updated_date).toISOString(),
+                            check: parseInt(1)
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    console.log(result);
+
+                    if (result.success)
+                    {
+                        var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
+                        const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
+                        window.location.href = url; // Điều hướng
+                    }
+                    else
+                    {
+                        alert(result.message);
+                    }
+                }
+                catch (error)
+                {
+                    console.error("Lỗi trong quá trình gửi yêu cầu:", error);
+                    alert("Không thể gửi yêu cầu hủy đơn hàng. Vui lòng thử lại.");
+                }
+            };
+        }
+        if (RefuseBtn)
+        {
+            RefuseBtn.onclick = async function () {
+                const orderId = this.getAttribute("data-orderid");
+
+                try {
+                    // Gửi yêu cầu cập nhật trạng thái hủy đơn hàng lên server
+                    const response = await fetch('/UserOrder/UpdateRequestCancelOrder', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            order_id: orderId,
+                            finishdate: null,
+                            check: 0
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
+                        const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
+                        window.location.href = url; // Điều hướng
+                    }
+                    else {
+                        alert(result.message);
+                    }
+                }
+                catch (error) {
+                    console.error("Lỗi trong quá trình gửi yêu cầu:", error);
+                    alert("Không thể gửi yêu cầu hủy đơn hàng. Vui lòng thử lại.");
+                }
+            };
+        }
     });
-
-
-
-
-    document.getElementById("AcceptBtn").onclick = async function () {
-        const orderId = this.getAttribute("data-orderid");
-        const ordercode = this.getAttribute("data-ordercode");
-
-        const result = await CancelOrder(ordercode);
-
-        if (result) {
-            console.log("Hủy thành công");
-        }
-        else {
-            console.log("Hủy thất bại");
-        }
-
-        const shippingDetail1 = await getShippingDetail(ordercode);
-
-        console.log(orderId);
-        console.log(shippingDetail1.updated_date);
-
-        try {
-            // Gửi yêu cầu cập nhật trạng thái hủy đơn hàng lên server
-            const response = await fetch('/UserOrder/UpdateRequestCancelOrder', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    order_id: orderId,
-                    finishdate: new Date(shippingDetail1.updated_date).toISOString(),
-                    check: parseInt(1)
-                })
-            });
-
-            const result = await response.json();
-
-            console.log(result);
-
-            if (result.success) {
-                var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
-                const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
-                window.location.href = url; // Điều hướng
-            }
-            else {
-                alert(result.message);
-            }
-        }
-        catch (error) {
-            console.error("Lỗi trong quá trình gửi yêu cầu:", error);
-            alert("Không thể gửi yêu cầu hủy đơn hàng. Vui lòng thử lại.");
-        }
-    };
-
-    document.getElementById("RefuseBtn").onclick = async function () {
-        const orderId = this.getAttribute("data-orderid");
-
-        try {
-            // Gửi yêu cầu cập nhật trạng thái hủy đơn hàng lên server
-            const response = await fetch('/UserOrder/UpdateRequestCancelOrder', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    order_id: orderId,
-                    finishdate: null,
-                    check: 0
-                })
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
-                const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
-                window.location.href = url; // Điều hướng
-            }
-            else {
-                alert(result.message);
-            }
-        }
-        catch (error) {
-            console.error("Lỗi trong quá trình gửi yêu cầu:", error);
-            alert("Không thể gửi yêu cầu hủy đơn hàng. Vui lòng thử lại.");
-        }
-    };
 </script>
