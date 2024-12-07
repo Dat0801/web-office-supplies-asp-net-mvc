@@ -116,8 +116,8 @@
                     <div class="col-6 text-left p-0" style="color: #777777">
                         <span>Tổng tiền hàng</span>
                     </div>
-                    <div class="col-6 text-right p-0" style="color: #272727">
-                        <span>₫@totalAmount.ToString("N0")</span>
+                    <div class="col-2 text-right p-0" style="color: #272727">
+                        <span class="totalamount" data-order-totalamount="@totalAmount">₫@totalAmount.ToString("N0")</span>
                     </div>
                 </div>
 
@@ -130,8 +130,17 @@
                     </div>
                 </div>
 
-                <div class="checkout-item d-flex justify-content-between mb-3">
-                    <div class="col-6 text-left p-0" style="color: #777777;">
+                <div class="checkout-item d-flex justify-content-end" style="margin-top: 20px">
+                    <div class="col-6 text-left p-0" style="color: #777777">
+                        <span>Giảm giá tiền hàng</span>
+                    </div>
+                    <div class="col-6 text-right p-0" style="color: #272727">
+                        <span class="discount_amount">-₫0.000</span>
+                    </div>
+                </div>
+
+                <div class="checkout-item d-flex justify-content-end" style="margin-top: 20px;">
+                    <div class="col-6 d-flex align-items-center justify-content-start p-0" style="color: #777777;">
                         <span>Tổng thanh toán</span>
                     </div>
                     <div class="col-6 text-right p-0">
@@ -146,7 +155,7 @@
     <hr />
 
     <!-- Footer with Terms and Order Button -->
-    <div class="checkout-footer-row d-flex flex-column flex-md-row align-items-center justify-content-between p-3">
+    <div class="checkout-footer-row d-flex flex-column flex-md-row align-items-center justify-content-between">
         <div class="text-center text-md-left mb-3 mb-md-0">
             Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo
             <a href="#" style="text-decoration: none; color: #007bff;">Điều khoản QVD</a>
@@ -235,58 +244,97 @@
                 `${JSON.parse(storedAddress1).fullName}, ${JSON.parse(storedAddress1).phone}, ${JSON.parse(storedAddress1).addressLine}`
                 : null;
 
-            if (selectedMethod === "PAY001") {
-                const response = await fetch('/Checkout/SaveOrder', {
-                            method: "POST",
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                user_id: userData1.MaTaiKhoan,
-                                cart_id: userData1.CartID,
-                                info_adrs: addressData,
-                                ordernote: ordnote.value.trim(),
-                                method_id: selectedMethod,
-                                shipping_fee: shipping_fee,
-                                orderID: null
-                            })
-                });
+            var appcoupon = sessionStorage.getItem("appliedcoupon");
 
-                const result = await response.json();
+            let result12 = { success: true };
 
-                if (result.success) {
-                    const url = `@Url.Action("Index", "Profile")?order_status_id=${1}&MaTaiKhoan=${userData.MaTaiKhoan}&view=OrderPartial`;
-                    window.location.href = url;
-                }
-                else if (!result.success) {
-                    @*const url = `@Url.Action("Index", "Cart")?cart_id=${userData1.CartID}`;
-                    window.location.href = url;*@
-                    showNotification('Số lượng tồn kho không đủ', 'danger');
-                }
-            }
-            else if (selectedMethod === "PAY002") {
-                const response = await fetch('/Checkout/InitVNPay', {
+            if (appcoupon)
+            {
+                const response12 = await fetch('/Checkout/CheckCoupon', {
                     method: "POST",
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        user_id: userData1.MaTaiKhoan,
-                        cart_id: userData1.CartID,
-                        info_adrs: addressData,
-                        ordernote: ordnote.value.trim(),
-                        shipping_fee: shipping_fee
-                    })
+                    body: JSON.stringify({ coupon_code: JSON.parse(appcoupon).coupon_code })
                 });
-                const result = await response.json();
-                if (result.success) {
-                    window.location.href = result.vnpayUrl;
+
+                result12 = await response12.json();
+            }
+
+            if (result12.success) {
+                if (selectedMethod === "PAY001") {
+                    const response = await fetch('/Checkout/SaveOrder', {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            user_id: userData1.MaTaiKhoan,
+                            cart_id: userData1.CartID,
+                            info_adrs: addressData,
+                            ordernote: ordnote.value.trim(),
+                            method_id: selectedMethod,
+                            shipping_fee: shipping_fee,
+                            discount_amount: appcoupon ? parseFloat(JSON.parse(appcoupon).discount_amount) : 0,
+                            coupon_applied: appcoupon ? JSON.parse(appcoupon).coupon_applied : null,
+                            orderID: null
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        const url = `@Url.Action("Index", "Profile")?order_status_id=${1}&MaTaiKhoan=${userData.MaTaiKhoan}&view=OrderPartial`;
+                        window.location.href = url;
+                    }
+                    else if (!result.success) {
+                        @*const url = `@Url.Action("Index", "Cart")?cart_id=${userData1.CartID}`;
+                        window.location.href = url;*@
+                        showNotification('Số lượng tồn kho không đủ', 'danger');
+                    }
                 }
-                else if (!result.success)
-                {
-                    showNotification('Số lượng tồn kho không đủ', 'danger');
+                else if (selectedMethod === "PAY002") {
+                    const response = await fetch('/Checkout/InitVNPay', {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            user_id: userData1.MaTaiKhoan,
+                            cart_id: userData1.CartID,
+                            info_adrs: addressData,
+                            ordernote: ordnote.value.trim(),
+                            shipping_fee: shipping_fee,
+                            discount_amount: appcoupon ? parseFloat(JSON.parse(appcoupon).discount_amount) : 0,
+                            coupon_applied: appcoupon ? JSON.parse(appcoupon).coupon_applied : null
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        window.location.href = result.vnpayUrl;
+                    }
+                    else if (!result.success) {
+                        showNotification('Số lượng tồn kho không đủ', 'danger');
+                    }
+                }
+            }
+            else
+            {
+                if (result12.message === "Mã giảm giá đã hết hạn.") {
+                    sessionStorage.removeItem('appliedcoupon');
+                    showNotification('Mã giảm giá đã hết hạn.', 'danger');
+                    location.reload();
+                }
+                else if (result12.message === "Mã giảm giá đã hết số lượng.") {
+                    sessionStorage.removeItem('appliedcoupon');
+                    showNotification('Mã giảm giá đã hết số lượng.', 'danger');
+                    location.reload();
+                }
+                else {
+                    sessionStorage.removeItem('appliedcoupon');
+                    showNotification('Mã giảm giá không tồn tại.', 'danger');
+                    location.reload();
                 }
             }
         } catch (error) {
             console.error("Không thể lưu Order", error);
         }
     });
+
     function showNotification(message, messageType) {
         var notificationContainer = document.getElementById("notification-container");
         var notification = document.createElement("div");

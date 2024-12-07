@@ -3,7 +3,6 @@
     ViewBag.Title = "Thanh toán đơn hàng - QVD";
     Layout = "~/Views/Shared/_LayoutClient.cshtml";
 }
-
 @if (ViewBag.Check == 1)
 {
 <script>
@@ -32,6 +31,13 @@
 }
 else
 {
+    if (ViewBag.msg != null)
+    {
+        <script>
+            showNotification(@ViewBag.msg, "danger");
+        </script>
+    }
+
     <div class="container p-10 mt-2">
         <div class="row">
             <div class="col-12" style="background-color: #f1f3f5">
@@ -39,8 +45,120 @@ else
 
                 @Html.Action("ProductsCheckoutPartial", "Checkout", new { cart_id = ViewBag.CartID })
 
+                <div class="checkoutlayout p-4" style="margin-top: 20px;">
+                    <div class="checkout-header-row">
+                        <div class="checkout-header">Mã giảm giá</div>
+                        <div class="input-group" style="width: 90%">
+                            <input type="text" class="form-control p-4" id="coupon" placeholder="Nhập mã giảm giá (nếu có)" maxlength="50">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary text-white" id="applied_coupon" disabled>Áp dụng</button>
+                            </div>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+
                 @Html.Action("PaymentCheckoutPartial", "Checkout", new { adrs = Model })
             </div>
         </div>
     </div>
+
+    <script>
+        // Xử lý khi trang được tải lại
+        window.onload = function () {
+            // Kiểm tra và xóa sessionStorage nếu có
+            sessionStorage.removeItem('appliedcoupon');
+        };
+
+        function showNotification(message, messageType) {
+            var notificationContainer = document.getElementById("notification-container");
+            var notification = document.createElement("div");
+            notification.className = `alert alert-${messageType} alert-dismissible fade show`;
+            notification.innerHTML = `
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    ${message}
+                `;
+
+            notificationContainer.appendChild(notification);
+
+            setTimeout(function () {
+                notification.remove();
+            }, 2000);
+        }
+
+        document.getElementById("coupon").addEventListener("input", function () {
+            const coupon1 = this;
+            const applyButton = document.getElementById("applied_coupon");
+
+            // Bật nút nếu có nội dung trong ô nhập, ngược lại thì tắt
+            if (coupon1.value.trim().length > 0) {
+                applyButton.disabled = false;
+            } else {
+                applyButton.disabled = true;
+            }
+        });
+
+        document.getElementById("applied_coupon").addEventListener("click", async function () {
+            const coupon1 = document.getElementById('coupon');
+            const appliedCouponButton = document.getElementById('applied_coupon');
+
+            const response = await fetch('/Checkout/CheckCoupon', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ coupon_code: coupon1.value })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                const totalamount = parseFloat(document.querySelector('.totalamount').getAttribute("data-order-totalamount")) || 0;
+
+                // Lấy giá trị từ phần tử .fee-ship và loại bỏ ký tự "₫" và dấu phân cách "."
+                const feeshipText = document.querySelector('.fee-ship').innerText;
+                const feeshipamount = parseFloat(feeshipText.replace(/[₫.]/g, '').replace(',', '.')) || 0;
+
+                // Tính toán số tiền giảm giá
+                let dis_amount = (result.percent * totalamount) / 100;
+                document.querySelector('.discount_amount').innerText = `-₫${Math.round(dis_amount).toLocaleString('de-DE')}`;
+
+                // Cập nhật phần tổng thanh toán sau khi trừ giảm giá
+                const totalAmountWithFeeandCoupon = totalamount - dis_amount + feeshipamount;
+                document.querySelector('.total-payment').innerText = `₫${Math.round(totalAmountWithFeeandCoupon).toLocaleString('de-DE')}`;
+
+
+                coupon1.value = "";
+                appliedCouponButton.disabled = true;
+
+                // Lưu thông tin vào sessionStorage
+                sessionStorage.setItem("appliedcoupon", JSON.stringify({
+                    coupon_applied: result.couponid,
+                    coupon_code: result.couponcode,
+                    discount_amount: dis_amount
+                }));
+
+                showNotification('Áp dụng mã thành công', 'success');
+            }
+            else
+            {
+                if (result.message === "Mã giảm giá đã hết hạn.") {
+                    sessionStorage.removeItem('appliedcoupon');
+                    coupon1.value = "";
+                    appliedCouponButton.disabled = true;
+                    showNotification('Mã giảm giá đã hết hạn.', 'danger');
+                }
+                else if (result.message === "Mã giảm giá đã hết số lượng.") {
+                    sessionStorage.removeItem('appliedcoupon');
+                    coupon1.value = "";
+                    appliedCouponButton.disabled = true;
+                    showNotification('Mã giảm giá đã hết số lượng.', 'danger');
+                }
+                else {
+                    sessionStorage.removeItem('appliedcoupon');
+                    coupon1.value = "";
+                    appliedCouponButton.disabled = true;
+                    showNotification('Mã giảm giá không tồn tại.', 'danger');
+                }
+            }
+        });
+    </script>
 }
