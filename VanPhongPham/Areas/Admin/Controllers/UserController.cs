@@ -8,8 +8,12 @@ using VanPhongPham.Models;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using System.Net;
+using VanPhongPham.Areas.Admin.Filter;
+using System.Text.RegularExpressions;
+using System.Web.Helpers;
 namespace VanPhongPham.Areas.Admin.Controllers
 {
+    [Admin]
     public class UserController : Controller
     {
         // GET: Admin/User
@@ -34,6 +38,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 listSup = userRepository.GetAllUsersWithAddresses();
             }
             ViewBag.user_id = userRepository.GenerateUserId();
+            ViewBag.Roles = userRepository.GetAllRoles();
             UserViewModel userr = userRepository.GetUserById(user_id);
             ViewBag.user = userr;
             return View(listSup);
@@ -70,8 +75,25 @@ namespace VanPhongPham.Areas.Admin.Controllers
             return RedirectToAction("Recoveruser", "user", new { area = "Admin" });
         }
         [HttpPost]
-        public ActionResult ManageUser(string action, UserViewModel model)
-        {            
+        public ActionResult ManageUser(string action, UserViewModel model, List<int> roleIds)
+        {
+            string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+            bool isValidEmail = Regex.IsMatch(model.Email, pattern);
+            if(!isValidEmail)
+            {
+                TempData["Msg"] = "Email không hợp lệ.";
+                return RedirectToAction("Index", "user", new { area = "Admin" });
+            }
+            if (model.Dob >= DateTime.Now.Date)
+            {
+                TempData["Msg"] = "Ngày sinh không hợp lệ.";
+                return RedirectToAction("Index", "user", new { area = "Admin" });
+            }
+            if (roleIds == null || !roleIds.Any())
+            {
+                TempData["Msg"] = "Vui lòng phân quyền!";
+                return RedirectToAction("Index", "user", new { area = "Admin" });
+            }
             if (model.AvatarFile != null && model.AvatarFile.ContentLength > 0)
             {
                 var uploadParams = new ImageUploadParams()
@@ -88,18 +110,12 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
             else
             {
-                UserViewModel user = userRepository.GetUserById(model.UserId);
-                if (user != null)
-                {
-                    model.AvatarUrl = user.AvatarUrl;
-                }
-                else
-                {
-                    model.AvatarUrl = "https://res.cloudinary.com/dgvcrawly/image/upload/v1730879614/user_avatars/ucfbpazojzj4kaluz3oo.jpg";
-                }
-            }
+                var user = userRepository.GetUserById(model.UserId);
+                model.AvatarUrl = user?.AvatarUrl ?? "https://res.cloudinary.com/dgvcrawly/image/upload/v1730879614/user_avatars/ucfbpazojzj4kaluz3oo.jpg";
+            }            
+            
 
-            UserViewModel newUser = new UserViewModel
+            var newUser = new UserViewModel
             {
                 UserId = model.UserId,
                 FullName = model.FullName,
@@ -110,32 +126,25 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 Dob = model.Dob,
                 AvatarUrl = model.AvatarUrl,
             };
+            
             if (action == "add")
             {
-                bool rs = userRepository.AddUser(newUser);
-                if (!rs)
-                {
-                    TempData["Msg"] = "Người dùng đã tồn tại";
-                }
-                else
-                { 
-                    TempData["Msg"] = "Thêm người dùng thành công";
-                }
+                bool rs = userRepository.AddUser(newUser, roleIds);
+                TempData["Msg"] = rs ? "Thêm người dùng thành công" : "Người dùng đã tồn tại";
             }
-            if (action == "edit")
+            else if (action == "edit")
             {
-                bool rs = userRepository.UpdateUser(newUser);
-                if(!rs)
-                {
-                    TempData["Msg"] = "Người dùng không tồn tại";
-                }
-                else
-                {
-                    TempData["Msg"] = "Cập nhật người dùng thành công";
-                }
+                bool rs = userRepository.UpdateUser(newUser, roleIds);
+                TempData["Msg"] = rs ? "Cập nhật người dùng thành công" : "Người dùng không tồn tại";
             }
+            else
+            {
+                TempData["Msg"] = "Hành động không hợp lệ.";
+            }
+
             return RedirectToAction("Index", "user", new { area = "Admin" });
         }
+
         [HttpGet]
         public ActionResult DeleteUser(string user_id)
         {

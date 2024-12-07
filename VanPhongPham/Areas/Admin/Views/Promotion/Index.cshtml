@@ -5,6 +5,7 @@
     ViewBag.Title = "Khuyến mãi - Quản Trị";
     var message = ViewBag.Message;
     var messageType = ViewBag.MessageType;
+    string userRole = Session["Role"] as string;
 }
 
 @if (message != null)
@@ -14,76 +15,79 @@
         @message
     </div>
 }
+@if (userRole == "Quản lý")
+{
+    <div class="card mb-4">
+        <h6 class="card-header">Thêm mới khuyến mãi <span><a class="btn btn-primary float-right" href="@Url.Action("RecoverPromotion")">Khuyến mãi đã xóa</a></span></h6>
+        <div class="card-body">
+            <form method="post" action="/Promotion/ManagePromotion">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="PromotionId">Mã khuyến mãi</label>
+                        <input type="text" class="form-control" id="PromotionId" name="PromotionId" readonly
+                               value="@(ViewBag.Promotion != null ? ViewBag.Promotion.PromotionId : ViewBag.PromoId ?? "")" />
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="PromotionName">Tên khuyến mãi</label>
+                        <input type="text" class="form-control" id="PromotionName" name="PromotionName" required
+                               value="@(ViewBag.Promotion != null ? ViewBag.Promotion.PromotionName : "")" />
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="Description">Mô tả</label>
+                        <input type="text" class="form-control" id="Description" name="Description" required
+                               value="@(ViewBag.Promotion != null ? ViewBag.Promotion.Description : "")" />
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="DiscountPercent">Giảm giá (%)</label>
+                        <input type="number" min="0" max="100" class="form-control" id="DiscountPercent" name="DiscountPercent" required
+                               value="@(ViewBag.Promotion != null ? ViewBag.Promotion.DiscountPercent : "")" />
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="StartDate">Ngày bắt đầu</label>
+                        <input type="date" class="form-control" id="StartDate" name="StartDate" required
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")"
+                               value="@(ViewBag.Promotion != null ? ViewBag.Promotion.StartDate.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))" />
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="EndDate">Ngày kết thúc</label>
+                        <input type="date" class="form-control" id="EndDate" name="EndDate" required
+                               value="@(ViewBag.Promotion != null ? ViewBag.Promotion.EndDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(7).ToString("yyyy-MM-dd"))" />
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="Products">Sản phẩm áp dụng</label>
+                        <select id="Products" name="SelectedProductIds" class="form-control" style="height: 200px" multiple>
+                            @foreach (var product in ViewBag.Products.ProductViewModel)
+                            {
+                                var isSelected = ViewBag.SelectedProductIds.Contains(product.ProductId);
+                                <option value="@product.ProductId" @(isSelected ? "selected" : "")>
+                                    @product.ProductName
+                                </option>
+                            }
+                        </select>
+                    </div>
 
-<div class="card mb-4">
-    <h6 class="card-header">Thêm mới khuyến mãi <span><a class="btn btn-primary float-right" href="@Url.Action("RecoverPromotion")">Khuyến mãi đã xóa</a></span></h6>
-    <div class="card-body">
-        <form method="post" action="/Promotion/ManagePromotion">
-            <div class="form-row">
-                <div class="form-group col-md-3">
-                    <label for="PromotionId">Mã khuyến mãi</label>
-                    <input type="text" class="form-control" id="PromotionId" name="PromotionId" readonly
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.PromotionId : ViewBag.PromoId ?? "")" />
-                    <div class="clearfix"></div>
-                </div>
-                <div class="form-group col-md-3">
-                    <label for="PromotionName">Tên khuyến mãi</label>
-                    <input type="text" class="form-control" id="PromotionName" name="PromotionName" required
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.PromotionName : "")" />
-                    <div class="clearfix"></div>
-                </div>
-                <div class="form-group col-md-3">
-                    <label for="Description">Mô tả</label>
-                    <input type="text" class="form-control" id="Description" name="Description" required
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.Description : "")" />
-                    <div class="clearfix"></div>
-                </div>
-                <div class="form-group col-md-3">
-                    <label for="DiscountPercent">Giảm giá (%)</label>
-                    <input type="number" min="0" max="100" class="form-control" id="DiscountPercent" name="DiscountPercent" required
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.DiscountPercent : "")" />
-                    <div class="clearfix"></div>
-                </div>
-                <div class="form-group col-md-3">
-                    <label for="StartDate">Ngày bắt đầu</label>
-                    <input type="date" class="form-control" id="StartDate" name="StartDate" required
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.StartDate.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))" />
-                    <div class="clearfix"></div>
-                </div>
-                <div class="form-group col-md-3">
-                    <label for="EndDate">Ngày kết thúc</label>
-                    <input type="date" class="form-control" id="EndDate" name="EndDate" required
-                           value="@(ViewBag.Promotion != null ? ViewBag.Promotion.EndDate.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(7).ToString("yyyy-MM-dd"))" />
-                    <div class="clearfix"></div>
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="Products">Sản phẩm áp dụng</label>
-                    <select id="Products" name="SelectedProductIds" class="form-control" multiple>
-                        @foreach (var product in ViewBag.Products.ProductViewModel)
-                        {
-                            var isSelected = ViewBag.SelectedProductIds.Contains(product.ProductId);
-                            <option value="@product.ProductId" @(isSelected ? "selected" : "")>
-                                @product.ProductName
-                            </option>
-                        }
-                    </select>
-                </div>
 
-
-                <div class="form-group col-md-3">
-                    <label for="status">Trạng thái</label>
-                    <select class="form-control" id="status" name="Status" required>
-                        <option value="true" @(ViewBag.Promotion != null && ViewBag.Promotion.Status == 1 ? "selected" : "")>Hoạt động</option>
-                        <option value="false" @(ViewBag.Promotion != null && ViewBag.Promotion.Status == 0 ? "selected" : "")>Không hoạt động</option>
-                    </select>
-                    <div class="clearfix"></div>
+                    <div class="form-group col-md-3">
+                        <label for="status">Trạng thái</label>
+                        <select class="form-control" id="status" name="Status" required>
+                            <option value="true" @(ViewBag.Promotion != null && ViewBag.Promotion.Status == true ? "selected" : "")>Hoạt động</option>
+                            <option value="false" @(ViewBag.Promotion != null && ViewBag.Promotion.Status == false ? "selected" : "")>Không hoạt động</option>
+                        </select>
+                        <div class="clearfix"></div>
+                    </div>
                 </div>
-            </div>
-            <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
-            <button type="submit" name="action" value="edit" class="btn btn-primary">Sửa</button>
-        </form>
+                <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
+                <button type="submit" name="action" value="edit" class="btn btn-primary">Sửa</button>
+            </form>
+        </div>
     </div>
-</div>
+}
 
 <h4 class="font-weight-bold mb-0">Danh sách khuyến mãi</h4>
 <div>
@@ -113,27 +117,36 @@
         <table class="table card-table table-responsive-md">
             <thead class="thead-light">
                 <tr>
-                    <th><input type="checkbox" id="select-all" />Chọn tất cả</th>
+                    @if (userRole == "Quản lý")
+                    {
+                        <th><input type="checkbox" id="select-all" />Chọn tất cả</th>
+                    }                    
                     <th>Mã KM</th>
                     <th>Tên khuyến mãi</th>
                     <th>Giảm giá (%)</th>
                     <th>Ngày bắt đầu</th>
-                    <th>Ngày kết thúc</th>                    
-                    <th>Thao tác</th>
+                    <th>Ngày kết thúc</th>
+                    @if (userRole == "Quản lý")
+                    {
+                        <th>Thao tác</th>
+                    }                    
                 </tr>
             </thead>
             <tbody>
                 @foreach (var promotion in Model)
                 {
                     <tr>
-                        <td>
-                            <input type="checkbox" name="selectedPromotions" value="@promotion.PromotionId" />
-                        </td>
+                        @if (userRole == "Quản lý")
+                        {
+                            <td>
+                                <input type="checkbox" name="selectedPromotions" value="@promotion.PromotionId" />
+                            </td>
+                        }                        
                         <td>@promotion.PromotionId</td>
                         <td>@promotion.PromotionName</td>
                         <td>@promotion.DiscountPercent%</td>
                         <td>@promotion.StartDate.ToString("dd/MM/yyyy")</td>
-                        <td>@promotion.EndDate.ToString("dd/MM/yyyy")</td>                        
+                        <td>@promotion.EndDate.ToString("dd/MM/yyyy")</td>
                         <td>
                             <a class="btn icon-btn btn-outline-danger"
                                title="Xóa"
@@ -150,7 +163,14 @@
                 }
             </tbody>
         </table>
-        <button type="submit" class="btn btn-danger mt-3">Xóa hàng loạt</button>
+        @if (Model.Count == 0)
+        {
+            <div class="text-center">Không có khuyến mãi nào</div>
+        }
+        @if (userRole == "Quản lý")
+        {
+            <button type="submit" class="btn btn-danger mt-3">Xóa hàng loạt</button>
+        }        
     </form>
     <div class="d-flex justify-content-center">
         <div class="pagination-container">
@@ -174,7 +194,7 @@
     }
 
     // Validate dates
-    document.querySelector('form').addEventListener('submit', function(e) {
+    document.querySelector('form').addEventListener('submit', function (e) {
         var startDate = new Date(document.getElementById('start_date').value);
         var endDate = new Date(document.getElementById('end_date').value);
 

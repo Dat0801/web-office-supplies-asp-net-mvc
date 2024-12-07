@@ -63,17 +63,22 @@
             </div>
 
             <div class="col-lg-4 col-4 text-left">
-                <form action="">
+                <form action="/ProductClient/GetAllProducts" method="get">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm">
+                        <input type="text"
+                               name="searchStr"
+                               class="form-control"
+                               placeholder="Tìm kiếm sản phẩm"
+                               value="@Request.QueryString["searchStr"]">
                         <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
+                            <button type="submit" class="btn btn-outline-primary">
                                 <i class="fa fa-search"></i>
-                            </span>
+                            </button>
                         </div>
                     </div>
                 </form>
             </div>
+
         }
 
 

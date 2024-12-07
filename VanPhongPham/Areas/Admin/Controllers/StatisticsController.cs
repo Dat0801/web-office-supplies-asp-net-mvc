@@ -3,9 +3,11 @@ using System.Web.Mvc;
 using System;
 using VanPhongPham.Models;
 using System.Linq;
+using VanPhongPham.Areas.Admin.Filter;
 
 namespace VanPhongPham.Areas.Admin.Controllers
 {
+    [Admin]
     public class StatisticsController : Controller
     {
         private DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();

@@ -766,6 +766,9 @@
     <Compile Include="Areas\Admin\Controllers\SupplierController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserOrderController.cs" />
+    <Compile Include="Areas\Admin\Filter\AdminAttribute.cs" />
+    <Compile Include="Areas\Admin\Filter\ImportStaffAttribute.cs" />
+    <Compile Include="Areas\Admin\Filter\SalesStaffAttribute.cs" />
     <Compile Include="Controllers\AddressController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\CartController.cs" />
@@ -799,6 +802,7 @@
     <Compile Include="Models\PromotionRepository.cs" />
     <Compile Include="Models\PromotionViewModel.cs" />
     <Compile Include="Models\PurchaseOrderRepository.cs" />
+    <Compile Include="Models\RoleViewModel.cs" />
     <Compile Include="Models\StatisticsViewModel.cs" />
     <Compile Include="Models\SupplierRepository.cs" />
     <Compile Include="Models\UserRepository.cs" />

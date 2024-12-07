@@ -5,9 +5,11 @@ using System.Web;
 using System.Web.Mvc;
 using VanPhongPham.Models;
 using PagedList;
+using VanPhongPham.Areas.Admin.Filter;
 
 namespace VanPhongPham.Areas.Admin.Controllers
 {
+    [SalesStaff]
     public class UserOrderController : Controller
     {
         private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();

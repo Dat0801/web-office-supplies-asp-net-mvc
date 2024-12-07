@@ -18,6 +18,7 @@ namespace VanPhongPham.Models
         public string AvatarUrl { get; set; } 
         public HttpPostedFileBase AvatarFile { get; set; } 
         public List<AddressViewModel> Addresses { get; set; } = new List<AddressViewModel>();
+        public List<string> Roles { get; set; }
     }
 
 }
