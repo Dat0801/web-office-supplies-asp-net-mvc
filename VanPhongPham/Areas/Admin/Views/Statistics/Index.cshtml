@@ -4,6 +4,25 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@*<a href="@Url.Action("ExportToExcel", "Statistics", new { startDate = Model.StartDate, endDate = Model.EndDate })" class="btn btn-success" style="position: absolute; right: 20px; top: 80px;">Xuất file excel</a>*@
+<div class="period-selector">
+    <form method="get" class="form-inline">
+        <label for="startDate" class="mr-2">Ngày bắt đầu:</label>
+        <input type="date"
+               name="startDate"
+               class="form-control mr-2"
+               value="@(Model.StartDate.ToString("yyyy-MM-dd"))" />
+
+        <label for="endDate" class="mr-2">Ngày kết thúc:</label>
+        <input type="date"
+               name="endDate"
+               class="form-control mr-2"
+               value="@(Model.EndDate.ToString("yyyy-MM-dd"))" />
+
+        <button type="submit" class="btn btn-primary">Xem thống kê</button> &nbsp;&nbsp;
+        <a href="@Url.Action("ExportToExcel", "Statistics", new { startDate = Model.StartDate, endDate = Model.EndDate })" class="btn btn-success excel">Xuất file excel</a>
+    </form>
+</div>
 <div>
     <h3>Doanh thu và lợi nhuận</h3>
     <canvas id="revenueProfitChart" width="400" height="200"></canvas>
@@ -169,5 +188,19 @@
             }
         }
     });
+
+    document.querySelector('.excel').addEventListener('click', function (event) {
+        event.preventDefault(); // Ngăn chặn hành động mặc định
+        const startDate = document.querySelector('input[name="startDate"]').value;
+        const endDate = document.querySelector('input[name="endDate"]').value;
+
+        if (startDate && endDate) {
+            const url = `/Statistics/ExportToExcel?startDate=${startDate}&endDate=${endDate}`;
+            window.location.href = url; // Điều hướng tới URL mới
+        } else {
+            alert('Vui lòng nhập đầy đủ ngày bắt đầu và ngày kết thúc!');
+        }
+    });
+
 </script>
 
