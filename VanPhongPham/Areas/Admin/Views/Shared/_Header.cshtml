@@ -3,6 +3,7 @@
 @{
     Layout = null;
     var login = Session["Admin"] as user;
+    var userRole = Session["Role"] as string;
 }
 
 @if (login != null)
@@ -36,6 +37,7 @@
                         <span class="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
                             <img src="~/Areas/Admin/Public/assets/img/avatars/1.png" class="d-block ui-w-30 rounded-circle ml-3">
                             <span class="px-1 ml-2 ml-lg-0">@login.full_name</span>
+                            <span class="px-1 ml-2 ml-lg-0">@userRole: </span>
                         </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">

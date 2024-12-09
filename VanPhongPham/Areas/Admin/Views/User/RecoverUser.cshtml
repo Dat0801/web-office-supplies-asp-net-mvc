@@ -5,7 +5,19 @@
 }
 @model List<VanPhongPham.Models.UserViewModel>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+    /* Đảm bảo rằng bảng có thể cuộn ngang */
+    .table-wrapper {
+        overflow-x: auto; /* Cho phép cuộn ngang */
+        -webkit-overflow-scrolling: touch; /* Thêm khả năng cuộn mượt mà trên thiết bị di động */
+        width: 100%;
+    }
 
+    .table {
+        width: 100%;
+        min-width: 800px; /* Thiết lập độ rộng tối thiểu cho bảng */
+    }
+</style>
 <a href="@Url.Action("Index","User")"><i class="bi bi-arrow-return-left"></i> Quay lại</a>
 <br />
 <br />
@@ -25,66 +37,70 @@
 </div>
 <div class="card">
     <form method="post" action="/User/RecoverUser">
-        <table class="table card-table table-responsive-md">
-            <thead class="thead-light">
-                <tr>
-                    <th><input type="checkbox" id="select-all" />Chọn tất cả</th>
-                    <th>Mã người dùng</th>
-                    <th>Tên tài khoản</th>
-                    <th>Email</th>
-                    <th>Ngày sinh</th>
-                    <th>Ảnh đại diện</th>
-                    <th>Giới tính</th>
-                    <th>Tên người dùng</th>
-                    <th>Địa chỉ</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in Model)
-                {
+        <div class="table-wrapper">
+            <table class="table card-table table-responsive-md">
+                <thead class="thead-light">
                     <tr>
-                        <td>
-                            <input type="checkbox" name="selectedUsers" value="@user.UserId" />
-                        </td>
-                        <td>@user.UserId</td>
-                        <td>@user.Username</td>
-                        <td>@user.Email</td>
-                        <td>@user.Dob</td>
-                        <td><img src="@user.AvatarUrl" alt="Avatar" style="width: 50px; height: auto;" /></td>
-                        <td>@user.Gender</td>
-                        <td>@user.FullName</td>
-                        <td>
-                            <ul>
-                                @if (user.Addresses != null && user.Addresses.Count > 0)
-                                {
-                                    foreach (var address in user.Addresses)
-                                    {
-                                        <li>
-                                            @address.AddressLine, @address.Ward, @address.District, @address.Province <br />
-                                            SĐT: @address.PhoneNumber <br />
-                                            @if (address.isDefault == true)
-                                            {
-                                                <span style="color: green;">(Mặc định)</span>
-                                            }
-                                        </li>
-                                    }
-                                }
-                                else
-                                {
-                                    <li>Không có địa chỉ nào.</li>
-                                }
-                            </ul>
-                        </td>
-                        <td>
-                            <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("RecoverSingleUser", "User", new { user_id = user.UserId })">
-                                <i class="feather icon-user-check navbar-icon align-middle"></i>
-                            </a>
-                        </td>
+                        <th><input type="checkbox" id="select-all" />Chọn tất cả</th>
+                        <th>Mã người dùng</th>
+                        <th>Tên tài khoản</th>
+                        <th>Email</th>
+                        <th>Ngày sinh</th>
+                        <th>Ảnh đại diện</th>
+                        <th>Giới tính</th>
+                        <th>Tên người dùng</th>
+                        <th>Địa chỉ</th>
+                        <th>Quyền</th>
+                        <th>Thao tác</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selectedUsers" value="@user.UserId" />
+                            </td>
+                            <td>@user.UserId</td>
+                            <td>@user.Username</td>
+                            <td>@user.Email</td>
+                            <td>@user.Dob</td>
+                            <td><img src="@user.AvatarUrl" alt="Avatar" style="width: 50px; height: auto;" /></td>
+                            <td>@user.Gender</td>
+                            <td>@user.FullName</td>
+                            <td>
+                                <ul>
+                                    @if (user.Addresses != null && user.Addresses.Count > 0)
+                                    {
+                                        foreach (var address in user.Addresses)
+                                        {
+                                            <li>
+                                                @address.AddressLine, @address.Ward, @address.District, @address.Province <br />
+                                                SĐT: @address.PhoneNumber <br />
+                                                @if (address.isDefault == true)
+                                                {
+                                                    <span style="color: green;">(Mặc định)</span>
+                                                }
+                                            </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <li>Không có địa chỉ nào.</li>
+                                    }
+                                </ul>
+                            </td>
+                            <td>@string.Join(", ", user.Roles)</td>
+                            <td>
+                                <a class="btn icon-btn btn-outline-info ml-2" href="@Url.Action("RecoverSingleUser", "User", new { user_id = user.UserId })">
+                                    <i class="feather icon-user-check navbar-icon align-middle"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
         <button type="submit" class="btn btn-danger mt-3">Khôi phục hàng loạt</button>
     </form>
 </div>

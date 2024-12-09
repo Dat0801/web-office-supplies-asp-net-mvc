@@ -5,8 +5,10 @@ using System.Web;
 using System.Web.Mvc;
 using VanPhongPham.Models;
 using PagedList;
+using VanPhongPham.Areas.Admin.Filter;
 namespace VanPhongPham.Areas.Admin.Controllers
 {
+    [Admin]
     public class SupplierController : Controller
     {
         private readonly SupplierRepository supplierRepository;

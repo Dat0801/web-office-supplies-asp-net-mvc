@@ -1,4 +1,8 @@
-﻿<!-- [ Layout sidenav ] Start -->
+﻿@{
+    var userRole = Session["Role"] as string;
+}
+
+<!-- [ Layout sidenav ] Start -->
 <div id="layout-sidenav" class="layout-sidenav sidenav sidenav-vertical bg-white logo-dark">
     <!-- Brand demo (see assets/css/demo/demo.css) -->
     <div class="app-brand demo">
@@ -24,166 +28,185 @@
         <li class="sidenav-divider mb-1"></li>
         <li class="sidenav-header small font-weight-semibold">Chức năng quản lý</li>
 
-        <!-- Quản lý người dùng -->
-        <li class="sidenav-item">
-            <a href="javascript:" class="sidenav-link sidenav-toggle">
-                <i class="sidenav-icon feather icon-users"></i>
-                <div>Người dùng</div>
-            </a>
-            <ul class="sidenav-menu">
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Index", "User")" class="sidenav-link">
-                        <div>Danh sách người dùng</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <!-- Quản lý nhập hàng -->
-        <li class="sidenav-item">
-            <a href="javascript:" class="sidenav-link sidenav-toggle">
-                <i class="sidenav-icon feather icon-package"></i>
-                <div>Nhập hàng</div>
-            </a>
-            <ul class="sidenav-menu">
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Index", "Supplier")" class="sidenav-link">
-                        <div>Danh sách nhà cung cấp</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Index", "PurchaseOrder")" class="sidenav-link">
-                        <div>Đặt hàng từ nhà cung cấp</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Receipt", "PurchaseOrder")" class="sidenav-link">
-                        <div>Danh sách phiếu nhập</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <!-- Quản lý sản phẩm -->
-        <li class="sidenav-item">
-            <a href="javascript:" class="sidenav-link sidenav-toggle">
-                <i class="sidenav-icon feather icon-package"></i>
-                <div>Sản phẩm</div>
-            </a>
-            <ul class="sidenav-menu">
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Index", "Product")" class="sidenav-link">
-                        <div>Danh sách sản phẩm</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Category", "Product")" class="sidenav-link">
-                        <div>Danh mục sản phẩm</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("AddProduct", "Product")" class="sidenav-link">
-                        <div>Thêm mới sản phẩm</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Attribute", "Product")" class="sidenav-link">
-                        <div>Thuộc tính của sản phẩm</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("AttributeValue", "Product")" class="sidenav-link">
-                        <div>Giá trị thuộc tính của sản phẩm</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <!-- Quản lý bán hàng -->
-        <li class="sidenav-item">
-            <a href="javascript:" class="sidenav-link sidenav-toggle">
-                <i class="sidenav-icon feather icon-shopping-cart"></i>
-                <div>Đơn hàng</div>
-            </a>
-            <ul class="sidenav-menu">
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Index", "UserOrder")" class="sidenav-link">
-                        <div>Tất cả</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("ConfirmRequest", "UserOrder")" class="sidenav-link">
-                        <div>Chờ xác nhận</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("DeliveringOrders", "UserOrder")" class="sidenav-link">
-                        <div>Chờ giao hàng</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("DeliveredOrders", "UserOrder")" class="sidenav-link">
-                        <div>Hoàn thành</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("CancelRequest", "UserOrder")" class="sidenav-link">
-                        <div>Yêu cầu hủy</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("CanceledOrders", "UserOrder")" class="sidenav-link">
-                        <div>Đã hủy</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <!-- Quản lý khuyến mãi -->
-        <li class="sidenav-item">
-            <a href="javascript:" class="sidenav-link sidenav-toggle">
-                <i class="sidenav-icon feather icon-percent"></i>
-                <div>Quản lý khuyến mãi</div>
-            </a>
-            <ul class="sidenav-menu">
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Index", "Promotion")" class="sidenav-link">
-                        <div>Danh sách khuyến mãi</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("RecoverPromotion", "Promotion")" class="sidenav-link">
-                        <div>Khuyến mãi đã xóa</div>
-                    </a>
-                </li>                
-            </ul>
-        </li>
-        <!-- Quản lý thống kê -->
-        <li class="sidenav-item">
-            <a href="javascript:" class="sidenav-link sidenav-toggle">
-                <i class="sidenav-icon feather icon-bar-chart-2"></i>
-                <div>Thống kê</div>
-            </a>
-            <ul class="sidenav-menu">
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Index", "Statistics")" class="sidenav-link">
-                        <div>Tổng quan thống kê</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Revenue", "Statistics")" class="sidenav-link">
-                        <div>Doanh thu & Lợi nhuận</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Products", "Statistics")" class="sidenav-link">
-                        <div>Thống kê sản phẩm</div>
-                    </a>
-                </li>
-                <li class="sidenav-item">
-                    <a href="@Url.Action("Rates", "Statistics")" class="sidenav-link">
-                        <div>Thống kê đánh giá</div>
-                    </a>
-                </li>
-            </ul>
+        @if (userRole == "Quản lý")
+        {
+            <!-- Quản lý người dùng -->
+            <li class="sidenav-item">
+                <a href="javascript:" class="sidenav-link sidenav-toggle">
+                    <i class="sidenav-icon feather icon-users"></i>
+                    <div>Người dùng</div>
+                </a>
+                <ul class="sidenav-menu">
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Index", "User")" class="sidenav-link">
+                            <div>Danh sách người dùng</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        }
+        @if (userRole == "Nhân viên nhập hàng" || userRole == "Quản lý")
+        {
+            <!-- Quản lý nhập hàng -->
+            <li class="sidenav-item">
+                <a href="javascript:" class="sidenav-link sidenav-toggle">
+                    <i class="sidenav-icon feather icon-package"></i>
+                    <div>Nhập hàng</div>
+                </a>
+                <ul class="sidenav-menu">
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Index", "Supplier")" class="sidenav-link">
+                            <div>Danh sách nhà cung cấp</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Index", "PurchaseOrder")" class="sidenav-link">
+                            <div>Đặt hàng từ nhà cung cấp</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Receipt", "PurchaseOrder")" class="sidenav-link">
+                            <div>Nhập hàng từ nhà cung cấp</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        }
+        @if (userRole == "Quản lý")
+        {
+            <!-- Quản lý sản phẩm -->
+            <li class="sidenav-item">
+                <a href="javascript:" class="sidenav-link sidenav-toggle">
+                    <i class="sidenav-icon feather icon-package"></i>
+                    <div>Sản phẩm</div>
+                </a>
+                <ul class="sidenav-menu">
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Index", "Product")" class="sidenav-link">
+                            <div>Danh sách sản phẩm</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Category", "Product")" class="sidenav-link">
+                            <div>Danh mục sản phẩm</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("AddProduct", "Product")" class="sidenav-link">
+                            <div>Thêm mới sản phẩm</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Attribute", "Product")" class="sidenav-link">
+                            <div>Thuộc tính của sản phẩm</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("AttributeValue", "Product")" class="sidenav-link">
+                            <div>Giá trị thuộc tính của sản phẩm</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        }
+        @if (userRole == "Nhân viên bán hàng" || userRole == "Quản lý")
+        {
+            <!-- Quản lý bán hàng -->
+            <li class="sidenav-item">
+                <a href="javascript:" class="sidenav-link sidenav-toggle">
+                    <i class="sidenav-icon feather icon-shopping-cart"></i>
+                    <div>Đơn hàng</div>
+                </a>
+                <ul class="sidenav-menu">
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Index", "UserOrder")" class="sidenav-link">
+                            <div>Tất cả</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("ConfirmRequest", "UserOrder")" class="sidenav-link">
+                            <div>Chờ xác nhận</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("DeliveringOrders", "UserOrder")" class="sidenav-link">
+                            <div>Chờ giao hàng</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("DeliveredOrders", "UserOrder")" class="sidenav-link">
+                            <div>Hoàn thành</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("CancelRequest", "UserOrder")" class="sidenav-link">
+                            <div>Yêu cầu hủy</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("CanceledOrders", "UserOrder")" class="sidenav-link">
+                            <div>Đã hủy</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        }
+        @if (userRole == "Quản lý" || userRole == "Nhân viên bán hàng")
+        {
+            <!-- Quản lý khuyến mãi -->
+            <li class="sidenav-item">
+                <a href="javascript:" class="sidenav-link sidenav-toggle">
+                    <i class="sidenav-icon feather icon-percent"></i>
+                    <div>Quản lý khuyến mãi</div>
+                </a>
+                <ul class="sidenav-menu">
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Index", "Promotion")" class="sidenav-link">
+                            <div>Danh sách khuyến mãi</div>
+                        </a>
+                    </li>
+                    @if (userRole == "Quản lý")
+                    {
+                        <li class="sidenav-item">
+                            <a href="@Url.Action("RecoverPromotion", "Promotion")" class="sidenav-link">
+                                <div>Khuyến mãi đã xóa</div>
+                            </a>
+                        </li>
+                    }                    
+                </ul>
+            </li>
+        }
+        @if (userRole == "Quản lý")
+        {
+            <!-- Quản lý thống kê -->
+            <li class="sidenav-item">
+                <a href="javascript:" class="sidenav-link sidenav-toggle">
+                    <i class="sidenav-icon feather icon-bar-chart-2"></i>
+                    <div>Thống kê</div>
+                </a>
+                <ul class="sidenav-menu">
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Index", "Statistics")" class="sidenav-link">
+                            <div>Tổng quan thống kê</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Revenue", "Statistics")" class="sidenav-link">
+                            <div>Doanh thu & Lợi nhuận</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Products", "Statistics")" class="sidenav-link">
+                            <div>Thống kê sản phẩm</div>
+                        </a>
+                    </li>
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Rates", "Statistics")" class="sidenav-link">
+                            <div>Thống kê đánh giá</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        }
 </div>
 <!-- [ Layout sidenav ] End -->
