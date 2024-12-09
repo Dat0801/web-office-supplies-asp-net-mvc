@@ -19,7 +19,7 @@ namespace VanPhongPham.Controllers
         {
             return View();
         }
-        public ActionResult GetAllProducts(string categoryID, string priceRange, List<string> colors, List<string> brands)
+        public ActionResult GetAllProducts(string categoryID, string searchStr, string priceRange, List<string> colors, List<string> brands, int pageNumber = 1, int pageSize = 12)
         {
             var viewModel = _productRepository.GetAllProducts();
             if (viewModel == null || viewModel.ProductViewModel == null || !viewModel.ProductViewModel.Any())
@@ -28,8 +28,9 @@ namespace VanPhongPham.Controllers
                 return View(viewModel);
             }
 
-            var products = viewModel.ProductViewModel;            
-            
+            var products = viewModel.ProductViewModel;
+
+            // Filter products by category
             if (!string.IsNullOrWhiteSpace(categoryID))
             {
                 viewModel = _productRepository.GetProductsModelViewByCategory(categoryID);
@@ -43,12 +44,12 @@ namespace VanPhongPham.Controllers
                 }
                 products = viewModel.ProductViewModel;
             }
-            
+
+            // Filter by price range
             if (!string.IsNullOrEmpty(priceRange))
             {
                 var priceRanges = priceRange.Split(',');
                 var filteredProducts = new List<ProductViewModel>();
-
                 foreach (var range in priceRanges)
                 {
                     var prices = range.Split('-');
@@ -60,10 +61,10 @@ namespace VanPhongPham.Controllers
                             p.Price >= minPrice && p.Price <= maxPrice));
                     }
                 }
-
                 products = filteredProducts.Distinct().ToList();
             }
-            
+
+            // Filter by colors
             if (colors != null && colors.Any())
             {
                 products = products.Where(p =>
@@ -72,7 +73,8 @@ namespace VanPhongPham.Controllers
                         colors.Contains(a.Value, StringComparer.OrdinalIgnoreCase)
                     )).ToList();
             }
-            
+
+            // Filter by brands
             if (brands != null && brands.Any())
             {
                 products = products.Where(p =>
@@ -81,11 +83,23 @@ namespace VanPhongPham.Controllers
                         brands.Contains(a.Value, StringComparer.OrdinalIgnoreCase)
                     )).ToList();
             }
+            if (!string.IsNullOrEmpty(searchStr))
+            {
+                var lowerQuery = searchStr.ToLower();
+                products = products.Where(p => p.ProductName.ToLower().Contains(lowerQuery)).ToList();
+            }
+            // Pagination
+            var totalProducts = products.Count();
+            products = products.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
             viewModel.ProductViewModel = products;
 
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+            ViewBag.SearchStr = searchStr;
             return View(viewModel);
         }
+
         public ActionResult Details(string id, string cart_id)
         {
             var product = _productRepository.GetProductsModelViewById(id);

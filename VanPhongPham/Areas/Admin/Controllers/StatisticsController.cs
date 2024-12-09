@@ -3,58 +3,19 @@ using System.Web.Mvc;
 using System;
 using VanPhongPham.Models;
 using System.Linq;
-
+using VanPhongPham.Areas.Admin.Filter;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System.Drawing;
+using System.IO;
 namespace VanPhongPham.Areas.Admin.Controllers
 {
+    [Admin]
     public class StatisticsController : Controller
     {
         private DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
 
-        //public ActionResult Index(int? month = null, int? year = null, string period = "custom")
-        //{
-        //    DateTime startDate;
-        //    DateTime endDate;
-
-        //    if (month.HasValue && year.HasValue)
-        //    {                
-        //        startDate = new DateTime(year.Value, month.Value, 1);
-        //        endDate = startDate.AddMonths(1).AddDays(-1); 
-        //    }
-        //    else
-        //    {                
-        //        endDate = DateTime.Now;
-        //        switch (period.ToLower())
-        //        {
-        //            case "week":
-        //                startDate = DateTime.Now.AddDays(-7);
-        //                break;
-        //            case "month":
-        //                startDate = DateTime.Now.AddMonths(-1);
-        //                break;
-        //            case "year":
-        //                startDate = DateTime.Now.AddYears(-1);
-        //                break;
-        //            default:
-        //                startDate = DateTime.Now.AddDays(-7);
-        //                break;
-        //        }
-        //    }
-
-        //    var statistics = new StatisticsViewModel
-        //    {
-        //        Period = period,
-        //        SelectedMonth = month,
-        //        SelectedYear = year,
-        //        TotalRevenue = CalculateRevenue(startDate, endDate),
-        //        TotalProfit = CalculateProfit(startDate, endDate),
-        //        BestSellingProducts = GetBestSellingProducts(5, startDate, endDate),
-        //        SlowSellingProducts = GetSlowSellingProducts(5, startDate, endDate),
-        //        HighestRatedProducts = GetHighestRatedProducts(5, startDate, endDate),
-        //        LowestRatedProducts = GetLowestRatedProducts(5, startDate, endDate)
-        //    };
-
-        //    return View(statistics);
-        //}
+        
         public ActionResult Index(DateTime? startDate = null, DateTime? endDate = null)
         {
             if (!startDate.HasValue || !endDate.HasValue)
@@ -284,7 +245,116 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
             return query;
         }
+        public ActionResult ExportToExcel(DateTime? startDate = null, DateTime? endDate = null)
+        {
+            if (!startDate.HasValue || !endDate.HasValue)
+            {
+                startDate = DateTime.Now.AddDays(-7);
+                endDate = DateTime.Now;
+            }
+            endDate = endDate.Value.Date.AddDays(1).AddSeconds(-1);
 
+            // Lấy dữ liệu thống kê
+            var bestSellingProducts = GetBestSellingProducts(10, startDate.Value, endDate.Value);
+            var slowSellingProducts = GetSlowSellingProducts(10, startDate.Value, endDate.Value);
+            var highestRatedProducts = GetHighestRatedProducts(10, startDate.Value, endDate.Value);
+            var lowestRatedProducts = GetLowestRatedProducts(10, startDate.Value, endDate.Value);
+
+            // Tạo file Excel
+            using (var package = new ExcelPackage())
+            {
+                // Tạo worksheet cho Best Selling Products
+                var bestSellingSheet = package.Workbook.Worksheets.Add("Sản phẩm bán chạy");
+                bestSellingSheet.Cells[1, 1].Value = "Mã sản phẩm";
+                bestSellingSheet.Cells[1, 2].Value = "Tên sản phẩm";
+                bestSellingSheet.Cells[1, 3].Value = "Tổng số lượng bán";
+                bestSellingSheet.Cells[1, 4].Value = "Tổng doanh thu";
+                bestSellingSheet.Cells[1, 5].Value = "Tổng lợi nhuận";
+
+                int row = 2;
+                foreach (var product in bestSellingProducts)
+                {
+                    bestSellingSheet.Cells[row, 1].Value = product.ProductId;
+                    bestSellingSheet.Cells[row, 2].Value = product.ProductName;
+                    bestSellingSheet.Cells[row, 3].Value = product.TotalQuantitySold;
+                    bestSellingSheet.Cells[row, 4].Value = product.TotalRevenue;
+                    bestSellingSheet.Cells[row, 5].Value = product.TotalProfit;
+                    row++;
+                }
+
+                // Tạo worksheet cho Slow Selling Products
+                var slowSellingSheet = package.Workbook.Worksheets.Add("Sản phẩm bán chậm");
+                slowSellingSheet.Cells[1, 1].Value = "Mã sản phẩm";
+                slowSellingSheet.Cells[1, 2].Value = "Tên sản phẩm";
+                slowSellingSheet.Cells[1, 3].Value = "Tổng số lượng bán";
+                slowSellingSheet.Cells[1, 4].Value = "Tổng doanh thu";
+                slowSellingSheet.Cells[1, 5].Value = "Tổng lợi nhuận";
+
+                row = 2;
+                foreach (var product in slowSellingProducts)
+                {
+                    slowSellingSheet.Cells[row, 1].Value = product.ProductId;
+                    slowSellingSheet.Cells[row, 2].Value = product.ProductName;
+                    slowSellingSheet.Cells[row, 3].Value = product.TotalQuantitySold;
+                    slowSellingSheet.Cells[row, 4].Value = product.TotalRevenue;
+                    slowSellingSheet.Cells[row, 5].Value = product.TotalProfit;
+                    row++;
+                }
+
+                // Tạo worksheet cho Highest Rated Products
+                var highestRatedSheet = package.Workbook.Worksheets.Add("Sản phẩm được đánh giá cao");
+                highestRatedSheet.Cells[1, 1].Value = "Mã sản phẩm";
+                highestRatedSheet.Cells[1, 2].Value = "Tên sản phẩm";
+                highestRatedSheet.Cells[1, 3].Value = "Đánh giá trung bình";
+                highestRatedSheet.Cells[1, 4].Value = "Số lượt đánh giá";
+
+                row = 2;
+                foreach (var product in highestRatedProducts)
+                {
+                    highestRatedSheet.Cells[row, 1].Value = product.ProductId;
+                    highestRatedSheet.Cells[row, 2].Value = product.ProductName;
+                    highestRatedSheet.Cells[row, 3].Value = product.AverageRating;
+                    highestRatedSheet.Cells[row, 4].Value = product.ReviewCount;
+                    row++;
+                }
+
+                // Tạo worksheet cho Lowest Rated Products
+                var lowestRatedSheet = package.Workbook.Worksheets.Add("Sản phẩm bị đánh giá thấp");
+                lowestRatedSheet.Cells[1, 1].Value = "Mã sản phẩm";
+                lowestRatedSheet.Cells[1, 2].Value = "Tên sản phẩm";
+                lowestRatedSheet.Cells[1, 3].Value = "Đánh giá trung bình";
+                lowestRatedSheet.Cells[1, 4].Value = "Số lượt đánh giá";
+
+                row = 2;
+                foreach (var product in lowestRatedProducts)
+                {
+                    lowestRatedSheet.Cells[row, 1].Value = product.ProductId;
+                    lowestRatedSheet.Cells[row, 2].Value = product.ProductName;
+                    lowestRatedSheet.Cells[row, 3].Value = product.AverageRating;
+                    lowestRatedSheet.Cells[row, 4].Value = product.ReviewCount;
+                    row++;
+                }
+
+                // Thiết lập style cho tiêu đề
+                foreach (var sheet in package.Workbook.Worksheets)
+                {
+                    using (var range = sheet.Cells[1, 1, 1, sheet.Dimension.Columns])
+                    {
+                        range.Style.Font.Bold = true;
+                        range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        range.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                        range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    }
+                }
+
+                // Trả file về cho người dùng
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+                var fileName = $"Statistics_{startDate.Value:yyyyMMdd}_{endDate.Value:yyyyMMdd}.xlsx";
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+        }
 
     }
 }

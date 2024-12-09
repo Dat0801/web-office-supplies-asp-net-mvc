@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using VanPhongPham.Areas.Admin.Filter;
 using VanPhongPham.Models;
 
 namespace VanPhongPham.Areas.Admin.Controllers
-{
+{    
     public class PromotionController : Controller
     {
         private readonly PromotionRepository promotionRepository;
@@ -19,6 +20,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
         }
         // GET: Admin/Promotion
+        [SalesStaff]
         public ActionResult Index(int? page, string promo_id, string search_str, bool? onlyActive)
         {
             int pageSize = 5;
@@ -66,7 +68,8 @@ namespace VanPhongPham.Areas.Admin.Controllers
             ViewBag.PromoId = promotionRepository.GeneratePromotionId();
 
             return View(listPromo.ToPagedList(pageNumber, pageSize));
-        }        
+        }
+        [Admin]
         public ActionResult RecoverPromotion(string search_str)
         {
             List<PromotionViewModel> sup;
@@ -79,6 +82,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 sup = promotionRepository.GetDeletedPromotions();
             return View(sup);
         }
+        [Admin]
         [HttpGet]
         public ActionResult RecoverSinglePromotion(string promotion_id)
         {
@@ -98,6 +102,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
             return RedirectToAction("Index", "Promotion", new { area = "Admin" });
         }
+        [Admin]
         [HttpPost]
         public ActionResult RecoverPromotion(List<string> selectedPromotions)
         {
@@ -117,16 +122,34 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
             return RedirectToAction("Index", "Promotion", new { area = "Admin" });
         }
+        [Admin]
         [HttpPost]
         public ActionResult ManagePromotion(string action, PromotionViewModel promotion, List<string> SelectedProductIds)
         {
-
+            if(promotion.StartDate > promotion.EndDate)
+            {
+                TempData["Message"] = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc!";
+                TempData["MessageType"] = "danger";
+                return RedirectToAction("Index", "Promotion", new { area = "Admin" });
+            }
+            if(promotion.DiscountPercent < 0 || promotion.DiscountPercent > 100)
+            {
+                TempData["Message"] = "Giảm giá phải nằm trong khoảng từ 0 đến 100!";
+                TempData["MessageType"] = "danger";
+                return RedirectToAction("Index", "Promotion", new { area = "Admin" });
+            }            
+            if(promotion.StartDate.Date < DateTime.Now.Date)
+            {
+                TempData["Message"] = "Ngày bắt đầu phải lớn hơn ngày hiện tại!";
+                TempData["MessageType"] = "danger";
+                return RedirectToAction("Index", "Promotion", new { area = "Admin" });
+            }
             if (action == "add")
             {
-                var existPromotion = promotionRepository.GetPromotionByName(promotion.PromotionName);
+                var existPromotion = promotionRepository.GetExistingPromotions(promotion.PromotionName, promotion.StartDate, promotion.EndDate);
                 if (existPromotion != null)
                 {
-                    TempData["Message"] = "Tên khuyến mãi đã tồn tại! Vui lòng thêm tên mới hoặc kiểm tra phần khôi phục!";
+                    TempData["Message"] = "Khuyến mãi đã tồn tại hoặc trùng ngày khuyến mãi!";
                     TempData["MessageType"] = "danger";
                 }
                 else
@@ -162,6 +185,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
             return RedirectToAction("Index", "Promotion", new { area = "Admin" });
         }
+        [Admin]
         [HttpGet]
         public ActionResult DeletePromotion(string promotion_id)
         {
@@ -181,7 +205,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
             return RedirectToAction("Index", "Promotion", new { area = "Admin" });
         }
-
+        [Admin]
         [HttpPost]
         public ActionResult DeletePromotion(List<string> selectedPromotions)
         {

@@ -37,6 +37,8 @@ namespace VanPhongPham.Areas.Admin.Controllers
             if (usr != null)
             {
                 Session["Admin"] = usr;
+                var userRoles = usr.user_roles.FirstOrDefault();
+                Session["Role"] = userRoles.role.role_name;
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
             else
