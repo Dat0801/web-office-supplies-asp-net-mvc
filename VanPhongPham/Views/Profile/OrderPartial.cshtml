@@ -357,7 +357,18 @@
                 }
                 else
                 {
-                    <div class="order-status">ĐÃ HOÀN TIỀN</div>
+                    if (order.CancellationRequested != 5 && order.CancellationRequested != 6)
+                    {
+                        <div class="order-status">CHỜ HOÀN TIỀN</div>
+                    }
+                    if (order.CancellationRequested == 5)
+                    {
+                        <div class="order-status">TỪ CHỐI HOÀN TIỀN</div>
+                    }
+                    if (order.CancellationRequested == 6)
+                    { 
+                        <div class="order-status">ĐÃ HOÀN TIỀN</div>
+                    }
                 }
                 <hr />
 

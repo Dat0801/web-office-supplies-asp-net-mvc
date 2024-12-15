@@ -368,6 +368,40 @@
             <textarea class="review-textarea" style="height: 150px;" disabled>@Model.CancellationReason</textarea>
         </div>
     }
+    else if (Model.OrderStatusID == 5 && Model.CancellationRequested != 5 && Model.CancellationRequested != 6)
+    {
+        <div class="text-center mt-5">
+            <h3 class="text-center text-primary">Lý do trả</h3>
+            <textarea class="review-textarea" style="height: 100px;" disabled>@Model.CancellationReason</textarea>
+
+            <h4 class="text-left mt-1">Hình ảnh trả hàng</h4>
+            <div id="returnImagePreview" class="d-flex flex-wrap justify-content-start" style="margin-bottom: 20px;">
+                @{
+                    if (!string.IsNullOrEmpty(Model.ReturnImages))
+                    {
+                        var imageLinks = Model.ReturnImages.Split(','); // Cắt chuỗi thành mảng
+                        foreach (var image in imageLinks)
+                        {
+                            <div class="image-container" style="position: relative; margin-right: 10px">
+                                <img src="@image" alt="Hình ảnh trả" class="preview-image"
+                                     style="width: 100px; height: 100px; object-fit: contain; cursor: pointer;"
+                                     data-bs-toggle="modal" data-bs-target="#imageModal" data-src="@image" />
+                            </div>
+                        }
+                    }
+                }
+            </div>
+
+            <!-- Modal để preview ảnh -->
+            <div id="imageModal" class="custom-modal">
+                <span class="close-modal">&times;</span>
+                <img id="modalImage" src="" alt="Preview" class="modal-image" />
+            </div>
+
+            <button type="button" id="RefuseBtn2" class="btn btn-primary" style="visibility: hidden" data-orderid="@Model.OrderId" data-ordercode="@Model.OrderCode"></button>
+            <button type="button" id="AcceptBtn2" class="btn btn-primary" style="visibility: hidden" data-orderid="@Model.OrderId" data-ordercode="@Model.OrderCode"></button>
+        </div>
+    }
 </div>
 
 @if (ViewBag.View == "CanceledOrders")
@@ -441,6 +475,23 @@ else if (ViewBag.View == "Index")
             </div>
             <div class="modal-footer">
                 <button type="button" id="confirmCancelBtn" class="btn btn-primary">Xác Nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal nhập lý do từ chối hoàn tiền -->
+<div class="modal fade" id="discardrechargeModal" tabindex="-1" role="dialog" aria-labelledby="discardrechargeModalLabel" aria-hidden="true" data-backdrop="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="discardrechargeModalLabel">Nhập lý từ chối hoàn tiền</h5>
+            </div>
+            <div class="modal-body">
+                <textarea id="discardrechargeReason" class="review-textarea" style="height: 200px" maxlength="100" placeholder="Nhập nội dung từ chối hoàn tiền, tối đa 100 ký tự"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="discardrechargeBtn" class="btn btn-primary">Xác Nhận</button>
             </div>
         </div>
     </div>
@@ -612,6 +663,9 @@ else if (ViewBag.View == "Index")
         const RefuseBtn = document.getElementById("RefuseBtn");
         const AcceptBtn1 = document.getElementById("AcceptBtn1");
         const RefuseBtn1 = document.getElementById("RefuseBtn1");
+        const AcceptBtn2 = document.getElementById("AcceptBtn2");
+        const RefuseBtn2 = document.getElementById("RefuseBtn2");
+        const discardrechargeBtn = document.getElementById("discardrechargeBtn");
 
         if (confirmBtn)
         {
@@ -922,89 +976,130 @@ else if (ViewBag.View == "Index")
                 }
             };
         }
+        if (AcceptBtn2)
+        {
+            AcceptBtn2.onclick = async function ()
+            {
+                const orderId = this.getAttribute("data-orderid");
+                const orderCode = this.getAttribute("data-ordercode");
+                const response = await fetch('/UserOrder/CheckRechargeWallet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        check: parseInt(1)
+                    })
+                });
 
+                const result = await response.json();
+
+                console.log(result);
+
+                if (result.success)
+                {
+                    var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
+                    const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
+                    window.location.href = url; // Điều hướng
+                }
+                else
+                {
+                    alert(result.message);
+                }
+            };
+        }
+        if (RefuseBtn2)
+        {
+            RefuseBtn2.onclick = async function () {
+                const orderId = this.getAttribute("data-orderid");
+                const discardrechargeBtn = document.getElementById("discardrechargeBtn");
+                const discardrechargeReason = document.getElementById("discardrechargeReason");
+
+                discardrechargeReason.value = "";
+
+                // Truyền dữ liệu vào nút xác nhận trong modal
+                discardrechargeBtn.setAttribute("data-orderid", orderId);
+
+                const bootstrapModal = new bootstrap.Modal(discardrechargeModal);
+                bootstrapModal.show();
+            };
+        }
+        if (discardrechargeBtn)
+        {
+            discardrechargeBtn.onclick = async function ()
+            {
+                const orderId = this.getAttribute("data-orderid");
+                const discardrechargeReason = document.getElementById("discardrechargeReason").value.trim();
+
+                if (!discardrechargeReason) {
+                    const modalBody = document.querySelector("#MessagesModal .modal-body p");
+                    modalBody.textContent = `Để từ chối, hãy thêm lý do.`; // Thông báo lỗi
+
+                    // Hiển thị modal với jQuery
+                    $("#MessagesModal").modal("show");
+
+                    // Tự động tắt modal sau 3 giây
+                    setTimeout(function () {
+                        $("#MessagesModal").modal("hide");
+                    }, 1500);
+
+                    return;
+                }
+
+                try {
+                    // Gửi yêu cầu cập nhật trạng thái hủy đơn hàng lên server
+                    const response = await fetch('/UserOrder/CheckRechargeWallet', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            order_id: orderId,
+                            discardrechargeReason: discardrechargeReason,
+                            check: parseInt(0)
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
+                        const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
+                        window.location.href = url; // Điều hướng
+                    }
+                    else {
+                        alert(result.message);
+                    }
+                }
+                catch (error) {
+                    console.error("Lỗi trong quá trình gửi yêu cầu:", error);
+                    alert("Không thể gửi yêu cầu từ chối hoàn tiền. Vui lòng thử lại.");
+                }
+            };
+        }
 
 
         const orderCode = "@Model.OrderCode";
 
         if (@Model.OrderStatusID !== 5) {
-            try {
-                const shippingDetail = await getShippingDetail(orderCode);
-
-                const timelineContainer = document.getElementById("shipping_items");
-
-                const statusItem1 = document.createElement("div");
-                statusItem1.classList.add("timeline-item", "completed");
-
-                statusItem1.innerHTML = `
-                    <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
-                    <div class="timeline-content">
-                        <p class="status-text">Đơn hàng đã được đặt</p>
-                        <span class="timestamp">${"@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")"}</span>
-                    </div>
-                `;
-
-                timelineContainer.prepend(statusItem1);
-
-
-                const createdDate = new Date(shippingDetail.created_date);
-                const formattedDate = formatDate(createdDate); // Hàm định dạng ngày giờ
-
-                const statusItem = document.createElement("div");
-                statusItem.classList.add("timeline-item", "completed");
-
-                statusItem.innerHTML = `
-                    <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
-                    <div class="timeline-content">
-                        <p class="status-text">Người bán đang chuẩn bị hàng</p>
-                        <span class="timestamp">${formattedDate}</span>
-                    </div>
-                `;
-
-                timelineContainer.prepend(statusItem);
-
-                if (shippingDetail.log.length > 0 && Array.isArray(shippingDetail.log) && shippingDetail.log) {
-                    shippingDetail.log.forEach(logEntry => {
-                        const logDate = new Date(logEntry.updated_date);
-                        const formattedLogDate = formatDate(logDate); // Hàm định dạng ngày giờ
-
-                        const statusItem = document.createElement("div");
-                        statusItem.classList.add("timeline-item", "completed");
-                        statusItem.innerHTML = `
-                        <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
-                        <div class="timeline-content">
-                            <p class="status-text">${getStatusText(logEntry.status)}</p>
-                            <span class="timestamp">${formattedLogDate}</span>
-                        </div>
-                    `;
-                        timelineContainer.prepend(statusItem);
-                    });
-                }
-            }
-            catch (error) {
-                if ("@Html.Raw(Model.OrderStatusName)" === "Chờ xác nhận") {
-                    const timelineContainer = document.getElementById("shipping_items");
-
-                    const statusItem1 = document.createElement("div");
-                    statusItem1.classList.add("timeline-item", "completed");
-
-                    statusItem1.innerHTML = `
-                        <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
-                        <div class="timeline-content">
-                            <p class="status-text">Đơn hàng đã được đặt</p>
-                            <span class="timestamp">${"@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")"}</span>
-                        </div>
-                    `;
-
-                    timelineContainer.prepend(statusItem1);
-                }
-            }
-        }
-        else
-        {
             const shippingDetail = await getShippingDetail(orderCode);
 
             const timelineContainer = document.getElementById("shipping_items");
+
+            const statusItem1 = document.createElement("div");
+            statusItem1.classList.add("timeline-item", "completed");
+
+            statusItem1.innerHTML = `
+                <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                <div class="timeline-content">
+                    <p class="status-text">Đơn hàng đã được đặt</p>
+                    <span class="timestamp">${"@Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")"}</span>
+                </div>
+            `;
+
+            timelineContainer.prepend(statusItem1);
+
 
             const createdDate = new Date(shippingDetail.created_date);
             const formattedDate = formatDate(createdDate); // Hàm định dạng ngày giờ
@@ -1015,7 +1110,7 @@ else if (ViewBag.View == "Index")
             statusItem.innerHTML = `
                 <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
                 <div class="timeline-content">
-                    <p class="status-text">Người mua đã chuẩn bị hàng</p>
+                    <p class="status-text">Người bán đang chuẩn bị hàng</p>
                     <span class="timestamp">${formattedDate}</span>
                 </div>
             `;
@@ -1038,6 +1133,59 @@ else if (ViewBag.View == "Index")
                 `;
                     timelineContainer.prepend(statusItem);
                 });
+            }
+        }
+        else
+        {
+            const shippingDetail = await getShippingDetail(orderCode);
+
+            const timelineContainer = document.getElementById("shipping_items");
+
+            const createdDate = new Date(shippingDetail.created_date);
+            const formattedDate = formatDate(createdDate); // Hàm định dạng ngày giờ
+
+            const statusItem = document.createElement("div");
+            statusItem.classList.add("timeline-item", "completed");
+
+            statusItem.innerHTML = `
+                <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                <div class="timeline-content">
+                    <p class="status-text">Đơn hàng đã được chuẩn bị</p>
+                    <span class="timestamp">${formattedDate}</span>
+                </div>
+            `;
+
+            timelineContainer.prepend(statusItem);
+
+            if (shippingDetail.log.length > 0 && Array.isArray(shippingDetail.log) && shippingDetail.log) {
+                shippingDetail.log.forEach(logEntry => {
+                    const logDate = new Date(logEntry.updated_date);
+                    const formattedLogDate = formatDate(logDate); // Hàm định dạng ngày giờ
+
+                    const statusItem = document.createElement("div");
+                    statusItem.classList.add("timeline-item", "completed");
+                    statusItem.innerHTML = `
+                    <div class="timeline-icon"><i class="fa fa-check-circle"></i></div>
+                    <div class="timeline-content">
+                        <p class="status-text">${getStatusText(logEntry.status)}</p>
+                        <span class="timestamp">${formattedLogDate}</span>
+                    </div>
+                `;
+                    timelineContainer.prepend(statusItem);
+                });
+            }
+
+            if (shippingDetail.status === "delivered") {
+                AcceptBtn2.textContent = "Hoàn tiền";
+                AcceptBtn2.style.visibility = "visible"; // Hiển thị nút
+
+                RefuseBtn2.textContent = "Từ chối hoàn tiền";
+                RefuseBtn2.style.visibility = "visible"; // Hiển thị nút
+            }
+            else {
+                // Ẩn nút nếu không phải trạng thái "delivered"
+                AcceptBtn2.style.visibility = "hidden";
+                RefuseBtn2.style.visibility = "hidden";
             }
         }
     });
