@@ -292,6 +292,45 @@ namespace VanPhongPham.Areas.Admin.Controllers
                             ord.order_status_id = 5;
                             ord.cancellation_requested = 3;
                             ord.created_at = DateTime.Now;
+                        }
+                        else if (check == 0)
+                        {
+                            ord.cancellation_requested = 2;
+                        }
+
+                        try
+                        {
+                            db.SubmitChanges();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error during SubmitChanges: " + ex.Message);
+                            return Json(new { success = false, message = ex.Message });
+                        }
+                    }
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+        public ActionResult CheckRechargeWallet(string order_id, string discardrechargeReason, int check)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(order_id))
+                {
+                    var ord = db.orders.FirstOrDefault(o => o.order_id == order_id);
+
+                    if (ord != null)
+                    {
+                        if (check == 1)
+                        {
+                            ord.cancellation_requested = 6;
+                            ord.created_at = DateTime.Now;
 
                             var wallet = db.user_wallets.FirstOrDefault(w => w.user_id == ord.user.user_id);
 
@@ -299,7 +338,9 @@ namespace VanPhongPham.Areas.Admin.Controllers
                         }
                         else if (check == 0)
                         {
-                            ord.cancellation_requested = 2;
+                            ord.cancellation_requested = 5;
+                            ord.cancellation_reason = ord.cancellation_reason + "," + discardrechargeReason;
+                            ord.created_at = DateTime.Now;
                         }
 
                         try
