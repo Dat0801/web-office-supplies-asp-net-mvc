@@ -32,6 +32,7 @@
       <Association Name="user_product_review" Member="product_reviews" ThisKey="user_id" OtherKey="user_id" Type="product_review" />
       <Association Name="user_purchase_order" Member="purchase_orders" ThisKey="user_id" OtherKey="employee_id" Type="purchase_order" />
       <Association Name="user_user_role" Member="user_roles" ThisKey="user_id" OtherKey="user_id" Type="user_role" />
+      <Association Name="user_user_wallet" Member="user_wallets" ThisKey="user_id" OtherKey="user_id" Type="user_wallet" />
     </Type>
   </Table>
   <Table Name="dbo.attribute_values" Member="attribute_values">
@@ -139,17 +140,16 @@
       <Column Name="discount_amount" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="total_amount" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="order_status_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="payment_status_id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="coupon_applied" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
       <Column Name="cancellation_requested" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="cancellation_reason" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="return_images" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
       <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Association Name="order_order_detail" Member="order_details" ThisKey="order_id" OtherKey="order_id" Type="order_detail" />
       <Association Name="user_order" Member="user" ThisKey="customer_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
       <Association Name="user_order1" Member="user1" ThisKey="employee_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
       <Association Name="order_status_order" Member="order_status" ThisKey="order_status_id" OtherKey="order_status_id" Type="order_status" IsForeignKey="true" />
       <Association Name="payment_method_order" Member="payment_method" ThisKey="method_id" OtherKey="method_id" Type="payment_method" IsForeignKey="true" />
-      <Association Name="payment_status_order" Member="payment_status" ThisKey="payment_status_id" OtherKey="payment_status_id" Type="payment_status" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.payment_methods" Member="payment_methods">
@@ -157,13 +157,6 @@
       <Column Name="method_id" Type="System.String" DbType="VarChar(10) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="method_name" Type="System.String" DbType="NVarChar(30) NOT NULL" CanBeNull="false" />
       <Association Name="payment_method_order" Member="orders" ThisKey="method_id" OtherKey="method_id" Type="order" />
-    </Type>
-  </Table>
-  <Table Name="dbo.payment_status" Member="payment_status">
-    <Type Name="payment_status">
-      <Column Name="payment_status_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="payment_status_name" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
-      <Association Name="payment_status_order" Member="orders" ThisKey="payment_status_id" OtherKey="payment_status_id" Type="order" />
     </Type>
   </Table>
   <Table Name="dbo.product_attribute_values" Member="product_attribute_values">
@@ -305,6 +298,15 @@
       <Column Name="role_id" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Association Name="role_user_role" Member="role" ThisKey="role_id" OtherKey="role_id" Type="role" IsForeignKey="true" />
       <Association Name="user_user_role" Member="user" ThisKey="user_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.user_wallet" Member="user_wallets">
+    <Type Name="user_wallet">
+      <Column Name="wallet_id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="user_id" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="balance" Type="System.Double" DbType="Float" CanBeNull="true" />
+      <Column Name="created_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="user_user_wallet" Member="user" ThisKey="user_id" OtherKey="user_id" Type="user" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

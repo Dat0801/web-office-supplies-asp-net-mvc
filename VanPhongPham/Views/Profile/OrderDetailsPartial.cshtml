@@ -186,6 +186,10 @@
                     {
                         <span>ĐƠN HÀNG ĐÃ HỦY VÀO: @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
                     }
+                    else if (Model.OrderStatusName == "Trả hàng/Hoàn tiền")
+                    {
+                        <span>ĐÃ HOÀN TIỀN VÀO: @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
+                    }
                     else
                     {
                         <span>ĐƠN HÀNG ĐÃ ĐẶT VÀO: @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</span>
@@ -209,7 +213,7 @@
             <hr />
         }
 
-        @if (Model.OrderStatusName != "Đã hủy")
+        @if (Model.OrderStatusName != "Đã hủy" && Model.OrderStatusName != "Trả hàng/Hoàn tiền")
         {
             <div class="row m-0">
                 <div class="xBNaac"></div>
@@ -288,6 +292,63 @@
                     </div>
                     <div class="col-4 text-right p-0">
                         <span>@Model.MethodName</span>
+                    </div>
+                </div>
+                @if (Model.MethodId != "PAY001")
+                {
+                    <hr />
+                    <div class="d-flex justify-content-end">
+                        <div class="col-8 text-right p-0">
+                            <span style="font-size: 13px">Số tiền hoàn lại</span>
+                        </div>
+                        <div class="col-4 text-right p-0">
+                            <span>₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-end">
+                        <div class="col-8 text-right p-0">
+                            <span style="font-size: 13px">Hoàn tiền vào</span>
+                        </div>
+                        <div class="col-4 text-right p-0">
+                            <span>Ví QVD</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <hr />
+            <span class="price-info" style="color: #555;">Lý do: @Model.CancellationReason</span>
+        }
+        else if (Model.OrderStatusName == "Trả hàng/Hoàn tiền")
+        {
+            <div class="order-cost-details">
+                <div class="d-flex justify-content-end">
+                    <div class="col-8 text-right p-0">
+                        <span style="font-size: 13px">Phương thức thanh toán</span>
+                    </div>
+                    <div class="col-4 text-right p-0">
+                        <span>@Model.MethodName</span>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-end">
+                    <div class="col-8 text-right p-0">
+                        <span style="font-size: 13px">Số tiền hoàn lại</span>
+                    </div>
+                    <div class="col-4 text-right p-0">
+                        <span>₫@( (Model.TotalAmount.Value - Model.ShippingFee.Value).ToString("N0") )</span>
+                    </div>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-end">
+                    <div class="col-8 text-right p-0">
+                        <span style="font-size: 13px">Hoàn tiền vào</span>
+                    </div>
+                    <div class="col-4 text-right p-0">
+                        <span>Ví QVD</span>
                     </div>
                 </div>
             </div>

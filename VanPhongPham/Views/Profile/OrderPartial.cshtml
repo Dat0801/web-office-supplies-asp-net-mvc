@@ -281,6 +281,17 @@
     .pagination-container nav ul.pagination li a:hover {
         color: #e91e63;
     }
+
+    #imagePreviewContainer img {
+        cursor: pointer;
+        margin: 5px;
+        transition: transform 0.2s;
+    }
+
+        #imagePreviewContainer img:hover {
+            transform: scale(1.1);
+            border-color: #ff0000;
+        }
 </style>
 
 <div class="order-status-tabs">
@@ -324,7 +335,7 @@
         foreach (var order in Model)
         {
             <div class="order-container">
-                @if (order.OrderStatusName != "Đã hủy")
+                @if (order.OrderStatusName != "Đã hủy" && order.OrderStatusName != "Trả hàng/Hoàn tiền")
                 {
                     <div class="order-status2" id="order_statusGHN" data-ordercode="@(string.IsNullOrEmpty(order.OrderCode) ? "" : order.OrderCode)" data-orderid="@order.OrderId" data-orderstatusname="@order.OrderStatusName" data-cancelrequested="@order.CancellationRequested">
                         <i class="fa fa-exclamation-circle" style="color: #26AA99; font-size: 13px; margin-right: 6px;"></i>
@@ -340,7 +351,14 @@
                     }
                 }
 
-                <div class="order-status">@order.OrderStatusName.ToUpper()</div>
+                @if (order.OrderStatusName != "Trả hàng/Hoàn tiền")
+                {
+                    <div class="order-status">@order.OrderStatusName.ToUpper()</div>
+                }
+                else
+                {
+                    <div class="order-status">ĐÃ HOÀN TIỀN</div>
+                }
                 <hr />
 
                 @{
@@ -355,6 +373,7 @@
                                 <div style="display: block; width: 700px; align-items: center;">
                                     <div class="product-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 110px); color: #272727;">@detail.ProductName</div>
                                     <div style="color: #272727;"><span>x</span>@detail.Quantity</div>
+                                    <div style="background-color: #fde8ef; border-radius: 6px; color: #e91e63; text-align:center; width: 16%; padding: 2px; font-size: 13px">7 ngày trả hàng</div>
                                 </div>
                             </div>
                             @if (detail.Promotion_Price == 0)
@@ -373,9 +392,25 @@
                     }
                 }
                 <hr />
-                <div class="d-flex justify-content-end">
-                    <span style="color: #272727;">Thành tiền: <span class="price-info" style="font-size: 24px">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span></span>
-                </div>
+
+                @if (order.OrderStatusName == "Đã hủy" && order.MethodName != "Thanh toán khi nhận hàng")
+                {
+                    <div class="d-flex justify-content-end">
+                        <span style="color: #272727;">Số tiền hoàn lại: <span class="price-info" style="font-size: 24px">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span></span>
+                    </div>
+                }
+                else if (order.OrderStatusName == "Trả hàng/Hoàn tiền")
+                { 
+                    <div class="d-flex justify-content-end">
+                        <span style="color: #272727;">Số tiền hoàn lại: <span class="price-info" style="font-size: 24px">₫@( (order.TotalAmount.Value - order.ShippingFee.Value).ToString("N0") )</span></span>
+                    </div>
+                }        
+                else
+                {
+                    <div class="d-flex justify-content-end">
+                        <span style="color: #272727;">Thành tiền: <span class="price-info" style="font-size: 24px">₫@(order.TotalAmount.HasValue ? order.TotalAmount.Value.ToString("N0") : "0")</span></span>
+                    </div>
+                }
                 @if (order.OrderStatusName == "Đã hủy")
                 {
                     if (order.CancellationRequested == 4)
@@ -407,7 +442,9 @@
                         }
                         else if (order.OrderStatusName == "Hoàn thành" && !checkReview)
                         {
-                            <button class="btn btn-danger ml-auto" data-bs-toggle="modal" data-bs-target="#reviewModal-@order.OrderId" data-orderid="@order.OrderId">Đánh Giá</button>
+                            <button class="btn btn-danger ml-auto mr-3" data-bs-toggle="modal" data-bs-target="#reviewModal-@order.OrderId" data-orderid="@order.OrderId">Đánh Giá</button>
+                            <button class="btn btn-danger" id="btnReturnOrder">
+                            </button>
                         }
                     </div>
                 }
@@ -415,7 +452,7 @@
 
             <!-- Modal đánh giá cho từng đơn hàng -->
             <div id="reviewModal-@order.OrderId" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="reviewLabel-@order.OrderId" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="reviewLabel-@order.OrderId">Đánh Giá Sản Phẩm</h5>
@@ -481,10 +518,20 @@
     }
     else
     {
-        <div class="d-flex flex-column align-items-center justify-content-center" style="text-align: center; margin-top: 20px; height: 50vh;">
-            <img src="~/Public/img/icons/clipboard.png" style="width: 100px; height: 100px; margin-bottom: 10px" />
-            <p>Chưa có đơn hàng.</p>
-        </div>
+        if (currentStatusId == "5")
+        {
+            <div class="d-flex flex-column align-items-center justify-content-center" style="text-align: center; margin-top: 20px; height: 50vh;">
+                <img src="~/Public/img/icons/clipboard.png" style="width: 100px; height: 100px; margin-bottom: 10px" />
+                <p>Bạn hiện không có yêu cầu Trả hàng/Hoàn tiền nào.</p>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column align-items-center justify-content-center" style="text-align: center; margin-top: 20px; height: 50vh;">
+                <img src="~/Public/img/icons/clipboard.png" style="width: 100px; height: 100px; margin-bottom: 10px" />
+                <p>Chưa có đơn hàng.</p>
+            </div>
+        }
     }
 </div>
 
@@ -510,6 +557,32 @@
             </div>
             <div class="modal-footer">
                 <button type="button" id="confirmCancelBtn" class="btn btn-primary">Xác Nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal nhập lý do trả -->
+<div class="modal fade" id="returnModal" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel" aria-hidden="true" data-backdrop="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="returnModalLabel">Nhập lý do trả hàng</h5>
+            </div>
+            <div class="modal-body">
+                <textarea id="returnReason" class="review-textarea" style="height: 100px;" maxlength="100" placeholder="Nhập nội dung trả đơn hàng, tối đa 100 ký tự"></textarea>
+                <hr>
+                <!-- Khu vực hiển thị hình ảnh -->
+                <div id="imagePreviewContainer" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <!-- Preview ảnh sẽ được thêm vào đây -->
+                </div>
+                <input type="file" id="imageInput" accept=".jpg, .jpeg, .png" multiple style="display: none;">
+                <button id="uploadImageBtn" class="btn btn-secondary" style="margin-top: 10px;">Thêm hình ảnh</button>
+                <p style="margin-top: 5px; padding: 0; margin: 0">Dung lượng file tối đa 2 MB</p>
+                <p id="imageCount">Tối đa 6 ảnh</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="confirmReturnBtn" class="btn btn-primary">Xác Nhận</button>
             </div>
         </div>
     </div>
@@ -575,10 +648,9 @@
 
     function updateBtnCustom(shippingDetail, orderstatusname, orderid, ordercode, orderContainer, cancelrequested) {
         const btnCustom = orderContainer.querySelector("#btnCustom");
+        const btnReturnOrder = orderContainer.querySelector("#btnReturnOrder");
 
         if ((shippingDetail.status === "ready_to_pick" || shippingDetail.status === "picking") && orderstatusname === "Chờ giao hàng") {
-
-
             if (cancelrequested == 0) {
                 btnCustom.setAttribute("data-orderid", orderid);
                 btnCustom.setAttribute("data-ordercode", ordercode);
@@ -607,7 +679,7 @@
                 btnCustom.classList.add("disabled");
                 btnCustom.textContent = "Đã gửi yêu cầu hủy đơn hàng";
                 btnCustom.onclick = null;
-            }
+            }   
             else if (cancelrequested == 2) {
                 btnCustom.classList.add("disabled");
                 btnCustom.textContent = "Yêu cầu hủy đơn hàng bị từ chối";
@@ -627,6 +699,64 @@
             btnCustom.classList.add("disabled");
             btnCustom.textContent = "Hủy đơn hàng";
             btnCustom.onclick = null;
+        }
+        else if (shippingDetail.status === "delivered" && orderstatusname === "Hoàn thành")
+        {
+            const finishDatee = new Date(shippingDetail.finish_date); // Ngày hoàn thành từ GHN
+            const currentDatee = new Date(); // Ngày hiện tại
+
+            // Tính số ngày đã qua kể từ ngày hoàn thành
+            const daysPassed = Math.floor((currentDatee - finishDatee) / (1000 * 60 * 60 * 24));
+
+            if (cancelrequested == 0 && daysPassed <= 7) {
+                btnReturnOrder.setAttribute("data-orderid", orderid);
+                btnReturnOrder.setAttribute("data-ordercode", ordercode);
+                btnReturnOrder.textContent = "Yêu cầu trả hàng";
+
+                // Khi bấm nút, mở modal và truyền dữ liệu
+                btnReturnOrder.onclick = function () {
+                    const returnModal = document.getElementById("returnModal");
+                    const confirmReturnBtn = document.getElementById("confirmReturnBtn");
+                    const returnReason = document.getElementById("returnReason");
+                    const imageInput = document.getElementById("imageInput");
+                    const imagePreviewContainer = document.getElementById("imagePreviewContainer");
+                    const imageCount = document.getElementById("imageCount");
+
+                    returnReason.value = "";
+
+                    // Reset dữ liệu ảnh
+                    selectedFiles = []; // Xóa toàn bộ ảnh trong mảng
+                    imageInput.value = ""; // Reset input file
+                    imagePreviewContainer.innerHTML = ""; // Xóa toàn bộ preview ảnh
+                    imageCount.textContent = `Đã chọn: 0/${maxImages} ảnh`; // Đặt lại số lượng ảnh đã chọn
+
+                    // Truyền dữ liệu vào nút xác nhận trong modal
+                    confirmReturnBtn.setAttribute("data-orderid", orderid);
+                    confirmReturnBtn.setAttribute("data-ordercode", ordercode);
+
+                    // Mở modal
+                    const bootstrapModal = new bootstrap.Modal(returnModal);
+                    bootstrapModal.show();
+
+                    document.body.style.overflowY = "scroll";
+                };
+            }
+            else if (cancelrequested == 0 && daysPassed > 7) {
+                btnReturnOrder.classList.add("disabled");
+                btnReturnOrder.textContent = "Quá hạn yêu cầu trả hàng";
+                btnReturnOrder.onclick = null;
+            }
+            else if (cancelrequested == 1) {
+                btnReturnOrder.classList.add("disabled");
+                btnReturnOrder.textContent = "Đã gửi yêu cầu trả đơn hàng";
+                btnReturnOrder.onclick = null;
+            }
+            else if (cancelrequested == 2)
+            {
+                btnReturnOrder.classList.add("disabled");
+                btnReturnOrder.textContent = "Yêu cầu trả đơn hàng bị từ chối";
+                btnReturnOrder.onclick = null;
+            }
         }
     }
 
@@ -805,4 +935,173 @@
         });
     });
 
+    const maxImages = 6; // Giới hạn số ảnh
+    let selectedFiles = []; // Mảng chứa các file ảnh đã chọn
+
+    // Xử lý sự kiện nút "Thêm hình ảnh"
+    document.getElementById("uploadImageBtn").addEventListener("click", function () {
+        if (selectedFiles.length < maxImages) {
+            document.getElementById("imageInput").click();
+        } else {
+            alert(`Bạn chỉ được tải lên tối đa ${maxImages} ảnh.`);
+        }
+    });
+
+    // Xử lý khi người dùng chọn ảnh
+    document.getElementById("imageInput").addEventListener("change", function (event) {
+        const files = Array.from(event.target.files);
+        const previewContainer = document.getElementById("imagePreviewContainer");
+
+        files.forEach(file => {
+            // Kiểm tra kích thước file (2MB = 2 * 1024 * 1024 bytes)
+            if (file.size > 2 * 1024 * 1024) {
+                alert(`Ảnh "${file.name}" vượt quá giới hạn 2MB và sẽ không được thêm.`);
+                return;
+            }
+
+            // Kiểm tra tổng số ảnh đã chọn
+            if (selectedFiles.length >= maxImages) {
+                alert(`Bạn chỉ được thêm tối đa ${maxImages} ảnh.`);
+                return;
+            }
+
+            selectedFiles.push(file); // Thêm file vào mảng
+            displayImagePreview(file, previewContainer); // Hiển thị preview
+        });
+
+        updateImageCount();
+    });
+
+    // Hiển thị preview ảnh
+    function displayImagePreview(file, container) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const imageContainer = document.createElement("div");
+            imageContainer.style.position = "relative";
+            imageContainer.style.width = "100px";
+            imageContainer.style.height = "100px";
+
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.alt = "Hình ảnh liên quan";
+            img.style.width = "100%";
+            img.style.height = "100%";
+            img.style.objectFit = "contain"; // Thay đổi từ 'cover' sang 'contain'
+            img.style.border = "1px solid #ddd";
+            img.style.borderRadius = "5px";
+
+            const removeButton = document.createElement("button");
+            removeButton.classList.add("p-1")
+            removeButton.innerHTML = "X";
+            removeButton.style.position = "absolute";
+            removeButton.style.top = "5px";
+            removeButton.style.right = "0px";
+            removeButton.style.backgroundColor = "red";
+            removeButton.style.color = "white";
+            removeButton.style.border = "none";
+            removeButton.style.borderRadius = "60%";
+            removeButton.style.cursor = "pointer";
+            removeButton.addEventListener("click", function () {
+                const index = Array.from(container.children).indexOf(imageContainer);
+                selectedFiles.splice(index, 1); // Xóa file khỏi mảng
+                container.removeChild(imageContainer); // Xóa preview
+                updateImageCount();
+            });
+
+            imageContainer.appendChild(img);
+            imageContainer.appendChild(removeButton);
+            container.appendChild(imageContainer);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Cập nhật số lượng ảnh
+    function updateImageCount() {
+        const imageCountText = document.getElementById("imageCount");
+        imageCountText.textContent = `Đã chọn: ${selectedFiles.length}/${maxImages} ảnh`;
+    }
+
+    // Upload ảnh lên Cloudinary khi xác nhận
+    document.getElementById("confirmReturnBtn").addEventListener("click", async function () {
+        const orderId = this.getAttribute("data-orderid");
+        const returnReason = document.getElementById("returnReason").value.trim();
+
+        let isValid = true;
+
+        if (!returnReason) {
+            const modalBody = document.querySelector("#MessagesModal .modal-body p");
+            modalBody.textContent = `Để gửi, hãy thêm lý do.`; // Thông báo lỗi
+
+            // Hiển thị modal với jQuery
+            $("#MessagesModal").modal("show");
+
+            // Tự động tắt modal sau 3 giây
+            setTimeout(function () {
+                $("#MessagesModal").modal("hide");
+            }, 1500);
+
+            // Khôi phục thanh cuộn khi modal mở
+            document.body.style.overflowY = "scroll"; // Đảm bảo trang có thể cuộn lại
+
+            isValid = false;
+        }
+        else if (selectedFiles.length == 0) {
+            isValid = false;
+        }
+
+        // Nếu không hợp lệ, ngừng gửi form
+        if (!isValid) {
+            const modalBody = document.querySelector("#MessagesModal .modal-body p");
+            modalBody.textContent = `Để gửi, hãy thêm lý do trả hàng và hình ảnh`; // Thông báo lỗi
+
+            // Hiển thị modal với jQuery
+            $("#MessagesModal").modal("show");
+
+            // Tự động tắt modal sau 3 giây
+            setTimeout(function () {
+                $("#MessagesModal").modal("hide");
+            }, 1500);
+
+            // Khôi phục thanh cuộn khi modal mở
+            document.body.style.overflowY = "scroll"; // Đảm bảo trang có thể cuộn lại
+
+            event.preventDefault(); // Ngừng submit form
+            return;
+        }
+        else {
+            try {
+                // Upload tất cả ảnh lên Cloudinary cùng lúc
+                const uploadPromises = selectedFiles.map(file => uploadToCloudinary(file, "return_orders"));
+                const imageLinks = await Promise.all(uploadPromises);
+
+                // Tạo chuỗi link ảnh, cách nhau bằng dấu phẩy
+                const imageLinksString = imageLinks.join(",");
+
+                // Gửi dữ liệu lên server
+                const response = await fetch('/Order/RequestReturnOrder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        returnReason: returnReason,
+                        imgs: imageLinksString
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    location.reload(); // Reload lại trang để cập nhật UI
+                } else {
+                    alert(result.message);
+                }
+            }
+            catch (error) {
+                console.error("Lỗi trong quá trình xử lý:", error);
+                alert("Không thể gửi yêu cầu trả đơn hàng. Vui lòng thử lại.");
+            }
+        }
+    });
 </script>

@@ -44,7 +44,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
         }
         public ActionResult CancelRequest(int? page, string search_str)
         {
-            var orders = db.orders.Where(o => o.cancellation_requested == 1).ToList();
+            var orders = db.orders.Where(o => o.cancellation_requested == 1 && o.order_status_id == 2).ToList();
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);
@@ -98,6 +98,34 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
             return View(orders.ToPagedList(pageNumber, pageSize));
         }
+        public ActionResult ReturnRequest(int? page, string search_str)
+        {
+            var orders = db.orders.Where(o => o.cancellation_requested == 1 && o.order_status_id == 3).ToList();
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            if (search_str != null)
+            {
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                ViewBag.search_str = search_str;
+            }
+            return View(orders.ToPagedList(pageNumber, pageSize));
+        }
+        public ActionResult ReturnOrders(int? page, string search_str)
+        {
+            var orders = db.orders.Where(o => o.order_status_id == 5).ToList();
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            if (search_str != null)
+            {
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                ViewBag.search_str = search_str;
+            }
+            return View(orders.ToPagedList(pageNumber, pageSize));
+        }
         public ActionResult UserOrderDetails(string ord_id, string view)
         {
             var cartdetails = db.orders
@@ -123,6 +151,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
                     OrderStatusName = o.order_status.order_status_name,
                     CancellationRequested = o.cancellation_requested ?? 0,
                     CancellationReason = o.cancellation_reason,
+                    ReturnImages = o.return_images,
                     CreatedAt = o.created_at,
                     OrderDetails = o.order_details.Select(od => new OrderDetailViewModel
                                     {
@@ -153,10 +182,8 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
             // Tính tổng trọng lượng cho tất cả các sản phẩm đã chọn trong giỏ hàng
             int totalWeight = 0;
-            var totalAmountOrder = 0.0;
             foreach (var detail in cartdetails.OrderDetails)
             {
-                totalAmountOrder += detail.TotalAmount;
                 if (!string.IsNullOrEmpty(detail.ProductWeight))
                 {
                     // Tìm vị trí khoảng trắng đầu tiên và cắt chuỗi
@@ -173,7 +200,6 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
 
             ViewBag.TotalWeight = totalWeight;
-            ViewBag.TotalAmountOrder = totalAmountOrder;
             ViewBag.View = view;
             return View(cartdetails);
         }
@@ -218,11 +244,63 @@ namespace VanPhongPham.Areas.Admin.Controllers
                             {
                                 ord.created_at = parsedDate.ToLocalTime();
                             }
+
+                            if (ord.method_id != "PAY001")
+                            {
+                                var wallet = db.user_wallets.FirstOrDefault(w => w.user_id == ord.user.user_id);
+
+                                wallet.balance = wallet.balance + ord.total_amount;
+                            }
                         }
                         else if (check == 0)
                         {
                             ord.cancellation_requested = 2;
                         }    
+
+                        try
+                        {
+                            db.SubmitChanges();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error during SubmitChanges: " + ex.Message);
+                            return Json(new { success = false, message = ex.Message });
+                        }
+                    }
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+        public ActionResult UpdateRequestReturnOrder(string order_id, string order_code, int check)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(order_id))
+                {
+                    var ord = db.orders.FirstOrDefault(o => o.order_id == order_id);
+
+                    if (ord != null)
+                    {
+                        if (check == 1)
+                        {
+                            ord.ordercode = order_code;
+                            ord.order_status_id = 5;
+                            ord.cancellation_requested = 3;
+                            ord.created_at = DateTime.Now;
+
+                            var wallet = db.user_wallets.FirstOrDefault(w => w.user_id == ord.user.user_id);
+
+                            wallet.balance = wallet.balance + (ord.total_amount - ord.shipping_fee);
+                        }
+                        else if (check == 0)
+                        {
+                            ord.cancellation_requested = 2;
+                        }
 
                         try
                         {
@@ -259,6 +337,13 @@ namespace VanPhongPham.Areas.Admin.Controllers
                         ord.cancellation_reason = cancelReason;
                         ord.created_at = DateTime.Now;
                     }
+
+                    if (ord.method_id != "PAY001")
+                    {
+                        var wallet = db.user_wallets.FirstOrDefault(w => w.user_id == ord.user.user_id);
+
+                        wallet.balance = wallet.balance + ord.total_amount;
+                    }    
                 }
 
                 db.SubmitChanges();

@@ -27,6 +27,13 @@ namespace VanPhongPham.Controllers
                         {
                             ord.order_status_id = 4;
                             ord.created_at = DateTime.Now;
+
+                            if (ord.method_id != "PAY001")
+                            {
+                                var wallet = db.user_wallets.FirstOrDefault(w => w.user_id == ord.user.user_id);
+
+                                wallet.balance = wallet.balance + ord.total_amount;
+                            }
                         }
                         if (order_status == 2)
                         {
@@ -75,6 +82,32 @@ namespace VanPhongPham.Controllers
 
                         ord.cancellation_requested = 1;
                         ord.cancellation_reason = cancelReason;
+                    }
+                }
+
+                db.SubmitChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        public ActionResult RequestReturnOrder(string order_id, string returnReason, string imgs)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(order_id))
+                {
+                    var ord = db.orders.FirstOrDefault(o => o.order_id == order_id);
+
+                    if (ord != null)
+                    {
+
+                        ord.cancellation_requested = 1;
+                        ord.cancellation_reason = returnReason;
+                        ord.return_images = imgs;
                     }
                 }
 
