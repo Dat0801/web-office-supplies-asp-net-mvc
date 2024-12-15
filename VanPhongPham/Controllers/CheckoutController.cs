@@ -113,9 +113,11 @@ namespace VanPhongPham.Controllers
             return PartialView(cartdetails);
         }
 
-        public ActionResult PaymentCheckoutPartial(address adrs)
+        public ActionResult PaymentCheckoutPartial(string userid, address adrs)
         {
             var paymentmethod = db.payment_methods.ToList();
+            var usrwallet = db.user_wallets.FirstOrDefault(w => w.user_id == userid);
+            ViewBag.wallet = usrwallet;
             ViewBag.adrs = adrs;
             ViewBag.TotalAmount = db.cart_details.Where(a => a.isSelected == 1).Sum(a => a.total_amount);
             return PartialView(paymentmethod);
@@ -191,7 +193,7 @@ namespace VanPhongPham.Controllers
             vnpay.AddRequestData("vnp_Version", "2.1.0");
             vnpay.AddRequestData("vnp_Command", "pay");
             vnpay.AddRequestData("vnp_TmnCode", "262XSFHX");
-            vnpay.AddRequestData("vnp_Amount", ((int)(totalAmount+shipping_fee) * 100).ToString()); // Tổng số tiền thanh toán
+            vnpay.AddRequestData("vnp_Amount", ((int)(totalAmount + shipping_fee - discount_amount) * 100).ToString()); // Tổng số tiền thanh toán
             vnpay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData("vnp_CurrCode", "VND");
             vnpay.AddRequestData("vnp_IpAddr", Request.UserHostAddress);
@@ -268,11 +270,7 @@ namespace VanPhongPham.Controllers
             var current_orderid = orderID ?? GenerateOrderId();
 
             var dbuser = db.users.FirstOrDefault(u => u.user_id == user_id);
-            int paymentStatusID = 1;
-            if (method_id == "PAY002")
-            {
-                paymentStatusID = 2;
-            }
+
             if (info_adrs != null)
             {
                 order ord = new order
@@ -287,11 +285,10 @@ namespace VanPhongPham.Controllers
                     coupon_applied = coupon_applied,
                     order_status_id = 1,
                     created_at = DateTime.Now,
-                    payment_status_id = paymentStatusID,
                     cancellation_requested = 0                    
                 };
 
-                db.orders.InsertOnSubmit(ord);
+                db.orders.InsertOnSubmit(ord);  
             }
             else
             {
@@ -308,12 +305,11 @@ namespace VanPhongPham.Controllers
                     coupon_applied = coupon_applied,
                     order_status_id = 1,
                     created_at = DateTime.Now,
-                    payment_status_id = paymentStatusID,
                     cancellation_requested = 0                    
                 };
 
                 db.orders.InsertOnSubmit(ord);
-            }    
+            }
 
             db.SubmitChanges();
 

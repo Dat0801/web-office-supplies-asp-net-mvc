@@ -58,7 +58,7 @@ else
                     </div>
                 </div>
 
-                @Html.Action("PaymentCheckoutPartial", "Checkout", new { adrs = Model })
+                @Html.Action("PaymentCheckoutPartial", "Checkout", new { userid = ViewBag.UserID, adrs = Model })
             </div>
         </div>
     </div>
@@ -137,6 +137,28 @@ else
                 }));
 
                 showNotification('Áp dụng mã thành công', 'success');
+
+                const selectedOption = document.getElementById('payment-method-select').options[document.getElementById('payment-method-select').selectedIndex];
+                const methodId = selectedOption.value; // Lấy phương thức thanh toán đã chọn
+
+                const qvdPaySection = document.getElementById('qvdPaySection');
+
+                // Kiểm tra nếu chọn Ví QVDPay
+                if (methodId === 'PAY003') {
+                    const walletBalance = parseFloat(qvdPaySection.getAttribute("data-walletbalance"));
+                    const totalText = document.querySelector('.total-payment').innerText;
+                    const totalamount = parseFloat(totalText.replace(/[₫.]/g, '').replace(',', '.')) || 0;
+
+                    if (walletBalance < totalamount) {
+                        document.querySelector('.order-button').classList.add("disabled");
+                    }
+                    else {
+                        document.querySelector('.order-button').classList.remove("disabled");
+                    }
+                }
+                else {
+                    document.querySelector('.order-button').classList.remove("disabled");
+                }
             }
             else
             {

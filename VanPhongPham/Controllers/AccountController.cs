@@ -92,6 +92,16 @@ namespace VanPhongPham.Controllers
                 db.user_roles.InsertOnSubmit(usrrole);
                 db.SubmitChanges();
 
+                user_wallet usrwallet = new user_wallet
+                {
+                    user_id = userData.user_id,
+                    balance = 0,
+                    created_at = DateTime.Now
+                };
+
+                db.user_wallets.InsertOnSubmit(usrwallet);
+                db.SubmitChanges();
+
                 return Json(new { success = true, message = "Dữ liệu đã được lưu thành công." });
             }
             catch (Exception ex)

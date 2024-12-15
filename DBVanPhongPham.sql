@@ -136,11 +136,6 @@ create table order_status
 	order_status_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
 	order_status_name NVARCHAR(255) NOT NULL
 )
-create table payment_status
-(
-	payment_status_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
-	payment_status_name NVARCHAR(255) NOT NULL
-)
 
 CREATE TABLE coupons
 (
@@ -171,11 +166,19 @@ create table orders
 	discount_amount float default 0,
 	total_amount float default 0,
 	order_status_id int not null,
-	payment_status_id int not null,
 	coupon_applied VARCHAR(10),
 	cancellation_requested int default 0,
 	cancellation_reason nvarchar(255),
+	return_images nvarchar(MAX),
 	created_at datetime default getdate(),
+)
+
+create table user_wallet
+(
+	wallet_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	user_id nvarchar(255) NOT NULL,
+	balance float default 0,
+	created_at datetime default getdate()
 )
 
 create table product_review
@@ -320,10 +323,6 @@ alter table orders
 add constraint FK_Orders_OrderStatus
 foreign key (order_status_id) references order_status(order_status_id);
 
-alter table orders
-add constraint FK_Orders_PaymentStatus
-foreign key (payment_status_id) references payment_status(payment_status_id);
-
 alter table order_details
 add constraint FK_OrderDetails_Orders
 foreign key (order_id) references orders(order_id);
@@ -379,6 +378,10 @@ foreign key (cart_id) references cart_section(cart_id);
 alter table cart_details
 add constraint FK_CartDetails_Products
 foreign key (product_id) references products(product_id);
+
+alter table user_wallet
+add constraint FK_UserWallet_Users
+foreign key (user_id) references users(user_id)
 go
 
 -- Cập nhật trường updated_at trong bảng products mỗi khi có bản ghi bị cập nhật.
@@ -652,6 +655,25 @@ BEGIN
         GROUP BY od.order_id
     )
     WHERE orders.order_id IN (SELECT DISTINCT order_id FROM inserted);
+END;
+
+GO
+
+-- Trigger cập nhật balance trong user_wallet khi total_amount của orders thay đổi và method_id = 'PAY003'.
+CREATE TRIGGER trg_UpdateUserWalletBalance
+ON orders
+AFTER UPDATE
+AS
+BEGIN
+    IF UPDATE(total_amount)
+    BEGIN
+        -- Cập nhật balance trong user_wallet
+        UPDATE user_wallet
+        SET balance = balance - inserted.total_amount
+        FROM user_wallet
+        INNER JOIN inserted ON user_wallet.user_id = inserted.customer_id
+        WHERE inserted.method_id = 'PAY003';
+    END
 END;
 
 GO
@@ -945,20 +967,17 @@ VALUES
 INSERT INTO payment_methods (method_id, method_name)
 VALUES
 ('PAY001', N'Thanh toán khi nhận hàng'),
-('PAY002', N'Thanh toán bằng chuyển khoản')
+('PAY002', N'Thanh toán bằng chuyển khoản'),
+('PAY003', N'Ví QVDPay')
 
 INSERT INTO order_status (order_status_name)
 VALUES
 (N'Chờ xác nhận'),
 (N'Chờ giao hàng'),
 (N'Hoàn thành'),
-(N'Đã hủy')
+(N'Đã hủy'),
+(N'Trả hàng/Hoàn tiền')
 
-INSERT INTO payment_status (payment_status_name)
-VALUES
-(N'Chưa thanh toán'),
-(N'Đã thanh toán'),
-(N'Đã hoàn tiền')
 
 INSERT INTO users (user_id, full_name, username, status)
 VALUES

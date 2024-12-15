@@ -1,0 +1,118 @@
+﻿@model VanPhongPham.Models.user_wallet
+
+@{
+    var usr = ViewBag.Usr as VanPhongPham.Models.user;
+}
+
+<style>
+    .wallet-card {
+        position: relative;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #e91e63, #f06292);
+        color: white;
+        padding: 25px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .wallet-card::before,
+    .wallet-card::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 0;
+    }
+
+    .wallet-card::before {
+        top: -60px;
+        right: -40px;
+        width: 200px;
+        height: 200px;
+    }
+
+    .wallet-card::after {
+        bottom: -80px;
+        left: -60px;
+        width: 250px;
+        height: 250px;
+    }
+
+    .wallet-card-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .wallet-card h5,
+    .wallet-card h3 {
+        margin: 0;
+    }
+
+    .wallet-card .wallet-balance {
+        font-size: 2.2rem;
+        font-weight: bold;
+    }
+
+    .wallet-card .wallet-details {
+        margin-top: 10px;
+    }
+
+    .wallet-card .brand-icon {
+        font-size: 2.5rem;
+        color: white;
+    }
+
+    .wallet-card .wallet-name {
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+    .wallet-footer {
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-align: right;
+    }
+</style>
+
+<p style="font-size: 20px; font-weight: bold;">Ví QVD</p>
+<p style="font-size: 15px;">
+    Số dư ví của bạn sẽ hiển thị ở đây.
+</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="wallet-card">
+            <div class="wallet-card-content">
+                <!-- Tên người dùng và thương hiệu -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="text-uppercase fw-bold">@usr.full_name</h5>
+                        <span class="wallet-name">QVD Wallet</span>
+                    </div>
+                    <i class="fas fa-wallet brand-icon"></i>
+                </div>
+
+                <!-- Số dư -->
+                <div class="wallet-details">
+                    <span class="d-block">Số dư hiện tại</span>
+                    <h3 class="wallet-balance">
+                        @Html.Raw(Model.balance.HasValue ? string.Format("{0:n0}đ", Model.balance) : "0đ")
+                    </h3>
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="mt-4">
+                    <!-- Nạp tiền -->
+                    <div class="text-left">
+                        <button class="btn btn-warning btn-icon rounded-circle p-3" onclick="openDepositModal()">
+                            <i class="fas fa-wallet fs-4"></i>
+                        </button>
+                        <p class="mt-2 text-white">Nạp tiền</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

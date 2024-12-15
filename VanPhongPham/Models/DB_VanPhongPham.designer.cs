@@ -69,9 +69,6 @@ namespace VanPhongPham.Models
     partial void Insertpayment_method(payment_method instance);
     partial void Updatepayment_method(payment_method instance);
     partial void Deletepayment_method(payment_method instance);
-    partial void Insertpayment_status(payment_status instance);
-    partial void Updatepayment_status(payment_status instance);
-    partial void Deletepayment_status(payment_status instance);
     partial void Insertproduct_attribute_value(product_attribute_value instance);
     partial void Updateproduct_attribute_value(product_attribute_value instance);
     partial void Deleteproduct_attribute_value(product_attribute_value instance);
@@ -108,6 +105,9 @@ namespace VanPhongPham.Models
     partial void Insertuser_role(user_role instance);
     partial void Updateuser_role(user_role instance);
     partial void Deleteuser_role(user_role instance);
+    partial void Insertuser_wallet(user_wallet instance);
+    partial void Updateuser_wallet(user_wallet instance);
+    partial void Deleteuser_wallet(user_wallet instance);
     #endregion
 		
 		public DB_VanPhongPhamDataContext() : 
@@ -244,14 +244,6 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		public System.Data.Linq.Table<payment_status> payment_status
-		{
-			get
-			{
-				return this.GetTable<payment_status>();
-			}
-		}
-		
 		public System.Data.Linq.Table<product_attribute_value> product_attribute_values
 		{
 			get
@@ -345,6 +337,14 @@ namespace VanPhongPham.Models
 			get
 			{
 				return this.GetTable<user_role>();
+			}
+		}
+		
+		public System.Data.Linq.Table<user_wallet> user_wallets
+		{
+			get
+			{
+				return this.GetTable<user_wallet>();
 			}
 		}
 	}
@@ -682,6 +682,8 @@ namespace VanPhongPham.Models
 		
 		private EntitySet<user_role> _user_roles;
 		
+		private EntitySet<user_wallet> _user_wallets;
+		
     #region Extensibility Method Definitions
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -715,6 +717,7 @@ namespace VanPhongPham.Models
 			this._product_reviews = new EntitySet<product_review>(new Action<product_review>(this.attach_product_reviews), new Action<product_review>(this.detach_product_reviews));
 			this._purchase_orders = new EntitySet<purchase_order>(new Action<purchase_order>(this.attach_purchase_orders), new Action<purchase_order>(this.detach_purchase_orders));
 			this._user_roles = new EntitySet<user_role>(new Action<user_role>(this.attach_user_roles), new Action<user_role>(this.detach_user_roles));
+			this._user_wallets = new EntitySet<user_wallet>(new Action<user_wallet>(this.attach_user_wallets), new Action<user_wallet>(this.detach_user_wallets));
 			OnCreated();
 		}
 		
@@ -989,6 +992,19 @@ namespace VanPhongPham.Models
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_user_wallet", Storage="_user_wallets", ThisKey="user_id", OtherKey="user_id")]
+		public EntitySet<user_wallet> user_wallets
+		{
+			get
+			{
+				return this._user_wallets;
+			}
+			set
+			{
+				this._user_wallets.Assign(value);
+			}
+		}
+		
 		public event PropertyChangingEventHandler PropertyChanging;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -1088,6 +1104,18 @@ namespace VanPhongPham.Models
 		}
 		
 		private void detach_user_roles(user_role entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = null;
+		}
+		
+		private void attach_user_wallets(user_wallet entity)
+		{
+			this.SendPropertyChanging();
+			entity.user = this;
+		}
+		
+		private void detach_user_wallets(user_wallet entity)
 		{
 			this.SendPropertyChanging();
 			entity.user = null;
@@ -2925,13 +2953,13 @@ namespace VanPhongPham.Models
 		
 		private int _order_status_id;
 		
-		private int _payment_status_id;
-		
 		private string _coupon_applied;
 		
 		private System.Nullable<int> _cancellation_requested;
 		
 		private string _cancellation_reason;
+		
+		private string _return_images;
 		
 		private System.Nullable<System.DateTime> _created_at;
 		
@@ -2944,8 +2972,6 @@ namespace VanPhongPham.Models
 		private EntityRef<order_status> _order_status;
 		
 		private EntityRef<payment_method> _payment_method;
-		
-		private EntityRef<payment_status> _payment_status;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -2975,14 +3001,14 @@ namespace VanPhongPham.Models
     partial void Ontotal_amountChanged();
     partial void Onorder_status_idChanging(int value);
     partial void Onorder_status_idChanged();
-    partial void Onpayment_status_idChanging(int value);
-    partial void Onpayment_status_idChanged();
     partial void Oncoupon_appliedChanging(string value);
     partial void Oncoupon_appliedChanged();
     partial void Oncancellation_requestedChanging(System.Nullable<int> value);
     partial void Oncancellation_requestedChanged();
     partial void Oncancellation_reasonChanging(string value);
     partial void Oncancellation_reasonChanged();
+    partial void Onreturn_imagesChanging(string value);
+    partial void Onreturn_imagesChanged();
     partial void Oncreated_atChanging(System.Nullable<System.DateTime> value);
     partial void Oncreated_atChanged();
     #endregion
@@ -2994,7 +3020,6 @@ namespace VanPhongPham.Models
 			this._user1 = default(EntityRef<user>);
 			this._order_status = default(EntityRef<order_status>);
 			this._payment_method = default(EntityRef<payment_method>);
-			this._payment_status = default(EntityRef<payment_status>);
 			OnCreated();
 		}
 		
@@ -3254,30 +3279,6 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_payment_status_id", DbType="Int NOT NULL")]
-		public int payment_status_id
-		{
-			get
-			{
-				return this._payment_status_id;
-			}
-			set
-			{
-				if ((this._payment_status_id != value))
-				{
-					if (this._payment_status.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onpayment_status_idChanging(value);
-					this.SendPropertyChanging();
-					this._payment_status_id = value;
-					this.SendPropertyChanged("payment_status_id");
-					this.Onpayment_status_idChanged();
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_coupon_applied", DbType="VarChar(10)")]
 		public string coupon_applied
 		{
@@ -3334,6 +3335,26 @@ namespace VanPhongPham.Models
 					this._cancellation_reason = value;
 					this.SendPropertyChanged("cancellation_reason");
 					this.Oncancellation_reasonChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_return_images", DbType="NVarChar(MAX)")]
+		public string return_images
+		{
+			get
+			{
+				return this._return_images;
+			}
+			set
+			{
+				if ((this._return_images != value))
+				{
+					this.Onreturn_imagesChanging(value);
+					this.SendPropertyChanging();
+					this._return_images = value;
+					this.SendPropertyChanged("return_images");
+					this.Onreturn_imagesChanged();
 				}
 			}
 		}
@@ -3507,40 +3528,6 @@ namespace VanPhongPham.Models
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="payment_status_order", Storage="_payment_status", ThisKey="payment_status_id", OtherKey="payment_status_id", IsForeignKey=true)]
-		public payment_status payment_status
-		{
-			get
-			{
-				return this._payment_status.Entity;
-			}
-			set
-			{
-				payment_status previousValue = this._payment_status.Entity;
-				if (((previousValue != value) 
-							|| (this._payment_status.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._payment_status.Entity = null;
-						previousValue.orders.Remove(this);
-					}
-					this._payment_status.Entity = value;
-					if ((value != null))
-					{
-						value.orders.Add(this);
-						this._payment_status_id = value.payment_status_id;
-					}
-					else
-					{
-						this._payment_status_id = default(int);
-					}
-					this.SendPropertyChanged("payment_status");
-				}
-			}
-		}
-		
 		public event PropertyChangingEventHandler PropertyChanging;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -3685,120 +3672,6 @@ namespace VanPhongPham.Models
 		{
 			this.SendPropertyChanging();
 			entity.payment_method = null;
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.payment_status")]
-	public partial class payment_status : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _payment_status_id;
-		
-		private string _payment_status_name;
-		
-		private EntitySet<order> _orders;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void Onpayment_status_idChanging(int value);
-    partial void Onpayment_status_idChanged();
-    partial void Onpayment_status_nameChanging(string value);
-    partial void Onpayment_status_nameChanged();
-    #endregion
-		
-		public payment_status()
-		{
-			this._orders = new EntitySet<order>(new Action<order>(this.attach_orders), new Action<order>(this.detach_orders));
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_payment_status_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int payment_status_id
-		{
-			get
-			{
-				return this._payment_status_id;
-			}
-			set
-			{
-				if ((this._payment_status_id != value))
-				{
-					this.Onpayment_status_idChanging(value);
-					this.SendPropertyChanging();
-					this._payment_status_id = value;
-					this.SendPropertyChanged("payment_status_id");
-					this.Onpayment_status_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_payment_status_name", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
-		public string payment_status_name
-		{
-			get
-			{
-				return this._payment_status_name;
-			}
-			set
-			{
-				if ((this._payment_status_name != value))
-				{
-					this.Onpayment_status_nameChanging(value);
-					this.SendPropertyChanging();
-					this._payment_status_name = value;
-					this.SendPropertyChanged("payment_status_name");
-					this.Onpayment_status_nameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="payment_status_order", Storage="_orders", ThisKey="payment_status_id", OtherKey="payment_status_id")]
-		public EntitySet<order> orders
-		{
-			get
-			{
-				return this._orders;
-			}
-			set
-			{
-				this._orders.Assign(value);
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_orders(order entity)
-		{
-			this.SendPropertyChanging();
-			entity.payment_status = this;
-		}
-		
-		private void detach_orders(order entity)
-		{
-			this.SendPropertyChanging();
-			entity.payment_status = null;
 		}
 	}
 	
@@ -6792,6 +6665,181 @@ namespace VanPhongPham.Models
 					if ((value != null))
 					{
 						value.user_roles.Add(this);
+						this._user_id = value.user_id;
+					}
+					else
+					{
+						this._user_id = default(string);
+					}
+					this.SendPropertyChanged("user");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.user_wallet")]
+	public partial class user_wallet : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _wallet_id;
+		
+		private string _user_id;
+		
+		private System.Nullable<double> _balance;
+		
+		private System.Nullable<System.DateTime> _created_at;
+		
+		private EntityRef<user> _user;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void Onwallet_idChanging(int value);
+    partial void Onwallet_idChanged();
+    partial void Onuser_idChanging(string value);
+    partial void Onuser_idChanged();
+    partial void OnbalanceChanging(System.Nullable<double> value);
+    partial void OnbalanceChanged();
+    partial void Oncreated_atChanging(System.Nullable<System.DateTime> value);
+    partial void Oncreated_atChanged();
+    #endregion
+		
+		public user_wallet()
+		{
+			this._user = default(EntityRef<user>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_wallet_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int wallet_id
+		{
+			get
+			{
+				return this._wallet_id;
+			}
+			set
+			{
+				if ((this._wallet_id != value))
+				{
+					this.Onwallet_idChanging(value);
+					this.SendPropertyChanging();
+					this._wallet_id = value;
+					this.SendPropertyChanged("wallet_id");
+					this.Onwallet_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="NVarChar(255) NOT NULL", CanBeNull=false)]
+		public string user_id
+		{
+			get
+			{
+				return this._user_id;
+			}
+			set
+			{
+				if ((this._user_id != value))
+				{
+					if (this._user.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onuser_idChanging(value);
+					this.SendPropertyChanging();
+					this._user_id = value;
+					this.SendPropertyChanged("user_id");
+					this.Onuser_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_balance", DbType="Float")]
+		public System.Nullable<double> balance
+		{
+			get
+			{
+				return this._balance;
+			}
+			set
+			{
+				if ((this._balance != value))
+				{
+					this.OnbalanceChanging(value);
+					this.SendPropertyChanging();
+					this._balance = value;
+					this.SendPropertyChanged("balance");
+					this.OnbalanceChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_created_at", DbType="DateTime")]
+		public System.Nullable<System.DateTime> created_at
+		{
+			get
+			{
+				return this._created_at;
+			}
+			set
+			{
+				if ((this._created_at != value))
+				{
+					this.Oncreated_atChanging(value);
+					this.SendPropertyChanging();
+					this._created_at = value;
+					this.SendPropertyChanged("created_at");
+					this.Oncreated_atChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="user_user_wallet", Storage="_user", ThisKey="user_id", OtherKey="user_id", IsForeignKey=true)]
+		public user user
+		{
+			get
+			{
+				return this._user.Entity;
+			}
+			set
+			{
+				user previousValue = this._user.Entity;
+				if (((previousValue != value) 
+							|| (this._user.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._user.Entity = null;
+						previousValue.user_wallets.Remove(this);
+					}
+					this._user.Entity = value;
+					if ((value != null))
+					{
+						value.user_wallets.Add(this);
 						this._user_id = value.user_id;
 					}
 					else

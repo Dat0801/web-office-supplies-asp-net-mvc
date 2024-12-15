@@ -26,6 +26,7 @@ namespace VanPhongPham.Models
         public string OrderStatusName { get; set; }
         public int CancellationRequested { get; set; }
         public string CancellationReason { get; set; }
+        public string ReturnImages { get; set; }
         public DateTime? CreatedAt { get; set; }
         public List<OrderDetailViewModel> OrderDetails { get; set; }
     }
