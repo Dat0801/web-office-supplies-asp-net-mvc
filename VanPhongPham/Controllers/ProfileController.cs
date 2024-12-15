@@ -16,13 +16,14 @@ namespace VanPhongPham.Controllers
     {
         private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
         // GET: Profile
-        public ActionResult Index(string view, string MaTaiKhoan, string ord_id, string search_str, int? page, int order_status_id = -1)
+        public ActionResult Index(string view, string MaTaiKhoan, string ord_id, string search_str, string msg, int? page, int order_status_id = -1)
         {
             ViewBag.PartialView = string.IsNullOrEmpty(view) ? "ProfilePartial" : view;
             ViewBag.MaTaiKhoan = MaTaiKhoan;
             ViewBag.CurrentStatus = order_status_id;
             ViewBag.OrderID = ord_id;
             ViewBag.SearchStr = search_str;
+            ViewBag.msg = msg;
             ViewBag.Page = page ?? 1;
 
             if (!string.IsNullOrEmpty(MaTaiKhoan))
@@ -205,7 +206,7 @@ namespace VanPhongPham.Controllers
             return PartialView(order);
         }
 
-        public ActionResult WalletPartial(string MaTaiKhoan) // Thêm tham số MaTaiKhoan
+        public ActionResult WalletPartial(string MaTaiKhoan, string msg) // Thêm tham số MaTaiKhoan
         {
             if (!string.IsNullOrEmpty(MaTaiKhoan))
             {
@@ -215,6 +216,7 @@ namespace VanPhongPham.Controllers
                 if (wallet != null)
                 {
                     ViewBag.Usr = dbUser;
+                    ViewBag.msg = msg;
                     return PartialView(wallet); // Truyền thông tin user từ database vào view
                 }
             }

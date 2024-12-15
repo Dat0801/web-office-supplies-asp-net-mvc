@@ -151,13 +151,16 @@ else
 
                     if (walletBalance < totalamount) {
                         document.querySelector('.order-button').classList.add("disabled");
+                        document.querySelector('.order-button').setAttribute("disabled", "disabled");
                     }
                     else {
                         document.querySelector('.order-button').classList.remove("disabled");
+                        document.querySelector('.order-button').removeAttribute("disabled");
                     }
                 }
                 else {
-                    document.querySelector('.order-button').classList.remove("disabled");
+                    document.querySelector('.order-button').classList.remove("disabled")
+                    document.querySelector('.order-button').removeAttribute("disabled");;
                 }
             }
             else
