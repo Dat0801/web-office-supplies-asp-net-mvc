@@ -64,7 +64,7 @@
                 <hr>
 
                 <!-- Additional Menu Items -->
-                <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "WalletPartial" })" style="text-decoration: none;" class="list-group-item @(ViewBag.PartialView == "WalletPartial" ? "active" : "")">
+                <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, msg = ViewBag.msg, view = "WalletPartial" })" style="text-decoration: none;" class="list-group-item @(ViewBag.PartialView == "WalletPartial" ? "active" : "")">
                     <i class="fa-solid fa-wallet"></i> Ví QVD
                 </a>
             </div>
@@ -98,9 +98,8 @@
             }
             else if (ViewBag.PartialView == "WalletPartial")
             {
-                @Html.Action("WalletPartial", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan })
+                @Html.Action("WalletPartial", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, msg = ViewBag.msg })
             }
         </div>
     </div>
 </div>
-

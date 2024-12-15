@@ -82,6 +82,7 @@
     .timeline-content p {
         margin-top: 5px;
     }
+
     .image-container img {
         border: 1px solid #ddd;
         border-radius: 4px;
@@ -89,9 +90,9 @@
         transition: transform 0.2s;
     }
 
-    .image-container img:hover {
-        transform: scale(1.1); /* Zoom nhẹ khi hover */
-    }
+        .image-container img:hover {
+            transform: scale(1.1); /* Zoom nhẹ khi hover */
+        }
     /* Modal background */
     .custom-modal {
         display: none; /* Hidden by default */
@@ -312,7 +313,7 @@
     {
         <div class="text-center mt-5">
             <h3 class="text-center text-primary">Lý do hủy</h3>
-            <textarea class="review-textarea" style="height: 100px;" disabled>@Model.CancellationReason</textarea>
+            <textarea class="review-textarea" style="height: 100px; margin-bottom: 20px;" disabled>@Model.CancellationReason</textarea>
             <button type="button" id="RefuseBtn" class="btn btn-primary" data-orderid="@Model.OrderId" data-ordercode="@Model.OrderCode">Từ chối</button>
             <button type="button" id="AcceptBtn" class="btn btn-primary" data-orderid="@Model.OrderId" data-ordercode="@Model.OrderCode">Chấp nhận</button>
         </div>
@@ -324,8 +325,8 @@
             <textarea class="review-textarea" style="height: 100px;" disabled>@Model.CancellationReason</textarea>
 
             <h4 class="text-left mt-1">Hình ảnh trả hàng</h4>
-            <div id="returnImagePreview" class="d-flex flex-wrap justify-content-start">
-                @{ 
+            <div id="returnImagePreview" class="d-flex flex-wrap justify-content-start" style="margin-bottom: 20px;">
+                @{
                     if (!string.IsNullOrEmpty(Model.ReturnImages))
                     {
                         var imageLinks = Model.ReturnImages.Split(','); // Cắt chuỗi thành mảng
@@ -333,11 +334,11 @@
                         {
                             <div class="image-container" style="position: relative; margin-right: 10px">
                                 <img src="@image" alt="Hình ảnh trả" class="preview-image"
-                                     style="width: 100px; height: 100px; object-fit: cover; cursor: pointer;"
+                                     style="width: 100px; height: 100px; object-fit: contain; cursor: pointer;"
                                      data-bs-toggle="modal" data-bs-target="#imageModal" data-src="@image" />
-                            </div> 
+                            </div>
                         }
-                    } 
+                    }
                 }
             </div>
 

@@ -55,6 +55,11 @@
         cursor: pointer;
     }
 
+    .order-button.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
     .custom-select {
         width: 250px;
         font-size: 14px;
@@ -398,10 +403,12 @@
 
             if (walletBalance < totalamount) {
                 document.querySelector('.order-button').classList.add("disabled");
+                document.querySelector('.order-button').setAttribute("disabled", "disabled");
             }
             else
             {
                 document.querySelector('.order-button').classList.remove("disabled");
+                document.querySelector('.order-button').removeAttribute("disabled");
             }
         }
         else
@@ -409,6 +416,7 @@
             // Ẩn thông tin Ví QVDPay khi chọn phương thức khác
             qvdPaySection.style.display = 'none';
             document.querySelector('.order-button').classList.remove("disabled");
+            document.querySelector('.order-button').removeAttribute("disabled");
         }
     });
 

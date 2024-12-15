@@ -464,18 +464,25 @@ BEGIN
 END;
 GO
 
--- Trigger cập nhật số lượng sản phẩm tồn kho sau khi sản phẩm được bán.
-CREATE TRIGGER trg_UpdateProductStock
-ON order_details
-AFTER INSERT
+-- Trigger cập nhật số lượng sản phẩm tồn kho sau khi sản phẩm được bán khi cap nhật trạng thái "Chờ giao hang".
+CREATE TRIGGER trg_UpdateProductStock_OnOrderStatus
+ON orders
+AFTER UPDATE
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    UPDATE p
-    SET p.stock_quantity = p.stock_quantity - inserted.quantity
-    FROM products p
-    INNER JOIN inserted ON p.product_id = inserted.product_id;
+    -- Chỉ thực hiện khi order_status_id được cập nhật thành 2
+    IF UPDATE(order_status_id)
+    BEGIN
+        -- Lấy danh sách các sản phẩm từ order_details khi order_status_id = 2
+        UPDATE p
+        SET p.stock_quantity = p.stock_quantity - od.quantity
+        FROM products p
+        INNER JOIN order_details od ON p.product_id = od.product_id
+        INNER JOIN inserted i ON i.order_id = od.order_id
+        WHERE i.order_status_id = 2;
+    END
 END;
 GO
 
@@ -494,6 +501,27 @@ BEGIN
         INNER JOIN order_details od ON p.product_id = od.product_id
         INNER JOIN inserted i ON od.order_id = i.order_id
         WHERE i.order_status_id = 3; 
+    END
+END;
+GO
+
+--Trigger giảm số lượng sản phẩm đã bán khi trạng thái đơn hàng thay đổi thành "Trả hàng/Hoàn tien".
+CREATE TRIGGER trg_DecreaseProductSoldOnReturn
+ON orders
+AFTER UPDATE
+AS
+BEGIN
+    IF UPDATE(order_status_id)
+    BEGIN
+        SET NOCOUNT ON;
+
+        -- Giảm số lượng sold khi order_status_id được cập nhật thành 5 (Trả hàng/Hoàn tiền)
+        UPDATE p
+        SET p.sold = p.sold - od.quantity
+        FROM products p
+        INNER JOIN order_details od ON p.product_id = od.product_id
+        INNER JOIN inserted i ON od.order_id = i.order_id
+        WHERE i.order_status_id = 5; -- Kiểm tra trạng thái mới là 5
     END
 END;
 GO
@@ -552,7 +580,7 @@ END
 
 GO
 
--- Trigger khôi phục số lượng tồn kho của sản phẩm khi đơn hàng bị hủy.
+-- Trigger khôi phục số lượng tồn kho của sản phẩm khi đơn hàng bị hủy khi order_status_id được cập nhật từ 2 (Chờ giao hàng) sang 4 (Đã hủy).
 CREATE TRIGGER trg_RestoreProductStockOnOrderCancel
 ON orders
 AFTER UPDATE
@@ -562,12 +590,15 @@ BEGIN
     BEGIN
         SET NOCOUNT ON;
 
+        -- Chỉ khôi phục tồn kho khi trạng thái đơn hàng được cập nhật từ 2 -> 4
         UPDATE p
         SET p.stock_quantity = p.stock_quantity + od.quantity
         FROM products p
         INNER JOIN order_details od ON p.product_id = od.product_id
-        INNER JOIN inserted i ON od.order_id = i.order_id
-        WHERE i.order_status_id = 4;
+        INNER JOIN deleted d ON od.order_id = d.order_id -- Bản ghi cũ trước khi update
+        INNER JOIN inserted i ON od.order_id = i.order_id -- Bản ghi mới sau khi update
+        WHERE d.order_status_id = 2 -- Trạng thái cũ là "Chờ giao hàng"
+          AND i.order_status_id = 4; -- Trạng thái mới là "Đã hủy"
     END
 END;
 
