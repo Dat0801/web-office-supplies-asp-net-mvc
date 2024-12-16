@@ -152,7 +152,22 @@
                         }
                         else
                         {
-                            <p><strong>Ngày đặt:</strong> @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</p>
+                            if (Model.OrderStatusID == 5 && Model.CancellationRequested == 3)
+                            {
+                                <p><strong>Chấp nhận yêu cầu trả vào:</strong> @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</p>
+                            }
+                            else if (Model.OrderStatusID == 5 && Model.CancellationRequested == 5)
+                            {
+                                <p><strong>Từ chối hoàn tiền vào:</strong> @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</p>
+                            }
+                            else if (Model.OrderStatusID == 5 && Model.CancellationRequested == 6)
+                            {
+                                <p><strong>Chấp nhận hoàn tiền vào:</strong> @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</p>
+                            }
+                            else
+                            {
+                                <p><strong>Ngày đặt:</strong> @Model.CreatedAt.Value.ToString("HH:mm dd-MM-yyyy")</p>
+                            }
                         }
 
                         @if (Model.OrderStatusName == "Hoàn thành")
@@ -202,6 +217,11 @@
                         <p><strong>Giảm giá tiền hàng:</strong> <span>-₫@(Model.DiscountAmount.HasValue ? Model.DiscountAmount.Value.ToString("N0") : "0")</span></p>
 
                         <p><strong>Thành tiền:</strong> <span class="text-danger" style="font-weight: bold">₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span></p>
+
+                        @if (Model.OrderStatusID == 5)
+                        {
+                            <p><strong>Số tiền hoàn lại:</strong> <span class="text-danger" style="font-weight: bold">₫@( (Model.TotalAmount.Value - Model.ShippingFee.Value).ToString("N0") )</span></p>
+                        }
 
                         @if (Model.FullNameCustomer != null)
                         {
@@ -400,6 +420,49 @@
 
             <button type="button" id="RefuseBtn2" class="btn btn-primary" style="visibility: hidden" data-orderid="@Model.OrderId" data-ordercode="@Model.OrderCode"></button>
             <button type="button" id="AcceptBtn2" class="btn btn-primary" style="visibility: hidden" data-orderid="@Model.OrderId" data-ordercode="@Model.OrderCode"></button>
+        </div>
+    }
+    else if (Model.OrderStatusID == 5 && (Model.CancellationRequested == 5 || Model.CancellationRequested == 6))
+    {
+        <div class="text-left mt-5">
+            <h3 class="text-center text-primary">Lý do trả</h3>
+            @if (Model.CancellationRequested == 5)
+            {
+                var reasonParts = Model.CancellationReason.Split(new[] { ',' }, 2);
+                <div style="border: 1px solid black; border-radius: 10px; padding: 10px; width: 100%">
+                    <p style="font-size: 16px">Lý do bởi người mua: @reasonParts[0]</p>
+                    <p style="font-size: 16px">Lý do bởi bạn: @reasonParts[1]</p>
+                </div>
+            }
+            else
+            {
+                <div style="border: 1px solid black; border-radius: 10px; padding: 10px; width: 100%">
+                    <p style="font-size: 16px">Lý do bởi người mua: @Model.CancellationReason</p>
+                </div>
+            }
+            <h4 class="text-left mt-4">Hình ảnh trả hàng</h4>
+            <div id="returnImagePreview" class="d-flex flex-wrap justify-content-start" style="margin-bottom: 20px;">
+                @{
+                    if (!string.IsNullOrEmpty(Model.ReturnImages))
+                    {
+                        var imageLinks = Model.ReturnImages.Split(','); // Cắt chuỗi thành mảng
+                        foreach (var image in imageLinks)
+                        {
+                            <div class="image-container" style="position: relative; margin-right: 10px">
+                                <img src="@image" alt="Hình ảnh trả" class="preview-image"
+                                     style="width: 100px; height: 100px; object-fit: contain; cursor: pointer;"
+                                     data-bs-toggle="modal" data-bs-target="#imageModal" data-src="@image" />
+                            </div>
+                        }
+                    }
+                }
+            </div>
+
+            <!-- Modal để preview ảnh -->
+            <div id="imageModal" class="custom-modal">
+                <span class="close-modal">&times;</span>
+                <img id="modalImage" src="" alt="Preview" class="modal-image" />
+            </div>
         </div>
     }
 </div>

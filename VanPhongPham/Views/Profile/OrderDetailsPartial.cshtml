@@ -336,6 +336,42 @@
         <div class="order-cost-details">
             <div class="d-flex justify-content-end">
                 <div class="col-8 text-right p-0">
+                    <span style="font-size: 13px">Tổng tiền hàng</span>
+                </div>
+                <div class="col-4 text-right p-0">
+                    <span>₫@totalItemCost.ToString("N0")</span>
+                </div>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-end">
+                <div class="col-8 text-right p-0">
+                    <span style="font-size: 13px">Phí vận chuyển</span>
+                </div>
+                <div class="col-4 text-right p-0">
+                    <span>₫@(Model.ShippingFee.HasValue ? Model.ShippingFee.Value.ToString("N0") : "0")</span>
+                </div>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-end">
+                <div class="col-8 text-right p-0">
+                    <span style="font-size: 13px">Giảm giá tiền hàng</span>
+                </div>
+                <div class="col-4 text-right p-0">
+                    <span>-₫@(Model.DiscountAmount.HasValue ? Model.DiscountAmount.Value.ToString("N0") : "0.000")</span>
+                </div>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-end">
+                <div class="col-8 d-flex align-items-center justify-content-end p-0">
+                    <span style="font-size: 13px">Thành tiền</span>
+                </div>
+                <div class="col-4 d-flex align-items-center justify-content-end p-0" style="color: red; font-size: 24px;">
+                    <span>₫@(Model.TotalAmount.HasValue ? Model.TotalAmount.Value.ToString("N0") : "0")</span>
+                </div>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-end">
+                <div class="col-8 text-right p-0">
                     <span style="font-size: 13px">Phương thức thanh toán</span>
                 </div>
                 <div class="col-4 text-right p-0">
