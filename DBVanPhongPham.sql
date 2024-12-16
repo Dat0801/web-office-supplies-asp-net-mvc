@@ -675,19 +675,19 @@ GO
 -- Trigger tính toán tổng số tiền của một đơn hàng.
 CREATE TRIGGER trg_CalculateOrderTotalAmount
 ON order_details
-AFTER INSERT
+AFTER INSERT, UPDATE
 AS
 BEGIN
+    -- Tính tổng tiền cho từng order_id
     UPDATE orders
     SET total_amount = (
-        SELECT SUM(od.total_amount) - orders.discount_amount + orders.shipping_fee
+        SELECT SUM(od.total_amount) 
         FROM order_details od
         WHERE od.order_id = orders.order_id
         GROUP BY od.order_id
-    )
+    ) - orders.discount_amount + orders.shipping_fee
     WHERE orders.order_id IN (SELECT DISTINCT order_id FROM inserted);
 END;
-
 GO
 
 -- Trigger cập nhật balance trong user_wallet khi total_amount của orders thay đổi và method_id = 'PAY003'.
@@ -698,15 +698,15 @@ AS
 BEGIN
     IF UPDATE(total_amount)
     BEGIN
-        -- Cập nhật balance trong user_wallet
+        -- Tính toán chênh lệch số tiền total_amount mới và cũ
         UPDATE user_wallet
-        SET balance = balance - inserted.total_amount
+        SET balance = user_wallet.balance - (inserted.total_amount - ISNULL(deleted.total_amount, 0))
         FROM user_wallet
         INNER JOIN inserted ON user_wallet.user_id = inserted.customer_id
+        LEFT JOIN deleted ON deleted.order_id = inserted.order_id
         WHERE inserted.method_id = 'PAY003';
     END
 END;
-
 GO
 
 -- Trigger để cập nhật item_count sau khi thêm mới chi tiết đơn đặt hàng
