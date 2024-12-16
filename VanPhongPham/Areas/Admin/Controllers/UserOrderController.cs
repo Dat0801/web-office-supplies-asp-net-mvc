@@ -23,7 +23,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             
             if (search_str != null)
             {
-                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper()) || (o.employee_id != null && o.employee_id.Contains(search_str.ToUpper()))).ToList();
                 ViewBag.search_str = search_str;
             }
             return View(orders.ToPagedList(pageNumber, pageSize));
@@ -37,7 +37,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
             if (search_str != null)
             {
-                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper()) || (o.employee_id != null && o.employee_id.Contains(search_str.ToUpper()))).ToList();
                 ViewBag.search_str = search_str;
             }
             return View(orders.ToPagedList(pageNumber, pageSize));
@@ -51,7 +51,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
             if (search_str != null)
             {
-                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper()) || (o.employee_id != null && o.employee_id.Contains(search_str.ToUpper()))).ToList();
                 ViewBag.search_str = search_str;
             }
             return View(orders.ToPagedList(pageNumber, pageSize));
@@ -65,7 +65,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
             if (search_str != null)
             {
-                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper()) || (o.employee_id != null && o.employee_id.Contains(search_str.ToUpper()))).ToList();
                 ViewBag.search_str = search_str;
             }
             return View(orders.ToPagedList(pageNumber, pageSize));
@@ -79,7 +79,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
             if (search_str != null)
             {
-                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper()) || (o.employee_id != null && o.employee_id.Contains(search_str.ToUpper()))).ToList();
                 ViewBag.search_str = search_str;
             }
             return View(orders.ToPagedList(pageNumber, pageSize));
@@ -93,7 +93,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
             if (search_str != null)
             {
-                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper()) || (o.employee_id != null && o.employee_id.Contains(search_str.ToUpper()))).ToList();
                 ViewBag.search_str = search_str;
             }
             return View(orders.ToPagedList(pageNumber, pageSize));
@@ -107,7 +107,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
             if (search_str != null)
             {
-                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper()) || (o.employee_id != null && o.employee_id.Contains(search_str.ToUpper()))).ToList();
                 ViewBag.search_str = search_str;
             }
             return View(orders.ToPagedList(pageNumber, pageSize));
@@ -121,7 +121,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
 
             if (search_str != null)
             {
-                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper())).ToList();
+                orders = orders.Where(o => o.order_id.Contains(search_str.ToUpper()) || (o.employee_id != null && o.employee_id.Contains(search_str.ToUpper()))).ToList();
                 ViewBag.search_str = search_str;
             }
             return View(orders.ToPagedList(pageNumber, pageSize));
