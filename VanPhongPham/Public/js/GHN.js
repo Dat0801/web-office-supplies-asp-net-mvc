@@ -158,7 +158,49 @@ async function createOrder(payment_type_id, to_name, to_phone, to_address, to_wa
             to_ward_name: to_ward_name,
             to_district_name: to_district_name,
             to_province_name: to_province_name,
-            cod_amount: parseFloat(cod_amount),
+            cod_amount: parseInt(cod_amount),
+            weight: parseInt(weight),
+            length: 1,
+            width: 1,
+            height: 1,
+            service_type_id: parseInt(service_type_id),
+            items: items
+        })
+    });
+
+    if (response.ok) {
+        const result = await response.json();
+        return result.data;
+    }
+    else {
+        console.error("Lỗi tạo đơn hàng")
+    }
+}
+
+async function returnOrder(payment_type_id, to_name, to_phone, to_address, to_ward_name, to_district_name, to_province_name, cod_amount, weight, service_type_id, items) {
+    const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'Token': TokenAPI,
+            'ShopId': 195136
+        },
+        body: JSON.stringify({
+            payment_type_id: parseInt(payment_type_id),
+            required_note: "KHONGCHOXEMHANG",
+            from_name: to_name,
+            from_phone: to_phone,
+            from_address: to_address,
+            from_ward_name: to_ward_name,
+            from_district_name: to_district_name,
+            from_provice_name: to_province_name,
+            to_name: "QVDShop",
+            to_phone: "0903320156",
+            to_address: "140 Lê Trọng Tấn, Tây Thạnh, Tân Phú, Hồ Chí Minh",
+            to_ward_name: "Tây Thạnh",
+            to_district_name: "Tân Phú",
+            to_province_name: "Hồ Chí Minh",
+            cod_amount: parseInt(cod_amount),
             weight: parseInt(weight),
             length: 1,
             width: 1,

@@ -16,13 +16,14 @@ namespace VanPhongPham.Controllers
     {
         private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();
         // GET: Profile
-        public ActionResult Index(string view, string MaTaiKhoan, string ord_id, string search_str, int? page, int order_status_id = -1)
+        public ActionResult Index(string view, string MaTaiKhoan, string ord_id, string search_str, string msg, int? page, int order_status_id = -1)
         {
             ViewBag.PartialView = string.IsNullOrEmpty(view) ? "ProfilePartial" : view;
             ViewBag.MaTaiKhoan = MaTaiKhoan;
             ViewBag.CurrentStatus = order_status_id;
             ViewBag.OrderID = ord_id;
             ViewBag.SearchStr = search_str;
+            ViewBag.msg = msg;
             ViewBag.Page = page ?? 1;
 
             if (!string.IsNullOrEmpty(MaTaiKhoan))
@@ -119,6 +120,9 @@ namespace VanPhongPham.Controllers
                     MethodId = o.method_id,
                     MethodName = o.payment_method.method_name,
                     DeliveryDate = o.delivery_date,
+                    ShippingFee = o.shipping_fee,
+                    DiscountAmount = o.discount_amount,
+                    CounponApplied = o.coupon_applied,
                     TotalAmount = o.total_amount,
                     OrderStatusName = o.order_status.order_status_name,
                     CancellationRequested = o.cancellation_requested ?? 0,
@@ -201,6 +205,25 @@ namespace VanPhongPham.Controllers
             ViewBag.OrderStatusID = order_status_id;
             return PartialView(order);
         }
+
+        public ActionResult WalletPartial(string MaTaiKhoan, string msg) // Thêm tham số MaTaiKhoan
+        {
+            if (!string.IsNullOrEmpty(MaTaiKhoan))
+            {
+                var dbUser = db.users.FirstOrDefault(u => u.user_id == MaTaiKhoan);
+                var wallet = db.user_wallets.FirstOrDefault(u => u.user_id == MaTaiKhoan);
+
+                if (wallet != null)
+                {
+                    ViewBag.Usr = dbUser;
+                    ViewBag.msg = msg;
+                    return PartialView(wallet); // Truyền thông tin user từ database vào view
+                }
+            }
+
+            return PartialView();
+        }
+
         [HttpPost]
         public ActionResult UpdateProfile(user updateUser)
         {

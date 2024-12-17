@@ -37,7 +37,7 @@
                 </a>
 
                 <!-- Sub-items for Tài Khoản Của Tôi (Always visible) -->
-                @if (ViewBag.PartialView != "OrderPartial" && ViewBag.PartialView != "OrderDetailsPartial")
+                @if (ViewBag.PartialView != "OrderPartial" && ViewBag.PartialView != "OrderDetailsPartial" && ViewBag.PartialView != "WalletPartial")
                 {
                     <div class="sub-menu">
                         <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "ProfilePartial" })" style="text-decoration: none;" class="list-group-item sub-item @(ViewBag.PartialView == "ProfilePartial" || ViewBag.PartialView == "ChangeEmailPartial" ? "active" : "")">
@@ -58,6 +58,14 @@
                 <!-- Additional Menu Items -->
                 <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, view = "OrderPartial", order_status_id = ViewBag.CurrentStatus })" style="text-decoration: none;" class="list-group-item @(ViewBag.PartialView == "OrderPartial" || ViewBag.PartialView == "OrderDetailsPartial" ? "active" : "")">
                     <i class="fas fa-shopping-bag"></i> Đơn Mua
+                </a>
+
+                <!-- Divider -->
+                <hr>
+
+                <!-- Additional Menu Items -->
+                <a href="@Url.Action("Index", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, msg = ViewBag.msg, view = "WalletPartial" })" style="text-decoration: none;" class="list-group-item @(ViewBag.PartialView == "WalletPartial" ? "active" : "")">
+                    <i class="fa-solid fa-wallet"></i> Ví QVD
                 </a>
             </div>
         </div>
@@ -88,7 +96,10 @@
             {
                 @Html.Action("OrderDetailsPartial", "Profile", new { ord_id = ViewBag.OrderID })
             }
+            else if (ViewBag.PartialView == "WalletPartial")
+            {
+                @Html.Action("WalletPartial", "Profile", new { MaTaiKhoan = ViewBag.MaTaiKhoan, msg = ViewBag.msg })
+            }
         </div>
     </div>
 </div>
-

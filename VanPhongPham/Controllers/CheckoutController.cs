@@ -113,9 +113,11 @@ namespace VanPhongPham.Controllers
             return PartialView(cartdetails);
         }
 
-        public ActionResult PaymentCheckoutPartial(address adrs)
+        public ActionResult PaymentCheckoutPartial(string userid, address adrs)
         {
             var paymentmethod = db.payment_methods.ToList();
+            var usrwallet = db.user_wallets.FirstOrDefault(w => w.user_id == userid);
+            ViewBag.wallet = usrwallet;
             ViewBag.adrs = adrs;
             ViewBag.TotalAmount = db.cart_details.Where(a => a.isSelected == 1).Sum(a => a.total_amount);
             return PartialView(paymentmethod);
@@ -191,7 +193,7 @@ namespace VanPhongPham.Controllers
             vnpay.AddRequestData("vnp_Version", "2.1.0");
             vnpay.AddRequestData("vnp_Command", "pay");
             vnpay.AddRequestData("vnp_TmnCode", "262XSFHX");
-            vnpay.AddRequestData("vnp_Amount", ((int)(totalAmount+shipping_fee) * 100).ToString()); // Tổng số tiền thanh toán
+            vnpay.AddRequestData("vnp_Amount", ((int)(totalAmount + shipping_fee - discount_amount) * 100).ToString()); // Tổng số tiền thanh toán
             vnpay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData("vnp_CurrCode", "VND");
             vnpay.AddRequestData("vnp_IpAddr", Request.UserHostAddress);
@@ -268,11 +270,7 @@ namespace VanPhongPham.Controllers
             var current_orderid = orderID ?? GenerateOrderId();
 
             var dbuser = db.users.FirstOrDefault(u => u.user_id == user_id);
-            int paymentStatusID = 1;
-            if (method_id == "PAY002")
-            {
-                paymentStatusID = 2;
-            }
+
             if (info_adrs != null)
             {
                 order ord = new order
@@ -287,11 +285,10 @@ namespace VanPhongPham.Controllers
                     coupon_applied = coupon_applied,
                     order_status_id = 1,
                     created_at = DateTime.Now,
-                    payment_status_id = paymentStatusID,
                     cancellation_requested = 0                    
                 };
 
-                db.orders.InsertOnSubmit(ord);
+                db.orders.InsertOnSubmit(ord);  
             }
             else
             {
@@ -308,12 +305,11 @@ namespace VanPhongPham.Controllers
                     coupon_applied = coupon_applied,
                     order_status_id = 1,
                     created_at = DateTime.Now,
-                    payment_status_id = paymentStatusID,
                     cancellation_requested = 0                    
                 };
 
                 db.orders.InsertOnSubmit(ord);
-            }    
+            }
 
             db.SubmitChanges();
 
@@ -388,6 +384,65 @@ namespace VanPhongPham.Controllers
             }
 
             return Json(new { success = false, message = "Mã giảm giá không tồn tại." });
+        }
+
+        [HttpPost]
+        public ActionResult RechargeVNPay(string user_id, int amount)
+        {
+            // Tạo giao dịch VNPay
+            var vnpay = new VnPayLibrary();
+            DateTime expireDate = DateTime.Now.AddMinutes(15); // Thời gian hết hạn
+
+            vnpay.AddRequestData("vnp_Version", "2.1.0");
+            vnpay.AddRequestData("vnp_Command", "pay");
+            vnpay.AddRequestData("vnp_TmnCode", "262XSFHX"); // Mã website của bạn trên VNPay
+            vnpay.AddRequestData("vnp_Amount", ((int)(amount * 100)).ToString()); // Số tiền cần nạp
+            vnpay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData("vnp_CurrCode", "VND");
+            vnpay.AddRequestData("vnp_IpAddr", Request.UserHostAddress);
+            vnpay.AddRequestData("vnp_Locale", "vn");
+            vnpay.AddRequestData("vnp_OrderInfo", $"Nạp tiền vào ví"); // Thông tin giao dịch
+            vnpay.AddRequestData("vnp_OrderType", "billpayment"); // Loại giao dịch
+            vnpay.AddRequestData("vnp_ReturnUrl", Url.Action("RechargeVNPayReturn", "Checkout", null, Request.Url.Scheme));
+            vnpay.AddRequestData("vnp_TxnRef", DateTime.Now.Ticks.ToString()); // Mã giao dịch
+            vnpay.AddRequestData("vnp_ExpireDate", expireDate.ToString("yyyyMMddHHmmss"));
+
+            // URL thanh toán
+            string paymentUrl = vnpay.CreateRequestUrl("https://sandbox.vnpayment.vn/paymentv2/vpcpay.html", "MMZXWISZNUUUNKGOZQPCPASLLTHYGMTB");
+
+            // Lưu thông tin giao dịch (có thể lưu vào bảng log giao dịch nếu cần)
+            TempData["user_id"] = user_id;
+            TempData["amount"] = amount;
+
+            return Json(new { success = true, vnpayUrl = paymentUrl });
+        }
+        public ActionResult RechargeVNPayReturn()
+        {
+            var vnpay = new VnPayLibrary();
+            foreach (string s in Request.QueryString)
+            {
+                vnpay.AddResponseData(s, Request.QueryString[s]);
+            }
+
+            string responseCode = vnpay.GetResponseData("vnp_ResponseCode");
+            string userId = TempData["user_id"]?.ToString();
+            float amount = float.Parse(TempData["amount"]?.ToString() ?? "0");
+
+            if (responseCode == "00") // Giao dịch thành công
+            {
+                // Cập nhật số dư ví người dùng
+                var wallet = db.user_wallets.FirstOrDefault(w => w.user_id == userId);
+                if (wallet != null)
+                {
+                    wallet.balance += amount;
+                    db.SubmitChanges();
+                }
+                return RedirectToAction("Index", "Profile", new { MaTaiKhoan = userId, view = "WalletPartial", msg = "Nạp tiền thành công!" });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Profile", new { MaTaiKhoan = userId, view = "WalletPartial", msg = "Nạp tiền thất bại!" });
+            }
         }
     }
 }

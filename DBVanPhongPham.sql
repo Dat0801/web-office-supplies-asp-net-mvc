@@ -136,11 +136,6 @@ create table order_status
 	order_status_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
 	order_status_name NVARCHAR(255) NOT NULL
 )
-create table payment_status
-(
-	payment_status_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
-	payment_status_name NVARCHAR(255) NOT NULL
-)
 
 CREATE TABLE coupons
 (
@@ -171,11 +166,19 @@ create table orders
 	discount_amount float default 0,
 	total_amount float default 0,
 	order_status_id int not null,
-	payment_status_id int not null,
 	coupon_applied VARCHAR(10),
 	cancellation_requested int default 0,
 	cancellation_reason nvarchar(255),
+	return_images nvarchar(MAX),
 	created_at datetime default getdate(),
+)
+
+create table user_wallet
+(
+	wallet_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	user_id nvarchar(255) NOT NULL,
+	balance float default 0,
+	created_at datetime default getdate()
 )
 
 create table product_review
@@ -320,10 +323,6 @@ alter table orders
 add constraint FK_Orders_OrderStatus
 foreign key (order_status_id) references order_status(order_status_id);
 
-alter table orders
-add constraint FK_Orders_PaymentStatus
-foreign key (payment_status_id) references payment_status(payment_status_id);
-
 alter table order_details
 add constraint FK_OrderDetails_Orders
 foreign key (order_id) references orders(order_id);
@@ -379,6 +378,10 @@ foreign key (cart_id) references cart_section(cart_id);
 alter table cart_details
 add constraint FK_CartDetails_Products
 foreign key (product_id) references products(product_id);
+
+alter table user_wallet
+add constraint FK_UserWallet_Users
+foreign key (user_id) references users(user_id)
 go
 
 -- Cập nhật trường updated_at trong bảng products mỗi khi có bản ghi bị cập nhật.
@@ -461,18 +464,25 @@ BEGIN
 END;
 GO
 
--- Trigger cập nhật số lượng sản phẩm tồn kho sau khi sản phẩm được bán.
-CREATE TRIGGER trg_UpdateProductStock
-ON order_details
-AFTER INSERT
+-- Trigger cập nhật số lượng sản phẩm tồn kho sau khi sản phẩm được bán khi cap nhật trạng thái "Chờ giao hang".
+CREATE TRIGGER trg_UpdateProductStock_OnOrderStatus
+ON orders
+AFTER UPDATE
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    UPDATE p
-    SET p.stock_quantity = p.stock_quantity - inserted.quantity
-    FROM products p
-    INNER JOIN inserted ON p.product_id = inserted.product_id;
+    -- Chỉ thực hiện khi order_status_id được cập nhật thành 2
+    IF UPDATE(order_status_id)
+    BEGIN
+        -- Lấy danh sách các sản phẩm từ order_details khi order_status_id = 2
+        UPDATE p
+        SET p.stock_quantity = p.stock_quantity - od.quantity
+        FROM products p
+        INNER JOIN order_details od ON p.product_id = od.product_id
+        INNER JOIN inserted i ON i.order_id = od.order_id
+        WHERE i.order_status_id = 2;
+    END
 END;
 GO
 
@@ -491,6 +501,27 @@ BEGIN
         INNER JOIN order_details od ON p.product_id = od.product_id
         INNER JOIN inserted i ON od.order_id = i.order_id
         WHERE i.order_status_id = 3; 
+    END
+END;
+GO
+
+--Trigger giảm số lượng sản phẩm đã bán khi trạng thái đơn hàng thay đổi thành "Trả hàng/Hoàn tien".
+CREATE TRIGGER trg_DecreaseProductSoldOnReturn
+ON orders
+AFTER UPDATE
+AS
+BEGIN
+    IF UPDATE(order_status_id)
+    BEGIN
+        SET NOCOUNT ON;
+
+        -- Giảm số lượng sold khi order_status_id được cập nhật thành 5 (Trả hàng/Hoàn tiền)
+        UPDATE p
+        SET p.sold = p.sold - od.quantity
+        FROM products p
+        INNER JOIN order_details od ON p.product_id = od.product_id
+        INNER JOIN inserted i ON od.order_id = i.order_id
+        WHERE i.order_status_id = 5; -- Kiểm tra trạng thái mới là 5
     END
 END;
 GO
@@ -549,7 +580,7 @@ END
 
 GO
 
--- Trigger khôi phục số lượng tồn kho của sản phẩm khi đơn hàng bị hủy.
+-- Trigger khôi phục số lượng tồn kho của sản phẩm khi đơn hàng bị hủy khi order_status_id được cập nhật từ 2 (Chờ giao hàng) sang 4 (Đã hủy).
 CREATE TRIGGER trg_RestoreProductStockOnOrderCancel
 ON orders
 AFTER UPDATE
@@ -559,12 +590,15 @@ BEGIN
     BEGIN
         SET NOCOUNT ON;
 
+        -- Chỉ khôi phục tồn kho khi trạng thái đơn hàng được cập nhật từ 2 -> 4
         UPDATE p
         SET p.stock_quantity = p.stock_quantity + od.quantity
         FROM products p
         INNER JOIN order_details od ON p.product_id = od.product_id
-        INNER JOIN inserted i ON od.order_id = i.order_id
-        WHERE i.order_status_id = 4;
+        INNER JOIN deleted d ON od.order_id = d.order_id -- Bản ghi cũ trước khi update
+        INNER JOIN inserted i ON od.order_id = i.order_id -- Bản ghi mới sau khi update
+        WHERE d.order_status_id = 2 -- Trạng thái cũ là "Chờ giao hàng"
+          AND i.order_status_id = 4; -- Trạng thái mới là "Đã hủy"
     END
 END;
 
@@ -641,19 +675,38 @@ GO
 -- Trigger tính toán tổng số tiền của một đơn hàng.
 CREATE TRIGGER trg_CalculateOrderTotalAmount
 ON order_details
-AFTER INSERT
+AFTER INSERT, UPDATE
 AS
 BEGIN
+    -- Tính tổng tiền cho từng order_id
     UPDATE orders
     SET total_amount = (
-        SELECT SUM(od.total_amount) - orders.discount_amount + orders.shipping_fee
+        SELECT SUM(od.total_amount) 
         FROM order_details od
         WHERE od.order_id = orders.order_id
         GROUP BY od.order_id
-    )
+    ) - orders.discount_amount + orders.shipping_fee
     WHERE orders.order_id IN (SELECT DISTINCT order_id FROM inserted);
 END;
+GO
 
+-- Trigger cập nhật balance trong user_wallet khi total_amount của orders thay đổi và method_id = 'PAY003'.
+CREATE TRIGGER trg_UpdateUserWalletBalance
+ON orders
+AFTER UPDATE
+AS
+BEGIN
+    IF UPDATE(total_amount)
+    BEGIN
+        -- Tính toán chênh lệch số tiền total_amount mới và cũ
+        UPDATE user_wallet
+        SET balance = user_wallet.balance - (inserted.total_amount - ISNULL(deleted.total_amount, 0))
+        FROM user_wallet
+        INNER JOIN inserted ON user_wallet.user_id = inserted.customer_id
+        LEFT JOIN deleted ON deleted.order_id = inserted.order_id
+        WHERE inserted.method_id = 'PAY003';
+    END
+END;
 GO
 
 -- Trigger để cập nhật item_count sau khi thêm mới chi tiết đơn đặt hàng
@@ -945,20 +998,17 @@ VALUES
 INSERT INTO payment_methods (method_id, method_name)
 VALUES
 ('PAY001', N'Thanh toán khi nhận hàng'),
-('PAY002', N'Thanh toán bằng chuyển khoản')
+('PAY002', N'Thanh toán bằng chuyển khoản'),
+('PAY003', N'Ví QVDPay')
 
 INSERT INTO order_status (order_status_name)
 VALUES
 (N'Chờ xác nhận'),
 (N'Chờ giao hàng'),
 (N'Hoàn thành'),
-(N'Đã hủy')
+(N'Đã hủy'),
+(N'Trả hàng/Hoàn tiền')
 
-INSERT INTO payment_status (payment_status_name)
-VALUES
-(N'Chưa thanh toán'),
-(N'Đã thanh toán'),
-(N'Đã hoàn tiền')
 
 INSERT INTO users (user_id, full_name, username, status)
 VALUES

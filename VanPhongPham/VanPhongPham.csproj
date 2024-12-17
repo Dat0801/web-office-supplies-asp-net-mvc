@@ -411,6 +411,7 @@
     <Content Include="Public\img\icons\icons8-location-100.png" />
     <Content Include="Public\img\icons\icons8-male-user-100.png" />
     <Content Include="Public\img\icons\icons8-next-100.png" />
+    <Content Include="Public\img\icons\qvdpay.png" />
     <Content Include="Public\img\icons\vecteezy_chat-box-with-laptop.png" />
     <Content Include="Public\img\offer-1.png" />
     <Content Include="Public\img\offer-2.png" />
@@ -660,6 +661,8 @@
     <Content Include="Areas\Admin\Views\Statistics\Revenue.cshtml" />
     <Content Include="Areas\Admin\Views\Statistics\Products.cshtml" />
     <Content Include="Areas\Admin\Views\Statistics\Rates.cshtml" />
+    <Content Include="Areas\Admin\Views\UserOrder\ReturnRequest.cshtml" />
+    <Content Include="Areas\Admin\Views\UserOrder\ReturnOrders.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>
@@ -842,6 +845,7 @@
     <Content Include="Views\Shared\_Dropdown.cshtml" />
     <Content Include="Views\ProductClient\_ProductList.cshtml" />
     <Content Include="Views\ProductClient\GetAllProducts.cshtml" />
+    <Content Include="Views\Profile\WalletPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -58,6 +58,16 @@ namespace VanPhongPham.Controllers
                     db.user_roles.InsertOnSubmit(usrrole);
                     db.SubmitChanges();
 
+                    user_wallet usrwallet = new user_wallet
+                    {
+                        user_id = uid,
+                        balance = 0,
+                        created_at = DateTime.Now
+                    };
+
+                    db.user_wallets.InsertOnSubmit(usrwallet);
+                    db.SubmitChanges();
+
                     cart_section cart = new cart_section
                     {
                         user_id = uid

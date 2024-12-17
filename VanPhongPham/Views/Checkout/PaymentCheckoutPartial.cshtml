@@ -3,6 +3,7 @@
 @{
     var totalAmount = ViewBag.TotalAmount;
     var adrs = ViewBag.adrs as VanPhongPham.Models.address;
+    var wallet = ViewBag.wallet as VanPhongPham.Models.user_wallet;
 }
 <style>
     .checkoutlayout {
@@ -54,6 +55,11 @@
         cursor: pointer;
     }
 
+    .order-button.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
     .custom-select {
         width: 250px;
         font-size: 14px;
@@ -69,11 +75,22 @@
         cursor: pointer;
     }
 
-        .custom-select:focus {
-            outline: none;
-            border-color: #ff4d4f;
-            box-shadow: 0 0 3px rgba(255, 77, 79, 0.5);
-        }
+    .custom-select:focus {
+        outline: none;
+        border-color: #ff4d4f;
+        box-shadow: 0 0 3px rgba(255, 77, 79, 0.5);
+    }
+
+    #qvdPaySection {
+        padding: 15px;
+        border: 1px solid #ddd;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+    }
+
+    #insufficientBalance {
+        font-weight: bold;
+    }
 </style>
 
 <div class="checkoutlayout p-4" style="margin-top: 20px;">
@@ -96,6 +113,12 @@
     </div>
 
     <hr />
+
+    <!-- Khu vực hiển thị thông tin ví QVDPay -->
+    <div id="qvdPaySection" style="display: none; margin-top: 20px;" data-walletbalance="@wallet.balance.Value">
+        <h5>Thanh toán bằng Ví QVDPay</h5>
+        <p>Số dư hiện tại: <span id="walletBalance">₫@wallet.balance.Value.ToString("N0")</span></p>
+    </div>
 
     <!-- Middle Section with Order Summary -->
     <div class="checkout-content">
@@ -150,7 +173,6 @@
             </div>
         </div>
     </div>
-
 
     <hr />
 
@@ -311,6 +333,36 @@
                         showNotification('Số lượng tồn kho không đủ', 'danger');
                     }
                 }
+                else if (selectedMethod === "PAY003")
+                {
+                    const response = await fetch('/Checkout/SaveOrder', {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            user_id: userData1.MaTaiKhoan,
+                            cart_id: userData1.CartID,
+                            info_adrs: addressData,
+                            ordernote: ordnote.value.trim(),
+                            method_id: selectedMethod,
+                            shipping_fee: shipping_fee,
+                            discount_amount: appcoupon ? parseFloat(JSON.parse(appcoupon).discount_amount) : 0,
+                            coupon_applied: appcoupon ? JSON.parse(appcoupon).coupon_applied : null,
+                            orderID: null
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        const url = `@Url.Action("Index", "Profile")?order_status_id=${1}&MaTaiKhoan=${userData.MaTaiKhoan}&view=OrderPartial`;
+                        window.location.href = url;
+                    }
+                    else if (!result.success) {
+                        @*const url = `@Url.Action("Index", "Cart")?cart_id=${userData1.CartID}`;
+                        window.location.href = url;*@
+                        showNotification('Số lượng tồn kho không đủ', 'danger');
+                    }
+                }
             }
             else
             {
@@ -335,6 +387,39 @@
         }
     });
 
+    document.getElementById('payment-method-select').addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const methodId = selectedOption.value; // Lấy phương thức thanh toán đã chọn
+
+        const qvdPaySection = document.getElementById('qvdPaySection');
+
+        // Kiểm tra nếu chọn Ví QVDPay
+        if (methodId === 'PAY003') {
+            // Hiển thị thông tin Ví QVDPay
+            qvdPaySection.style.display = 'block';
+            const walletBalance = parseFloat(qvdPaySection.getAttribute("data-walletbalance"));
+            const totalText = document.querySelector('.total-payment').innerText;
+            const totalamount = parseFloat(totalText.replace(/[₫.]/g, '').replace(',', '.')) || 0;
+
+            if (walletBalance < totalamount) {
+                document.querySelector('.order-button').classList.add("disabled");
+                document.querySelector('.order-button').setAttribute("disabled", "disabled");
+            }
+            else
+            {
+                document.querySelector('.order-button').classList.remove("disabled");
+                document.querySelector('.order-button').removeAttribute("disabled");
+            }
+        }
+        else
+        {
+            // Ẩn thông tin Ví QVDPay khi chọn phương thức khác
+            qvdPaySection.style.display = 'none';
+            document.querySelector('.order-button').classList.remove("disabled");
+            document.querySelector('.order-button').removeAttribute("disabled");
+        }
+    });
+
     function showNotification(message, messageType) {
         var notificationContainer = document.getElementById("notification-container");
         var notification = document.createElement("div");
@@ -351,4 +436,3 @@
         }, 3000);
     }
 </script>
-

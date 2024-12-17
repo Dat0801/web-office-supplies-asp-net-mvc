@@ -163,7 +163,6 @@ async function signUp(email, password, tenkhachhang, tentaikhoan, gender, dateof
         });
 
         const result = await response.json();
-        console.log(result);
 
         if (result.error) {
             console.error("Lỗi đăng ký: ", result.error.message);
@@ -286,7 +285,6 @@ async function AddCartSection(user_id) {
         });
 
         const result = await response.json();
-        console.log(result);
         return result.success;
     } catch (error) {
         console.error("Có lỗi xảy ra khi kiểm tra tên đăng nhập:", error);
@@ -338,7 +336,6 @@ async function SignWithPassword(email, password) {
         });
 
         const result = await response.json();
-        console.log(result);
 
         const errorImage = document.createElement('img');
         errorImage.src = "/Public/img/icons/icons8-error-100.png";
@@ -478,7 +475,6 @@ async function checkUsername(username) {
         });
 
         const result = await response.json();
-        console.log(result);
         return result.exists;
     } catch (error) {
         console.error("Có lỗi xảy ra khi kiểm tra tên đăng nhập:", error);
@@ -550,7 +546,6 @@ async function changePassword(email, currentpassword, updatepassword) {
         });
 
         const result = await response.json();
-        console.log(result);
 
         // Kiểm tra xem có lỗi từ kết quả không
         if (result.error) {
@@ -570,8 +565,6 @@ async function changePassword(email, currentpassword, updatepassword) {
             });
 
             const result2 = await response2.json();
-
-            console.log(result2);
 
             if (!result2.error) {
                 logout();
@@ -601,7 +594,6 @@ async function validatePassword(email, currentpassword) {
         });
 
         const result = await response.json();
-        console.log(result);
 
         // Kiểm tra xem có lỗi từ kết quả không
         if (result.error) {
