@@ -19,7 +19,7 @@ namespace VanPhongPham.Controllers
         {
             return View();
         }
-        public ActionResult GetAllProducts(string categoryID, string searchStr, string priceRange, List<string> colors, List<string> brands, int pageNumber = 1, int pageSize = 12)
+        public ActionResult GetAllProducts(string categoryID, string searchStr, string priceRange, List<string> colors, List<string> brands, int pageNumber = 1, int pageSize = 6)
         {
             var viewModel = _productRepository.GetAllProducts();
             if (viewModel == null || viewModel.ProductViewModel == null || !viewModel.ProductViewModel.Any())
