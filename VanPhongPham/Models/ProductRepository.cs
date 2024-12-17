@@ -126,7 +126,7 @@ namespace VanPhongPham.Models
         }
 
 
-        public ViewModels GetTopSellingProducts(int topCount = 10)
+        public ViewModels GetTopSellingProducts(int topCount = 8)
         {
             var currentDate = DateTime.Now;
 
