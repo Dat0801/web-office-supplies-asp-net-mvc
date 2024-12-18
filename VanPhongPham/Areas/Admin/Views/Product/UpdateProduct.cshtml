@@ -27,7 +27,7 @@
                     <label for="supplier_name">Giá nhập</label>
                     <input type="number" class="form-control" name="purchase_price"
                            placeholder="Giá nhập sẽ có sau khi đặt hàng từ nhà cung cấp"
-                           step="1000" min="1000" max="5000000" value="@Model.purchase_price" required />
+                           step="500" min="1000" max="5000000" value="@Model.purchase_price" required />
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-md-3">
@@ -141,10 +141,10 @@
                     </div>
                 </div>
                 <div class="form-group col-md-3 my-2">
-                    <label for="status">Trạng thái hiển thị</label>
+                    <label for="status">Trạng thái</label>
                     <select name="status" id="status" class="form-control">
-                        <option value="true" @(Model.status == true ? "selected" : "")>Hiển thị phía người dùng</option>
-                        <option value="false" @(Model.status == false ? "selected" : "")>Ẩn phía người dùng</option>
+                        <option value="true" @(Model.status == true ? "selected" : "")>Đang kinh doanh</option>
+                        <option value="false" @(Model.status == false ? "selected" : "")>Ngừng kinh doanh</option>
                     </select>
                 </div>
 

@@ -34,8 +34,14 @@
                 <div class="order-detail">
                     <div class="form-row">
                         <div class="form-group col-md-4">
-                            <label for="productCode">Mã Sản Phẩm</label>
-                            <input type="text" class="form-control" id="productCode" placeholder="Nhập mã sản phẩm" />
+                            <label for="productCode">Sản Phẩm</label>
+                            <select class="form-control" id="productCode" name="productCode">
+                                <option value="">Chọn sản phẩm</option>
+                                @foreach (var product in ViewBag.products as SelectList)
+                                {
+                                    <option value="@product.Value">@product.Text</option>
+                                }
+                            </select>
                         </div>
                         <div class="form-group col-md-3">
                             <label for="quantity">Số Lượng</label>
@@ -90,6 +96,16 @@ document.getElementById("addProduct").addEventListener("click", function () {
         return;
     }
 
+    // Kiểm tra xem quantity và price có hợp lệ không
+    if (!Number.isInteger(parseFloat(quantity)) || parseInt(quantity) < 20) {
+        alert("Số lượng phải là một số nguyên và lớn hơn hoặc bằng 20.");
+        return;
+    }
+
+    if (parseFloat(price) < 3000) {
+        alert("Giá phải lớn hơn hoặc bằng 3000.");
+        return;
+    }
     // Kiểm tra mã sản phẩm có hợp lệ không
     let product = products.find(p => p.Value === productCode);
 
@@ -123,7 +139,7 @@ document.getElementById("addProduct").addEventListener("click", function () {
             <td>${product.Text}</td>
             <td>
                 <input type="hidden" name="orderDetails[${orderDetailIndex}].product_id" value="${product.Value}"/>
-                <input type="number" class="form-control quantity-input" name="orderDetails[${orderDetailIndex}].quantity" value="${quantity}" min="1" />
+                <input type="number" class="form-control quantity-input" name="orderDetails[${orderDetailIndex}].quantity" value="${quantity}" min="20" />
             </td>
             <td><input type="number" class="form-control price-input" name="orderDetails[${orderDetailIndex}].price" value="${price}" min="3000" step="500" /></td>
             <td><button type="button" class="btn btn-danger btn-sm remove-product">Xóa</button></td>
@@ -156,6 +172,43 @@ document.querySelector("form").addEventListener("submit", function (event) {
         event.preventDefault();  // Ngừng gửi form
         alert("Vui lòng thêm sản phẩm vào bảng trước khi tạo phiếu đặt.");
         return;
+    }
+
+    // Kiểm tra từng dòng trong bảng
+    for (let row of rows) {
+        let quantityInput = row.querySelector(".quantity-input");
+        let priceInput = row.querySelector(".price-input");
+
+        let quantity = quantityInput.value;
+        let price = priceInput.value;
+
+        // Kiểm tra xem số lượng và giá có được nhập hay không
+        if (!quantity || !price) {
+            event.preventDefault();  // Ngừng gửi form
+            alert("Số lượng và giá không được để trống.");
+            return;
+        }
+
+        // Kiểm tra số lượng tối thiểu là 20
+        if (parseInt(quantity) < 20) {
+            event.preventDefault();  // Ngừng gửi form
+            alert("Số lượng phải lớn hơn hoặc bằng 20.");
+            return;
+        }
+
+        // Kiểm tra giá tối thiểu là 3000
+        if (parseFloat(price) < 3000) {
+            event.preventDefault();  // Ngừng gửi form
+            alert("Giá phải lớn hơn hoặc bằng 3000.");
+            return;
+        }
+
+        // Kiểm tra nếu số lượng không phải là số nguyên
+        if (!Number.isInteger(parseFloat(quantity))) {
+            event.preventDefault();  // Ngừng gửi form
+            alert("Số lượng phải là một số nguyên.");
+            return;
+        }
     }
 });
 </script>
