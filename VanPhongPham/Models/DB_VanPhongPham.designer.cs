@@ -108,13 +108,15 @@ namespace VanPhongPham.Models
     partial void Insertuser_wallet(user_wallet instance);
     partial void Updateuser_wallet(user_wallet instance);
     partial void Deleteuser_wallet(user_wallet instance);
-        #endregion
-        public DB_VanPhongPhamDataContext() :
-               base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString1"].ConnectionString, mappingSource)
-        {
-            OnCreated();
-        }
-        public DB_VanPhongPhamDataContext(string connection) : 
+    #endregion
+		
+		public DB_VanPhongPhamDataContext() : 
+				base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DB_VanPhongPhamConnectionString"].ConnectionString, mappingSource)
+		{
+			OnCreated();
+		}
+		
+		public DB_VanPhongPhamDataContext(string connection) : 
 				base(connection, mappingSource)
 		{
 			OnCreated();
