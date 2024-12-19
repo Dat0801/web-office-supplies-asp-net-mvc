@@ -126,6 +126,26 @@ namespace VanPhongPham.Areas.Admin.Controllers
             }
             return View(orders.ToPagedList(pageNumber, pageSize));
         }
+        public ActionResult CheckProductQuantity(string order_id)
+        {
+            // Lấy tất cả sản phẩm trong giỏ hàng mà người dùng đã chọn và có số lượng đủ
+            var ord_items = db.order_details
+                                .Where(o => o.order_id == order_id).ToList();
+
+            if (ord_items.Count != 0)
+            {
+                // Kiểm tra xem có sản phẩm nào bị thiếu số lượng trong kho không
+                foreach (var item in ord_items)
+                {
+                    if (item.quantity > item.product.stock_quantity)
+                    {
+                        return Json(new { success = false, message = "Dữ liệu không lưu thành công. Số lượng sản phẩm không đủ trong kho." });
+                    }
+                }
+            }
+
+            return Json(new { success = true, message = "Dữ liệu đã được lưu thành công." });
+        }
         public ActionResult UserOrderDetails(string ord_id, string view)
         {
             var cartdetails = db.orders
