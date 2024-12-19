@@ -193,16 +193,16 @@ namespace VanPhongPham.Models
             promotion us = _context.promotions.ToList().LastOrDefault();
             if (us == null)
             {
-                return "PROMO001";
+                return "PMT001";
             }
             else
             {
-                int num = int.Parse(us.promotion_id.Substring(5)) + 1;
-                string promo_id = "PROMO";
+                int num = int.Parse(us.promotion_id.Substring(3)) + 1;
+                string promo_id = "PMT";
                 if (num < 10)
-                    promo_id = "PROMO00";
+                    promo_id = "PMT00";
                 else if (num < 100)
-                    promo_id = "PROMO0";
+                    promo_id = "PMT0";
                 promo_id += num;
                 return promo_id;
             }

@@ -21,7 +21,7 @@ namespace VanPhongPham.Models
         public List<RoleViewModel> GetAllRoles()
         {
             return (from r in _context.roles
-                    where r.role_id != 2
+                    where r.role_id != 2 && r.role_id != 1
                     select new RoleViewModel
                     {
                         RoleId = r.role_id,
@@ -374,16 +374,16 @@ namespace VanPhongPham.Models
             user us = _context.users.Where(u => u.status == true).ToList().LastOrDefault();
             if (us == null)
             {
-                return "USER001";
+                return "USR001";
             }
             else
             {
-                int num = int.Parse(us.user_id.Substring(4)) + 1;
-                string user_id = "USER";
+                int num = int.Parse(us.user_id.Substring(3)) + 1;
+                string user_id = "USR";
                 if (num < 10)
-                    user_id = "USER00";
+                    user_id = "USR00";
                 else if (num < 100)
-                    user_id = "USER0";
+                    user_id = "USR0";
                 user_id += num;
                 return user_id;
             }

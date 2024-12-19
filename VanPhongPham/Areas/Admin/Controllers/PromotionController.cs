@@ -132,9 +132,9 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 TempData["MessageType"] = "danger";
                 return RedirectToAction("Index", "Promotion", new { area = "Admin" });
             }
-            if(promotion.DiscountPercent < 0 || promotion.DiscountPercent > 100)
+            if(promotion.DiscountPercent < 5 || promotion.DiscountPercent > 40)
             {
-                TempData["Message"] = "Giảm giá phải nằm trong khoảng từ 0 đến 100!";
+                TempData["Message"] = "Giảm giá phải nằm trong khoảng từ 5 đến 40!";
                 TempData["MessageType"] = "danger";
                 return RedirectToAction("Index", "Promotion", new { area = "Admin" });
             }            

@@ -1012,11 +1012,11 @@ VALUES
 
 INSERT INTO users (user_id, full_name, username, status)
 VALUES
-('USER001', N'Thành Đạt', 'qwe', 'true')
+('USR001', N'Thành Đạt', 'qwe', 'true')
 
 INSERT INTO user_roles
 VALUES
-('USER001', 2)
+('USR001', 2)
 GO
 
 UPDATE users
@@ -1025,8 +1025,8 @@ WHERE username = 'qwe';
 
 INSERT INTO purchase_order (purchase_order_id, supplier_id, employee_id)
 VALUES
-('POD001', 'SUP001', 'USER001'),
-('POD002', 'SUP002', 'USER001')
+('POD001', 'SUP001', 'USR001'),
+('POD002', 'SUP002', 'USR001')
 
 INSERT INTO purchase_order_detail
 VALUES
