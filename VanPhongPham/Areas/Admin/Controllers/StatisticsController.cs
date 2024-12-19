@@ -129,7 +129,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
         private double CalculateRevenue(DateTime startDate, DateTime endDate)
         {
             var revenue = db.order_details
-                .Where(od => od.order.created_at >= startDate && od.order.created_at <= endDate)
+                .Where(od => od.order.order_status.order_status_name == "Hoàn thành" && (od.order.created_at >= startDate && od.order.created_at <= endDate))
                 .Select(od => od.price * od.quantity)
                 .Sum();
             return revenue ?? 0;
@@ -138,7 +138,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
         private double CalculateProfit(DateTime startDate, DateTime endDate)
         {
             var profit = db.order_details
-                .Where(od => od.order.created_at >= startDate && od.order.created_at <= endDate)
+                .Where(od => od.order.order_status.order_status_name == "Hoàn thành" && (od.order.created_at >= startDate && od.order.created_at <= endDate))
                 .GroupBy(od => od.product_id)
                 .Select(g => new
                 {
@@ -163,7 +163,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
         private List<ProductStatisticsViewModel> GetBestSellingProducts(int count, DateTime startDate, DateTime endDate)
         {
             var query = db.order_details
-                .Where(od => od.order.created_at >= startDate && od.order.created_at <= endDate)
+                .Where(od => od.order.order_status.order_status_name == "Hoàn thành" && (od.order.created_at >= startDate && od.order.created_at <= endDate))
                 .GroupBy(od => new { od.product_id, od.product.product_name, od.product.purchase_price })
                 .Select(g => new ProductStatisticsViewModel
                 {
@@ -186,7 +186,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
         private List<ProductStatisticsViewModel> GetSlowSellingProducts(int count, DateTime startDate, DateTime endDate)
         {
             var query = db.order_details
-                .Where(od => od.order.created_at >= startDate && od.order.created_at <= endDate)
+                .Where(od => od.order.order_status.order_status_name == "Hoàn thành" && (od.order.created_at >= startDate && od.order.created_at <= endDate))
                 .GroupBy(od => new { od.product_id, od.product.product_name, od.product.purchase_price })
                 .Select(g => new ProductStatisticsViewModel
                 {

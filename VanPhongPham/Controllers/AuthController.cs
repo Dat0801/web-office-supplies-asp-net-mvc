@@ -31,6 +31,10 @@ namespace VanPhongPham.Controllers
             {
                 FirebaseToken decodedToken = await FirebaseService.VerifyTokenAsync(token);
                 string uid = decodedToken.Uid; // UID từ Firebase
+                if(uid != null)
+                {
+                    Session["userId"] = uid;
+                }
                 string email = decodedToken.Claims["email"].ToString();
                 string displayName = decodedToken.Claims["name"].ToString();
                 string userName = email.Substring(0, email.IndexOf('@'));
@@ -57,7 +61,7 @@ namespace VanPhongPham.Controllers
 
                     db.user_roles.InsertOnSubmit(usrrole);
                     db.SubmitChanges();
-
+                    Session["Role"] = user.user_roles.FirstOrDefault().role.role_name;
                     user_wallet usrwallet = new user_wallet
                     {
                         user_id = uid,

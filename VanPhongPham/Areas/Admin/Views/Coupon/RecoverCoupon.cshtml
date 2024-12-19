@@ -1,0 +1,78 @@
+﻿@{
+    ViewBag.Title = "Khôi phục phiếu giảm giá - Quản Trị";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@model List<VanPhongPham.Models.CouponViewModel>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<a href="@Url.Action("Index","Coupon")"><i class="bi bi-arrow-return-left"></i> Quay lại</a>
+<br />
+<br />
+<h4 class="font-weight-bold mb-0">Danh sách phiếu giảm giá đã xóa</h4>
+<div class="row">
+    <div class="navbar-nav my-3 ml-2">
+        <!-- Search -->
+        <form class="nav-item navbar-text navbar-search-box p-0 active" action="@Url.Action("RecoverCoupon", "Coupon")" method="get">
+            <span class="navbar-search-input">
+                <input type="text" class="form-control navbar-text mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")">
+            </span>
+            <button class="btn icon-btn btn-outline-primary" title="Tìm kiếm">
+                <i class="feather icon-search navbar-icon align-middle"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <form method="post" action="/Coupon/RecoverCoupon">
+        <table class="table card-table table-responsive-md">
+            <thead class="thead-light">
+                <tr>
+                    <th><input type="checkbox" id="select-all" />Chọn tất cả</th>
+                    <th>Coupon ID</th>
+                    <th>Tên mã giảm giá</th>
+                    <th>Mã giảm giá</th>
+                    <th>Giảm giá (%)</th>
+                    <th>Hình ảnh</th>
+                    <th>Mô tả</th>
+                    <th>Ngày tạo</th>
+                    <th>Ngày hết hạn</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var coupon in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="selectedCoupons" value="@coupon.CouponId" />
+                        </td>
+                        <td>@coupon.CouponId</td>
+                        <td>@coupon.Title</td>
+                        <td>@coupon.CouponCode</td>
+                        <td>@coupon.DiscountPercent%</td>
+                        <td><img src="@coupon.ImageUrl" alt="Avatar" style="width: 50px; height: auto;" /></td>
+                        <td>@coupon.Description</td>
+                        <td>@coupon.CreatedAt.ToString("dd/MM/yyyy")</td>
+                        <td>@coupon.ExpiresAt.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <a class="btn icon-btn btn-outline-info ml-2"
+                               href="@Url.Action("RecoverSingleCoupon", "Coupon", new { coupon_id = coupon.CouponId })"
+                               title="Khôi phục">
+                                <i class="feather icon-refresh-cw navbar-icon align-middle"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary mt-3">Khôi phục hàng loạt</button>
+    </form>
+</div>
+
+<script>document.getElementById("select-all").addEventListener("click", function (e) {
+        var checkboxes = document.querySelectorAll("input[name='selectedCoupons']");
+        checkboxes.forEach((checkbox) => {
+            checkbox.checked = e.target.checked;
+        });
+    });</script>

@@ -663,6 +663,8 @@
     <Content Include="Areas\Admin\Views\Statistics\Rates.cshtml" />
     <Content Include="Areas\Admin\Views\UserOrder\ReturnRequest.cshtml" />
     <Content Include="Areas\Admin\Views\UserOrder\ReturnOrders.cshtml" />
+    <Content Include="Areas\Admin\Views\Coupon\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Coupon\RecoverCoupon.cshtml" />
     <None Include="Models\DB_VanPhongPham.dbml.layout">
       <DependentUpon>DB_VanPhongPham.dbml</DependentUpon>
     </None>
@@ -761,6 +763,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\CouponController.cs" />
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
     <Compile Include="Areas\Admin\Controllers\PromotionController.cs" />
@@ -770,12 +773,14 @@
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserOrderController.cs" />
     <Compile Include="Areas\Admin\Filter\AdminAttribute.cs" />
+    <Compile Include="Areas\Admin\Filter\GuestAttribute.cs" />
     <Compile Include="Areas\Admin\Filter\ImportStaffAttribute.cs" />
     <Compile Include="Areas\Admin\Filter\SalesStaffAttribute.cs" />
     <Compile Include="Controllers\AddressController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
+    <Compile Include="Controllers\CouponClientController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductClientController.cs" />
@@ -789,6 +794,8 @@
     <Compile Include="Models\AttributeViewModel.cs" />
     <Compile Include="Models\CategoryRepository.cs" />
     <Compile Include="Models\CategoryViewModel.cs" />
+    <Compile Include="Models\CouponRepository.cs" />
+    <Compile Include="Models\CouponViewModel.cs" />
     <Compile Include="Models\DB_VanPhongPham.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -846,6 +853,7 @@
     <Content Include="Views\ProductClient\_ProductList.cshtml" />
     <Content Include="Views\ProductClient\GetAllProducts.cshtml" />
     <Content Include="Views\Profile\WalletPartial.cshtml" />
+    <Content Include="Views\CouponClient\GetAllCoupons.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

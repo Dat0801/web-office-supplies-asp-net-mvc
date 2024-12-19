@@ -206,7 +206,7 @@
                                         {
                                             var activePromotions = Model.PromotionViewModel
                                                 .Where(p => p.StartDate.Date <= DateTime.Now.Date && p.EndDate.Date >= DateTime.Now.Date)
-                                                .ToList();
+                                                .ToList();                                            
                                             if (product.PromotionPrice < product.Price)
                                             {
                                                 <div class="d-flex align-items-center">

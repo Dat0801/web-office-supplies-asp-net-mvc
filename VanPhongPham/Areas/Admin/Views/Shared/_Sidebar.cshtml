@@ -182,7 +182,32 @@
                                 <div>Khuyến mãi đã xóa</div>
                             </a>
                         </li>
-                    }                    
+                    }
+                </ul>
+            </li>
+        }
+        @if (userRole == "Quản lý")
+        {
+            <!-- Quản lý mã giảm giá -->
+            <li class="sidenav-item">
+                <a href="javascript:" class="sidenav-link sidenav-toggle">
+                    <i class="sidenav-icon feather icon-tag"></i>
+                    <div>Quản lý mã giảm giá</div>
+                </a>
+                <ul class="sidenav-menu">
+                    <li class="sidenav-item">
+                        <a href="@Url.Action("Index", "Coupon")" class="sidenav-link">
+                            <div>Danh sách mã giảm giá</div>
+                        </a>
+                    </li>
+                    @if (userRole == "Quản lý")
+                    {
+                        <li class="sidenav-item">
+                            <a href="@Url.Action("RecoverCoupon", "Coupon")" class="sidenav-link">
+                                <div>Mã giảm giá đã xóa</div>
+                            </a>
+                        </li>
+                    }
                 </ul>
             </li>
         }
