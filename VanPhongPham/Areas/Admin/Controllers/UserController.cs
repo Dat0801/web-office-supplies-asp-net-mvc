@@ -94,6 +94,14 @@ namespace VanPhongPham.Areas.Admin.Controllers
                 TempData["Msg"] = "Vui lòng phân quyền!";
                 return RedirectToAction("Index", "user", new { area = "Admin" });
             }
+            string passwordPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$";
+            bool isValidPassword = Regex.IsMatch(model.Password, passwordPattern);
+
+            if (!isValidPassword)
+            {
+                TempData["Msg"] = "Mật khẩu không hợp lệ. Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, chữ số và ký tự đặc biệt.";
+                return RedirectToAction("Index", "user", new { area = "Admin" });
+            }
             if (model.AvatarFile != null && model.AvatarFile.ContentLength > 0)
             {
                 var uploadParams = new ImageUploadParams()
