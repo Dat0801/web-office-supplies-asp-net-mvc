@@ -243,10 +243,11 @@
                 <p><strong>Số điện thoại:</strong> @phone</p>
                 <p><strong>Lời nhắn từ khách hàng:</strong> @Model.OrderNote</p>
                 <p><strong>Theo dõi đơn hàng:</strong></p>
-                <div style="margin-top: 20px">
+                <div style="margin-top: 20px; margin-bottom: 20px;">
                     <div id="shipping_items" class="shipping-timeline">
                     </div>
                 </div>
+                <button type="button" id="PrintOrder" class="btn btn-primary" style="visibility: hidden" data-orderid="@Model.OrderId" data-ordercode="@Model.OrderCode"></button>
             </div>
         </div>
     </div>
@@ -729,6 +730,7 @@ else if (ViewBag.View == "Index")
         const AcceptBtn2 = document.getElementById("AcceptBtn2");
         const RefuseBtn2 = document.getElementById("RefuseBtn2");
         const discardrechargeBtn = document.getElementById("discardrechargeBtn");
+        const PrintOrder = document.getElementById("PrintOrder");
 
         if (confirmBtn)
         {
@@ -1141,10 +1143,33 @@ else if (ViewBag.View == "Index")
                 }
             };
         }
+        if (PrintOrder)
+        {
+            PrintOrder.onclick = async function ()
+            {
+                const orderCode = this.getAttribute("data-ordercode");
+                const items = [orderCode]; // Tạo mảng chứa mã đơn hàng
+                const result = await printOrder(items); // Gửi request đến API GHN
+
+                if (result) {
+                    const token = result.token; // Lấy token từ kết quả trả về
+                    const url = `https://dev-online-gateway.ghn.vn/a5/public-api/printA5?token=${token}`; // URL chứa token
+                    window.open(url, '_blank'); // Mở tab mới
+                }
+                else {
+                    alert(result.message);
+                }
+            };
+        }
 
 
         const orderCode = "@Model.OrderCode";
 
+        if (@Model.OrderStatusID !== 1)
+        {
+            PrintOrder.textContent = "In đơn hàng";
+            PrintOrder.style.visibility = "visible";
+        }
         if (@Model.OrderStatusID !== 5) {
             const shippingDetail = await getShippingDetail(orderCode);
 
