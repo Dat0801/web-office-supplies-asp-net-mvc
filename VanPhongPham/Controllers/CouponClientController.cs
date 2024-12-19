@@ -21,8 +21,7 @@ namespace VanPhongPham.Controllers
         {
             var coupons = _couponRepository.GetCoupons();
             if (coupons == null || !coupons.Any())
-            {
-                ViewBag.ErrorMessage = "Không có mã giảm giá!";
+            {                
                 return View(coupons);
             }            
 
