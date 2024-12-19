@@ -1,5 +1,6 @@
 ﻿﻿@{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var userID = Session["userId"] as string;
 }
 <div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 1050; background-color:coral; color:white"></div>
 
@@ -96,7 +97,10 @@
                         </li>
                         <li class="nav-item">
                             <a href="@Url.Action("GetAllProducts", "ProductClient")" class="nav-link text-primary">Sản phẩm</a>
-                        </li>
+                        </li>                        
+                        <li class="nav-item">
+                            <a href="@Url.Action("GetAllCoupons", "CouponClient")" id="coupon-item" class="nav-link text-primary" style="display:none">Ưu đãi</a>
+                        </li>                        
                         <li class="nav-item">
                             <a href="@Url.Action("Login", "Auth")" id="login-item" class="nav-link text-primary">Đăng nhập</a>
                         </li>

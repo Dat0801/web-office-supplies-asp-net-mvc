@@ -1,0 +1,174 @@
+﻿@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<VanPhongPham.Models.CouponViewModel>
+@{
+    ViewBag.Title = "Mã giảm giá - Quản Trị";
+    var message = ViewBag.Message;
+    var messageType = ViewBag.MessageType;
+    string userRole = Session["Role"] as string;
+}
+
+@if (message != null)
+{
+    <div class="alert alert-dark-@messageType alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        @message
+    </div>
+}
+@if (userRole == "Quản lý")
+{
+    <div class="card mb-4">
+        <h6 class="card-header">
+            Thêm mới mã giảm giá
+            <span><a class="btn btn-primary float-right" href="@Url.Action("RecoverCoupon")">Mã giảm giá đã xóa</a></span>
+        </h6>
+        <div class="card-body">
+            <form method="post" action="/Coupon/ManageCoupon" enctype="multipart/form-data">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="CouponId">Coupon ID</label>
+                        <input type="text" class="form-control" id="CouponId" name="CouponId" readonly
+                               value="@(ViewBag.Coupon != null ? ViewBag.Coupon.CouponId : ViewBag.CouponId ?? "")" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="CouponCode">Mã giảm giá</label>
+                        <input type="text" max="10" class="form-control" id="CouponCode" name="CouponCode" required
+                               value="@(ViewBag.Coupon != null ? ViewBag.Coupon.CouponCode : "")" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="CouponTitle">Tên mã giảm giá</label>
+                        <input type="text" class="form-control" id="CouponTitle" name="Title" required
+                               value="@(ViewBag.Coupon != null ? ViewBag.Coupon.Title : "")" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="CouponDescription">Mô tả mã giảm giá</label>
+                        <input type="text" class="form-control" id="CouponDescription" name="Description" required
+                               value="@(ViewBag.Coupon != null ? ViewBag.Coupon.Description : "")" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="CouponFile">Tải ảnh mã giảm giá lên</label>
+                        <input type="file" class="form-control" id="CouponFile" name="CouponFile" />
+                        @if (!string.IsNullOrEmpty(ViewBag.Coupon?.ImageUrl))
+                        {
+                            <div class="mt-2">
+                                <p>Ảnh hiện tại:</p>
+                                <img src="@ViewBag.Coupon.ImageUrl" alt="Current Avatar" style="width: 100px; height: auto;" />
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="DiscountPercent">Giá trị giảm (%)</label>
+                        <input type="number" min="0" class="form-control" id="DiscountPercent" name="DiscountPercent" required
+                               value="@(ViewBag.Coupon != null ? ViewBag.Coupon.DiscountPercent : "")" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="UsageLimit">Giới hạn số lượng sử dụng</label>
+                        <input type="number" min="1" class="form-control" id="UsageLimit" name="Quantity"
+                               value="@(ViewBag.Coupon != null ? ViewBag.Coupon.Quantity : "")" />
+                    </div>
+                    
+                    <div class="form-group col-md-3">
+                        <label for="ExpiresAt">Ngày kết thúc</label>
+                        <input type="date" class="form-control" id="ExpiresAt" name="ExpiresAt" required
+                               value="@(ViewBag.Coupon != null ? ViewBag.Coupon.ExpiresAt.ToString("yyyy-MM-dd") : DateTime.Now.AddDays(7).ToString("yyyy-MM-dd"))" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="Status">Trạng thái</label>
+                        <select class="form-control" id="Status" name="Status" required>
+                            <option value="true" @(ViewBag.Coupon != null && ViewBag.Coupon.Status == true ? "selected" : "")>Có hiệu lực</option>
+                            <option value="false" @(ViewBag.Coupon != null && ViewBag.Coupon.Status == false ? "selected" : "")>Không có hiệu lực</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" name="action" value="add" class="btn btn-primary">Thêm</button>
+                <button type="submit" name="action" value="edit" class="btn btn-primary">Sửa</button>
+            </form>
+        </div>
+    </div>
+}
+
+<h4 class="font-weight-bold mb-0">Danh sách mã giảm giá</h4>
+<div>
+    <form class="navbar-search-box d-flex" action="@Url.Action("Index", "Coupon")" method="get">
+        <input type="text" class="form-control mx-2" name="search_str" placeholder="Tìm kiếm..." value="@(ViewBag.searchStr ?? "")" />
+        <button class="btn btn-primary" title="Tìm kiếm"><i class="feather icon-search"></i></button>
+    </form>
+</div>
+
+<div class="card">
+    <form method="post" action="/Coupon/DeleteCoupon">
+        <table class="table table-responsive-md">
+            <thead class="thead-light">
+                <tr>
+                    @if (userRole == "Quản lý")
+                    {
+                        <th><input type="checkbox" id="select-all" /> Chọn tất cả</th>
+                    }
+                    <th>Coupon ID</th>
+                    <th>Tên mã giảm giá</th>
+                    <th>Mã giảm giá</th>
+                    <th>Giảm giá (%)</th>
+                    <th>Hình ảnh</th>
+                    <th>Mô tả</th>
+                    <th>Ngày tạo</th>
+                    <th>Ngày hết hạn</th>
+                    @if (userRole == "Quản lý")
+                    {
+                        <th>Thao tác</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var coupon in Model)
+                {
+                    <tr>
+                        @if (userRole == "Quản lý")
+                        {
+                            <td><input type="checkbox" name="selectedCoupons" value="@coupon.CouponId" /></td>
+                        }
+                        <td>@coupon.CouponId</td>
+                        <td>@coupon.Title</td>
+                        <td>@coupon.CouponCode</td>
+                        <td>@coupon.DiscountPercent%</td>
+                        <td><img src="@coupon.ImageUrl" alt="Avatar" style="width: 50px; height: auto;" /></td>
+                        <td>@coupon.Description</td>
+                        <td>@coupon.CreatedAt.ToString("dd/MM/yyyy")</td>
+                        <td>@coupon.ExpiresAt.ToString("dd/MM/yyyy")</td>
+                        @if (userRole == "Quản lý")
+                        {
+                            <td>
+                                <a class="btn btn-danger" href="javascript:void(0);" onclick="confirmDelete('@Url.Action("DeleteCoupon", "Coupon", new { coupon_id = coupon.CouponId })')">Xóa</a>
+                                <a class="btn btn-info ml-2" href="@Url.Action("Index", "Coupon", new { coupon_id = coupon.CouponId })">Sửa</a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (Model.Count == 0)
+        {
+            <div class="text-center">Không có mã giảm giá nào</div>
+        }
+        @if (userRole == "Quản lý")
+        {
+            <button type="submit" class="btn btn-danger mt-3">Xóa hàng loạt</button>
+        }
+    </form>
+    <div class="d-flex justify-content-center">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+    </div>
+</div>
+
+<script>
+    document.getElementById("select-all").addEventListener("click", function (e) {
+        document.querySelectorAll("input[name='selectedCoupons']").forEach((checkbox) => {
+            checkbox.checked = e.target.checked;
+        });
+    });
+
+    function confirmDelete(url) {
+        if (confirm('Bạn có chắc chắn muốn xóa mã giảm giá này?')) {
+            window.location.href = url;
+        }
+    }
+</script>

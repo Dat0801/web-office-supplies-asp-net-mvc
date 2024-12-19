@@ -28,10 +28,14 @@ namespace VanPhongPham.Controllers
             {
                 FirebaseToken decodedToken = await FirebaseService.VerifyTokenAsync(token);
                 string uid = decodedToken.Uid;
-
-                var user = db.users.SingleOrDefault(u => u.user_id == uid);                
+                if (uid != null)
+                {
+                    Session["userId"] = uid;
+                }
+                var user = db.users.SingleOrDefault(u => u.user_id == uid);                  
                 if (user != null)
                 {
+                    Session["Role"] = user.user_roles.FirstOrDefault().role.role_name;
                     var cartsection = db.cart_sections.FirstOrDefault(c => c.user_id == user.user_id);
                     return Json(new { success = true, user.user_id, user.username, user.avt_url, cartsection.cart_id }, JsonRequestBehavior.AllowGet);
                 }

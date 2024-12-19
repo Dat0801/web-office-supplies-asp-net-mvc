@@ -1,0 +1,360 @@
+﻿
+@{
+    ViewBag.Title = "Danh sách mã giảm giá";
+    Layout = "~/Views/Shared/_LayoutClient.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+@model List<VanPhongPham.Models.CouponViewModel>
+
+<!-- Coupon Start -->
+<div class="container-fluid pt-5">
+    <div class="row px-xl-5">
+        <!-- Coupon Sidebar Start -->
+        <div class="col-lg-3 col-md-12">
+            <!-- Status Start -->
+            <div class="border-bottom mb-4 pb-4">
+                <h5 class="font-weight-semi-bold mb-4">Lọc coupon theo trạng thái</h5>
+                <form id="statusFilterForm">
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input status-filter" name="statusFilter" checked id="status-all" value="all">
+                        <label class="custom-control-label" for="status-all">Tất cả trạng thái</label>
+                        @if (Model != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.Count()
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
+                    </div>
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input status-filter" name="statusFilter" id="status-active" value="active">
+                        <label class="custom-control-label" for="status-active">Đang hoạt động</label>
+                        @if (Model != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.Count(c => c.Status == true)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
+                    </div>
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input status-filter" name="statusFilter" id="status-inactive" value="inactive">
+                        <label class="custom-control-label" for="status-inactive">Không hoạt động</label>
+                        @if (Model != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.Count(c => c.Status == false)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
+                    </div>
+                </form>
+            </div>
+
+            <!-- Expiry Date Start -->
+            <div class="border-bottom mb-4 pb-4">
+                <h5 class="font-weight-semi-bold mb-4">Lọc coupon theo ngày hết hạn</h5>
+                <form id="expiryDateFilterForm">
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input expiry-date-filter" name="expiryDateFilter" checked id="expiry-all" value="all">
+                        <label class="custom-control-label" for="expiry-all">Tất cả ngày hết hạn</label>
+                        @if (Model != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.Count()
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
+                    </div>
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input expiry-date-filter" name="expiryDateFilter" id="expiry-1" value="upcoming">
+                        <label class="custom-control-label" for="expiry-1">Sắp hết hạn</label>
+                        @if (Model != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.Count(c => c.ExpiresAt >= DateTime.Now.Date)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
+                    </div>
+                    <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                        <input type="radio" class="custom-control-input expiry-date-filter" name="expiryDateFilter" id="expiry-2" value="expired">
+                        <label class="custom-control-label" for="expiry-2">Đã hết hạn</label>
+                        @if (Model != null)
+                        {
+                            <span class="badge border font-weight-normal">
+                                @Model.Count(c => c.ExpiresAt < DateTime.Now.Date)
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge border font-weight-normal">0</span>
+                        }
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Coupon Sidebar End -->
+        <!-- Coupon List Start -->
+        <div id="coupon-container" class="col-lg-9 col-md-12">
+            <div class="row pb-3">
+                @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+                {
+                    <div class="alert alert-danger">
+                        @ViewBag.ErrorMessage
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(ViewBag.Query))
+                {
+                    <p>Kết quả tìm kiếm cho: "<strong>@ViewBag.SearchStr</strong>"</p>
+                }
+                @if (Model.Count == 0)
+                {
+                    <div class="alert alert-warning">
+                        Không tìm thấy coupon nào.
+                    </div>
+                }
+                else
+                {
+                    foreach (var coupon in Model)
+                    {
+                        <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+                            <div class="card Model-item border-0 mb-4">
+                                <div class="card-header Model-img position-relative overflow-hidden bg-transparent border p-0">
+                                    <img class="img-fluid w-100" src="@coupon.ImageUrl" alt="@coupon.Title" style="object-fit: cover; height: 100%; max-height: 200px; min-height: 200px">
+                                </div>
+
+                                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                                    <h6 class="text-truncate mb-3">@coupon.Title</h6>
+                                    <div class="d-flex flex-column ">
+                                        @if (coupon.Quantity == 0)
+                                        {
+                                            <div class="text-danger">
+                                                <span>Mã đã hết lượt sử dụng</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            var activeCoupons = Model
+                                                .Where(p => p.CreatedAt.Date <= DateTime.Now.Date && p.ExpiresAt.Date >= DateTime.Now.Date)
+                                                .ToList();
+                                            if (activeCoupons.Count == 0)
+                                            {
+                                                <div class="text-danger">
+                                                    <span>Mã đã hết hạn</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="coupon-details">
+                                                    <div><strong>Mã giảm giá:</strong> <b style="color: red" id="couponCode">@coupon.CouponCode</b></div>
+                                                    <div><strong>Giảm giá:</strong> <b style="color: red">@coupon.DiscountPercent%</b></div>
+                                                    <div><strong>Ngày hết hạn:</strong> <b>@coupon.ExpiresAt.ToString("dd/MM/yyyy")</b></div>
+                                                    <div><strong>Số lượng còn lại:</strong> <b class="text-success">@coupon.Quantity</b></div>
+                                                    
+                                                    @*<div><strong>Mô tả:</strong> <b>@coupon.Description</b></div>*@
+                                                </div>
+                                                <div class="text-success d-flex">
+                                                    <span>Có thể sử dụng: </span>                                                    
+                                                    <span class="ml-auto">
+                                                        <a href="#" id="copyCouponBtn" class="btn btn-sm text-dark p-0" onclick="copyCouponCode()">
+                                                            <i class="fas fa-copy text-primary mr-1"></i>Copy Mã
+                                                        </a>
+                                                    </span>                                                    
+
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>                                
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Pagination for Coupons -->
+                    <div class="col-12 pb-1">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mb-3">
+                                @if (ViewBag.PageNumber > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("GetAllCoupons", new { pageNumber = 1 })" aria-label="First">
+                                            <span aria-hidden="true">&laquo;&laquo;</span>
+                                            <span class="sr-only">First</span>
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="First">
+                                            <span aria-hidden="true">&laquo;&laquo;</span>
+                                            <span class="sr-only">First</span>
+                                        </a>
+                                    </li>
+                                }
+
+                                @if (ViewBag.PageNumber > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("GetAllCoupons", new { pageNumber = ViewBag.PageNumber - 1 })" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                }
+
+                                @{
+                                    int startPage = Math.Max(1, ViewBag.PageNumber - 2);
+                                    int endPage = Math.Min(ViewBag.TotalPages, ViewBag.PageNumber + 2);
+
+                                    for (int i = startPage; i <= endPage; i++)
+                                    {
+                                        <li class="page-item @(i == ViewBag.PageNumber ? "active" : "")">
+                                            <a class="page-link" href="@Url.Action("GetAllCoupons", new { pageNumber = i })">@i</a>
+                                        </li>
+                                    }
+                                }
+
+                                @if (ViewBag.PageNumber < ViewBag.TotalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("GetAllCoupons", new { pageNumber = ViewBag.PageNumber + 1 })" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                }
+
+                                @if (ViewBag.PageNumber < ViewBag.TotalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("GetAllCoupons", new { pageNumber = ViewBag.TotalPages })" aria-label="Last">
+                                            <span aria-hidden="true">&raquo;&raquo;</span>
+                                            <span class="sr-only">Last</span>
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Last">
+                                            <span aria-hidden="true">&raquo;&raquo;</span>
+                                            <span class="sr-only">Last</span>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            </div>
+        </div>
+        <!-- Coupon List End -->
+    </div>
+</div>
+<!-- Coupon End -->
+<script>
+    function copyCouponCode() {
+        var couponCode = document.getElementById("couponCode").innerText; // Get the coupon code text
+        navigator.clipboard.writeText(couponCode) // Use the Clipboard API to write the coupon code to clipboard
+            .then(function () {
+                alert("Mã coupon đã được sao chép!"); // Success message
+            })
+            .catch(function (error) {
+                alert("Có lỗi xảy ra khi sao chép mã coupon."); // Error message
+            });
+    }
+    const CouponFilter = {
+        init: function() {
+            this.attachFilterHandlers();
+        },
+
+        attachFilterHandlers: function() {
+            // Listen for changes in the status filter (active, inactive, or all)
+            $(document).on('change', '.status-filter', function() {
+                CouponFilter.applyFilters();
+            });
+
+            // Listen for changes in the expiry date filter (upcoming, expired, or all)
+            $(document).on('change', '.expiry-date-filter', function() {
+                CouponFilter.applyFilters();
+            });
+        },
+
+        applyFilters: function() {
+            var selectedStatus = $('input[name="statusFilter"]:checked').val(); // Get the selected status filter
+            var selectedExpiryDate = $('input[name="expiryDateFilter"]:checked').val(); // Get the selected expiry date filter
+
+            // AJAX call to fetch filtered coupons
+            $.ajax({
+                url: '@Url.Action("GetAllCoupons", "CouponClient")', // Update URL to your coupon filtering endpoint
+                data: {
+                    status: selectedStatus,
+                    expiryDate: selectedExpiryDate
+                },
+                method: 'GET',
+                success: function(result) {
+                    // Only update the coupon container instead of the entire page
+                    $('#coupon-container').html($(result).find('#coupon-container').html());
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error filtering coupons:', error);
+                    CouponFilter.showNotification('Có lỗi xảy ra khi lọc mã giảm giá. Vui lòng thử lại.', 'danger');
+                }
+            });
+        },
+
+        showNotification: function(message, messageType) {
+            var notificationContainer = document.getElementById("notification-container");
+            var notification = document.createElement("div");
+            notification.className = `alert alert-dark-${messageType} alert-dismissible fade show`;
+            notification.innerHTML = `
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                ${message}
+            `;
+            notificationContainer.appendChild(notification);
+            setTimeout(function () {
+                notification.remove();
+            }, 3000);
+        }
+    };
+
+    // Initialize when document is ready
+    $(document).ready(function() {
+        CouponFilter.init();
+    });
+</script>

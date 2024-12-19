@@ -65,6 +65,7 @@ function displayUserName() {
     const logoutItem = document.getElementById("logout-item");
     const cartLink = document.getElementById("cart-link");
     const cartBadge = cartLink.querySelector('.badge'); // Lấy phần tử badge
+    const couponItem = document.getElementById("coupon-item");
 
     if (userData) {
         const user = JSON.parse(userData);
@@ -78,6 +79,7 @@ function displayUserName() {
 
         // Hiển thị nút đăng xuất, ẩn đăng nhập và đăng ký
         logoutItem.style.display = 'block';
+        couponItem.style.display = 'block';
         loginItem.style.display = 'none';
         registerItem.style.display = 'none';
         document.getElementById('profile-section').style.display = 'flex';
@@ -96,6 +98,7 @@ function displayUserName() {
         loginItem.style.display = 'block';
         registerItem.style.display = 'block';
         logoutItem.style.display = 'none';
+        couponItem.style.display = 'none';
         document.getElementById('profile-section').style.display = 'none';
 
         // Đặt liên kết giỏ hàng đến trang đăng nhập
@@ -137,6 +140,18 @@ function logout() {
 
     displayUserName();
 
+    // Gửi yêu cầu AJAX tới server để xóa session server-side
+    $.ajax({
+        url: '/Home/Logout',  // URL của controller để xử lý logout và clear session
+        method: 'GET',         // Hoặc 'POST', tùy vào cấu hình của bạn
+        success: function (response) {
+            // Sau khi xóa session server-side, chuyển hướng người dùng về trang chủ
+            window.location.replace('/Home/Index');
+        },
+        error: function (xhr, status, error) {
+            console.error("Error during logout:", error);
+        }
+    });
     // Kiểm tra xem đã chuyển hướng hay chưa
     if (!sessionStorage.getItem('redirected')) {
         sessionStorage.setItem('redirected', 'true'); // Đánh dấu đã chuyển hướng
