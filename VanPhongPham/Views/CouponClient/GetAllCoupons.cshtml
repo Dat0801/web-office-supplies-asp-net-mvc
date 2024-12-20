@@ -13,7 +13,7 @@
         <div class="col-lg-3 col-md-12">
             <!-- Status Start -->
             <div class="border-bottom mb-4 pb-4">
-                <h5 class="font-weight-semi-bold mb-4">Lọc coupon theo trạng thái</h5>
+                <h5 class="font-weight-semi-bold mb-4">Lọc mã giảm giá theo trạng thái</h5>
                 <form id="statusFilterForm">
                     <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
                         <input type="radio" class="custom-control-input status-filter" name="statusFilter" checked id="status-all" value="all">
@@ -62,7 +62,7 @@
 
             <!-- Expiry Date Start -->
             <div class="border-bottom mb-4 pb-4">
-                <h5 class="font-weight-semi-bold mb-4">Lọc coupon theo ngày hết hạn</h5>
+                <h5 class="font-weight-semi-bold mb-4">Lọc giảm giá theo ngày hết hạn</h5>
                 <form id="expiryDateFilterForm">
                     <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
                         <input type="radio" class="custom-control-input expiry-date-filter" name="expiryDateFilter" checked id="expiry-all" value="all">
@@ -126,7 +126,7 @@
                 @if (Model.Count == 0)
                 {
                     <div class="alert alert-warning">
-                        Không tìm thấy coupon nào.
+                        Không tìm thấy mã giảm giá nào.
                     </div>
                 }
                 else

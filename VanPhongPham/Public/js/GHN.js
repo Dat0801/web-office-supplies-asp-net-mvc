@@ -219,6 +219,25 @@ async function returnOrder(payment_type_id, to_name, to_phone, to_address, to_wa
     }
 }
 
+async function printOrder(order_codes) {
+    const response = await fetch(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/a5/gen-token`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'Token': TokenAPI
+        },
+        body: JSON.stringify({ order_codes })
+    });
+
+    if (response.ok) {
+        const result = await response.json();
+        return result.data;
+    }
+    else {
+        console.error("Lỗi khi tính")
+    }
+}
+
 async function initAddressDropdowns() {
     const provinces = await getProvinces();
     const citySelect = document.getElementById('city');
