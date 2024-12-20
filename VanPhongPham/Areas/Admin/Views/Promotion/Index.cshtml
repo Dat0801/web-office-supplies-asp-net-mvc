@@ -5,7 +5,7 @@
     ViewBag.Title = "Khuyến mãi - Quản Trị";
     var message = ViewBag.Message;
     var messageType = ViewBag.MessageType;
-    string userRole = Session["Role"] as string;
+    string userRole = Session["RoleAdmin"] as string;
 }
 
 @if (message != null)

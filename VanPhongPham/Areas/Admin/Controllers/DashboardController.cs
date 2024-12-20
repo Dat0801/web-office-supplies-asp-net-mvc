@@ -26,7 +26,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
         }
         public ActionResult Logout()
         {
-            Session.Clear();
+            //Session.Clear();
             return RedirectToAction("Login", "Dashboard");
         }
 
@@ -38,7 +38,7 @@ namespace VanPhongPham.Areas.Admin.Controllers
             {
                 Session["Admin"] = usr;
                 var userRoles = usr.user_roles.FirstOrDefault();
-                Session["Role"] = userRoles.role.role_name;
+                Session["RoleAdmin"] = userRoles.role.role_name;
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
             else

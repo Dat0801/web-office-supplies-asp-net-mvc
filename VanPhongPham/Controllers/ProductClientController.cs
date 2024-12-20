@@ -11,9 +11,11 @@ namespace VanPhongPham.Controllers
     {
         // GET: Product
         private readonly ProductRepository _productRepository;
+        private readonly AISearchEngine aiSearchEngine;
         public ProductClientController()
         {
             _productRepository = new ProductRepository();
+            aiSearchEngine = new AISearchEngine();
         }
         public ActionResult Index()
         {
@@ -29,6 +31,12 @@ namespace VanPhongPham.Controllers
             }
 
             var products = viewModel.ProductViewModel;
+            //var userID = Session["userId"] as string;
+            //if (!string.IsNullOrEmpty(userID))
+            //{
+            //    // Khi không có searchStr, gọi hàm gợi ý sản phẩm dựa trên tương tác của người dùng
+            //    ViewBag.products = aiSearchEngine.RecommendProductsForUser(userID, products);
+            //}
 
             // Filter products by category
             if (!string.IsNullOrWhiteSpace(categoryID))
@@ -83,11 +91,18 @@ namespace VanPhongPham.Controllers
                         brands.Contains(a.Value, StringComparer.OrdinalIgnoreCase)
                     )).ToList();
             }
+            //if (!string.IsNullOrEmpty(searchStr))
+            //{
+            //    var lowerQuery = searchStr.ToLower();
+            //    products = products.Where(p => p.ProductName.ToLower().Contains(lowerQuery)).ToList();
+            //}
             if (!string.IsNullOrEmpty(searchStr))
             {
-                var lowerQuery = searchStr.ToLower();
-                products = products.Where(p => p.ProductName.ToLower().Contains(lowerQuery)).ToList();
+
+                // Chuyển searchStr và các mô tả sản phẩm thành vector bằng AI hoặc TF-IDF                
+                products = aiSearchEngine.FindRelevantProducts(searchStr, products);
             }
+
             // Pagination
             var totalProducts = products.Count();
             products = products.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
@@ -97,7 +112,30 @@ namespace VanPhongPham.Controllers
             ViewBag.PageNumber = pageNumber;
             ViewBag.TotalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
             ViewBag.SearchStr = searchStr;
+            ViewBag.categoryID = categoryID;
+            ViewBag.PriceRange = priceRange;
+            ViewBag.Colors = colors != null ? string.Join(",", colors) : string.Empty;
+            ViewBag.Brands = brands != null ? string.Join(",", brands) : string.Empty;
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+
             return View(viewModel);
+        }
+        [HttpGet]
+        public ActionResult SearchSuggestions(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return Json(new List<string>(), JsonRequestBehavior.AllowGet); // Trả về danh sách rỗng nếu không có query
+            var viewModel = _productRepository.GetAllProducts();
+            if (viewModel == null || viewModel.ProductViewModel == null || !viewModel.ProductViewModel.Any())
+            {
+                return Json(new List<string>(), JsonRequestBehavior.AllowGet); // Trả về danh sách rỗng nếu không có sản phẩm
+            }
+            var products = viewModel.ProductViewModel;
+            var suggestions = aiSearchEngine.SuggestProducts(products, new List<string> { query });
+            var suggestionKeywords = suggestions.Select(p => p.ProductName).Distinct().ToList();
+
+            return Json(suggestionKeywords, JsonRequestBehavior.AllowGet); // Trả về danh sách gợi ý dạng JSON
         }
 
         public ActionResult Details(string id, string cart_id)
