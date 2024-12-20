@@ -11,7 +11,7 @@ namespace VanPhongPham.Areas.Admin.Filter
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             HttpSessionStateBase session = filterContext.HttpContext.Session;
-            var role = (string)session["Role"];
+            var role = (string)session["RoleAdmin"];
             if (role == null || role != "Nhân viên bán hàng" && role != "Quản lý")
             {
                 filterContext.Result = new RedirectToRouteResult(

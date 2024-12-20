@@ -7,18 +7,18 @@ using System.Web.Routing;
 
 namespace VanPhongPham.Areas.Admin.Filter
 {
-    public class AdminAttribute : ActionFilterAttribute
+    public class CustomerAttribute : ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             HttpSessionStateBase session = filterContext.HttpContext.Session;
-            if (session["RoleAdmin"] == null || (string)session["RoleAdmin"] != "Quản lý")
+            if (session["Role"] != null)
             {
                 filterContext.Result = new RedirectToRouteResult(
                     new RouteValueDictionary
                     {
-                    { "controller", "Dashboard" },
-                    { "action", "Logout" }
+                    { "controller", "Home" },
+                    { "action", "Index" }
                     });
             }
         }

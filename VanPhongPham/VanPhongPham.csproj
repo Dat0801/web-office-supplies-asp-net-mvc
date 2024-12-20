@@ -71,6 +71,9 @@
     <Reference Include="FirebaseAdmin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=97c8d00c348326ed, processorArchitecture=MSIL">
       <HintPath>..\packages\FirebaseAdmin.3.0.1\lib\net462\FirebaseAdmin.dll</HintPath>
     </Reference>
+    <Reference Include="FuzzySharp, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FuzzySharp.2.0.2\lib\net461\FuzzySharp.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Api.Gax, Version=4.8.0.0, Culture=neutral, PublicKeyToken=3ec5ea7f18953e47, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Api.Gax.4.8.0\lib\net462\Google.Api.Gax.dll</HintPath>
     </Reference>
@@ -773,6 +776,7 @@
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserOrderController.cs" />
     <Compile Include="Areas\Admin\Filter\AdminAttribute.cs" />
+    <Compile Include="Areas\Admin\Filter\CustomerAttribute.cs" />
     <Compile Include="Areas\Admin\Filter\GuestAttribute.cs" />
     <Compile Include="Areas\Admin\Filter\ImportStaffAttribute.cs" />
     <Compile Include="Areas\Admin\Filter\SalesStaffAttribute.cs" />
@@ -790,6 +794,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AddressViewModel.cs" />
+    <Compile Include="Models\AISearchEngine.cs" />
     <Compile Include="Models\AttributeValueDTO.cs" />
     <Compile Include="Models\AttributeViewModel.cs" />
     <Compile Include="Models\CategoryRepository.cs" />
