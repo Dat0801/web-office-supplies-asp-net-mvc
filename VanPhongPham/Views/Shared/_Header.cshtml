@@ -2,6 +2,25 @@
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
     var userID = Session["userId"] as string;
 }
+<style>
+    #suggestions {
+        border: 1px solid #ccc;
+        display: none;
+        position: absolute;
+        background: white;
+        width: 300px;
+        z-index: 9999;
+    }
+
+        #suggestions div {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+            #suggestions div:hover {
+                background-color: #f1f1f1;
+            }
+</style>
 <div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 1050; background-color:coral; color:white"></div>
 
 <!-- Topbar Start -->
@@ -69,8 +88,11 @@
                         <input type="text"
                                name="searchStr"
                                class="form-control"
+                               id="searchBox"
                                placeholder="Tìm kiếm sản phẩm"
+                               autocomplete="off"
                                value="@Request.QueryString["searchStr"]">
+                        <div id="suggestions" style="border: 1px solid #ccc; display: none; position: absolute; top: 40px; background: white; width: 400px; z-index: 2"></div>
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-outline-primary">
                                 <i class="fa fa-search"></i>
@@ -136,3 +158,54 @@
     </nav>
 </div>
 <!-- Topbar End -->
+<script>
+    const searchBox = document.getElementById("searchBox");
+    const suggestionsDiv = document.getElementById("suggestions");
+
+    let debounceTimeout;
+
+    searchBox.addEventListener("input", async (event) => {
+        const query = event.target.value;
+
+        // Hide suggestions if the input is too short
+        if (query.length < 2) {
+            suggestionsDiv.style.display = "none";
+            return;
+        }
+
+        // Debounce to avoid excessive requests
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(async () => {
+            const response = await fetch(`/ProductClient/SearchSuggestions?query=${encodeURIComponent(query)}`);
+            if (!response.ok) return;
+
+            const suggestions = await response.json();
+
+            // Show suggestions if any exist
+            if (suggestions.length > 0) {
+                suggestionsDiv.style.display = "block";
+                suggestionsDiv.innerHTML = suggestions
+                    .map(s => `<div style="padding: 5px; cursor: pointer;">${s}</div>`)
+                    .join("");
+
+                // Handle click events on suggestions
+                Array.from(suggestionsDiv.children).forEach((item, index) => {
+                    item.addEventListener("click", () => {
+                        searchBox.value = suggestions[index];
+                        suggestionsDiv.style.display = "none"; // Hide suggestions after selection
+                    });
+                });
+            } else {
+                suggestionsDiv.style.display = "none"; // Hide if no suggestions
+            }
+        }, 300); // Wait 300ms to trigger search after typing
+    });
+
+    // Hide suggestions when clicking outside of the input box
+    document.addEventListener("click", (event) => {
+        if (!suggestionsDiv.contains(event.target) && event.target !== searchBox) {
+            suggestionsDiv.style.display = "none";
+        }
+    });
+
+</script>
