@@ -4,9 +4,11 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using VanPhongPham.Models;
+using VanPhongPham.Areas.Admin.Filter;
 
 namespace VanPhongPham.Controllers
 {
+    [Guest]
     public class CheckoutController : Controller
     {
         private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();

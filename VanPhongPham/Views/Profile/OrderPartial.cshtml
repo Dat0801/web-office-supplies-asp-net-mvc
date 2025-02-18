@@ -366,7 +366,7 @@
                         <div class="order-status">TỪ CHỐI HOÀN TIỀN</div>
                     }
                     if (order.CancellationRequested == 6)
-                    { 
+                    {
                         <div class="order-status">ĐÃ HOÀN TIỀN</div>
                     }
                 }
@@ -411,11 +411,11 @@
                     </div>
                 }
                 else if (order.OrderStatusName == "Trả hàng/Hoàn tiền")
-                { 
+                {
                     <div class="d-flex justify-content-end">
                         <span style="color: #272727;">Số tiền hoàn lại: <span class="price-info" style="font-size: 24px">₫@( (order.TotalAmount.Value - order.ShippingFee.Value).ToString("N0") )</span></span>
                     </div>
-                }        
+                }
                 else
                 {
                     <div class="d-flex justify-content-end">
@@ -439,25 +439,34 @@
                 }
                 else
                 {
-                    <div class="order-actions d-flex justify-content-end align-items-center justify-content-between mt-2">
-                        @if (order.OrderStatusName == "Chờ xác nhận")
-                        {
-                            <button class="btn btn-danger ml-auto setOrderStatusOne" data-orderid="@order.OrderId" data-ordercreatat="@order.CreatedAt">
-                                Hủy Đơn Hàng
-                            </button>
-                        }
-                        else if (order.OrderStatusName == "Chờ giao hàng")
-                        {
-                            <button class="btn btn-danger ml-auto" id="btnCustom">
-                            </button>
-                        }
-                        else if (order.OrderStatusName == "Hoàn thành" && !checkReview)
-                        {
-                            <button class="btn btn-danger ml-auto mr-3" data-bs-toggle="modal" data-bs-target="#reviewModal-@order.OrderId" data-orderid="@order.OrderId">Đánh Giá</button>
-                            <button class="btn btn-danger" id="btnReturnOrder">
-                            </button>
-                        }
-                    </div>
+            <div class="order-actions d-flex justify-content-end align-items-center justify-content-between mt-2">
+                @if (order.OrderStatusName == "Chờ xác nhận")
+                {
+                    <button class="btn btn-danger ml-auto setOrderStatusOne" data-orderid="@order.OrderId" data-ordercreatat="@order.CreatedAt">
+                        Hủy Đơn Hàng
+                    </button>
+                }
+                else if (order.OrderStatusName == "Chờ giao hàng")
+                {
+                    <button class="btn btn-danger ml-auto" id="btnCustom">
+                    </button>
+                }
+                else if (order.OrderStatusName == "Hoàn thành")
+                {
+                    if (!checkReview)
+                    {
+                        <button class="btn btn-danger ml-auto mr-3" data-bs-toggle="modal" data-bs-target="#reviewModal-@order.OrderId" data-orderid="@order.OrderId">Đánh Giá</button>
+                        <button class="btn btn-danger" id="btnReturnOrder">
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-danger ml-auto" id="btnReturnOrder">
+                        </button>
+                    }
+
+                }
+            </div>
                 }
             </div>
 
@@ -690,7 +699,7 @@
                 btnCustom.classList.add("disabled");
                 btnCustom.textContent = "Đã gửi yêu cầu hủy đơn hàng";
                 btnCustom.onclick = null;
-            }   
+            }
             else if (cancelrequested == 2) {
                 btnCustom.classList.add("disabled");
                 btnCustom.textContent = "Yêu cầu hủy đơn hàng bị từ chối";

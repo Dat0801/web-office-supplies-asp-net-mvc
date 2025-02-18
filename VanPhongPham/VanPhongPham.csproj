@@ -816,6 +816,7 @@
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserOrderController.cs" />
     <Compile Include="Areas\Admin\Filter\AdminAttribute.cs" />
+    <Compile Include="Areas\Admin\Filter\CustomerAttribute.cs" />
     <Compile Include="Areas\Admin\Filter\GuestAttribute.cs" />
     <Compile Include="Areas\Admin\Filter\ImportStaffAttribute.cs" />
     <Compile Include="Areas\Admin\Filter\SalesStaffAttribute.cs" />

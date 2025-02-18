@@ -29,8 +29,8 @@ namespace VanPhongPham.Controllers
             return PartialView("_Dropdown", categories);
         }
         public ActionResult Logout()
-        {            
-            Session.Clear();              
+        {
+            Session["Role"] = null;
             return RedirectToAction("Index", "Home");
         }
     }

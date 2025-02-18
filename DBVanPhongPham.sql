@@ -1015,14 +1015,15 @@ VALUES
 ('USR001', N'Thành Đạt', 'admin', 'true'),
 ('khachvanglai', N'Khách vãng lai', 'khachvanglai', 'true')
 
+
 INSERT INTO user_roles
 VALUES
 ('USR001', 2)
 GO
 
 UPDATE users
-SET password = CONVERT(VARCHAR(32), HASHBYTES('MD5', '123'), 2)
-WHERE username = 'qwe';
+SET password = CONVERT(VARCHAR(32), HASHBYTES('MD5', 'Admin123*'), 2)
+WHERE username = 'admin';
 
 INSERT INTO purchase_order (purchase_order_id, supplier_id, employee_id)
 VALUES

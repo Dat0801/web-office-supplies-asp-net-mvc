@@ -243,10 +243,11 @@
                 <p><strong>Số điện thoại:</strong> @phone</p>
                 <p><strong>Lời nhắn từ khách hàng:</strong> @Model.OrderNote</p>
                 <p><strong>Theo dõi đơn hàng:</strong></p>
-                <div style="margin-top: 20px">
+                <div style="margin-top: 20px; margin-bottom: 20px;">
                     <div id="shipping_items" class="shipping-timeline">
                     </div>
                 </div>
+                <button type="button" id="PrintOrder" class="btn btn-primary" style="visibility: hidden" data-orderid="@Model.OrderId" data-ordercode="@Model.OrderCode"></button>
             </div>
         </div>
     </div>
@@ -729,30 +730,40 @@ else if (ViewBag.View == "Index")
         const AcceptBtn2 = document.getElementById("AcceptBtn2");
         const RefuseBtn2 = document.getElementById("RefuseBtn2");
         const discardrechargeBtn = document.getElementById("discardrechargeBtn");
+        const PrintOrder = document.getElementById("PrintOrder");
 
         if (confirmBtn)
         {
             document.getElementById("confirmBtn").addEventListener('click', async function () {
+                const response13 = await fetch('/UserOrder/CheckProductQuantity', {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        order_id: "@Model.OrderId"
+                    })
+                });
 
-                const itemsAdmin = JSON.parse(sessionStorage.getItem('itemsAdmin'));
+                const result13 = await response13.json();
 
-                const createOrderResponse = await createOrder(
-                    itemsAdmin.payment_type_id,
-                    itemsAdmin.to_name,
-                    itemsAdmin.to_phone,
-                    itemsAdmin.to_address,
-                    itemsAdmin.to_ward_name,
-                    itemsAdmin.to_district_name,
-                    itemsAdmin.to_province_name,
-                    itemsAdmin.cod_amount,
-                    itemsAdmin.weight,
-                    itemsAdmin.service_type_id,
-                    itemsAdmin.items
-                );
+                if (result13.success) {
+                    const itemsAdmin = JSON.parse(sessionStorage.getItem('itemsAdmin'));
 
-                if (createOrderResponse) {
+                    const createOrderResponse = await createOrder(
+                        itemsAdmin.payment_type_id,
+                        itemsAdmin.to_name,
+                        itemsAdmin.to_phone,
+                        itemsAdmin.to_address,
+                        itemsAdmin.to_ward_name,
+                        itemsAdmin.to_district_name,
+                        itemsAdmin.to_province_name,
+                        itemsAdmin.cod_amount,
+                        itemsAdmin.weight,
+                        itemsAdmin.service_type_id,
+                        itemsAdmin.items
+                    );
 
-                    const response = await fetch('/UserOrder/UpdateOrderAfterConfirm', {
+                    if (createOrderResponse) {
+                        const response = await fetch('/UserOrder/UpdateOrderAfterConfirm', {
                             method: "POST",
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -762,20 +773,31 @@ else if (ViewBag.View == "Index")
                             })
                         });
 
-                    const result = await response.json();
+                        const result = await response.json();
 
-                    if (result.success) {
-                        var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
-                        const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
-                        window.location.href = url; // Điều hướng
+                        if (result.success) {
+                            var viewName = '@ViewBag.View'; // Razor gán giá trị vào biến JavaScript
+                            const url = `/Admin/UserOrder/${viewName}`; // Tạo URL động
+                            window.location.href = url; // Điều hướng
+                        } else {
+                            console.log("Lỗi: ", result.message);
+                        }
+                    } else {
+                        console.error("Không tạo được đơn hàng.");
                     }
-                    else {
-                        console.log("Lỗi: ", result.message);
-                    }
-                }
-                else
-                {
-                    console.error("Không tạo được đơn hàng.");
+                } else {
+                    const modalBody = document.querySelector("#MessagesModal .modal-body p");
+                    modalBody.textContent = `Số lượng sản phẩm không đủ trong kho.`; // Thông báo lỗi
+
+                    // Hiển thị modal với jQuery
+                    $("#MessagesModal").modal("show");
+
+                    // Tự động tắt modal sau 3 giây
+                    setTimeout(function () {
+                        $("#MessagesModal").modal("hide");
+                    }, 1500);
+
+                    return;
                 }
             });
         }
@@ -1141,10 +1163,33 @@ else if (ViewBag.View == "Index")
                 }
             };
         }
+        if (PrintOrder)
+        {
+            PrintOrder.onclick = async function ()
+            {
+                const orderCode = this.getAttribute("data-ordercode");
+                const items = [orderCode]; // Tạo mảng chứa mã đơn hàng
+                const result = await printOrder(items); // Gửi request đến API GHN
+
+                if (result) {
+                    const token = result.token; // Lấy token từ kết quả trả về
+                    const url = `https://dev-online-gateway.ghn.vn/a5/public-api/printA5?token=${token}`; // URL chứa token
+                    window.open(url, '_blank'); // Mở tab mới
+                }
+                else {
+                    alert(result.message);
+                }
+            };
+        }
 
 
         const orderCode = "@Model.OrderCode";
 
+        if (@Model.OrderStatusID !== 1)
+        {
+            PrintOrder.textContent = "In đơn hàng";
+            PrintOrder.style.visibility = "visible";
+        }
         if (@Model.OrderStatusID !== 5) {
             const shippingDetail = await getShippingDetail(orderCode);
 

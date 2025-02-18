@@ -55,6 +55,7 @@ namespace VanPhongPham.Controllers
                 }
             }
 
+
             // Filter products by category
             if (!string.IsNullOrWhiteSpace(categoryID))
             {
@@ -137,6 +138,7 @@ namespace VanPhongPham.Controllers
             //ViewBag.Brands = brands != null ? string.Join(",", brands) : string.Empty;
             //ViewBag.PageNumber = pageNumber;
             //ViewBag.PageSize = pageSize;
+
 
             return View(viewModel);
         }

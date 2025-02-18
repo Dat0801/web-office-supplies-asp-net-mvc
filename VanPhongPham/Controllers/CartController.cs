@@ -5,9 +5,11 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using VanPhongPham.Models;
+using VanPhongPham.Areas.Admin.Filter;
 
 namespace VanPhongPham.Controllers
 {
+    [Guest]
     public class CartController : Controller
     {
         DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();

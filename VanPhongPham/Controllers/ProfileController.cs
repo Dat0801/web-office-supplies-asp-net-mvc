@@ -6,12 +6,14 @@ using System.Data.Entity;
 using System.Web;
 using System.Web.Mvc;
 using VanPhongPham.Models;
+using VanPhongPham.Areas.Admin.Filter;
 using System.Threading.Tasks;
 using FirebaseAdmin.Auth;
 using PagedList;
 
 namespace VanPhongPham.Controllers
 {
+    [Guest]
     public class ProfileController : Controller
     {
         private readonly DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();

@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using VanPhongPham.Areas.Admin.Filter;
 using VanPhongPham.Models;
 using VanPhongPham.Services;
 
 namespace VanPhongPham.Controllers
 {
+    [Customer]
     public class AuthController : Controller
     {
         DB_VanPhongPhamDataContext db = new DB_VanPhongPhamDataContext();

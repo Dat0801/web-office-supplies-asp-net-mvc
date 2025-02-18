@@ -2,6 +2,25 @@
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
     var userID = Session["userId"] as string;
 }
+<style>
+    #suggestions {
+        border: 1px solid #ccc;
+        display: none;
+        position: absolute;
+        background: white;
+        width: 300px;
+        z-index: 9999;
+    }
+
+        #suggestions div {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+            #suggestions div:hover {
+                background-color: #f1f1f1;
+            }
+</style>
 <div id="notification-container" style="position: fixed; top: 20px; right: 20px; z-index: 1050; background-color:coral; color:white"></div>
 
 <!-- Topbar Start -->
