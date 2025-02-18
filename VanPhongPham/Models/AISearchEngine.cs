@@ -11,68 +11,73 @@ namespace VanPhongPham.Models
 {
     public class AISearchEngine
     {
-        //private readonly TrainModelAI _trainModelAI;
-        //private readonly Dictionary<string, int> _userMapping;
-        //private readonly Dictionary<string, int> _productMapping;
-        //private readonly List<string> _allProductIds;
+        private readonly TrainModelAI _trainModelAI;
+        private readonly Dictionary<string, int> _userMapping;
+        private readonly Dictionary<string, int> _productMapping;
+        private readonly List<string> _allProductIds;
 
-        //public AISearchEngine(List<(string UserId, string ProductId, int? ViewCount, int? AddToCartCount, int? PurchaseCount)> rawData, List<ProductViewModel> products)
-        //{
-        //    _trainModelAI = new TrainModelAI();
-        //    _trainModelAI.TrainModel(rawData); // Huấn luyện mô hình từ dữ liệu thô
-        //    _trainModelAI.LoadModel(); // Tải mô hình đã huấn luyện
+        public AISearchEngine(List<(string UserId, string ProductId, int? ViewCount, int? AddToCartCount, int? PurchaseCount)> rawData, List<ProductViewModel> products)
+        {
+            _trainModelAI = new TrainModelAI();
+            _trainModelAI.TrainModelIfNotExists(rawData); // Huấn luyện mô hình từ dữ liệu thô
+            _trainModelAI.LoadModel(); // Tải mô hình đã huấn luyện
 
-        //    // Tạo mappings cho người dùng và sản phẩm
-        //    _userMapping = rawData.Select(x => x.UserId).Distinct()
-        //                          .Select((user, index) => new { user, index })
-        //                          .ToDictionary(x => x.user, x => x.index);
+            // Tạo mappings cho người dùng và sản phẩm
+            _userMapping = rawData.Select(x => x.UserId).Distinct()
+                                  .Select((user, index) => new { user, index })
+                                  .ToDictionary(x => x.user, x => x.index);
 
-        //    _productMapping = rawData.Select(x => x.ProductId).Distinct()
-        //                             .Select((prod, index) => new { prod, index })
-        //                             .ToDictionary(x => x.prod, x => x.index);
+            _productMapping = rawData.Select(x => x.ProductId).Distinct()
+                                     .Select((prod, index) => new { prod, index })
+                                     .ToDictionary(x => x.prod, x => x.index);
 
-        //    _allProductIds = products.Select(p => p.ProductId).ToList(); // Danh sách tất cả ID sản phẩm
-        //}
-        // Tìm sản phẩm tương tác nhiều nhất cho người dùng
-        //public List<ProductViewModel> RecommendProductsForUser(string userId, List<ProductViewModel> products)
-        //{
-        //    var userIndex = _userMapping.ContainsKey(userId) ? _userMapping[userId] : -1;
+            _allProductIds = products.Select(p => p.ProductId).ToList(); // Danh sách tất cả ID sản phẩm
+        }
+        //Tìm sản phẩm tương tác nhiều nhất cho người dùng
+        public List<ProductViewModel> RecommendProductsForUser(string userId, List<ProductViewModel> products)
+        {
+            if (userId == null)
+            {
+                return new List<ProductViewModel>();
 
-        //    if (userIndex == -1)
-        //    {
-        //        return new List<ProductViewModel>(); // Nếu không tìm thấy người dùng
-        //    }
+            }
+            var userIndex = _userMapping.ContainsKey(userId) ? _userMapping[userId] : -1;
 
-        //    var predictionEngine = _trainModelAI.GetPredictionEngine(); // Tạo prediction engine từ mô hình đã tải
+            if (userIndex == -1)
+            {
+                return new List<ProductViewModel>(); // Nếu không tìm thấy người dùng
+            }
 
-        //    // Dự đoán điểm số cho từng sản phẩm và sắp xếp theo điểm số
-        //    var recommendedProducts = _allProductIds
-        //        .Select(productId => new
-        //        {
-        //            ProductId = productId,
-        //            Score = predictionEngine.Predict(new PurchaseData
-        //            {
-        //                UserId = userIndex,
-        //                ProductId = _productMapping.ContainsKey(productId) ? _productMapping[productId] : -1
-        //            }).Score
-        //        })
-        //        .OrderByDescending(x => x.Score) // Sắp xếp sản phẩm theo điểm số dự đoán
-        //        .Select(x => x.ProductId)
-        //        .ToList();
+            var predictionEngine = _trainModelAI.GetPredictionEngine(); // Tạo prediction engine từ mô hình đã tải
 
-        //    // Trả về danh sách sản phẩm đã được sắp xếp
-        //    return products
-        //        .Where(p => recommendedProducts.Contains(p.ProductId))
-        //        .OrderBy(p => recommendedProducts.IndexOf(p.ProductId)) // Đảm bảo sắp xếp theo điểm số
-        //        .Take(5)
-        //        .ToList();
-        //}
+            // Dự đoán điểm số cho từng sản phẩm và sắp xếp theo điểm số
+            var recommendedProducts = _allProductIds
+                .Select(productId => new
+                {
+                    ProductId = productId,
+                    Score = predictionEngine.Predict(new PurchaseData
+                    {
+                        UserId = (uint)userIndex,
+                        ProductId = (uint)(_productMapping.ContainsKey(productId) ? _productMapping[productId] : -1)
+                    }).Score
+                })
+                .OrderByDescending(x => x.Score) // Sắp xếp sản phẩm theo điểm số dự đoán
+                .Select(x => x.ProductId)
+                .ToList();
+
+            // Trả về danh sách sản phẩm đã được sắp xếp
+            return products
+                .Where(p => recommendedProducts.Contains(p.ProductId))
+                .OrderBy(p => recommendedProducts.IndexOf(p.ProductId)) // Đảm bảo sắp xếp theo điểm số
+                .Take(5)
+                .ToList();
+        }
         public List<ProductViewModel> FindRelevantProducts(string searchQuery, List<ProductViewModel> products)
         {
-            //// Triển khai thuật toán AI hoặc kết nối đến API (ví dụ OpenAI hoặc ML.NET)
-            //var lowerQuery = searchQuery.ToLower();
+            // Triển khai thuật toán AI hoặc kết nối đến API (ví dụ OpenAI hoặc ML.NET)
+            var lowerQuery = searchQuery.ToLower();
 
-            //// Tìm kiếm tương đối dựa trên TF-IDF hoặc Cosine Similarity
+            // Tìm kiếm tương đối dựa trên TF-IDF hoặc Cosine Similarity
             //var filteredProducts = products
             //    .Where(p => ComputeRelevanceScore(lowerQuery, p) > 0) // Chỉ giữ sản phẩm liên quan
             //    .OrderByDescending(p => ComputeRelevanceScore(lowerQuery, p))
@@ -124,11 +129,10 @@ namespace VanPhongPham.Models
         //    var descriptionMagnitude = Math.Sqrt(descriptionVector.Sum(d => d * d));
 
         //    var rs = dotProduct / (queryMagnitude * descriptionMagnitude + 1e-10); // Thêm epsilon để tránh chia cho 0
-        //    if(rs ==0)
-        //        Console.WriteLine(" " + product);            
+        //    if (rs == 0)
+        //        Console.WriteLine(" " + product);
         //    return rs;
         //}
-
 
     }
 }
